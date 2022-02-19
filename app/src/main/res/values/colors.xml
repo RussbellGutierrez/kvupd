@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--App colors-->
+    <color name="primaryColor">#0277bd</color>
+    <color name="primaryLightColor">#58a5f0</color>
+    <color name="primaryDarkColor">#004c8c</color>
+    <color name="secondaryColor">#d81b60</color>
+    <color name="secondaryLightColor">#ff5c8d</color>
+    <color name="secondaryDarkColor">#a00037</color>
+    <color name="primaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#ffffff</color>
+    <!--Base colors-->
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <!--Custom colors-->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="teal">#008080</color>
+    <color name="smoke">#D3D3D3</color>
+    <color name="lightcrimson">#DF3E5F</color>
+    <color name="dodgerblue">#1E90FF</color>
+    <color name="gray">#555555</color>
+    <color name="lightgray">#B6B6B6</color>
+    <color name="deeporange">#f4511e</color>
+    <color name="green">#046A61</color>
+    <color name="lightgreen">#07A395</color>
+    <color name="gold">#FF9100</color>
+    <color name="darkgreen">#014512</color>
+    <color name="magenta">#E91E63</color>
+    <color name="marineblue">#1A237E</color>
+    <color name="transplightgray">#1f000000</color>
+
+
+    <color name="opacity">#99000000</color>
+    <color name="transparent">#0fff</color>
+</resources>

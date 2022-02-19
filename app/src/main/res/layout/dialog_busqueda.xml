@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textColor="@color/lightgreen"
+            android:text="Busqueda"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"/>
+
+        <EditText
+            android:id="@+id/edt_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="12dp"
+            android:layout_marginVertical="8dp"
+            android:hint="Buscar..."
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:drawableLeft="@drawable/buscar"
+            android:drawableTint="@color/gray"
+            android:drawablePadding="3dp"/>
+
+        <ListView
+            android:id="@+id/lst_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:divider="@color/transplightgray"
+            android:dividerHeight="1dp"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
