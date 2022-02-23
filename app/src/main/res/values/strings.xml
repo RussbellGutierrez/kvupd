@@ -1,5 +1,66 @@
 <resources>
     <string name="app_name">KVUPD</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Hello Blank Fragment</string>
+    <string-array name="baja">
+        <item>-- SELECCIONE MOTIVO --</item>
+        <item>DUPLICADO</item>
+        <item>NO EXISTE</item>
+        <item>CAMBIO GIRO</item>
+        <item>CERRADO</item>
+    </string-array>
+    <string-array name="documento">
+        <item>BOLETA</item>
+        <item>FACTURA</item>
+    </string-array>
+    <string-array name="vias">
+        <item>NINGUNO</item>
+        <item>AVENIDA</item>
+        <item>BOULEVARD</item>
+        <item>CALLE</item>
+        <item>CARRETERA</item>
+        <item>INTERIOR</item>
+        <item>JIRON</item>
+        <item>MERCADO</item>
+        <item>PASAJE</item>
+        <item>PASEO</item>
+        <item>PLAZA</item>
+    </string-array>
+    <string-array name="urbano">
+        <item>NINGUNO</item>
+        <item>AMPLIACION</item>
+        <item>ANEXO</item>
+        <item>ASENTAMIENTO HUMANO</item>
+        <item>ASOCIACION</item>
+        <item>ASOCIACION VIVIENDA</item>
+        <item>BARRIO</item>
+        <item>CENTRO COMERCIAL</item>
+        <item>CENTRO POBLADO</item>
+        <item>COMITE</item>
+        <item>CONDOMINIO</item>
+        <item>CONJUNTO HABITACIONAL</item>
+        <item>CONJUNTO RESIDENCIAL</item>
+        <item>COOPERATIVA</item>
+        <item>COOPERATIVA VIVIENDA</item>
+        <item>HABILITACION URBANA</item>
+        <item>LOTIZACION</item>
+        <item>PARCELA</item>
+        <item>POBLADO</item>
+        <item>PUEBLO JOVEN</item>
+        <item>QUINTA</item>
+        <item>RESIDENCIAL</item>
+        <item>SECTOR</item>
+        <item>UNIDAD VECINAL</item>
+        <item>URBANIZACION</item>
+        <item>VILLA</item>
+        <item>ZONA INDUSTRIAL</item>
+    </string-array>
+    <string-array name="numeracion">
+        <item>NUMERO</item>
+        <item>INTERIOR</item>
+        <item>BLOCK</item>
+        <item>DPTO</item>
+        <item>PUESTO</item>
+        <item>LOTE</item>
+    </string-array>
 </resources>

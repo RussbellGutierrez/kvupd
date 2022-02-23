@@ -3,6 +3,7 @@ package com.upd.kv.data.local
 import androidx.room.Dao
 import androidx.room.Query
 import com.upd.kv.data.model.*
+import com.upd.kv.data.model.QueryConstant.GET_BAJA_SPECIFIC
 import com.upd.kv.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kv.data.model.QueryConstant.GET_CONFIG
 import com.upd.kv.data.model.QueryConstant.GET_DATA_CLIENTE
@@ -47,6 +48,9 @@ interface QueryDAO {
 
     @Query(GET_DATA_CLIENTE)
     suspend fun getDataCliente(cliente: String): List<DataCliente>
+
+    @Query(GET_BAJA_SPECIFIC)
+    suspend fun getBajaCliente(cliente: String): TBaja?
 
     /*  Dao send data to server    */
     @Query(GET_VISITA)

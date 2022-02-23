@@ -6,6 +6,7 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kv.R
@@ -18,6 +19,7 @@ import com.upd.kv.utils.Constant.CONF
 import com.upd.kv.utils.Interface.clienteListener
 import com.upd.kv.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ class FCliente @Inject constructor() : Fragment(), SearchView.OnQueryTextListene
     private var _bind: FragmentFClienteBinding? = null
     private val bind get() = _bind!!
     private var row = listOf<RowCliente>()
+    private var clienteBaja: Boolean? = null
     private val _tag by lazy { FCliente::class.java.simpleName }
 
     @Inject
@@ -113,6 +116,20 @@ class FCliente @Inject constructor() : Fragment(), SearchView.OnQueryTextListene
         return false
     }
 
+    override fun onClienteClick(cliente: RowCliente) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            navigateToDialog(0,cliente)
+        }
+    }
+
+    override fun onPressCliente(cliente: RowCliente) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            navigateToDialog(1,cliente)
+        }
+    }
+
     private fun launchDownload(fecha: String) {
         val json = JSONObject()
         json.put("empleado", CONF.codigo)
@@ -133,7 +150,19 @@ class FCliente @Inject constructor() : Fragment(), SearchView.OnQueryTextListene
         }
     }
 
-    override fun onClienteClick(cliente: RowCliente) {
-        snack("Click cliente ${cliente.id}")
+    private fun navigateToDialog(dialog: Int, cliente: RowCliente) {
+        if (clienteBaja != null && clienteBaja!!) {
+            snack("Cliente con baja, revise lista de bajas")
+        }else {
+            val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+            when(dialog) {
+                0 -> findNavController().navigate(
+                    FClienteDirections.actionFClienteToDObservacion(cli)
+                )
+                1 -> findNavController().navigate(
+                    FClienteDirections.actionFClienteToDBaja(cli)
+                )
+            }
+        }
     }
 }

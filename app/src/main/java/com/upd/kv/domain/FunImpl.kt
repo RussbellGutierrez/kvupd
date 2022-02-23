@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.work.BackoffPolicy
@@ -144,10 +145,10 @@ class FunImpl @Inject constructor(
                 (i.longitud < 0 && i.latitud > 0) ||
                 (i.longitud > 0 && i.latitud < 0)
             ) {
-                when(i.motivo) {
+                when(i.observacion) {
                     0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
                     in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
-                    9 -> m.add(map.addingMarker(i, R.drawable.pin_chess))
+                    9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
                 }
             }
         }

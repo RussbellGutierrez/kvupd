@@ -57,6 +57,9 @@ class RepoImpl @Inject constructor(
         return localDataSource.getDataCliente(cliente)
     }
 
+    override suspend fun isClienteBaja(cliente: String) =
+        localDataSource.isClienteBaja(cliente)
+
     override suspend fun getStarterTime(): Long? {
         localDataSource.getConfig().forEach { i ->
             val calendar = Calendar.getInstance().apply {
@@ -113,6 +116,14 @@ class RepoImpl @Inject constructor(
         localDataSource.saveVisita(visita)
     }
 
+    override suspend fun saveEstado(estado: TEstado) {
+        localDataSource.saveEstado(estado)
+    }
+
+    override suspend fun saveBaja(baja: TBaja) {
+        localDataSource.saveBaja(baja)
+    }
+
     override suspend fun deleteClientes() {
         localDataSource.deleteCliente()
     }
@@ -139,6 +150,14 @@ class RepoImpl @Inject constructor(
 
     override suspend fun deleteVisita() {
         localDataSource.deleteVisita()
+    }
+
+    override suspend fun deleteEstado() {
+        localDataSource.deleteEstado()
+    }
+
+    override suspend fun deleteBaja() {
+        localDataSource.deleteBaja()
     }
 
     override suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>> {

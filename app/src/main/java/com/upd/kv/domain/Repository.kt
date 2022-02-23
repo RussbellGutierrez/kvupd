@@ -17,8 +17,10 @@ interface Repository {
     suspend fun getDistritos(): List<Combo>
     suspend fun getNegocios(): List<Combo>
     suspend fun getClienteDetail(cliente: String): List<DataCliente>
+    suspend fun isClienteBaja(cliente: String): Boolean
     suspend fun getStarterTime(): Long?
     suspend fun workDay(): Boolean?
+
     suspend fun saveConfiguracion(config: List<Config>)
     suspend fun saveClientes(cliente: List<Cliente>)
     suspend fun saveEmpleados(empleado: List<Vendedor>)
@@ -27,6 +29,9 @@ interface Repository {
     suspend fun saveEncuesta(encuesta: List<Encuesta>)
     suspend fun saveSeguimiento(seguimiento: TSeguimiento)
     suspend fun saveVisita(visita: TVisita)
+    suspend fun saveEstado(estado: TEstado)
+    suspend fun saveBaja(baja: TBaja)
+
     suspend fun deleteClientes()
     suspend fun deleteEmpleados()
     suspend fun deleteDistritos()
@@ -34,6 +39,8 @@ interface Repository {
     suspend fun deleteEncuesta()
     suspend fun deleteSeguimiento()
     suspend fun deleteVisita()
+    suspend fun deleteEstado()
+    suspend fun deleteBaja()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>>

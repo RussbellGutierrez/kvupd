@@ -23,6 +23,7 @@ object Constant {
     var MSG_NEGOCIO = ""
 
     lateinit var FIRST_LOCATION: Location
+    var POS_LOC: Location? = null
     lateinit var CONF: Config
     lateinit var IWAM: DataCliente
 

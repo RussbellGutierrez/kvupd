@@ -5,10 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.upd.kv.data.model.*
+import com.upd.kv.data.model.QueryConstant.DEL_BAJA
 import com.upd.kv.data.model.QueryConstant.DEL_CLIENTES
 import com.upd.kv.data.model.QueryConstant.DEL_DISTRITOS
 import com.upd.kv.data.model.QueryConstant.DEL_EMPLEADOS
 import com.upd.kv.data.model.QueryConstant.DEL_ENCUESTA
+import com.upd.kv.data.model.QueryConstant.DEL_ESTADO
 import com.upd.kv.data.model.QueryConstant.DEL_NEGOCIOS
 import com.upd.kv.data.model.QueryConstant.DEL_SEGUIMIENTO
 import com.upd.kv.data.model.QueryConstant.DEL_VISITA
@@ -41,6 +43,12 @@ interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVisita(vis: TVisita)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEstado(est: TEstado)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertBaja(baj: TBaja)
+
     @Query(DEL_CLIENTES)
     suspend fun deleteClientes()
 
@@ -61,4 +69,10 @@ interface AppDAO {
 
     @Query(DEL_VISITA)
     suspend fun deleteVisita()
+
+    @Query(DEL_ESTADO)
+    suspend fun deleteEstado()
+
+    @Query(DEL_BAJA)
+    suspend fun deleteBaja()
 }

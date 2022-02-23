@@ -8,6 +8,7 @@ object QueryConstant {
     const val GET_DISTRITOS = "SELECT * FROM TDistrito"
     const val GET_NEGOCIOS = "SELECT * FROM TNegocio"
     const val GET_VISITA = "SELECT * FROM TVisita ORDER BY fecha ASC"
+    const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
 
     const val DEL_CLIENTES = "DELETE FROM TClientes"
     const val DEL_EMPLEADOS = "DELETE FROM TEmpleados"
@@ -16,6 +17,8 @@ object QueryConstant {
     const val DEL_ENCUESTA = "DELETE FROM TEncuesta"
     const val DEL_SEGUIMIENTO = "DELETE FROM TSeguimiento"
     const val DEL_VISITA = "DELETE FROM TVisita"
+    const val DEL_ESTADO = "DELETE FROM TEstado"
+    const val DEL_BAJA = "DELETE FROM TBaja"
 
     const val GET_ROW_CLIENTES = "" +
             "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, c.secuencia, c.ruta " +
@@ -30,13 +33,15 @@ object QueryConstant {
             "ORDER BY fecha DESC LIMIT 1 "
 
     const val GET_MARKERS = "" +
-            "SELECT c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, IFNULL(v.motivo,9) as motivo " +
+            "SELECT c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
+            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido " +
             "FROM TClientes c " +
+            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.empleado=e.empleado and c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
             "ORDER BY c.idcliente ASC "
 
     const val GET_DATA_CLIENTE = "" +
-            "SELECT idcliente, nomcli, domicli, '---' as negocio, '---' as telefono " +
+            "SELECT idcliente, nomcli, domicli, ruta, '---' as negocio, '---' as telefono " +
             "FROM TClientes " +
             "WHERE ((:cliente <> '0' AND idcliente = :cliente) OR :cliente = '0') "
 }

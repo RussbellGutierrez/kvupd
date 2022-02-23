@@ -120,7 +120,7 @@ fun GoogleMap.settingsMap() {
     isTrafficEnabled = false
     setMaxZoomPreference(20f)
     setMinZoomPreference(10f)
-    mapType = GoogleMap.MAP_TYPE_NORMAL
+    mapType = GoogleMap.MAP_TYPE_TERRAIN
     uiSettings.isZoomControlsEnabled = true
     uiSettings.isZoomGesturesEnabled = true
     uiSettings.isRotateGesturesEnabled = false
@@ -130,7 +130,7 @@ fun GoogleMap.settingsMap() {
 
 fun GoogleMap.addingMarker(item: MarkerMap, icon: Int): Marker {
     return this.addMarker(MarkerOptions().apply {
-        title(item.motivo.toString())
+        title(item.observacion.toString())
         snippet(item.id.toString())
         position(LatLng(item.latitud,item.longitud))
         icon(BitmapDescriptorFactory.fromResource(icon))

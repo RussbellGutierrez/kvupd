@@ -1,8 +1,9 @@
 package com.upd.kv.data.model
 
 import androidx.room.Entity
+import com.upd.kv.utils.Constant.CONF
 
-@Entity(primaryKeys = ["codigo","empresa","sucursal","esquema"])
+@Entity(primaryKeys = ["codigo", "empresa", "sucursal", "esquema"])
 data class TConfiguracion(
     val codigo: Int,
     val empresa: Int,
@@ -21,13 +22,43 @@ data class TConfiguracion(
 )
 
 fun List<TConfiguracion>.asConfigList(): List<Config> = this.map {
-    Config(it.codigo,it.empresa,it.esquema,it.fecha,it.nombre,it.codsuper,it.supervisor,it.hfin,it.hini,it.ipp,it.ips,it.seguimiento,it.sucursal,it.tipo)
+    Config(
+        it.codigo,
+        it.empresa,
+        it.esquema,
+        it.fecha,
+        it.nombre,
+        it.codsuper,
+        it.supervisor,
+        it.hfin,
+        it.hini,
+        it.ipp,
+        it.ips,
+        it.seguimiento,
+        it.sucursal,
+        it.tipo
+    )
 }
 
 fun Config.asTConfig(): TConfiguracion =
-    TConfiguracion(this.codigo,this.empresa,this.esquema,this.fecha,this.nombre,this.codsuper,this.supervisor,this.hini,this.hfin,this.ipp,this.ips,this.seguimiento,this.sucursal,this.tipo)
+    TConfiguracion(
+        this.codigo,
+        this.empresa,
+        this.esquema,
+        this.fecha,
+        this.nombre,
+        this.codsuper,
+        this.supervisor,
+        this.hini,
+        this.hfin,
+        this.ipp,
+        this.ips,
+        this.seguimiento,
+        this.sucursal,
+        this.tipo
+    )
 
-@Entity(primaryKeys = ["idcliente","ruta"])
+@Entity(primaryKeys = ["idcliente", "ruta"])
 data class TClientes(
     val idcliente: Int,
     val nomcli: String,
@@ -39,14 +70,39 @@ data class TClientes(
     val fecha: String,
     val secuencia: Int,
     val numcuit: String,
-    val encuestas: String)
+    val encuestas: String
+)
 
 fun List<TClientes>.asClienteList(): List<Cliente> = this.map {
-    Cliente(it.idcliente,it.nomcli,it.ruta,it.empleado,it.domicli,it.longitud,it.latitud,it.fecha,it.secuencia,it.numcuit,it.encuestas)
+    Cliente(
+        it.idcliente,
+        it.nomcli,
+        it.ruta,
+        it.empleado,
+        it.domicli,
+        it.longitud,
+        it.latitud,
+        it.fecha,
+        it.secuencia,
+        it.numcuit,
+        it.encuestas
+    )
 }
 
 fun Cliente.asTCliente(): TClientes =
-    TClientes(this.codigo,this.cliente,this.ruta,this.vendedor,this.domicilio,this.longitud,this.latitud,this.fecha,this.secuencia,this.numcuit,this.encuestas)
+    TClientes(
+        this.codigo,
+        this.cliente,
+        this.ruta,
+        this.vendedor,
+        this.domicilio,
+        this.longitud,
+        this.latitud,
+        this.fecha,
+        this.secuencia,
+        this.numcuit,
+        this.encuestas
+    )
 
 @Entity(primaryKeys = ["codigo"])
 data class TEmpleados(
@@ -56,11 +112,11 @@ data class TEmpleados(
 )
 
 fun List<TEmpleados>.asEmpleadoList(): List<Vendedor> = this.map {
-    Vendedor(it.codigo,it.descripcion,it.cargo)
+    Vendedor(it.codigo, it.descripcion, it.cargo)
 }
 
 fun Vendedor.asTEmpleado(): TEmpleados =
-    TEmpleados(this.codigo,this.descripcion,this.cargo)
+    TEmpleados(this.codigo, this.descripcion, this.cargo)
 
 @Entity(primaryKeys = ["codigo"])
 data class TDistrito(
@@ -69,11 +125,11 @@ data class TDistrito(
 )
 
 fun List<TDistrito>.asDistritoList(): List<Combo> = this.map {
-    Combo(it.codigo,it.nombre)
+    Combo(it.codigo, it.nombre)
 }
 
 fun Combo.asTDistrito(): TDistrito =
-    TDistrito(this.codigo,this.nombre)
+    TDistrito(this.codigo, this.nombre)
 
 @Entity(primaryKeys = ["codigo"])
 data class TNegocio(
@@ -82,11 +138,11 @@ data class TNegocio(
 )
 
 fun List<TNegocio>.asNegocioList(): List<Combo> = this.map {
-    Combo(it.codigo,it.nombre)
+    Combo(it.codigo, it.nombre)
 }
 
 fun Combo.asTNegocio(): TNegocio =
-    TNegocio(this.codigo,this.nombre)
+    TNegocio(this.codigo, this.nombre)
 
 @Entity(primaryKeys = ["id"])
 data class TEncuesta(
@@ -104,21 +160,51 @@ data class TEncuesta(
 )
 
 fun List<TEncuesta>.asEncuestaList(): List<Encuesta> = this.map {
-    Encuesta(it.id,it.nombre,it.foto,it.pregunta,it.descripcion,it.tipo,it.respuesta,it.formato,it.condicional,it.previa,it.eleccion)
+    Encuesta(
+        it.id,
+        it.nombre,
+        it.foto,
+        it.pregunta,
+        it.descripcion,
+        it.tipo,
+        it.respuesta,
+        it.formato,
+        it.condicional,
+        it.previa,
+        it.eleccion
+    )
 }
 
 fun Encuesta.asTEncuesta(): TEncuesta =
-    TEncuesta(this.id,this.nombre,this.foto,this.pregunta,this.descripcion,this.tipo,this.respuesta,this.formato,this.condicional,this.previa,this.eleccion)
+    TEncuesta(
+        this.id,
+        this.nombre,
+        this.foto,
+        this.pregunta,
+        this.descripcion,
+        this.tipo,
+        this.respuesta,
+        this.formato,
+        this.condicional,
+        this.previa,
+        this.eleccion
+    )
 
-@Entity(primaryKeys = ["idcliente","ruta"])
+@Entity(primaryKeys = ["idcliente", "ruta"])
 data class TEstado(
-    val idcliente: String,
+    val idcliente: Int,
     val empleado: Int,
     val ruta: Int,
     val atendido: Int
 )
 
-@Entity(primaryKeys = ["fecha","longitud","latitud"])
+fun TVisita.asTEstado(ruta: Int): TEstado =
+    TEstado(this.cliente, this.usuario, ruta, 1)
+
+fun TBaja.asTEstado(ruta: Int): TEstado =
+    TEstado(this.cliente, CONF.codigo, ruta, 2)
+
+@Entity(primaryKeys = ["fecha", "longitud", "latitud"])
 data class TSeguimiento(
     val fecha: String,
     val usuario: Int,
@@ -136,8 +222,21 @@ data class TVisita(
     val usuario: Int,
     val longitud: Double,
     val latitud: Double,
-    val motivo: Int,
+    val observacion: Int,
     val precision: Double,
+    val estado: String
+)
+
+@Entity(primaryKeys = ["cliente"])
+data class TBaja(
+    val cliente: Int,
+    val motivo: Int,
+    val comentario: String,
+    val longitud: Double,
+    val latitud: Double,
+    val precision: Double,
+    val fecha: String,
+    val anulado: Int,
     val estado: String
 )
 

@@ -47,6 +47,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getDataCliente(cliente)
     }
 
+    suspend fun isClienteBaja(cliente: String): Boolean {
+        return qdao.getBajaCliente(cliente) != null
+    }
+
     suspend fun saveConfiguracion(conf: List<Config>) {
         dao.insertConf(conf.map { it.asTConfig() })
     }
@@ -79,6 +83,14 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertVisita(vis)
     }
 
+    suspend fun saveEstado(est: TEstado) {
+        dao.insertEstado(est)
+    }
+
+    suspend fun saveBaja(baj: TBaja) {
+        dao.insertBaja(baj)
+    }
+
     suspend fun deleteCliente() {
         dao.deleteClientes()
     }
@@ -105,5 +117,13 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteVisita() {
         dao.deleteVisita()
+    }
+
+    suspend fun deleteEstado() {
+        dao.deleteEstado()
+    }
+
+    suspend fun deleteBaja() {
+        dao.deleteBaja()
     }
 }

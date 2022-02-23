@@ -14,6 +14,8 @@ import com.upd.kv.utils.Constant.BASE_URL
 import com.upd.kv.utils.Constant.DB_NAME
 import com.upd.kv.utils.Constant.GPS_FAST_INTERVAL
 import com.upd.kv.utils.Constant.GPS_NORMAL_INTERVAL
+import com.upd.kv.utils.Constant.POSITION_F_INTERVAL
+import com.upd.kv.utils.Constant.POSITION_N_INTERVAL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -94,6 +96,24 @@ object ProviderModule {
     @Singleton
     @Provides
     fun providerLocationSettingsRequest(@LocationRequestGps locationRequest: LocationRequest) = LocationSettingsRequest.Builder().apply {
+        addLocationRequest(locationRequest)
+    }.build()
+
+    @LocationRequestPosition
+    @Singleton
+    @Provides
+    fun providerLocationRequestP(): LocationRequest {
+        return LocationRequest.create().apply {
+            interval = POSITION_N_INTERVAL
+            fastestInterval = POSITION_F_INTERVAL
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+    }
+
+    @LocationSettingsRequestPosition
+    @Singleton
+    @Provides
+    fun providerLocationSettingsRequestP(@LocationRequestPosition locationRequest: LocationRequest) = LocationSettingsRequest.Builder().apply {
         addLocationRequest(locationRequest)
     }.build()
 }

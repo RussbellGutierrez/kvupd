@@ -1,7 +1,6 @@
 package com.upd.kv.viewmodel
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
@@ -26,8 +25,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _fecha: MutableLiveData<Event<String>> = MutableLiveData()
     val fecha: LiveData<Event<String>> = _fecha
 
-    private val _cliselec: MutableLiveData<Event<String>> = MutableLiveData()
-    val cliselec: LiveData<Event<String>> = _cliselec
+    private val _climap: MutableLiveData<Event<String>> = MutableLiveData()
+    val climap: LiveData<Event<String>> = _climap
 
     private val _detail: MutableLiveData<Event<List<DataCliente>>> = MutableLiveData()
     val detail: LiveData<Event<List<DataCliente>>> = _detail
@@ -63,7 +62,7 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     fun setClienteSelect(cliente: String) {
-        _cliselec.value = Event(cliente)
+        _climap.value = Event(cliente)
     }
 
     fun getClientDet(cliente: String) {
@@ -94,10 +93,8 @@ class AppViewModel @ViewModelInject constructor(
 
     fun setupApp(T: () -> Unit) {
         if (functions.existQR()) {
-            Log.d(_tag, "Launch service")
             functions.executeService("setup", true)
         } else {
-            Log.d(_tag, "Launch parameter")
             T()
         }
     }
@@ -108,6 +105,7 @@ class AppViewModel @ViewModelInject constructor(
         return qr
     }
 
+    //  change to suspend
     fun workDay(E: () -> Unit, S: () -> Unit) {
         viewModelScope.launch {
             repository.workDay()?.let {
@@ -131,5 +129,29 @@ class AppViewModel @ViewModelInject constructor(
         functions.generateQR(value)
 
     fun setMarker(map: GoogleMap, list: List<MarkerMap>) =
-        functions.setupMarkers(map,list)
+        functions.setupMarkers(map, list)
+
+    fun launchPosition() {
+        functions.executeService("position", false)
+    }
+
+    fun fecha(opt: Int) =
+        functions.dateToday(opt)
+
+    fun saveVisita(visita: TVisita, ruta: Int) {
+        viewModelScope.launch {
+            repository.saveVisita(visita)
+            repository.saveEstado(visita.asTEstado(ruta))
+        }
+    }
+
+    fun saveBaja(baja: TBaja, ruta: Int) {
+        viewModelScope.launch {
+            repository.saveBaja(baja)
+            repository.saveEstado(baja.asTEstado(ruta))
+        }
+    }
+
+    suspend fun isClienteBaja(cliente: String): Boolean =
+        repository.isClienteBaja(cliente)
 }

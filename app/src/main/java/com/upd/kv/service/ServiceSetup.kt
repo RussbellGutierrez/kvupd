@@ -23,8 +23,6 @@ import com.upd.kv.domain.Functions
 import com.upd.kv.domain.Repository
 import com.upd.kv.utils.Constant.CONF
 import com.upd.kv.utils.Constant.FIRST_LOCATION
-import com.upd.kv.utils.Constant.GPS_FAST_INTERVAL
-import com.upd.kv.utils.Constant.GPS_NORMAL_INTERVAL
 import com.upd.kv.utils.Constant.SETUP_NOTIF
 import com.upd.kv.utils.Constant.W_CONFIG
 import com.upd.kv.utils.Constant.W_DISTRITO

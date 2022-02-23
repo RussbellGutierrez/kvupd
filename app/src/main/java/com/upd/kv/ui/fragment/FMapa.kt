@@ -6,20 +6,18 @@ import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.text.InputType
 import android.util.Log
 import android.view.*
-import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -27,17 +25,19 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kv.R
 import com.upd.kv.data.model.DataCliente
+import com.upd.kv.data.model.RowCliente
 import com.upd.kv.databinding.FragmentFMapaBinding
 import com.upd.kv.utils.*
 import com.upd.kv.utils.Constant.FIRST_LOCATION
 import com.upd.kv.utils.Constant.IWAM
 import com.upd.kv.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.*
 
 @AndroidEntryPoint
 class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, OnMarkerClickListener,
-    OnInfoWindowLongClickListener {
+    OnInfoWindowClickListener, OnInfoWindowLongClickListener {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFMapaBinding? = null
@@ -82,6 +82,7 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
         }
 
         viewmodel.markerMap().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+            map.clear()
             markers = viewmodel.setMarker(map, result)
         }
 
@@ -97,7 +98,7 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
             }
         }
 
-        viewmodel.cliselec.observe(viewLifecycleOwner) {
+        viewmodel.climap.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 showMarker(y)
             }
@@ -145,6 +146,7 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
                 settingsMap()
                 isMyLocationEnabled = true
                 setOnMarkerClickListener(this@FMapa)
+                setOnInfoWindowClickListener(this@FMapa)
                 setOnInfoWindowLongClickListener(this@FMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
@@ -158,8 +160,12 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
         return true
     }
 
+    override fun onInfoWindowClick(p0: Marker) {
+        navigateToDialog(0,IWAM)
+    }
+
     override fun onInfoWindowLongClick(p0: Marker) {
-        snack("Long click ${p0.snippet}")
+        navigateToDialog(1,IWAM)
     }
 
     private fun centerMarkers() {
@@ -192,7 +198,7 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
                 mclk = it
             }
         } else {
-            snack("No se encontro cliente")
+            snack("No se encontro cliente, revisar en bajas")
         }
     }
 
@@ -217,5 +223,17 @@ class FMapa : Fragment(), SearchView.OnQueryTextListener, OnMapReadyCallback, On
             dt.add(cliente)
         }
         search(dt)
+    }
+
+    private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
+        val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+        when(dialog) {
+            0 -> findNavController().navigate(
+                FMapaDirections.actionFMapaToDObservacion(cli)
+            )
+            1 -> findNavController().navigate(
+                FMapaDirections.actionFMapaToDBaja(cli)
+            )
+        }
     }
 }

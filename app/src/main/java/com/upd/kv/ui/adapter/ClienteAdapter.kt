@@ -1,9 +1,13 @@
 package com.upd.kv.ui.adapter
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -97,16 +101,21 @@ class ClienteAdapter @Inject constructor(
             bind.txtRuta.text = ruta
 
             when(item.atendido) {
-                1 -> bind.imgVisita.setColorFilter(R.color.lightgreen)
-                2 -> bind.imgAnulado.setColorFilter(R.color.lightcrimson)
+                1 -> ImageViewCompat.setImageTintList(bind.imgVisita, ColorStateList.valueOf(Color.parseColor("#07A395")))
+                2 -> ImageViewCompat.setImageTintList(bind.imgAnulado,ColorStateList.valueOf(Color.parseColor("#DF3E5F")))
             }
             bind.lnrCliente.setOnClickListener {
                 clienteListener.onClienteClick(item)
+            }
+            bind.lnrCliente.setOnLongClickListener {
+                clienteListener.onPressCliente(item)
+                return@setOnLongClickListener true
             }
         }
     }
 
     interface OnClienteListener {
         fun onClienteClick(cliente: RowCliente)
+        fun onPressCliente(cliente: RowCliente)
     }
 }
