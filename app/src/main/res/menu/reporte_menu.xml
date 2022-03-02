@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="HardcodedText">
+    <item
+        android:id="@+id/actualizar"
+        android:title="Actualizar"
+        android:icon="@drawable/actualizar"
+        app:showAsAction="always"/>
+</menu>

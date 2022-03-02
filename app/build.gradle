@@ -18,7 +18,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.upd.kv"
+        applicationId "com.upd.kventas"
         minSdk 23
         targetSdk 32
         versionCode 230050000
@@ -122,6 +122,11 @@ dependencies {
 
     //  MATERIAL DIALOGS
     implementation 'com.afollestad.material-dialogs:core:3.3.0'
+
+    //  SOCKET IO
+    implementation('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 
     //  TEST
     testImplementation 'junit:junit:4.13.2'

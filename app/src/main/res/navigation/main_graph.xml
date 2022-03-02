@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FBase"
-        android:name="com.upd.kv.ui.fragment.FBase"
+        android:name="com.upd.kventas.ui.fragment.FBase"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_f_base">
         <action
@@ -31,16 +31,23 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FReporte"
+            app:destination="@id/FReporte"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
-        android:name="com.upd.kv.ui.fragment.FAjuste"
+        android:name="com.upd.kventas.ui.fragment.FAjuste"
         android:label="Ajustes"
         tools:layout="@layout/fragment_f_ajuste" >
     </fragment>
     <dialog
         android:id="@+id/DLogin"
-        android:name="com.upd.kv.ui.dialog.DLogin"
+        android:name="com.upd.kventas.ui.dialog.DLogin"
         android:label="Login"
         tools:layout="@layout/dialog_login">
         <action
@@ -53,7 +60,7 @@
     </dialog>
     <fragment
         android:id="@+id/FCliente"
-        android:name="com.upd.kv.ui.fragment.FCliente"
+        android:name="com.upd.kventas.ui.fragment.FCliente"
         android:label="Clientes"
         tools:layout="@layout/fragment_f_cliente" >
         <action
@@ -80,7 +87,7 @@
     </fragment>
     <fragment
         android:id="@+id/FMapa"
-        android:name="com.upd.kv.ui.fragment.FMapa"
+        android:name="com.upd.kventas.ui.fragment.FMapa"
         android:label="Mapa"
         tools:layout="@layout/fragment_f_mapa">
         <action
@@ -100,7 +107,7 @@
     </fragment>
     <dialog
         android:id="@+id/DObservacion"
-        android:name="com.upd.kv.ui.dialog.DObservacion"
+        android:name="com.upd.kventas.ui.dialog.DObservacion"
         android:label="Observacion"
         tools:layout="@layout/dialog_observacion">
         <action
@@ -117,7 +124,7 @@
     </dialog>
     <fragment
         android:id="@+id/FEncuesta"
-        android:name="com.upd.kv.ui.fragment.FEncuesta"
+        android:name="com.upd.kventas.ui.fragment.FEncuesta"
         android:label="Encuesta"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
@@ -126,12 +133,95 @@
         tools:layout="@layout/fragment_f_encuesta" />
     <dialog
         android:id="@+id/DBaja"
-        android:name="com.upd.kv.ui.dialog.DBaja"
+        android:name="com.upd.kventas.ui.dialog.DBaja"
         android:label="Baja"
         tools:layout="@layout/dialog_baja">
         <argument
             android:name="cliente"
             android:defaultValue=''
             app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/FReporte"
+        android:name="com.upd.kventas.ui.fragment.FReporte"
+        android:label="Reporte"
+        tools:layout="@layout/fragment_f_reporte" >
+        <action
+            android:id="@+id/action_FReporte_to_FDetalle"
+            app:destination="@id/FDetalle"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FReporte_to_DMiniDetalle"
+            app:destination="@id/DMiniDetalle" />
+    </fragment>
+    <fragment
+        android:id="@+id/FDetalle"
+        android:name="com.upd.kventas.ui.fragment.FDetalle"
+        android:label="Detalle"
+        tools:layout="@layout/fragment_f_detalle">
+        <argument
+            android:name="ume"
+            app:argType="com.upd.kventas.data.model.Umes"
+            app:nullable="true"/>
+        <argument
+            android:name="soles"
+            app:argType="com.upd.kventas.data.model.Soles"
+            app:nullable="true"/>
+        <argument
+            android:name="visisuper"
+            app:argType="com.upd.kventas.data.model.Visisuper[]"
+            app:nullable="true"/>
+        <action
+            android:id="@+id/action_FDetalle_to_DMiniDetalle"
+            app:destination="@id/DMiniDetalle"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <dialog
+        android:id="@+id/DMiniDetalle"
+        android:name="com.upd.kventas.ui.dialog.DMiniDetalle"
+        android:label="dialog_mini_detalle"
+        tools:layout="@layout/dialog_mini_detalle" >
+        <argument
+            android:name="preventa"
+            app:argType="com.upd.kventas.data.model.Volumen[]"
+            app:nullable="true" />
+        <argument
+            android:name="cobertura"
+            app:argType="com.upd.kventas.data.model.CobCart[]"
+            app:nullable="true"/>
+        <argument
+            android:name="cartera"
+            app:argType="com.upd.kventas.data.model.CobCart[]"
+            app:nullable="true"/>
+        <argument
+            android:name="cambios"
+            app:argType="com.upd.kventas.data.model.Cambio[]"
+            app:nullable="true"/>
+        <argument
+            android:name="visicooler"
+            app:argType="com.upd.kventas.data.model.Visicooler[]"
+            app:nullable="true"/>
+        <argument
+            android:name="generico"
+            app:argType="com.upd.kventas.data.model.Generico"
+            app:nullable="true"/>
+        <argument
+            android:name="umes"
+            app:argType="com.upd.kventas.data.model.Umes"
+            app:nullable="true" />
+        <argument
+            android:name="soles"
+            app:argType="com.upd.kventas.data.model.Soles"
+            app:nullable="true" />
+        <argument
+            android:name="pedidos"
+            app:argType="integer"
+            android:defaultValue="0" />
     </dialog>
 </navigation>

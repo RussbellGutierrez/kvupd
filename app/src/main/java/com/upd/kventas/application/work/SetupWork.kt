@@ -1,0 +1,21 @@
+package com.upd.kventas.application.work
+
+import android.content.Context
+import androidx.hilt.Assisted
+import androidx.hilt.work.WorkerInject
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.upd.kventas.domain.Functions
+
+class SetupWork @WorkerInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParameters: WorkerParameters,
+    private val functions: Functions
+) : Worker(appContext, workerParameters) {
+    private val _tag by lazy { SetupWork::class.java.simpleName }
+
+    override fun doWork(): Result {
+        functions.executeService("setup",true)
+        return Result.success()
+    }
+}

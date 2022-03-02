@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.upd.kv">
+    package="com.upd.kventas">
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -44,7 +44,7 @@
         
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.upd.kv"
+            android:authorities="kventas"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -59,7 +59,7 @@
             tools:replace="android:authorities"/>
         
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name="com.upd.kventas.ui.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
@@ -71,21 +71,21 @@
         </activity>
 
         <service
-            android:name=".service.ServiceSetup"
+            android:name="com.upd.kventas.service.ServiceSetup"
             android:directBootAware="true"
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="location"/>
 
         <service
-            android:name=".service.ServicePosicion"
+            android:name="com.upd.kventas.service.ServicePosicion"
             android:directBootAware="true"
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="location"/>
         
         <receiver
-            android:name=".application.Receiver"
+            android:name="com.upd.kventas.application.Receiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
