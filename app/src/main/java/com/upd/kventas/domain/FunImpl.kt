@@ -23,6 +23,7 @@ import com.upd.kventas.BuildConfig
 import com.upd.kventas.R
 import com.upd.kventas.application.work.*
 import com.upd.kventas.data.model.MarkerMap
+import com.upd.kventas.data.model.Pedimap
 import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.service.ServiceSetup
 import com.upd.kventas.utils.Constant.W_CONFIG
@@ -32,6 +33,7 @@ import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
 import com.upd.kventas.utils.addingMarker
 import com.upd.kventas.utils.isServiceRunning
+import com.upd.kventas.utils.markerPedimap
 import com.upd.kventas.utils.timeToText
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
@@ -148,6 +150,24 @@ class FunImpl @Inject constructor(
                     0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
                     in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
                     9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
+                }
+            }
+        }
+        return m
+    }
+
+    override fun pedimapMarkers(map: GoogleMap, list: List<Pedimap>): List<Marker> {
+        val m = mutableListOf<Marker>()
+        list.forEach { i ->
+            val p = i.posicion
+            if ((p.longitud < 0 && p.latitud < 0) ||
+                (p.longitud > 0 && p.latitud > 0) ||
+                (p.longitud < 0 && p.latitud > 0) ||
+                (p.longitud > 0 && p.latitud < 0)
+            ) {
+                when(i.emitiendo) {
+                    0 -> m.add(map.markerPedimap(i,R.drawable.pin_noemite))
+                    1 -> m.add(map.markerPedimap(i,R.drawable.pin_emite))
                 }
             }
         }

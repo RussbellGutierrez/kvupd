@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.upd.kventas.R
 import com.upd.kventas.data.model.MarkerMap
+import com.upd.kventas.data.model.Pedimap
 import com.upd.kventas.ui.dialog.DBuscar
 import com.upd.kventas.ui.dialog.DProgress
 import com.upd.kventas.utils.Constant.DL_WIDTH
@@ -158,6 +159,15 @@ fun GoogleMap.addingMarker(item: MarkerMap, icon: Int): Marker {
         title(item.observacion.toString())
         snippet(item.id.toString())
         position(LatLng(item.latitud, item.longitud))
+        icon(BitmapDescriptorFactory.fromResource(icon))
+    })!!
+}
+
+fun GoogleMap.markerPedimap(item: Pedimap, icon: Int): Marker {
+    return this.addMarker(MarkerOptions().apply {
+        title("20")
+        snippet(item.codigo.toString())
+        position(LatLng(item.posicion.latitud, item.posicion.longitud))
         icon(BitmapDescriptorFactory.fromResource(icon))
     })!!
 }

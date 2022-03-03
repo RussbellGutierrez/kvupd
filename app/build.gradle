@@ -21,8 +21,8 @@ android {
         applicationId "com.upd.kventas"
         minSdk 23
         targetSdk 32
-        versionCode 230050000
-        versionName "5.0.0"
+        versionCode 230010000
+        versionName "1.0.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

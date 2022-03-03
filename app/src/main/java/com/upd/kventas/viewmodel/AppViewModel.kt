@@ -85,6 +85,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _pedigen: MutableLiveData<Network<JPediGen>> = MutableLiveData()
     val pedigen: LiveData<Network<JPediGen>> = _pedigen
 
+    private val _pedimap: MutableLiveData<Network<JPedimap>> = MutableLiveData()
+    val pedimap: LiveData<Network<JPedimap>> = _pedimap
+
     fun configObserver() = repository.getFlowConfig().asLiveData()
 
     fun rowClienteObs() = repository.getFlowRowCliente().asLiveData()
@@ -208,6 +211,12 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
+    fun fetchPedimap(body: RequestBody) = viewModelScope.launch {
+        repository.getWebPedimap(body).collect { values ->
+            _pedimap.value = values
+        }
+    }
+
     suspend fun isConfigEmpty(): Boolean =
         repository.getConfig().isNullOrEmpty()
 
@@ -272,6 +281,9 @@ class AppViewModel @ViewModelInject constructor(
 
     fun setMarker(map: GoogleMap, list: List<MarkerMap>) =
         functions.setupMarkers(map, list)
+
+    fun pedimapMarker(map: GoogleMap, list: List<Pedimap>) =
+        functions.pedimapMarkers(map, list)
 
     fun launchPosition() {
         functions.executeService("position", false)

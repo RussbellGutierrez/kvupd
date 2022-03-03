@@ -5,6 +5,7 @@ import androidx.work.OneTimeWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.data.model.MarkerMap
+import com.upd.kventas.data.model.Pedimap
 
 interface Functions {
     fun generateQR(value: String): Bitmap
@@ -15,6 +16,7 @@ interface Functions {
     fun dateToday(formato: Int): String
     fun appSO(): String
     fun setupMarkers(map: GoogleMap,list: List<MarkerMap>): List<Marker>
+    fun pedimapMarkers(map: GoogleMap,list: List<Pedimap>): List<Marker>
     fun executeService(service: String, foreground: Boolean)
     fun launchWorkers()
     fun workerSetup(long: Long)

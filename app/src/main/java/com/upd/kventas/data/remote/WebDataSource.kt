@@ -102,4 +102,8 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
     suspend fun getWebPedidosRealizados(body: RequestBody): Response<JPediGen> {
         return web.getApiPedidosRealizados(body)
     }
+
+    suspend fun getWebPedimap(body: RequestBody): Response<JPedimap> {
+        return web.getApiPedimap(body)
+    }
 }

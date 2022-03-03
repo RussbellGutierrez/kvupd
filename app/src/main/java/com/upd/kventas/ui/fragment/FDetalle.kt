@@ -40,6 +40,11 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
     @Inject
     lateinit var visiAdapter: VisisuperAdapter
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)

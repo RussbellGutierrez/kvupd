@@ -69,4 +69,6 @@ interface Repository {
     suspend fun getWebSolesDetalle(body: RequestBody): Flow<Network<JGenerico>>
     suspend fun getWebCoberturaPendiente(body: RequestBody): Flow<Network<JCoberturados>>
     suspend fun getWebPedidosRealizados(body: RequestBody): Flow<Network<JPediGen>>
+
+    suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>>
 }

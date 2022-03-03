@@ -10,6 +10,7 @@ import com.upd.kventas.utils.Constant.API_CONFIGURACION
 import com.upd.kventas.utils.Constant.API_DISTRITO
 import com.upd.kventas.utils.Constant.API_EMPCAMBIO
 import com.upd.kventas.utils.Constant.API_EMPLEADO
+import com.upd.kventas.utils.Constant.API_EMPMARCADOR
 import com.upd.kventas.utils.Constant.API_ENCUESTA
 import com.upd.kventas.utils.Constant.API_LOGIN
 import com.upd.kventas.utils.Constant.API_NEGOCIO
@@ -105,4 +106,7 @@ interface ApiClient {
 
     @POST(API_REPOEMP)
     suspend fun getApiPedidosRealizados(@Body body: RequestBody): Response<JPediGen>//@param empleado, empresa
+
+    @POST(API_EMPMARCADOR)
+    suspend fun getApiPedimap(@Body body: RequestBody): Response<JPedimap>//@param empleado, empresa
 }

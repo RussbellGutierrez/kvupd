@@ -303,4 +303,10 @@ class RepoImpl @Inject constructor(
             emit(safeApiCall { webDataSource.getWebPedidosRealizados(body) })
         }.flowOn(Dispatchers.IO)
     }
+
+    override suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>> {
+        return flow {
+            emit(safeApiCall { webDataSource.getWebPedimap(body) })
+        }.flowOn(Dispatchers.IO)
+    }
 }

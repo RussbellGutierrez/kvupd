@@ -296,3 +296,26 @@ data class PediGen(
     @Json(name = "pedidos") val pedidos: Int,
     @Json(name = "nuevos") val nuevos: Int
 )
+
+@JsonClass(generateAdapter = true)
+data class Position(
+    @Json(name = "lng") val longitud: Double,
+    @Json(name = "lat") val latitud: Double
+)
+
+@JsonClass(generateAdapter = true)
+data class JPedimap(
+    @Json(name = "data") val jobl: List<Pedimap>
+)
+
+@JsonClass(generateAdapter = true)
+data class Pedimap(
+    @Json(name = "codigo") val codigo: Int,
+    @Json(name = "nombre") val nombre: String,
+    @Json(name = "precision") val precision: Double,
+    @Json(name = "bateria") val bateria: String,
+    @Json(name = "fecha") val fecha: String,
+    @Json(name = "hora") val hora: String,
+    @Json(name = "estado") val emitiendo: Int,
+    @Json(name = "position") val posicion: Position
+)

@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.data.model.DataCliente
+import com.upd.kventas.data.model.Pedimap
 
 object Constant {
 
@@ -27,6 +28,7 @@ object Constant {
     lateinit var FIRST_LOCATION: Location
     lateinit var CONF: Config
     lateinit var IWAM: DataCliente
+    lateinit var IWP: Pedimap
 
     const val W_SETUP = "VSetup"
     const val W_CONFIG = "VConfiguracion"
@@ -91,6 +93,8 @@ object Constant {
     const val API_COBPEN = "empleado/movil/preventa/cobertura-pendiente"
     const val API_REPOEMP = "empleado/movil/preventa/reporte-empleado"
 
+    const val API_EMPMARCADOR = "empleado/movil/marker/empleado"
+
     const val API_SEGUIMIENTO = "empleado/movil/seguimiento"
     const val API_VISITA = "empleado/movil/visita"
     const val API_ALTA = "empleado/movil/alta"
@@ -106,7 +110,6 @@ object Constant {
 
     const val API_FOTO = "empleado/movil/encuesta/foto"
     const val API_RESPUESTA = "empleado/movil/encuesta/respuesta"
-    const val API_EMPMARCADOR = "empleado/movil/marker/empleado"
     //const val VOUCHER = "empleado/movil/recibo/foto"
     //const val DATOVOUCHER = "empleado/movil/recibo/nuevo"
     //const val COMPRAS = "empleado/movil/reporte/cliente/venta"

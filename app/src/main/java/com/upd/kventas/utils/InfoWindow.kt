@@ -6,6 +6,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.databinding.InfoWindowModelBinding
 import com.upd.kventas.utils.Constant.IWAM
+import com.upd.kventas.utils.Constant.IWP
 import com.upd.kventas.utils.Constant.M_ALTA
 import com.upd.kventas.utils.Constant.M_BAJA
 import com.upd.kventas.utils.Constant.M_CERRADO
@@ -16,7 +17,7 @@ import com.upd.kventas.utils.Constant.M_OCUPADO
 import com.upd.kventas.utils.Constant.M_PEDIDO
 import com.upd.kventas.utils.Constant.M_PRODUCTO
 
-class InfoWindow (private val inflater: LayoutInflater) :
+class InfoWindow(private val inflater: LayoutInflater) :
     InfoWindowAdapter {
 
     private var _bind: InfoWindowModelBinding? = null
@@ -30,16 +31,20 @@ class InfoWindow (private val inflater: LayoutInflater) :
         _bind = InfoWindowModelBinding.inflate(inflater)
         when (m.title?.toInt()) {
             in 0..9 -> setData(m)
-            10 -> { TODO("option for markers altas") }
-            11 -> { TODO("option for markers bajas") }
-            20 -> { TODO("option for markers from pedimap") }
+            10 -> {
+                TODO("option for markers altas")
+            }
+            11 -> {
+                TODO("option for markers bajas")
+            }
+            20 -> dataPedimap(m)
         }
         return bind.root
     }
 
     private fun setData(marker: Marker) {
-        bind.lnrCliente.setUI("v",true)
-        bind.lnrVendedor.setUI("v",false)
+        bind.lnrCliente.setUI("v", true)
+        bind.lnrVendedor.setUI("v", false)
         val cliente = "${IWAM.id} - ${IWAM.nombre}"
         bind.txtCliente.text = cliente
         bind.txtDomicilio.text = IWAM.domicilio
@@ -48,8 +53,8 @@ class InfoWindow (private val inflater: LayoutInflater) :
         bind.txtLongitud.text = marker.position.longitude.toString()
         bind.txtLatitud.text = marker.position.latitude.toString()
         if (marker.title != "9") {
-            bind.cardMotivo.setUI("v",true)
-            val motivo = when(marker.title?.toInt()) {
+            bind.cardMotivo.setUI("v", true)
+            val motivo = when (marker.title?.toInt()) {
                 0 -> M_PEDIDO
                 1 -> M_CERRADO
                 2 -> M_PRODUCTO
@@ -62,5 +67,17 @@ class InfoWindow (private val inflater: LayoutInflater) :
             }
             bind.txtMotivo.text = motivo
         }
+    }
+
+    private fun dataPedimap(marker: Marker) {
+        bind.lnrCliente.setUI("v", false)
+        bind.lnrVendedor.setUI("v", true)
+        val cliente = "${IWP.codigo} - ${IWP.nombre}"
+        bind.txtVendedor.text = cliente
+        bind.txtPrecision.text = IWP.precision.toString()
+        bind.txtBateria.text = IWP.bateria
+        bind.txtHora.text = IWP.hora
+        bind.txtLongV.text = marker.position.longitude.toString()
+        bind.txtLatiV.text = marker.position.latitude.toString()
     }
 }

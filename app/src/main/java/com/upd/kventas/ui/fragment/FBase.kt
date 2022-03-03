@@ -49,7 +49,7 @@ class FBase : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind.fabVendedor.setOnClickListener {  }
+        bind.fabVendedor.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FRastreo) }
         bind.fabCliente.setOnClickListener {
             if (CONF.tipo == "V")
                 findNavController().navigate(R.id.action_FBase_to_FCliente)

@@ -7,12 +7,10 @@ import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.*
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.widget.SearchView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
@@ -22,28 +20,28 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.R
-import com.upd.kventas.data.model.DataCliente
-import com.upd.kventas.databinding.FragmentFMapaBinding
+import com.upd.kventas.data.model.Pedimap
+import com.upd.kventas.databinding.FragmentFRastreoBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.FIRST_LOCATION
-import com.upd.kventas.utils.Constant.IWAM
+import com.upd.kventas.utils.Constant.IWP
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import java.util.*
 
 @AndroidEntryPoint
-class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
-    OnInfoWindowClickListener, OnInfoWindowLongClickListener {
+class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
     private val viewmodel by activityViewModels<AppViewModel>()
-    private var _bind: FragmentFMapaBinding? = null
+    private var _bind: FragmentFRastreoBinding? = null
     private val bind get() = _bind!!
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
     private lateinit var location: Location
     private lateinit var markers: List<Marker>
-    private lateinit var mclk: Marker
-    private val _tag by lazy { FMapa::class.java.simpleName }
+    private lateinit var pdmp: List<Pedimap>
+    private val _tag by lazy { FRastreo::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -60,7 +58,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFMapaBinding.inflate(inflater, container, false)
+        _bind = FragmentFRastreoBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -72,31 +70,22 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             sup.getMapAsync(this)
         }
 
+        launchDownload()
+
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
             location.longitude = result[0].longitud
             location.latitude = result[0].latitud
         }
 
-        viewmodel.markerMap().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            map.clear()
-            markers = viewmodel.setMarker(map, result)
-        }
-
-        viewmodel.detail.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                if (y.size > 1) {
-                    searchList(y)
-                } else {
-                    IWAM = y[0]
-                    moveCamera(mclk.position.toLocation())
-                    mclk.showInfoWindow()
+        viewmodel.pedimap.observe(viewLifecycleOwner) { rsl ->
+            when(rsl) {
+                is Network.Success -> {
+                    showDialog("Correcto", "Se descargo vendedores") {}
+                    map.clear()
+                    pdmp = rsl.data!!.jobl
+                    markers = viewmodel.pedimapMarker(map, pdmp)
                 }
-            }
-        }
-
-        viewmodel.climap.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                showMarker(y)
+                is Network.Error -> showDialog("Error", "Server ${rsl.message}") {}
             }
         }
 
@@ -106,11 +95,11 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.mapa_menu, menu)
+        inflater.inflate(R.menu.rastreo_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.lista -> consume { viewmodel.getClientDet("0") }
+        R.id.actualizar -> consume { launchDownload() }
         R.id.voz -> consume { searchVoice() }
         else -> super.onOptionsItemSelected(item)
     }
@@ -122,9 +111,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             map.apply {
                 settingsMap()
                 isMyLocationEnabled = true
-                setOnMarkerClickListener(this@FMapa)
-                setOnInfoWindowClickListener(this@FMapa)
-                setOnInfoWindowLongClickListener(this@FMapa)
+                setOnMarkerClickListener(this@FRastreo)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
             moveCamera(location)
@@ -132,17 +119,8 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
-        mclk = p0
-        viewmodel.getClientDet(p0.snippet!!)
+        pedimapMarker(p0)
         return true
-    }
-
-    override fun onInfoWindowClick(p0: Marker) {
-        navigateToDialog(0,IWAM)
-    }
-
-    override fun onInfoWindowLongClick(p0: Marker) {
-        navigateToDialog(1,IWAM)
     }
 
     private fun centerMarkers() {
@@ -158,6 +136,12 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         }
     }
 
+    private fun pedimapMarker(marker: Marker) {
+        IWP = pdmp.find { it.codigo.toString() == marker.snippet }!!
+        marker.showInfoWindow()
+        moveCamera(marker.position.toLocation())
+    }
+
     private fun moveCamera(location: Location) {
         map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
@@ -167,19 +151,15 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     private fun showMarker(search: String) {
-        val cliente = markers.find { it.snippet == search }
-        if (cliente != null) {
-            cliente.let {
-                moveCamera(it.position.toLocation())
-                viewmodel.getClientDet(it.snippet!!)
-                mclk = it
-            }
+        val vendedor = markers.find { it.snippet == search }
+        if (vendedor != null) {
+            pedimapMarker(vendedor)
         } else {
-            snack("No se encontro cliente, revisar en bajas")
+            snack("No se encontro vendedor")
         }
     }
 
-    private val resultLauncher = registerForActivityResult(StartActivityForResult()) { result ->
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             var codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
             codigo = codigo.replace("\\s".toRegex(), "")
@@ -197,30 +177,17 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                     RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                 )
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione codigo del cliente")
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione codigo del vendedor")
                 resultLauncher.launch(intent)
             }
         }
     }
 
-    private fun searchList(list: List<DataCliente>) {
-        val dt = arrayListOf<String>()
-        list.forEach { i ->
-            val cliente = "${i.id} - ${i.nombre}"
-            dt.add(cliente)
-        }
-        search(dt)
-    }
-
-    private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
-        val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
-        when(dialog) {
-            0 -> findNavController().navigate(
-                FMapaDirections.actionFMapaToDObservacion(cli)
-            )
-            1 -> findNavController().navigate(
-                FMapaDirections.actionFMapaToDBaja(cli)
-            )
-        }
+    private fun launchDownload() {
+        val p = JSONObject()
+        p.put("empleado", Constant.CONF.codigo)
+        p.put("empresa", Constant.CONF.empresa)
+        progress("Descargando vendedores")
+        viewmodel.fetchPedimap(p.toReqBody())
     }
 }

@@ -31,14 +31,18 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_cliente.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_detalle.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_encuesta.xml" value="0.2875" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_mapa.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_rastreo.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_reporte.xml" value="0.67" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_vendedor.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/info_window_model.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_cliente.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_informe.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_mini_detalle.xml" value="0.67" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_reporte.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_tarjeta_cliente.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/cliente_menu.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/rastreo_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/reporte_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/vendedor_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/back_gold.xml" value="0.2755" />

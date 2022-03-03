@@ -45,6 +45,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FRastreo"
+            app:destination="@id/FRastreo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -262,4 +269,9 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
+    <fragment
+        android:id="@+id/FRastreo"
+        android:name="com.upd.kventas.ui.fragment.FRastreo"
+        android:label="Monitoreo"
+        tools:layout="@layout/fragment_f_rastreo" />
 </navigation>
