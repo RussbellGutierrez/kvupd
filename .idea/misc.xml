@@ -5,18 +5,22 @@
       <map>
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/actualizar.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/ajustes.xml" value="0.3365" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/altas.xml" value="0.347" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/anulado.xml" value="0.332" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/arrow_down_drop_circle.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/arrow_right_drop_circle.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/arrow_up_drop_circle.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/casa.xml" value="0.347" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/encuesta.xml" value="0.347" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/imagen.xml" value="0.332" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/neutral.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/persona.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/tarjeta.xml" value="0.347" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/chips.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_baja.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_busqueda.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_cliente_dia.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_cliente_vendedor.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_login.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_mini_detalle.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/dialog_observacion.xml" value="0.5" />
@@ -28,12 +32,15 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_detalle.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_encuesta.xml" value="0.2875" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_reporte.xml" value="0.67" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_vendedor.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_cliente.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_informe.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_mini_detalle.xml" value="0.67" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_reporte.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_tarjeta_cliente.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/cliente_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/reporte_menu.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/vendedor_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/back_gold.xml" value="0.2755" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/back_white.xml" value="0.2755" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/l_todo.xml" value="0.2755" />

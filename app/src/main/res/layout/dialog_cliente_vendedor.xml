@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="10dp"
+    android:layout_gravity="center"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textColor="@color/lightgreen"
+            android:text="Clientes por vendedor"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"/>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/flx_vendedor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            app:flexWrap="wrap"
+            app:justifyContent="center"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"/>
+
+        <TextView
+            android:id="@+id/txt_vendedor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginVertical="2dp"
+            android:layout_marginHorizontal="3dp"
+            android:hint="Vendedor"
+            app:drawableLeftCompat="@drawable/persona"
+            app:drawableTint="@color/lightcrimson"
+            android:drawablePadding="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="2dp"
+            android:weightSum="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/img_calendario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="@color/lightcrimson"
+                app:srcCompat="@drawable/calendario"/>
+
+            <TextView
+                android:id="@+id/txt_dia"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:gravity="center"
+                android:hint="YYYY/MM/DD"/>
+
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="3dp"/>
+
+        <TextView
+            android:id="@+id/txt_mensaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="2dp"
+            android:textColor="@color/lightcrimson"
+            android:gravity="center_vertical"
+            app:drawableLeftCompat="@drawable/error"
+            android:drawablePadding="5dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btn_descargar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Descargar"
+            style="@style/Widget.MaterialComponents.Button"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -106,6 +106,13 @@ fun percent(dividendo: Double, divisor: Double): String {
     return result
 }
 
+fun castDate(day: Int,month: Int,year: Int): String {
+    val m = month+1
+    val d = if (day.toString().length == 2) day.toString() else "0$day"
+    val mr = if (m.toString().length == 2) m.toString() else "0$m"
+    return "$year/$mr/$d"
+}
+
 fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
     val icon = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia

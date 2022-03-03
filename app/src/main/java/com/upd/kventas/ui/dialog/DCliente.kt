@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.upd.kventas.databinding.DialogClienteDiaBinding
+import com.upd.kventas.utils.castDate
 import com.upd.kventas.utils.setCreate
 import com.upd.kventas.utils.setResume
 import com.upd.kventas.utils.setUI
@@ -76,20 +77,10 @@ class DCliente : DialogFragment() {
     private fun dayWeek(day: Int) {
         val c = Calendar.getInstance()
         c.set(Calendar.DAY_OF_WEEK, day)
-        val mm = if ((c.get(Calendar.MONTH) + 1).toString().length < 2) {
-            "0${c.get(Calendar.MONTH) + 1}"
-        } else {
-            (c.get(Calendar.MONTH) + 1).toString()
-        }
-
-        val dd = if (c.get(Calendar.DAY_OF_MONTH).toString().length < 2) {
-            "0${c.get(Calendar.DAY_OF_MONTH)}"
-        } else {
-            c.get(Calendar.DAY_OF_MONTH).toString()
-        }
-
-        val date = "${c.get(Calendar.YEAR)}/$mm/$dd"
-
+        val y = c.get(Calendar.YEAR)
+        val m = c.get(Calendar.MONTH)
+        val d = c.get(Calendar.DAY_OF_MONTH)
+        val date = castDate(d, m, y)
         bind.txtDia.text = date
     }
 }

@@ -28,6 +28,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _climap: MutableLiveData<Event<String>> = MutableLiveData()
     val climap: LiveData<Event<String>> = _climap
 
+    private val _vendedor: MutableLiveData<Event<List<String>>> = MutableLiveData()
+    val vendedor: LiveData<Event<List<String>>> = _vendedor
+
     private val _detail: MutableLiveData<Event<List<DataCliente>>> = MutableLiveData()
     val detail: LiveData<Event<List<DataCliente>>> = _detail
 
@@ -219,6 +222,10 @@ class AppViewModel @ViewModelInject constructor(
         _climap.value = Event(cliente)
     }
 
+    fun setVendedorSelect(list: List<String>) {
+        _vendedor.value = Event(list)
+    }
+
     fun getClientDet(cliente: String) {
         viewModelScope.launch {
             val result = repository.getClienteDetail(cliente)
@@ -286,4 +293,7 @@ class AppViewModel @ViewModelInject constructor(
             repository.saveEstado(baja.asTEstado(ruta))
         }
     }
+
+    suspend fun gettingVendedores() =
+        repository.getEmpleados()
 }

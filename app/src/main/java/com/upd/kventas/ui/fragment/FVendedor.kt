@@ -1,0 +1,170 @@
+package com.upd.kventas.ui.fragment
+
+import android.os.Bundle
+import android.view.*
+import android.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.upd.kventas.R
+import com.upd.kventas.data.model.RowCliente
+import com.upd.kventas.databinding.FragmentFVendedorBinding
+import com.upd.kventas.ui.adapter.ClienteAdapter
+import com.upd.kventas.ui.dialog.DCliente
+import com.upd.kventas.ui.dialog.DVendedor
+import com.upd.kventas.utils.*
+import com.upd.kventas.utils.Constant.CONF
+import com.upd.kventas.utils.Interface.clienteListener
+import com.upd.kventas.viewmodel.AppViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener {
+
+    private val viewmodel by activityViewModels<AppViewModel>()
+    private var _bind: FragmentFVendedorBinding? = null
+    private val bind get() = _bind!!
+    private var row = listOf<RowCliente>()
+    private var clienteBaja = false
+    private val _tag by lazy { FVendedor::class.java.simpleName }
+
+    @Inject
+    lateinit var clienteAdapter: ClienteAdapter
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+        clienteListener = this
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _bind = FragmentFVendedorBinding.inflate(inflater, container, false)
+        return bind.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
+        bind.rcvClientes.adapter = clienteAdapter
+
+        bind.searchView.setOnQueryTextListener(this)
+
+        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+            row = result
+            setupList(result)
+        }
+
+        viewmodel.vendedor.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                launchDownload(y[0],y[1])
+            }
+        }
+
+        viewmodel.cliente.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is Network.Success -> showDialog(
+                        "Correcto",
+                        "Clientes descargados correctamente"
+                    ) {}
+                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
+                }
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.vendedor_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.descargar -> consume { DVendedor().show(parentFragmentManager, "dialog") }
+        R.id.encuesta -> consume {  }
+        R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
+        else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onQueryTextSubmit(p0: String) = false
+
+    override fun onQueryTextChange(p0: String): Boolean {
+        val search = mutableListOf<RowCliente>()
+        row.forEach { i ->
+            if ((i.id.toString().contains(p0.lowercase())) ||
+                (i.nombre.lowercase().contains(p0.lowercase()))
+            )
+                search.add(i)
+        }
+        if (search.isNullOrEmpty()) {
+            snack("No encontramos clientes")
+        } else {
+            clienteAdapter.mDiffer.submitList(search)
+        }
+        return false
+    }
+
+    override fun onClienteClick(cliente: RowCliente) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            navigateToDialog(0,cliente)
+        }
+    }
+
+    override fun onPressCliente(cliente: RowCliente) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            navigateToDialog(1,cliente)
+        }
+    }
+
+    private fun launchDownload(codigo: String,fecha: String) {
+        val json = JSONObject()
+        json.put("empleado", codigo)
+        json.put("fecha", fecha)
+        json.put("empresa", CONF.empresa)
+        progress("Descargando clientes")
+        viewmodel.fetchClientes(json.toReqBody())
+    }
+
+    private fun setupList(list: List<RowCliente>) {
+        if (list.isNullOrEmpty()) {
+            bind.emptyContainer.root.setUI("v", true)
+            bind.rcvClientes.setUI("v", false)
+        } else {
+            bind.emptyContainer.root.setUI("v", false)
+            bind.rcvClientes.setUI("v", true)
+            clienteAdapter.mDiffer.submitList(list)
+        }
+    }
+
+    private fun navigateToDialog(dialog: Int, cliente: RowCliente) {
+        if (clienteBaja) {
+            snack("Cliente con baja, revise lista de bajas")
+        }else {
+            val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+            when(dialog) {
+                0 -> findNavController().navigate(
+                    FVendedorDirections.actionFVendedorToDObservacion(cli)
+                )
+                1 -> findNavController().navigate(
+                    FVendedorDirections.actionFVendedorToDBaja(cli)
+                )
+            }
+        }
+    }
+}

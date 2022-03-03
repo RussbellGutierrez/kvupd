@@ -12,6 +12,7 @@ import com.upd.kventas.BuildConfig
 import com.upd.kventas.R
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.databinding.FragmentFBaseBinding
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.consume
 import com.upd.kventas.utils.isGPSDisabled
 import com.upd.kventas.utils.setUI
@@ -49,7 +50,12 @@ class FBase : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind.fabVendedor.setOnClickListener {  }
-        bind.fabCliente.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FCliente) }
+        bind.fabCliente.setOnClickListener {
+            if (CONF.tipo == "V")
+                findNavController().navigate(R.id.action_FBase_to_FCliente)
+            else
+                findNavController().navigate(R.id.action_FBase_to_FVendedor)
+        }
         bind.fabReporte.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FReporte) }
         bind.fabAltas.setOnClickListener {  }
         bind.fabBajas.setOnClickListener {  }

@@ -38,6 +38,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FVendedor"
+            app:destination="@id/FVendedor"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -155,7 +162,11 @@
             app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_FReporte_to_DMiniDetalle"
-            app:destination="@id/DMiniDetalle" />
+            app:destination="@id/DMiniDetalle"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FDetalle"
@@ -224,4 +235,31 @@
             app:argType="integer"
             android:defaultValue="0" />
     </dialog>
+    <fragment
+        android:id="@+id/FVendedor"
+        android:name="com.upd.kventas.ui.fragment.FVendedor"
+        android:label="Clientes"
+        tools:layout="@layout/fragment_f_vendedor">
+        <action
+            android:id="@+id/action_FVendedor_to_DObservacion"
+            app:destination="@id/DObservacion"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FVendedor_to_DBaja"
+            app:destination="@id/DBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FVendedor_to_FMapa"
+            app:destination="@id/FMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 </navigation>

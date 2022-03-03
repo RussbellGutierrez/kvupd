@@ -23,7 +23,7 @@ object QueryConstant {
     const val GET_ROW_CLIENTES = "" +
             "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, c.secuencia, c.ruta " +
             "FROM TClientes c " +
-            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.empleado=e.empleado and c.ruta=e.ruta " +
+            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
             "LEFT JOIN TEmpleados p on c.empleado=p.codigo " +
             "ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC "
 
@@ -36,7 +36,7 @@ object QueryConstant {
             "SELECT c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
             "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido " +
             "FROM TClientes c " +
-            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.empleado=e.empleado and c.ruta=e.ruta " +
+            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
             "ORDER BY c.idcliente ASC "
 
