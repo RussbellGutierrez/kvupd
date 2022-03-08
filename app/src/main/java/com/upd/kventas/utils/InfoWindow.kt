@@ -8,7 +8,6 @@ import com.upd.kventas.databinding.InfoWindowModelBinding
 import com.upd.kventas.utils.Constant.IWAM
 import com.upd.kventas.utils.Constant.IWP
 import com.upd.kventas.utils.Constant.M_ALTA
-import com.upd.kventas.utils.Constant.M_BAJA
 import com.upd.kventas.utils.Constant.M_CERRADO
 import com.upd.kventas.utils.Constant.M_DINERO
 import com.upd.kventas.utils.Constant.M_ENCARGADO
@@ -30,13 +29,7 @@ class InfoWindow(private val inflater: LayoutInflater) :
     private fun createIW(m: Marker): View {
         _bind = InfoWindowModelBinding.inflate(inflater)
         when (m.title?.toInt()) {
-            in 0..9 -> setData(m)
-            10 -> {
-                TODO("option for markers altas")
-            }
-            11 -> {
-                TODO("option for markers bajas")
-            }
+            in 0..10 -> setData(m)
             20 -> dataPedimap(m)
         }
         return bind.root
@@ -46,10 +39,10 @@ class InfoWindow(private val inflater: LayoutInflater) :
         bind.lnrCliente.setUI("v", true)
         bind.lnrVendedor.setUI("v", false)
         val cliente = "${IWAM.id} - ${IWAM.nombre}"
-        bind.txtCliente.text = cliente
-        bind.txtDomicilio.text = IWAM.domicilio
-        bind.txtNegocio.text = IWAM.negocio
-        bind.txtTelefono.text = IWAM.telefono
+        bind.txtCliente.text = cliente.trim()
+        bind.txtDomicilio.text = IWAM.domicilio.trim()
+        bind.txtNegocio.text = IWAM.negocio.trim()
+        bind.txtTelefono.text = IWAM.telefono.trim()
         bind.txtLongitud.text = marker.position.longitude.toString()
         bind.txtLatitud.text = marker.position.latitude.toString()
         if (marker.title != "9") {
@@ -62,8 +55,7 @@ class InfoWindow(private val inflater: LayoutInflater) :
                 4 -> M_ENCARGADO
                 6 -> M_OCUPADO
                 7 -> M_NOEXISTE
-                10 -> M_ALTA
-                else -> M_BAJA
+                else -> M_ALTA
             }
             bind.txtMotivo.text = motivo
         }

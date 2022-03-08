@@ -1,9 +1,11 @@
 package com.upd.kventas.viewmodel
 
 import android.graphics.Bitmap
+import android.location.Location
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.application.ToastHelper
 import com.upd.kventas.data.model.*
 import com.upd.kventas.domain.Functions
@@ -33,6 +35,12 @@ class AppViewModel @ViewModelInject constructor(
 
     private val _detail: MutableLiveData<Event<List<DataCliente>>> = MutableLiveData()
     val detail: LiveData<Event<List<DataCliente>>> = _detail
+
+    private val _altamark: MutableLiveData<Event<DataCliente>> = MutableLiveData()
+    val altamark: LiveData<Event<DataCliente>> = _altamark
+
+    private val _bss: MutableLiveData<TBajaSuper> = MutableLiveData()
+    val bss: LiveData<TBajaSuper> = _bss
 
     private val _register: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
     val register: LiveData<Event<Network<JObj>>> = _register
@@ -88,6 +96,15 @@ class AppViewModel @ViewModelInject constructor(
     private val _pedimap: MutableLiveData<Network<JPedimap>> = MutableLiveData()
     val pedimap: LiveData<Network<JPedimap>> = _pedimap
 
+    private val _bajasuper: MutableLiveData<Event<Network<JBajaSupervisor>>> = MutableLiveData()
+    val bajasuper: LiveData<Event<Network<JBajaSupervisor>>> = _bajasuper
+
+    private val _bajaven: MutableLiveData<Event<Network<JBajaVendedor>>> = MutableLiveData()
+    val bajavend: LiveData<Event<Network<JBajaVendedor>>> = _bajaven
+
+    private val _altadatos: MutableLiveData<TADatos> = MutableLiveData()
+    val altadatos: LiveData<TADatos> = _altadatos
+
     fun configObserver() = repository.getFlowConfig().asLiveData()
 
     fun rowClienteObs() = repository.getFlowRowCliente().asLiveData()
@@ -96,15 +113,25 @@ class AppViewModel @ViewModelInject constructor(
 
     fun markerMap() = repository.getFlowMarker().asLiveData()
 
+    fun altasObs() = repository.getFlowAltas().asLiveData()
+
+    fun distritosObs() = repository.getFlowDistritos().asLiveData()
+
+    fun negociosObs() = repository.getFlowNegocios().asLiveData()
+
+    fun bajasObs() = repository.getFlowBajas().asLiveData()
+
+    fun rowBajaObs() = repository.getFlowRowBaja().asLiveData()
+
     fun fetchRegisterDevice(body: RequestBody) = viewModelScope.launch {
-        repository.registerWebDevice(body).collect { values ->
-            _register.value = Event(values)
+        repository.registerWebDevice(body).collect {
+            _register.value = Event(it)
         }
     }
 
     fun fetchLoginAdmin(body: RequestBody) = viewModelScope.launch {
-        repository.loginAdministrator(body).collect { values ->
-            _login.value = Event(values)
+        repository.loginAdministrator(body).collect {
+            _login.value = Event(it)
         }
     }
 
@@ -116,104 +143,123 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     fun fetchPreventa(body: RequestBody) = viewModelScope.launch {
-        repository.getWebPreventa(body).collect { values ->
-            _preventa.value = Event(values)
+        repository.getWebPreventa(body).collect {
+            _preventa.value = Event(it)
         }
     }
 
     fun fetchCobertura(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCobertura(body).collect { values ->
-            _cobertura.value = Event(values)
+        repository.getWebCobertura(body).collect {
+            _cobertura.value = Event(it)
         }
     }
 
     fun fetchCartera(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCartera(body).collect { values ->
-            _cartera.value = Event(values)
+        repository.getWebCartera(body).collect {
+            _cartera.value = Event(it)
         }
     }
 
     fun fetchPedidos(body: RequestBody) = viewModelScope.launch {
-        repository.getWebPedidos(body).collect { values ->
-            _pedidos.value = Event(values)
+        repository.getWebPedidos(body).collect {
+            _pedidos.value = Event(it)
         }
     }
 
     fun fetchVisicooler(body: RequestBody) = viewModelScope.launch {
-        repository.getWebVisicooler(body).collect { values ->
-            _visicooler.value = Event(values)
+        repository.getWebVisicooler(body).collect {
+            _visicooler.value = Event(it)
         }
     }
 
     fun fetchVisisuper(body: RequestBody) = viewModelScope.launch {
-        repository.getWebVisisuper(body).collect { values ->
-            _visisuper.value = Event(values)
+        repository.getWebVisisuper(body).collect {
+            _visisuper.value = Event(it)
         }
     }
 
     fun fetchCambiosCliente(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCambiosCli(body).collect { values ->
-            _cambiocli.value = Event(values)
+        repository.getWebCambiosCli(body).collect {
+            _cambiocli.value = Event(it)
         }
     }
 
     fun fetchCambiosEmpleado(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCambiosEmp(body).collect { values ->
-            _cambioemp.value = Event(values)
+        repository.getWebCambiosEmp(body).collect {
+            _cambioemp.value = Event(it)
         }
     }
 
     fun fetchUmes(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmes(body).collect { values ->
-            _umes.value = Event(values)
+        repository.getWebUmes(body).collect {
+            _umes.value = Event(it)
         }
     }
 
     fun fetchSoles(body: RequestBody) = viewModelScope.launch {
-        repository.getWebSoles(body).collect { values ->
-            _soles.value = Event(values)
+        repository.getWebSoles(body).collect {
+            _soles.value = Event(it)
         }
     }
 
     fun fetchUmesGenerico(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmesGenerico(body).collect { values ->
-            _generico.value = Event(values)
+        repository.getWebUmesGenerico(body).collect {
+            _generico.value = Event(it)
         }
     }
 
     fun fetchSolesGenerico(body: RequestBody) = viewModelScope.launch {
-        repository.getWebSolesGenerico(body).collect { values ->
-            _generico.value = Event(values)
+        repository.getWebSolesGenerico(body).collect {
+            _generico.value = Event(it)
         }
     }
 
     fun fetchUmeDetalle(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmesDetalle(body).collect { values ->
-            _detalle.value = values
+        repository.getWebUmesDetalle(body).collect {
+            _detalle.value = it
         }
     }
 
     fun fetchSolesDetalle(body: RequestBody) = viewModelScope.launch {
-        repository.getWebSolesDetalle(body).collect { values ->
-            _detalle.value = values
+        repository.getWebSolesDetalle(body).collect {
+            _detalle.value = it
         }
     }
 
     fun fetchCoberturaPendiente(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCoberturaPendiente(body).collect { values ->
-            _cobpendiente.value = values
+        repository.getWebCoberturaPendiente(body).collect {
+            _cobpendiente.value = it
         }
     }
 
     fun fetchPediGen(body: RequestBody) = viewModelScope.launch {
-        repository.getWebPedidosRealizados(body).collect { values ->
-            _pedigen.value = values
+        repository.getWebPedidosRealizados(body).collect {
+            _pedigen.value = it
         }
     }
 
     fun fetchPedimap(body: RequestBody) = viewModelScope.launch {
-        repository.getWebPedimap(body).collect { values ->
-            _pedimap.value = values
+        repository.getWebPedimap(body).collect {
+            _pedimap.value = it
+        }
+    }
+
+    fun fetchBajaVendedor(body: RequestBody) = viewModelScope.launch {
+        repository.getWebBajaVendedor(body).collect {
+            _bajaven.value = Event(it)
+        }
+    }
+
+    fun fetchBajaSupervisor(body: RequestBody) = viewModelScope.launch {
+        repository.getWebBajaSupervisor(body).collect { values ->
+            values.data?.jobl?.let { repository.saveBajaSuper(it) }
+            _bajasuper.value = Event(values)
+        }
+    }
+
+    fun fetchAltaDatos(alta: String) = viewModelScope.launch {
+        repository.getAltaDatoSpecific(alta).let {
+            _altadatos.value = it
         }
     }
 
@@ -222,6 +268,9 @@ class AppViewModel @ViewModelInject constructor(
 
     suspend fun isClienteBaja(cliente: String): Boolean =
         repository.isClienteBaja(cliente)
+
+    suspend fun gettingVendedores() =
+        repository.getEmpleados()
 
     fun setFecha(fecha: String) {
         _fecha.value = Event(fecha)
@@ -239,6 +288,20 @@ class AppViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             val result = repository.getClienteDetail(cliente)
             _detail.value = Event(result)
+        }
+    }
+
+    fun getAltaData(alta: String) {
+        viewModelScope.launch {
+            val result = repository.getDataAlta(alta)
+            _altamark.value = Event(result)
+        }
+    }
+
+    fun getBajaSuperSpecific(codigo: String, fecha: String) {
+        viewModelScope.launch {
+            val result = repository.getBajaSuperSpecific(codigo, fecha)
+            _bss.value = result
         }
     }
 
@@ -285,6 +348,12 @@ class AppViewModel @ViewModelInject constructor(
     fun pedimapMarker(map: GoogleMap, list: List<Pedimap>) =
         functions.pedimapMarkers(map, list)
 
+    fun altaMarker(map: GoogleMap, list: List<TAlta>) =
+        functions.altaMarkers(map, list)
+
+    fun bajaMarker(map: GoogleMap, baja: TBajaSuper) =
+        functions.bajaMarker(map, baja)
+
     fun launchPosition() {
         functions.executeService("position", false)
     }
@@ -306,6 +375,36 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    suspend fun gettingVendedores() =
-        repository.getEmpleados()
+    fun addingAlta(location: Location) {
+        viewModelScope.launch {
+            repository.processAlta(functions.dateToday(4), location)
+        }
+    }
+
+    fun saveAltaDatos(datos: TADatos) {
+        viewModelScope.launch {
+            val mini = MiniUpdAlta(datos.idaux,1)
+            repository.saveAltaDatos(datos)
+            repository.updateMiniAlta(mini)
+        }
+    }
+
+    fun updateLocationAlta(m: Marker) {
+        viewModelScope.launch {
+            val item = LocationAlta(m.snippet!!.toInt(),functions.dateToday(4), m.position.longitude,m.position.latitude,10.0,"Pendiente")
+            repository.updateLocationAlta(item)
+        }
+    }
+
+    fun updateBaja(datos: MiniUpdBaja) {
+        viewModelScope.launch {
+            repository.updateMiniBaja(datos)
+        }
+    }
+
+    fun saveEstadoBaja(dato: TBajaEstado) {
+        viewModelScope.launch {
+            repository.saveEstadoBaja(dato)
+        }
+    }
 }

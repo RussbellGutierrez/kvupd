@@ -1,5 +1,6 @@
 package com.upd.kventas.utils
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
@@ -8,6 +9,9 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationManager
 import android.text.Editable
+import android.util.Log
+import android.util.Patterns
+import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.Toast
@@ -24,6 +28,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.upd.kventas.R
 import com.upd.kventas.data.model.MarkerMap
 import com.upd.kventas.data.model.Pedimap
+import com.upd.kventas.data.model.TAlta
+import com.upd.kventas.data.model.TBajaSuper
 import com.upd.kventas.ui.dialog.DBuscar
 import com.upd.kventas.ui.dialog.DProgress
 import com.upd.kventas.utils.Constant.DL_WIDTH
@@ -35,6 +41,7 @@ import org.json.JSONObject
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 fun JSONObject.toReqBody(): RequestBody =
     RequestBody.create(MediaType.parse("application/json"), this.toString())
@@ -142,11 +149,45 @@ inline fun consume(f: () -> Unit): Boolean {
     return true
 }
 
+fun String.checkEmail(): Boolean =
+    this.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+fun String.checkDocumento(tipo: String): Boolean{
+    var resultado = false
+    val documento = this.length
+    val dni = documento == 8
+    val extr = documento == 9
+    val ruc = documento == 11
+    when(tipo) {
+        "PJ" -> if (ruc) {
+            if (this.startsWith("20")){
+                resultado = true
+            }
+        }
+        "PN" -> if (dni || extr) {
+            resultado = true
+        }else if (ruc) {
+            if (this.startsWith("10") || this.startsWith("15")){
+                resultado = true
+            }
+        }
+    }
+    return resultado
+}
+
+fun String.daysBetween(today: String): String{
+    val inicio = this.split(" ")[0].textToTime(6)
+    val fin = today.textToTime(5)
+    val diferencia = fin!!.time - inicio!!.time
+    val dias = TimeUnit.DAYS.convert(diferencia, TimeUnit.MILLISECONDS) + 1
+    return dias.toString()
+}
+
 fun GoogleMap.settingsMap() {
     isTrafficEnabled = false
     setMaxZoomPreference(20f)
     setMinZoomPreference(10f)
-    mapType = GoogleMap.MAP_TYPE_TERRAIN
+    mapType = GoogleMap.MAP_TYPE_NORMAL
     uiSettings.isZoomControlsEnabled = true
     uiSettings.isZoomGesturesEnabled = true
     uiSettings.isRotateGesturesEnabled = false
@@ -169,6 +210,26 @@ fun GoogleMap.markerPedimap(item: Pedimap, icon: Int): Marker {
         snippet(item.codigo.toString())
         position(LatLng(item.posicion.latitud, item.posicion.longitud))
         icon(BitmapDescriptorFactory.fromResource(icon))
+    })!!
+}
+
+fun GoogleMap.markerBaja(item: TBajaSuper, icon: Int): Marker {
+    return this.addMarker(MarkerOptions().apply {
+        val titulo = "${item.clicodigo} - ${item.clinombre}"
+        title(titulo)
+        snippet(item.direccion)
+        position(LatLng(item.latitud, item.longitud))
+        icon(BitmapDescriptorFactory.fromResource(icon))
+    })!!
+}
+
+fun GoogleMap.markerAlta(item: TAlta, icon: Int): Marker {
+    return this.addMarker(MarkerOptions().apply {
+        title("10")
+        snippet(item.idaux.toString())
+        position(LatLng(item.latitud, item.longitud))
+        icon(BitmapDescriptorFactory.fromResource(icon))
+        draggable(true)
     })!!
 }
 
@@ -214,11 +275,40 @@ fun Date.timeToText(formato: Int, patronActual: String = ""): String {
     return result
 }
 
+fun String.textToTime(tipeformat: Int): Date? {
+    var outputpattern = ""
+    when (tipeformat) {
+        1 -> outputpattern = "dd-MM-yyyy HH:mm:ss"
+        2 -> outputpattern = "dd-MM-yyyy"
+        3 -> outputpattern = "HH:mm:ss"
+        4 -> outputpattern = "yyyy-MM-dd HH:mm:ss"
+        5 -> outputpattern = "dd/MM/yyyy"
+        6 -> outputpattern = "yyyy/MM/dd"
+        7 -> outputpattern = "yyyy_MM_dd_HHmmss"
+        8 -> outputpattern = "yyyy-MM-dd"
+    }
+    val format = SimpleDateFormat(outputpattern, Locale.ENGLISH)
+    var date: Date? = null
+    try {
+        date = format.parse(this)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+    return date
+}
+
 fun View.setUI(ui: String, toggle: Boolean) {
     when (ui) {
         "v" -> visibility = if (toggle) View.VISIBLE else View.GONE
         "e" -> isEnabled = toggle
         "c" -> isClickable = toggle
         "s" -> isSelected = toggle
+    }
+}
+
+fun MenuItem.setUI(ui: String, toggle: Boolean) {
+    when(ui) {
+        "v" -> isVisible = toggle
+        "e" -> isEnabled = toggle
     }
 }

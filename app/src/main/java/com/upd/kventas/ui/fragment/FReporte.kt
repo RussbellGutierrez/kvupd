@@ -73,6 +73,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             2 -> {
                 bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
                 bind.rcvReporte.adapter = solesAdapter
+                bind.lnrSoloOriunda.setUI("v", false)
             }
         }
 

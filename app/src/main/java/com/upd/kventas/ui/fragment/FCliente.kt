@@ -34,7 +34,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
     private val _tag by lazy { FCliente::class.java.simpleName }
 
     @Inject
-    lateinit var clienteAdapter: ClienteAdapter
+    lateinit var adapter: ClienteAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -59,7 +59,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         super.onViewCreated(view, savedInstanceState)
 
         bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
-        bind.rcvClientes.adapter = clienteAdapter
+        bind.rcvClientes.adapter = adapter
 
         bind.searchView.setOnQueryTextListener(this)
 
@@ -111,7 +111,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         if (search.isNullOrEmpty()) {
             snack("No encontramos clientes")
         } else {
-            clienteAdapter.mDiffer.submitList(search)
+            adapter.mDiffer.submitList(search)
         }
         return false
     }
@@ -146,7 +146,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         } else {
             bind.emptyContainer.root.setUI("v", false)
             bind.rcvClientes.setUI("v", true)
-            clienteAdapter.mDiffer.submitList(list)
+            adapter.mDiffer.submitList(list)
         }
     }
 

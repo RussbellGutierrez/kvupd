@@ -9,14 +9,13 @@
     android:paddingHorizontal="40dp"
     android:gravity="center"
     android:background="@drawable/bicolor_dialog"
-    tools:context=".ui.dialog.DLogin">
+    tools:context=".ui.dialog.BDLogin">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginVertical="10dp"
-        android:layout_marginHorizontal="10dp"
+        android:layout_margin="10dp"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="5dp"
         app:cardElevation="3dp">

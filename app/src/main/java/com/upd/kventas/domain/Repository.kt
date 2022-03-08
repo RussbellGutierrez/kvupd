@@ -1,5 +1,6 @@
 package com.upd.kventas.domain
 
+import android.location.Location
 import com.upd.kventas.data.model.*
 import com.upd.kventas.utils.Network
 import kotlinx.coroutines.flow.Flow
@@ -11,13 +12,24 @@ interface Repository {
     fun getFlowRowCliente(): Flow<List<RowCliente>>
     fun getFlowLocation(): Flow<List<TSeguimiento>>
     fun getFlowMarker(): Flow<List<MarkerMap>>
+    fun getFlowAltas(): Flow<List<TAlta>>
+    fun getFlowDistritos(): Flow<List<Combo>>
+    fun getFlowNegocios(): Flow<List<Combo>>
+    fun getFlowBajas(): Flow<List<TBaja>>
+    fun getFlowRowBaja(): Flow<List<RowBaja>>
+
     suspend fun getConfig(): List<Config>
     suspend fun getClientes(): List<Cliente>
     suspend fun getEmpleados(): List<Vendedor>
     suspend fun getDistritos(): List<Combo>
     suspend fun getNegocios(): List<Combo>
     suspend fun getClienteDetail(cliente: String): List<DataCliente>
+    suspend fun getDataAlta(alta: String): DataCliente
+    suspend fun getAltaDatoSpecific(alta: String): TADatos?
+    suspend fun getBajaSuperSpecific(codigo: String, fecha: String): TBajaSuper
     suspend fun isClienteBaja(cliente: String): Boolean
+    suspend fun getLastAlta(): TAlta?
+    suspend fun processAlta(fecha: String, location: Location)
     suspend fun getStarterTime(): Long?
     suspend fun workDay(): Boolean?
 
@@ -31,6 +43,15 @@ interface Repository {
     suspend fun saveVisita(visita: TVisita)
     suspend fun saveEstado(estado: TEstado)
     suspend fun saveBaja(baja: TBaja)
+    suspend fun saveAlta(alta: TAlta)
+    suspend fun saveAltaDatos(da: TADatos)
+    suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
+    suspend fun saveEstadoBaja(estado: TBajaEstado)
+
+    suspend fun updateLocationAlta(locationAlta: LocationAlta)
+    suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
+    suspend fun updateAltaDatos(upd: TADatos)
+    suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja)
 
     suspend fun deleteClientes()
     suspend fun deleteEmpleados()
@@ -41,6 +62,10 @@ interface Repository {
     suspend fun deleteVisita()
     suspend fun deleteEstado()
     suspend fun deleteBaja()
+    suspend fun deleteAlta()
+    suspend fun deleteAltaDatos()
+    suspend fun deleteBajaSuper()
+    suspend fun deleteEstadoBaja()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>>
@@ -71,4 +96,6 @@ interface Repository {
     suspend fun getWebPedidosRealizados(body: RequestBody): Flow<Network<JPediGen>>
 
     suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>>
+    suspend fun getWebBajaVendedor(body: RequestBody): Flow<Network<JBajaVendedor>>
+    suspend fun getWebBajaSupervisor(body: RequestBody): Flow<Network<JBajaSupervisor>>
 }

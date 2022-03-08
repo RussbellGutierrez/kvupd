@@ -3,7 +3,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello Blank Fragment</string>
     <string-array name="baja">
-        <item>-- SELECCIONE MOTIVO --</item>
         <item>DUPLICADO</item>
         <item>NO EXISTE</item>
         <item>CAMBIO GIRO</item>
@@ -14,7 +13,6 @@
         <item>FACTURA</item>
     </string-array>
     <string-array name="vias">
-        <item>NINGUNO</item>
         <item>AVENIDA</item>
         <item>BOULEVARD</item>
         <item>CALLE</item>
@@ -26,8 +24,7 @@
         <item>PASEO</item>
         <item>PLAZA</item>
     </string-array>
-    <string-array name="urbano">
-        <item>NINGUNO</item>
+    <string-array name="zona">
         <item>AMPLIACION</item>
         <item>ANEXO</item>
         <item>ASENTAMIENTO HUMANO</item>

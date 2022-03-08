@@ -319,3 +319,61 @@ data class Pedimap(
     @Json(name = "estado") val emitiendo: Int,
     @Json(name = "position") val posicion: Position
 )
+
+@JsonClass(generateAdapter = true)
+data class JBajaVendedor(
+    @Json(name = "data") val jobl: List<BajaVendedor>
+)
+
+@JsonClass(generateAdapter = true)
+data class BajaVendedor(
+    @Json(name = "SUCURSAL_ID") val sucursal: Int,
+    @Json(name = "EMPLEADO_ID") val empleado: Int,
+    @Json(name = "FECHA") val fecha: String,
+    @Json(name = "MOTIVO_ID") val motivo: Int,
+    @Json(name = "MOTIVO_DESCRIP") val descripcion: String,
+    @Json(name = "ESTADO") val estado: String,
+    @Json(name = "FECHA_CONFIRMADO") val confirmado: String,
+    @Json(name = "CLIENTE_ID") val cliente: Int,
+    @Json(name = "CLIENTE_NOMBRE") val nombre: String
+)
+
+@JsonClass(generateAdapter = true)
+data class JBajaSupervisor(
+    @Json(name = "data") val jobl: List<BajaSupervisor>
+)
+
+@JsonClass(generateAdapter = true)
+data class BajaSupervisor(
+    @Json(name = "SUCURSAL_ID") val sucursal: Int,
+    @Json(name = "EMPLEADO_ID") val empleado: Int,
+    @Json(name = "EMPLEADO_NOMBRE") val nombre: String,
+    @Json(name = "FECHA") val creado: String,
+    @Json(name = "DIA_SEMANA") val dia: String,
+    @Json(name = "MOTIVO_ID") val motivo: String,
+    @Json(name = "MOTIVO_DESCRIP") val descripcion: String,
+    @Json(name = "OBSERVACION") val observacion: String,
+    @Json(name = "CONFIRMADO") val confirmado: Int?,
+    @Json(name = "FECHA_CONFIRMADO") val fechaconf: String,
+    @Json(name = "CLIENTE") val cliente: ClienteBaja,
+    @Json(name = "HORA") val hora: String,
+    @Json(name = "PRECISION") val precision: Double,
+    @Json(name = "LONGITUD") val longitud: Double,
+    @Json(name = "LATITUD") val latitud: Double,
+    @Json(name = "ULTIMA_COMPRA") val compra: String
+)
+
+@JsonClass(generateAdapter = true)
+data class ClienteBaja(
+    @Json(name = "ID") val codigo: Int,
+    @Json(name = "NOMBRE") val nombre: String,
+    @Json(name = "DOCUMENTO") val documento: String,
+    @Json(name = "DIRECCION") val direccion: String,
+    @Json(name = "RUTA") val ruta: Int,
+    @Json(name = "NEGOCIO") val negocio: String,
+    @Json(name = "CANAL") val canal: String,
+    @Json(name = "PAGO") val pago: String,
+    @Json(name = "VISICOOLER") val visicooler: String,
+    @Json(name = "LONGITUD") val longitud: Double,
+    @Json(name = "LATITUD") val latitud: Double
+)

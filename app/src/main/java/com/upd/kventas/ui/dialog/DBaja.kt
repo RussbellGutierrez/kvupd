@@ -57,6 +57,11 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
         bind.btnAnular.setOnClickListener { checkFields() }
     }
 
+    override fun onResume() {
+        setResume()
+        super.onResume()
+    }
+
     override fun onItemSelected(p0: AdapterView<*>, p1: View?, p2: Int, p3: Long) {
         val motivo = p0.getItemAtPosition(p2)
         if (motivo.toString() == "DUPLICADO") {
@@ -78,38 +83,34 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     private fun checkFields() {
         if (POS_LOC != null) {
             val motivo = when (bind.spnMotivo.selectedItem.toString()) {
-                "DUPLICADO" -> 0
-                "NO EXISTE" -> 1
-                "CAMBIO GIRO" -> 2
+                "DUPLICADO" -> 1
+                "NO EXISTE" -> 2
                 "CERRADO" -> 3
                 else -> 4
             }
-            if (motivo < 4) {
-                val cliente = args.cliente.split("-")[0].trim().toInt()
-                val ruta = args.cliente.split("-")[2].trim().toInt()
-                val comentario = bind.edtComentario.text.toString()
-                val fecha = viewmodel.fecha(4)
-                val item = TBaja(
-                    cliente,
-                    motivo,
-                    comentario,
-                    POS_LOC!!.longitude,
-                    POS_LOC!!.latitude,
-                    POS_LOC!!.accuracy.toDouble(),
-                    fecha,
-                    0,
-                    "Pendiente"
-                )
-                if (motivo < 1 && comentario.trim() == "") {
-                    bind.txtMensaje.setUI("v", true)
-                    bind.txtMensaje.text = "Ingrese el codigo duplicado en comentario"
-                }else {
-                    viewmodel.saveBaja(item, ruta)
-                    dismiss()
-                }
-            } else {
+            val cliente = args.cliente.split("-")[0].trim().toInt()
+            val nombre = args.cliente.split("-")[1].trim()
+            val ruta = args.cliente.split("-")[2].trim().toInt()
+            val comentario = bind.edtComentario.text.toString()
+            val fecha = viewmodel.fecha(4)
+            val item = TBaja(
+                cliente,
+                nombre,
+                motivo,
+                comentario,
+                POS_LOC!!.longitude,
+                POS_LOC!!.latitude,
+                POS_LOC!!.accuracy.toDouble(),
+                fecha,
+                0,
+                "Pendiente"
+            )
+            if (motivo < 1 && comentario.trim() == "") {
                 bind.txtMensaje.setUI("v", true)
-                bind.txtMensaje.text = "Debe seleccionar un motivo de baja"
+                bind.txtMensaje.text = "Ingrese el codigo duplicado en comentario"
+            }else {
+                viewmodel.saveBaja(item, ruta)
+                dismiss()
             }
         } else {
             toast("No se encontro coordenadas")

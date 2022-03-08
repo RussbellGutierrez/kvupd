@@ -1,9 +1,11 @@
 package com.upd.kventas.domain
 
+import android.location.Location
 import com.upd.kventas.data.local.LocalDataSource
 import com.upd.kventas.data.model.*
 import com.upd.kventas.data.remote.WebDataSource
 import com.upd.kventas.utils.BaseApiResponse
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Network
 import com.upd.kventas.utils.timeToText
 import kotlinx.coroutines.Dispatchers
@@ -26,11 +28,31 @@ class RepoImpl @Inject constructor(
     }
 
     override fun getFlowLocation(): Flow<List<TSeguimiento>> {
-        return localDataSource.getLastLocation()
+        return localDataSource.getLastLocation().distinctUntilChanged()
     }
 
     override fun getFlowMarker(): Flow<List<MarkerMap>> {
-        return localDataSource.getMarkers()
+        return localDataSource.getMarkers().distinctUntilChanged()
+    }
+
+    override fun getFlowAltas(): Flow<List<TAlta>> {
+        return localDataSource.getAltas().distinctUntilChanged()
+    }
+
+    override fun getFlowDistritos(): Flow<List<Combo>> {
+        return localDataSource.getObsDistritos().distinctUntilChanged()
+    }
+
+    override fun getFlowNegocios(): Flow<List<Combo>> {
+        return localDataSource.getObsNegocios().distinctUntilChanged()
+    }
+
+    override fun getFlowBajas(): Flow<List<TBaja>> {
+        return localDataSource.getBajas().distinctUntilChanged()
+    }
+
+    override fun getFlowRowBaja(): Flow<List<RowBaja>> {
+        return localDataSource.getRowBajas().distinctUntilChanged()
     }
 
     override suspend fun getConfig(): List<Config> {
@@ -57,8 +79,43 @@ class RepoImpl @Inject constructor(
         return localDataSource.getDataCliente(cliente)
     }
 
+    override suspend fun getDataAlta(alta: String): DataCliente {
+        return localDataSource.getDataAlta(alta)
+    }
+
+    override suspend fun getAltaDatoSpecific(alta: String): TADatos? {
+        return localDataSource.getAltaDatoSpecific(alta)
+    }
+
+    override suspend fun getBajaSuperSpecific(codigo: String, fecha: String): TBajaSuper {
+        return localDataSource.getBajaSuperSpecific(codigo, fecha)
+    }
+
     override suspend fun isClienteBaja(cliente: String) =
         localDataSource.isClienteBaja(cliente)
+
+    override suspend fun getLastAlta() =
+        localDataSource.getLastAlta()
+
+    override suspend fun processAlta(fecha: String, location: Location) {
+        val alta = getLastAlta()
+        val last = if (alta != null) {
+            alta.idaux + 1
+        } else {
+            "${CONF.codigo}001".toInt()
+        }
+        val item = TAlta(
+            last,
+            fecha,
+            CONF.codigo,
+            location.longitude,
+            location.latitude,
+            location.accuracy.toDouble(),
+            "Pendiente",
+            0
+        )
+        saveAlta(item)
+    }
 
     override suspend fun getStarterTime(): Long? {
         localDataSource.getConfig().forEach { i ->
@@ -75,10 +132,10 @@ class RepoImpl @Inject constructor(
     }
 
     override suspend fun workDay(): Boolean? {
-        val time = Calendar.getInstance().time.timeToText(3).replace(":","").toInt()
+        val time = Calendar.getInstance().time.timeToText(3).replace(":", "").toInt()
         localDataSource.getConfig().forEach { i ->
-            val inicio = i.hini.replace(":","").toInt()
-            val final = i.hfin.replace(":","").toInt()
+            val inicio = i.hini.replace(":", "").toInt()
+            val final = i.hfin.replace(":", "").toInt()
             return time in inicio..final
         }
         return null
@@ -124,6 +181,38 @@ class RepoImpl @Inject constructor(
         localDataSource.saveBaja(baja)
     }
 
+    override suspend fun saveAlta(alta: TAlta) {
+        localDataSource.saveAlta(alta)
+    }
+
+    override suspend fun saveAltaDatos(da: TADatos) {
+        localDataSource.saveAltaDatos(da)
+    }
+
+    override suspend fun saveBajaSuper(baja: List<BajaSupervisor>) {
+        localDataSource.saveBajaSuper(baja)
+    }
+
+    override suspend fun saveEstadoBaja(estado: TBajaEstado) {
+        localDataSource.saveEstadoBaja(estado)
+    }
+
+    override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
+        localDataSource.updateLocationAlta(locationAlta)
+    }
+
+    override suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta) {
+        localDataSource.updateMiniAlta(miniUpdAlta)
+    }
+
+    override suspend fun updateAltaDatos(upd: TADatos) {
+        localDataSource.updateAltaDatos(upd)
+    }
+
+    override suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja) {
+        localDataSource.updateMiniBaja(miniUpdBaja)
+    }
+
     override suspend fun deleteClientes() {
         localDataSource.deleteCliente()
     }
@@ -158,6 +247,22 @@ class RepoImpl @Inject constructor(
 
     override suspend fun deleteBaja() {
         localDataSource.deleteBaja()
+    }
+
+    override suspend fun deleteAlta() {
+        localDataSource.deleteAlta()
+    }
+
+    override suspend fun deleteAltaDatos() {
+        localDataSource.deleteAltaDatos()
+    }
+
+    override suspend fun deleteBajaSuper() {
+        localDataSource.deleteBajaSuper()
+    }
+
+    override suspend fun deleteEstadoBaja() {
+        localDataSource.deleteEstadoBaja()
     }
 
     override suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>> {
@@ -307,6 +412,18 @@ class RepoImpl @Inject constructor(
     override suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebPedimap(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getWebBajaVendedor(body: RequestBody): Flow<Network<JBajaVendedor>> {
+        return flow {
+            emit(safeApiCall { webDataSource.getWebBajaVendedor(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getWebBajaSupervisor(body: RequestBody): Flow<Network<JBajaSupervisor>> {
+        return flow {
+            emit(safeApiCall { webDataSource.getWebBajaSupervisor(body) })
         }.flowOn(Dispatchers.IO)
     }
 }

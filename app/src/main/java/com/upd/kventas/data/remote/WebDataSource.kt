@@ -106,4 +106,12 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
     suspend fun getWebPedimap(body: RequestBody): Response<JPedimap> {
         return web.getApiPedimap(body)
     }
+
+    suspend fun getWebBajaVendedor(body: RequestBody): Response<JBajaVendedor> {
+        return web.getApiBajaVendedor(body)
+    }
+
+    suspend fun getWebBajaSupervisor(body: RequestBody): Response<JBajaSupervisor> {
+        return web.getApiBajaSupervisor(body)
+    }
 }

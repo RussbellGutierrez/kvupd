@@ -23,6 +23,26 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getMarkers()
     }
 
+    fun getAltas(): Flow<List<TAlta>> {
+        return qdao.getAltas()
+    }
+
+    fun getObsDistritos(): Flow<List<Combo>> {
+        return qdao.getObsDistritos()
+    }
+
+    fun getObsNegocios(): Flow<List<Combo>> {
+        return qdao.getObsNegocios()
+    }
+
+    fun getBajas(): Flow<List<TBaja>> {
+        return qdao.getBajas()
+    }
+
+    fun getRowBajas(): Flow<List<RowBaja>> {
+        return qdao.getRowBajas()
+    }
+
     suspend fun getConfig(): List<Config> {
         return qdao.getConfig().asConfigList()
     }
@@ -47,8 +67,24 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getDataCliente(cliente)
     }
 
+    suspend fun getDataAlta(alta: String): DataCliente {
+        return qdao.getDataAlta(alta)
+    }
+
+    suspend fun getAltaDatoSpecific(alta: String): TADatos? {
+        return qdao.getAltaDatoSpecific(alta)
+    }
+
+    suspend fun getBajaSuperSpecific(codigo: String, fecha: String): TBajaSuper {
+        return qdao.getBajaSuper(codigo, fecha)
+    }
+
     suspend fun isClienteBaja(cliente: String): Boolean {
         return qdao.getBajaCliente(cliente) != null
+    }
+
+    suspend fun getLastAlta(): TAlta? {
+        return qdao.getLastAlta()
     }
 
     suspend fun saveConfiguracion(conf: List<Config>) {
@@ -87,8 +123,40 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertEstado(est)
     }
 
-    suspend fun saveBaja(baj: TBaja) {
-        dao.insertBaja(baj)
+    suspend fun saveBaja(baja: TBaja) {
+        dao.insertBaja(baja)
+    }
+
+    suspend fun saveAlta(alta: TAlta) {
+        dao.insertAlta(alta)
+    }
+
+    suspend fun saveAltaDatos(da: TADatos) {
+        dao.insertAltaDatos(da)
+    }
+
+    suspend fun saveBajaSuper(baja: List<BajaSupervisor>) {
+        dao.insertBajaSupervisor(baja.map { it.asTBajaSuper() })
+    }
+
+    suspend fun saveEstadoBaja(estado: TBajaEstado) {
+        dao.insertEstadoBaja(estado)
+    }
+
+    suspend fun updateLocationAlta(locationAlta: LocationAlta) {
+        dao.updateLocationAlta(locationAlta)
+    }
+
+    suspend fun updateMiniAlta(mini: MiniUpdAlta) {
+        dao.updateMiniAlta(mini)
+    }
+
+    suspend fun updateAltaDatos(upd: TADatos) {
+        dao.updateAltaDatos(upd)
+    }
+
+    suspend fun updateMiniBaja(mini: MiniUpdBaja) {
+        dao.updateMiniBaja(mini)
     }
 
     suspend fun deleteCliente() {
@@ -125,5 +193,20 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteBaja() {
         dao.deleteBaja()
+    }
+
+    suspend fun deleteAlta() {
+        dao.deleteAlta()
+    }
+    suspend fun deleteAltaDatos() {
+        dao.deleteAltaDatos()
+    }
+
+    suspend fun deleteBajaSuper() {
+        dao.deleteBajaSuper()
+    }
+
+    suspend fun deleteEstadoBaja() {
+        dao.deleteEstadoBaja()
     }
 }

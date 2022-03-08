@@ -25,6 +25,12 @@ android {
         versionName "1.0.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        //ruta para schemas room
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -89,10 +95,10 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
     //  ROOM
-    implementation 'androidx.room:room-ktx:2.4.1'
-    implementation 'androidx.room:room-runtime:2.4.1'
+    implementation 'androidx.room:room-ktx:2.4.2'
+    implementation 'androidx.room:room-runtime:2.4.2'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    kapt 'androidx.room:room-compiler:2.4.1'
+    kapt 'androidx.room:room-compiler:2.4.2'
 
     //  HILT
     implementation 'com.google.dagger:hilt-android:2.29.1-alpha'

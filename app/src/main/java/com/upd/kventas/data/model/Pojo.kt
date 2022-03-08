@@ -30,3 +30,34 @@ data class DataCliente(
     @ColumnInfo(name = "negocio") val negocio: String,
     @ColumnInfo(name = "telefono") val telefono: String
 )
+
+data class LocationAlta(
+    @ColumnInfo(name = "idaux") val idaux: Int,
+    @ColumnInfo(name = "fecha") val fecha: String,
+    @ColumnInfo(name = "longitud") val longitud: Double,
+    @ColumnInfo(name = "latitud") val latitud: Double,
+    @ColumnInfo(name = "precision") val precision: Double,
+    @ColumnInfo(name = "estado") val estado: String
+)
+
+data class MiniUpdAlta(
+    @ColumnInfo(name = "idaux") val idaux: Int,
+    @ColumnInfo(name = "datos") val datos: Int
+)
+
+data class MiniUpdBaja(
+    @ColumnInfo(name = "cliente") val cliente: Int,
+    @ColumnInfo(name = "anulado") val anulado: Int,
+    @ColumnInfo(name = "estado") val estado: String
+)
+
+data class RowBaja(
+    @ColumnInfo(name = "id") val id: Int,
+    @ColumnInfo(name = "nombre") val nombre: String,
+    @ColumnInfo(name = "direccion") val direccion: String,
+    @ColumnInfo(name = "fecha") val fecha: String,
+    @ColumnInfo(name = "dia") val dia: String,
+    @ColumnInfo(name = "motivo") val motivo: String,
+    @ColumnInfo(name = "negocio") val negocio: String,
+    @ColumnInfo(name = "procede") val procede: Int
+)

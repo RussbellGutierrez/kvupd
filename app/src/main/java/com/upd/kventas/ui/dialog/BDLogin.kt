@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kventas.R
-import com.upd.kventas.databinding.DialogLoginBinding
+import com.upd.kventas.databinding.BottomDialogLoginBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.viewmodel.AppViewModel
@@ -18,13 +18,13 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class DLogin : BottomSheetDialogFragment() {
+class BDLogin : BottomSheetDialogFragment() {
 
     private val viewmodel by activityViewModels<AppViewModel>()
-    private var _bind: DialogLoginBinding? = null
+    private var _bind: BottomDialogLoginBinding? = null
     private val bind get() = _bind!!
     private var configEmpty = false
-    private val _tag by lazy { DLogin::class.java.simpleName }
+    private val _tag by lazy { BDLogin::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -35,7 +35,7 @@ class DLogin : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = DialogLoginBinding.inflate(inflater, container, false)
+        _bind = BottomDialogLoginBinding.inflate(inflater, container, false)
         return bind.root
     }
 

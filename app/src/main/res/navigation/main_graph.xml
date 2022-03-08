@@ -52,6 +52,20 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FAlta"
+            app:destination="@id/FAlta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FBaja"
+            app:destination="@id/FBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -61,9 +75,9 @@
     </fragment>
     <dialog
         android:id="@+id/DLogin"
-        android:name="com.upd.kventas.ui.dialog.DLogin"
+        android:name="com.upd.kventas.ui.dialog.BDLogin"
         android:label="Login"
-        tools:layout="@layout/dialog_login">
+        tools:layout="@layout/bottom_dialog_login">
         <action
             android:id="@+id/action_DLogin_to_FAjuste"
             app:destination="@id/FAjuste"
@@ -274,4 +288,110 @@
         android:name="com.upd.kventas.ui.fragment.FRastreo"
         android:label="Monitoreo"
         tools:layout="@layout/fragment_f_rastreo" />
+    <fragment
+        android:id="@+id/FAlta"
+        android:name="com.upd.kventas.ui.fragment.FAlta"
+        android:label="Alta"
+        tools:layout="@layout/fragment_f_alta" >
+        <action
+            android:id="@+id/action_FAlta_to_FAltaMapa"
+            app:destination="@id/FAltaMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FAlta_to_FAltaDatos"
+            app:destination="@id/FAltaDatos"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/FAltaMapa"
+        android:name="com.upd.kventas.ui.fragment.FAltaMapa"
+        android:label="Alta manual"
+        tools:layout="@layout/fragment_f_alta_mapa" >
+        <action
+            android:id="@+id/action_FAltaMapa_to_FAltaDatos"
+            app:destination="@id/FAltaDatos"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="idaux"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/FAltaDatos"
+        android:name="com.upd.kventas.ui.fragment.FAltaDatos"
+        android:label="Datos del alta"
+        tools:layout="@layout/fragment_f_alta_datos" >
+        <action
+            android:id="@+id/action_FAltaDatos_to_FAlta"
+            app:popUpTo="@+id/FAlta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FAltaDatos_to_FAltaMapa"
+            app:destination="@id/FAltaMapa"
+            app:popUpTo="@+id/FAlta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="idaux"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/FBaja"
+        android:name="com.upd.kventas.ui.fragment.FBaja"
+        android:label="Baja"
+        tools:layout="@layout/fragment_f_baja" >
+        <action
+            android:id="@+id/action_FBaja_to_FBajaDatos"
+            app:destination="@id/FBajaDatos"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/FBajaDatos"
+        android:name="com.upd.kventas.ui.fragment.FBajaDatos"
+        android:label="Bajas generadas"
+        tools:layout="@layout/fragment_f_baja_datos" >
+        <action
+            android:id="@+id/action_FBajaDatos_to_FValidar"
+            app:destination="@id/FValidar"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/FValidar"
+        android:name="com.upd.kventas.ui.fragment.FValidar"
+        android:label="Validar"
+        tools:layout="@layout/fragment_f_validar" >
+        <action
+            android:id="@+id/action_FValidar_to_FBajaDatos"
+            app:destination="@id/FBajaDatos"
+            app:popUpTo="@+id/FBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <argument
+            android:name="datos"
+            app:argType="string"
+            app:nullable="true"/>
+    </fragment>
 </navigation>

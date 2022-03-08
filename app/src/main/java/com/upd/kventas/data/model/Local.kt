@@ -1,6 +1,7 @@
 package com.upd.kventas.data.model
 
 import androidx.room.Entity
+import com.squareup.moshi.Json
 import com.upd.kventas.utils.Constant.CONF
 
 @Entity(primaryKeys = ["codigo", "empresa", "sucursal", "esquema"])
@@ -144,6 +145,10 @@ fun List<TNegocio>.asNegocioList(): List<Combo> = this.map {
 fun Combo.asTNegocio(): TNegocio =
     TNegocio(this.codigo, this.nombre)
 
+fun List<Combo>.asSpinner(): List<String> = this.map {
+    "${it.codigo} - ${it.nombre}"
+}
+
 @Entity(primaryKeys = ["id"])
 data class TEncuesta(
     val id: String,
@@ -230,6 +235,7 @@ data class TVisita(
 @Entity(primaryKeys = ["cliente"])
 data class TBaja(
     val cliente: Int,
+    val nombre: String,
     val motivo: Int,
     val comentario: String,
     val longitud: Double,
@@ -240,3 +246,115 @@ data class TBaja(
     val estado: String
 )
 
+@Entity(primaryKeys = ["idaux"])
+data class TAlta(
+    val idaux: Int,
+    val fecha: String,
+    val empleado: Int,
+    val longitud: Double,
+    val latitud: Double,
+    val precision: Double,
+    val estado: String,
+    val datos: Int
+)
+
+@Entity(primaryKeys = ["idaux"])
+data class TADatos(
+    val idaux: Int,
+    val empleado: Int,
+    val tipo: String,
+    val razon: String,
+    val nombre: String,
+    val appaterno: String,
+    val apmaterno: String,
+    val documento: String,
+    val movil1: String,
+    val movil2: String,
+    val correo: String,
+    val via: String,
+    val direccion: String,
+    val manzana: String,
+    val zona: String,
+    val zonanombre: String,
+    val ubicacion: String,
+    val numero: String,
+    val distrito: String,
+    val giro: String,
+    val ruta: String,
+    val secuencia: String,
+    val estado: String
+)
+
+@Entity(primaryKeys = ["clicodigo", "creado"])
+data class TBajaSuper(
+    val sucursal: Int,
+    val empleado: Int,
+    val nombre: String,
+    val creado: String,
+    val dia: String,
+    val motivo: String,
+    val descripcion: String,
+    val observacion: String,
+    val confirmado: Int?,
+    val fechaconf: String,
+    val clicodigo: Int,
+    val clinombre: String,
+    val documento: String,
+    val direccion: String,
+    val ruta: Int,
+    val negocio: String,
+    val canal: String,
+    val pago: String,
+    val visicooler: String,
+    val clilongitud: Double,
+    val clilatitud: Double,
+    val hora: String,
+    val precision: Double,
+    val longitud: Double,
+    val latitud: Double,
+    val compra: String
+)
+
+fun BajaSupervisor.asTBajaSuper(): TBajaSuper =
+    TBajaSuper(
+        this.sucursal,
+        this.empleado,
+        this.nombre,
+        this.creado,
+        this.dia,
+        this.motivo,
+        this.descripcion,
+        this.observacion,
+        this.confirmado,
+        this.fechaconf,
+        this.cliente.codigo,
+        this.cliente.nombre,
+        this.cliente.documento,
+        this.cliente.direccion,
+        this.cliente.ruta,
+        this.cliente.negocio,
+        this.cliente.canal,
+        this.cliente.pago,
+        this.cliente.visicooler,
+        this.cliente.longitud,
+        this.cliente.latitud,
+        this.hora,
+        this.precision,
+        this.longitud,
+        this.latitud,
+        this.compra
+    )
+
+@Entity(primaryKeys = ["cliente","fecha"])
+data class TBajaEstado(
+    var empleado: Int,
+    var cliente: Int,
+    var procede: Int,
+    var fecha: String,
+    var precision: Double,
+    var longitud: Double,
+    var latitud: Double,
+    var fechaconf: String,
+    var observacion: String,
+    var estado: String
+)

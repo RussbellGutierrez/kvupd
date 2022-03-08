@@ -2,6 +2,7 @@ package com.upd.kventas.utils
 
 import android.location.Location
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.data.model.DataCliente
 import com.upd.kventas.data.model.Pedimap
@@ -16,7 +17,6 @@ object Constant {
     const val M_OCUPADO = "Cliente ocupado"
     const val M_NOEXISTE = "Cliente no existe"
     const val M_ALTA = "Alta cliente"
-    const val M_BAJA = "Baja cliente"
 
     var MSG_CONFIG = ""
     var MSG_USER = ""
@@ -24,7 +24,9 @@ object Constant {
     var MSG_NEGOCIO = ""
 
     var VISICOOLER_ID = 0
+    var DIA_FILTRO = 0
     var POS_LOC: Location? = null
+    lateinit var ALTADATOS: String
     lateinit var FIRST_LOCATION: Location
     lateinit var CONF: Config
     lateinit var IWAM: DataCliente
@@ -94,6 +96,11 @@ object Constant {
     const val API_REPOEMP = "empleado/movil/preventa/reporte-empleado"
 
     const val API_EMPMARCADOR = "empleado/movil/marker/empleado"
+    const val API_BAJALIS = "empleado/movil/baja/lista"
+    const val API_BAJAESTLIS = "empleado/movil/baja/lista/estado"
+
+
+
 
     const val API_SEGUIMIENTO = "empleado/movil/seguimiento"
     const val API_VISITA = "empleado/movil/visita"
@@ -104,9 +111,9 @@ object Constant {
 
 
     const val API_BAJAS = "empleado/movil/baja"
-    const val API_BAJALIS = "empleado/movil/baja/lista"
+
     const val API_BAJACONF = "empleado/movil/baja/confirmar"
-    const val API_BAJAESTLIS = "empleado/movil/baja/lista/estado"
+
 
     const val API_FOTO = "empleado/movil/encuesta/foto"
     const val API_RESPUESTA = "empleado/movil/encuesta/respuesta"

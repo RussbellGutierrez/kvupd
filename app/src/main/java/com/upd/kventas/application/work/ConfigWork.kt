@@ -63,9 +63,11 @@ class ConfigWork @WorkerInject constructor(
         }
 
     private fun getRequestBody(): RequestBody {
+        val imei = functions.parseQRtoIMEI(true)
+        val app = functions.appSO()
         val json = JSONObject()
-        json.put("imei", functions.parseQRtoIMEI(true))
-        json.put("version", functions.appSO())
+        json.put("imei", imei)
+        json.put("version", app)
         json.put("fecha", functions.dateToday(6))
         return json.toReqBody()
     }

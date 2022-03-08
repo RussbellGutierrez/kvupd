@@ -5,6 +5,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.*
 import com.upd.kventas.data.model.Config
+import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
 import com.upd.kventas.utils.Constant.MSG_USER
 import com.upd.kventas.utils.toReqBody
@@ -17,7 +18,8 @@ import retrofit2.HttpException
 class UserWork @WorkerInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val repository: Repository
+    private val repository: Repository,
+    private val functions: Functions
 ) : CoroutineWorker(appContext, workerParameters) {
     private val _tag by lazy { UserWork::class.java.simpleName }
 
@@ -79,6 +81,7 @@ class UserWork @WorkerInject constructor(
         val json = JSONObject()
         json.put("empleado", conf.codigo)
         json.put("empresa", conf.empresa)
+        json.put("fecha", functions.dateToday(6))
         return json.toReqBody()
     }
 }

@@ -9,4 +9,7 @@ object Interface {
     lateinit var solesListener: SolesAdapter.OnSolesListener
     lateinit var generListener: GenericoAdapter.OnGenericoListener
     lateinit var visisuListener: VisisuperAdapter.OnVisisuperListener
+    lateinit var altaListener: AltaAdapter.OnAltaListener
+    lateinit var bajaListener: BajaAdapter.OnBajaListener
+    lateinit var bajaSuperListener: BajaSupervisorAdapter.OnBajaSuperListener
 }

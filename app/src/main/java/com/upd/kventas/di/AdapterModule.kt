@@ -30,4 +30,18 @@ object AdapterModule {
 
     @Provides
     fun prodiverVisisuperAdapter() = VisisuperAdapter()
+
+    @Provides
+    fun prodiverAltaAdapter() = AltaAdapter()
+
+    @Provides
+    fun providerBajaAdapter() = BajaAdapter()
+
+    @Provides
+    fun providerBajaSupervisorAdapter() = BajaSupervisorAdapter()
+
+    @Provides
+    fun providerBajaVendedorAdapter(
+        functions: Functions
+    ) = BajaVendedorAdapter(functions)
 }

@@ -80,10 +80,14 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         viewmodel.pedimap.observe(viewLifecycleOwner) { rsl ->
             when(rsl) {
                 is Network.Success -> {
-                    showDialog("Correcto", "Se descargo vendedores") {}
-                    map.clear()
-                    pdmp = rsl.data!!.jobl
-                    markers = viewmodel.pedimapMarker(map, pdmp)
+                    if (rsl.data?.jobl.isNullOrEmpty()) {
+                        showDialog("Error", "No se obtuvieron vendedores") {}
+                    }else {
+                        showDialog("Correcto", "Se descargo vendedores") {}
+                        map.clear()
+                        pdmp = rsl.data!!.jobl
+                        markers = viewmodel.pedimapMarker(map, pdmp)
+                    }
                 }
                 is Network.Error -> showDialog("Error", "Server ${rsl.message}") {}
             }
@@ -125,14 +129,16 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
     private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
-        when {
-            markers.isNotEmpty() -> {
-                markers.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(location.latitude, location.longitude))
-                val bounds = builder.build()
-                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+        if (::markers.isInitialized) {
+            when {
+                markers.isNotEmpty() -> {
+                    markers.forEach { i -> builder.include(i.position) }
+                    builder.include(LatLng(location.latitude, location.longitude))
+                    val bounds = builder.build()
+                    map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+                }
+                markers.isEmpty() -> snack("Sin marcadores para ubicar")
             }
-            markers.isEmpty() -> snack("Sin marcadores para ubicar")
         }
     }
 
@@ -151,11 +157,13 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     }
 
     private fun showMarker(search: String) {
-        val vendedor = markers.find { it.snippet == search }
-        if (vendedor != null) {
-            pedimapMarker(vendedor)
-        } else {
-            snack("No se encontro vendedor")
+        if (::markers.isInitialized) {
+            val vendedor = markers.find { it.snippet == search }
+            if (vendedor != null) {
+                pedimapMarker(vendedor)
+            } else {
+                snack("No se encontro vendedor")
+            }
         }
     }
 

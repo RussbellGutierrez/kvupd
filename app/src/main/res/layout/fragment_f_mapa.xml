@@ -27,23 +27,23 @@
             android:src="@drawable/centrar"
             app:backgroundTint="@color/white"
             app:elevation="1dp"
-            app:tint="@color/primaryDarkColor"
             app:rippleColor="@color/lightgray"
-            app:useCompatPadding="true"/>
+            app:tint="@color/primaryDarkColor"
+            app:useCompatPadding="true" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_ubicacion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginBottom="60dp"
             android:src="@drawable/gps"
             app:backgroundTint="@color/white"
-            app:useCompatPadding="true"
-            app:tint="@color/primaryDarkColor"
+            app:elevation="1dp"
             app:rippleColor="@color/lightgray"
-            app:elevation="1dp"/>
+            app:tint="@color/primaryDarkColor"
+            app:useCompatPadding="true" />
 
     </RelativeLayout>
 

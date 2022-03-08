@@ -24,18 +24,18 @@ import com.upd.kventas.R
 import com.upd.kventas.application.work.*
 import com.upd.kventas.data.model.MarkerMap
 import com.upd.kventas.data.model.Pedimap
+import com.upd.kventas.data.model.TAlta
+import com.upd.kventas.data.model.TBajaSuper
 import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.service.ServiceSetup
+import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
 import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
-import com.upd.kventas.utils.addingMarker
-import com.upd.kventas.utils.isServiceRunning
-import com.upd.kventas.utils.markerPedimap
-import com.upd.kventas.utils.timeToText
 import dagger.hilt.android.qualifiers.ApplicationContext
+import okio.FileNotFoundException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -67,10 +67,16 @@ class FunImpl @Inject constructor(
         try {
             val bytes = ByteArrayOutputStream()
             bm.compress(Bitmap.CompressFormat.PNG, 100, bytes)
-            val f = File("${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/qrcode.png")
-            if (!f.exists()) {
-                f.parentFile!!.mkdirs()
+            val rootPath = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/"
+            val root = File(rootPath)
+            if (!root.exists()) {
+                root.mkdirs()
             }
+            val f = File("${rootPath}qrcode.png")
+            if (f.exists()) {
+                f.delete()
+            }
+            f.createNewFile()
             val fo = FileOutputStream(f)
             fo.write(bytes.toByteArray())
             fo.close()
@@ -86,12 +92,14 @@ class FunImpl @Inject constructor(
 
     override fun parseQRtoIMEI(add: Boolean): String {
         val bitmap = getQR()
-        val qrRecognizer = BarcodeDetector.Builder(ctx).build()
-        val frame = Frame.Builder().setBitmap(bitmap).build()
-        val result = qrRecognizer.detect(frame)
         val campo = StringBuilder()
-        for (i in 0 until result.size()) {
-            campo.append(result.valueAt(i).rawValue)
+        val qrRecognizer = BarcodeDetector.Builder(ctx).build()
+        if (bitmap != null) {
+            val frame = Frame.Builder().setBitmap(bitmap).build()
+            val result = qrRecognizer.detect(frame)
+            for (i in 0 until result.size()) {
+                campo.append(result.valueAt(i).rawValue)
+            }
         }
         return if (add) {
             "$campo-V"
@@ -100,19 +108,25 @@ class FunImpl @Inject constructor(
         }
     }
 
-    override fun getQR(): Bitmap {
-        val path = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/qrcode.png"
-        val file = File(path)
-        val uri = Uri.fromFile(file)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val source = ImageDecoder.createSource(ctx.contentResolver, uri)
-            val listener = ImageDecoder.OnHeaderDecodedListener { imageDecoder, _, _ ->
-                imageDecoder.isMutableRequired = true
+    override fun getQR(): Bitmap? {
+        var rsl: Bitmap? = null
+        try {
+            val path = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/qrcode.png"
+            val file = File(path)
+            val uri = Uri.fromFile(file)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val source = ImageDecoder.createSource(ctx.contentResolver, uri)
+                val listener = ImageDecoder.OnHeaderDecodedListener { imageDecoder, _, _ ->
+                    imageDecoder.isMutableRequired = true
+                }
+                rsl = ImageDecoder.decodeBitmap(source, listener)
+            } else {
+                rsl = MediaStore.Images.Media.getBitmap(ctx.contentResolver, uri)
             }
-            ImageDecoder.decodeBitmap(source, listener)
-        } else {
-            MediaStore.Images.Media.getBitmap(ctx.contentResolver, uri)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
         }
+        return rsl
     }
 
     override fun dateToday(formato: Int): String {
@@ -172,6 +186,34 @@ class FunImpl @Inject constructor(
             }
         }
         return m
+    }
+
+    override fun altaMarkers(map: GoogleMap, list: List<TAlta>): List<Marker> {
+        val m = mutableListOf<Marker>()
+        list.forEach { i ->
+            if ((i.longitud < 0 && i.latitud < 0) ||
+                (i.longitud > 0 && i.latitud > 0) ||
+                (i.longitud < 0 && i.latitud > 0) ||
+                (i.longitud > 0 && i.latitud < 0)
+            ) {
+                m.add(map.markerAlta(i,R.drawable.pin_altas))
+            }
+        }
+        return m
+    }
+
+    override fun bajaMarker(map: GoogleMap, baja: TBajaSuper): Marker {
+        val m = mutableListOf<Marker>()
+        val longitud = baja.longitud
+        val latitud = baja.latitud
+        if ((longitud < 0 && latitud < 0) ||
+            (longitud > 0 && latitud > 0) ||
+            (longitud < 0 && latitud > 0) ||
+            (longitud > 0 && latitud < 0)
+        ) {
+            m.add(map.markerBaja(baja,R.drawable.pin_bajas))
+        }
+        return m[0]
     }
 
     override fun executeService(service: String, foreground: Boolean) {

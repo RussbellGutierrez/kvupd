@@ -1,6 +1,8 @@
 package com.upd.kventas.data.remote
 
 import com.upd.kventas.data.model.*
+import com.upd.kventas.utils.Constant.API_BAJAESTLIS
+import com.upd.kventas.utils.Constant.API_BAJALIS
 import com.upd.kventas.utils.Constant.API_CARTERA
 import com.upd.kventas.utils.Constant.API_CLICAMBIO
 import com.upd.kventas.utils.Constant.API_CLIENTE
@@ -109,4 +111,10 @@ interface ApiClient {
 
     @POST(API_EMPMARCADOR)
     suspend fun getApiPedimap(@Body body: RequestBody): Response<JPedimap>//@param empleado, empresa
+
+    @POST(API_BAJAESTLIS)
+    suspend fun getApiBajaVendedor(@Body body: RequestBody): Response<JBajaVendedor>//@param empleado, empresa
+
+    @POST(API_BAJALIS)
+    suspend fun getApiBajaSupervisor(@Body body: RequestBody): Response<JBajaSupervisor>//@param empleado, empresa
 }

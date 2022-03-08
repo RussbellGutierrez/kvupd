@@ -56,22 +56,6 @@ class DVendedor : DialogFragment() {
         bind.btnDescargar.setOnClickListener {
             processData()
         }
-        /*setup()
-        bind.fabLunes.setOnClickListener { dayWeek(2) }
-        bind.fabMartes.setOnClickListener { dayWeek(3) }
-        bind.fabMiercoles.setOnClickListener { dayWeek(4) }
-        bind.fabJueves.setOnClickListener { dayWeek(5) }
-        bind.fabViernes.setOnClickListener { dayWeek(6) }
-        bind.fabSabado.setOnClickListener { dayWeek(7) }
-        bind.btnDescargar.setOnClickListener {
-            val dia = bind.txtDia.text.toString().trim()
-            if (dia != "") {
-                dismiss()
-                viewmodel.setFecha(dia)
-            } else {
-                bind.txtMensaje.setUI("v", true)
-            }
-        }*/
     }
 
     private fun setup() {

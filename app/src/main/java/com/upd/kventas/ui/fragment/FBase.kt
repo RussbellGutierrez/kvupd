@@ -57,8 +57,8 @@ class FBase : Fragment() {
                 findNavController().navigate(R.id.action_FBase_to_FVendedor)
         }
         bind.fabReporte.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FReporte) }
-        bind.fabAltas.setOnClickListener {  }
-        bind.fabBajas.setOnClickListener {  }
+        bind.fabAltas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FAlta) }
+        bind.fabBajas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FBaja) }
         bind.fabOtros.setOnClickListener {  }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -88,7 +88,7 @@ class FBase : Fragment() {
         }
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
         val version = "ver. ${BuildConfig.VERSION_NAME}"
-        val usuario = "${config.nombre} - ${config.codigo}"
+        val usuario = getUsuario(config)
         val gps = if (isGPSDisabled()) Color.rgb(221, 150, 6) else Color.rgb(4, 106, 97)
         val seguimiento = if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
         bind.imgEmpresa.setImageResource(img)
@@ -96,5 +96,16 @@ class FBase : Fragment() {
         bind.txtVersion.text = version
         bind.fabGps.imageTintList = ColorStateList.valueOf(gps)
         bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
+    }
+
+    private fun getUsuario(item: Config): String {
+        return if (item.nombre == "") {
+            when(item.tipo) {
+                "S" -> "Supervisor de ventas - ${item.codigo}"
+                else -> "Usuario de ventas - ${item.codigo}"
+            }
+        }else {
+            "${item.nombre} - ${item.codigo}"
+        }
     }
 }

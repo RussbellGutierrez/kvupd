@@ -1,16 +1,17 @@
 package com.upd.kventas.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.upd.kventas.data.model.*
+import com.upd.kventas.data.model.QueryConstant.DEL_ALTA
+import com.upd.kventas.data.model.QueryConstant.DEL_ALTADATOS
 import com.upd.kventas.data.model.QueryConstant.DEL_BAJA
+import com.upd.kventas.data.model.QueryConstant.DEL_BAJASUPER
 import com.upd.kventas.data.model.QueryConstant.DEL_CLIENTES
 import com.upd.kventas.data.model.QueryConstant.DEL_DISTRITOS
 import com.upd.kventas.data.model.QueryConstant.DEL_EMPLEADOS
 import com.upd.kventas.data.model.QueryConstant.DEL_ENCUESTA
 import com.upd.kventas.data.model.QueryConstant.DEL_ESTADO
+import com.upd.kventas.data.model.QueryConstant.DEL_ESTADOBAJA
 import com.upd.kventas.data.model.QueryConstant.DEL_NEGOCIOS
 import com.upd.kventas.data.model.QueryConstant.DEL_SEGUIMIENTO
 import com.upd.kventas.data.model.QueryConstant.DEL_VISITA
@@ -46,7 +47,31 @@ interface AppDAO {
     suspend fun insertEstado(est: TEstado)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBaja(baj: TBaja)
+    suspend fun insertBaja(baja: TBaja)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlta(alta: TAlta)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAltaDatos(da: TADatos)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertBajaSupervisor(baja: List<TBajaSuper>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEstadoBaja(estado: TBajaEstado)
+
+    @Update(entity = TAlta::class)
+    suspend fun updateLocationAlta(upd: LocationAlta)
+
+    @Update(entity = TAlta::class)
+    suspend fun updateMiniAlta(upd: MiniUpdAlta)
+
+    @Update(entity = TADatos::class)
+    suspend fun updateAltaDatos(upd: TADatos)
+
+    @Update(entity = TBaja::class)
+    suspend fun updateMiniBaja(upd: MiniUpdBaja)
 
     @Query(DEL_CLIENTES)
     suspend fun deleteClientes()
@@ -74,4 +99,16 @@ interface AppDAO {
 
     @Query(DEL_BAJA)
     suspend fun deleteBaja()
+
+    @Query(DEL_ALTA)
+    suspend fun deleteAlta()
+
+    @Query(DEL_ALTADATOS)
+    suspend fun deleteAltaDatos()
+
+    @Query(DEL_BAJASUPER)
+    suspend fun deleteBajaSuper()
+
+    @Query(DEL_ESTADOBAJA)
+    suspend fun deleteEstadoBaja()
 }

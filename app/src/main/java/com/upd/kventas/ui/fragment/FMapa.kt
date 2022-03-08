@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
@@ -133,7 +132,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onMarkerClick(p0: Marker): Boolean {
         mclk = p0
-        viewmodel.getClientDet(p0.snippet!!)
+        viewmodel.getClientDet(mclk.snippet!!)
         return true
     }
 
