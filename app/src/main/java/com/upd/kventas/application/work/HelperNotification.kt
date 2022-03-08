@@ -12,8 +12,11 @@ import com.upd.kventas.utils.Constant.CONFIG_CHANNEL
 import com.upd.kventas.utils.Constant.CONFIG_NOTIF
 import com.upd.kventas.utils.Constant.DISTRITO_CHANNEL
 import com.upd.kventas.utils.Constant.DISTRITO_NOTIF
+import com.upd.kventas.utils.Constant.ENCUESTA_CHANNEL
+import com.upd.kventas.utils.Constant.ENCUESTA_NOTIF
 import com.upd.kventas.utils.Constant.MSG_CONFIG
 import com.upd.kventas.utils.Constant.MSG_DISTRITO
+import com.upd.kventas.utils.Constant.MSG_ENCUESTA
 import com.upd.kventas.utils.Constant.MSG_NEGOCIO
 import com.upd.kventas.utils.Constant.MSG_USER
 import com.upd.kventas.utils.Constant.NEGOCIO_CHANNEL
@@ -175,5 +178,39 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(NEGOCIO_NOTIF, notif.build())
+    }
+
+    fun encuestaNotifLaunch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(ENCUESTA_CHANNEL, "Encuesta", NotificationManager.IMPORTANCE_DEFAULT)
+            channel.description = "Notificacion para encuesta"
+            val notificationManager =
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder = NotificationCompat.Builder(ctx, ENCUESTA_CHANNEL)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setContentTitle("Download")
+            .setContentText("Encuesta programada")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setProgress(0,0,true)
+            .setOngoing(true)
+        val manager = NotificationManagerCompat.from(ctx)
+        manager.notify(ENCUESTA_NOTIF,builder.build())
+    }
+
+    fun encuestaNotif() {
+        val manager = NotificationManagerCompat.from(ctx)
+        val notif = NotificationCompat.Builder(ctx, ENCUESTA_CHANNEL)
+            .setSmallIcon(R.drawable.notf_encuesta)
+            .setContentTitle("KV Encuesta")
+            .setContentText(MSG_ENCUESTA)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setVibrate(LongArray(0))
+            .setProgress(0, 0, false)
+            .setOngoing(false)
+        notif.setCategory(Notification.CATEGORY_EVENT)
+        manager.notify(ENCUESTA_NOTIF, notif.build())
     }
 }

@@ -28,4 +28,5 @@ interface Functions {
     fun workerUser(): OneTimeWorkRequest
     fun workerDistritos(): OneTimeWorkRequest
     fun workerNegocios(): OneTimeWorkRequest
+    fun workerEncuestas(): OneTimeWorkRequest
 }

@@ -1,6 +1,5 @@
 package com.upd.kventas.utils
 
-import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
@@ -9,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationManager
 import android.text.Editable
-import android.util.Log
 import android.util.Patterns
 import android.view.MenuItem
 import android.view.View

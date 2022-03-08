@@ -7,6 +7,7 @@ object QueryConstant {
     const val GET_EMPLEADOS = "SELECT * FROM TEmpleados"
     const val GET_DISTRITOS = "SELECT * FROM TDistrito"
     const val GET_NEGOCIOS = "SELECT * FROM TNegocio"
+    const val GET_ENCUESTAS = "SELECT * FROM TEncuesta"
     const val GET_VISITA = "SELECT * FROM TVisita ORDER BY fecha ASC"
     const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"

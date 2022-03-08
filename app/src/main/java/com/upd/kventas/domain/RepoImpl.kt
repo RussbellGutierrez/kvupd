@@ -75,6 +75,10 @@ class RepoImpl @Inject constructor(
         return localDataSource.getNegocios()
     }
 
+    override suspend fun getEncuestas(): List<Encuesta> {
+        return localDataSource.getEncuestas()
+    }
+
     override suspend fun getClienteDetail(cliente: String): List<DataCliente> {
         return localDataSource.getDataCliente(cliente)
     }

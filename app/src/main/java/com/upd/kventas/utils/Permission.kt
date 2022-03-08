@@ -52,23 +52,29 @@ class Permission @Inject constructor(private val act: Activity) {
 
     fun reqBackPermission() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-            if ( checkSinglePermission(perAccessFineLocation) &&
+
+            if (!checkSinglePermission(perBackgroundLocation)) {
+
+                if ( checkSinglePermission(perAccessFineLocation) &&
                     checkSinglePermission(perAccessCoarseLocation)) {
-                val backPermList = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                AlertDialog.Builder(act)
-                    .setTitle("Ubicacion Segundo Plano")
-                    .setMessage("Otorgar permiso de localizacion en segundo plano para tener coordenadas actualizadas")
-                    .setPositiveButton("Permitir") { _, _ ->
-                        act.requestPermissions(
-                            backPermList,
-                            REQ_BACK_CODE
-                        )
-                    }
-                    .setNegativeButton("Cancelar") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .create()
-                    .show()
+
+                    val backPermList = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+
+                    AlertDialog.Builder(act)
+                        .setTitle("Ubicacion Segundo Plano")
+                        .setMessage("Otorgar permiso de localizacion en segundo plano para tener coordenadas actualizadas")
+                        .setPositiveButton("Permitir") { _, _ ->
+                            act.requestPermissions(
+                                backPermList,
+                                REQ_BACK_CODE
+                            )
+                        }
+                        .setNegativeButton("Cancelar") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                }
             }
         }
     }

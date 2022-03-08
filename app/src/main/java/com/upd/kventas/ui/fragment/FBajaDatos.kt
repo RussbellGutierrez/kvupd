@@ -1,6 +1,5 @@
 package com.upd.kventas.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -12,15 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kventas.R
 import com.upd.kventas.data.model.BajaVendedor
 import com.upd.kventas.data.model.RowBaja
-import com.upd.kventas.data.model.RowCliente
 import com.upd.kventas.databinding.FragmentFBajaDatosBinding
-import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.ui.adapter.BajaSupervisorAdapter
 import com.upd.kventas.ui.adapter.BajaVendedorAdapter
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.DIA_FILTRO
-import com.upd.kventas.utils.Constant.POS_LOC
 import com.upd.kventas.utils.Interface.bajaSuperListener
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint

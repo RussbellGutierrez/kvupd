@@ -14,6 +14,7 @@ import com.upd.kventas.data.model.QueryConstant.GET_DATA_ALTA
 import com.upd.kventas.data.model.QueryConstant.GET_DATA_CLIENTE
 import com.upd.kventas.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kventas.data.model.QueryConstant.GET_EMPLEADOS
+import com.upd.kventas.data.model.QueryConstant.GET_ENCUESTAS
 import com.upd.kventas.data.model.QueryConstant.GET_LAST_ALTA
 import com.upd.kventas.data.model.QueryConstant.GET_LAST_LOCATION
 import com.upd.kventas.data.model.QueryConstant.GET_MARKERS
@@ -67,6 +68,9 @@ interface QueryDAO {
 
     @Query(GET_NEGOCIOS)
     suspend fun getNegocio(): List<TNegocio>
+
+    @Query(GET_ENCUESTAS)
+    suspend fun getEncuesta(): List<TEncuesta>
 
     @Query(GET_DATA_CLIENTE)
     suspend fun getDataCliente(cliente: String): List<DataCliente>

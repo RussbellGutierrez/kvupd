@@ -22,6 +22,7 @@ object Constant {
     var MSG_USER = ""
     var MSG_DISTRITO = ""
     var MSG_NEGOCIO = ""
+    var MSG_ENCUESTA = ""
 
     var VISICOOLER_ID = 0
     var DIA_FILTRO = 0
@@ -37,6 +38,7 @@ object Constant {
     const val W_USER = "VUser"
     const val W_DISTRITO = "VDistrito"
     const val W_NEGOCIO = "VNegocio"
+    const val W_ENCUESTA = "VEncuesta"
 
     const val SETUP_CHANNEL = "1"
     const val SETUP_NOTIF = 1
@@ -48,6 +50,8 @@ object Constant {
     const val DISTRITO_NOTIF = 4
     const val NEGOCIO_CHANNEL = "5"
     const val NEGOCIO_NOTIF = 5
+    const val ENCUESTA_CHANNEL = "6"
+    const val ENCUESTA_NOTIF = 6
 
     const val GPS_NORMAL_INTERVAL = 300000L
     const val GPS_FAST_INTERVAL = 120000L

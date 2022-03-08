@@ -8,10 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.work.BackoffPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.vision.Frame
@@ -31,6 +28,7 @@ import com.upd.kventas.service.ServiceSetup
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
+import com.upd.kventas.utils.Constant.W_ENCUESTA
 import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
@@ -239,7 +237,7 @@ class FunImpl @Inject constructor(
     override fun launchWorkers() {
         workManager
             .beginWith(workerConfiguracion())
-            .then(listOf(workerUser(), workerDistritos(), workerNegocios()))
+            .then(listOf(workerUser(), workerDistritos(), workerNegocios(), workerEncuestas()))
             .enqueue()
     }
 
@@ -294,5 +292,15 @@ class FunImpl @Inject constructor(
                 TimeUnit.MINUTES
             )
             .addTag(W_NEGOCIO)
+            .build()
+
+    override fun workerEncuestas() =
+        OneTimeWorkRequestBuilder<EncuestaWork>()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                5,
+                TimeUnit.MINUTES
+            )
+            .addTag(W_ENCUESTA)
             .build()
 }

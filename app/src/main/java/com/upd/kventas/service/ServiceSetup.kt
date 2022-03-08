@@ -26,6 +26,7 @@ import com.upd.kventas.utils.Constant.FIRST_LOCATION
 import com.upd.kventas.utils.Constant.SETUP_NOTIF
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
+import com.upd.kventas.utils.Constant.W_ENCUESTA
 import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
@@ -92,6 +93,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
         workManager.getWorkInfosByTagLiveData(W_USER).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_DISTRITO).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_NEGOCIO).observe(this, workInfoObserver())
+        workManager.getWorkInfosByTagLiveData(W_ENCUESTA).observe(this, workInfoObserver())
 
         repository.getFlowConfig().asLiveData().observe(this) { result ->
             if (result.isNotEmpty()) {
@@ -99,6 +101,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
                 helper.userNotifLaunch()
                 helper.distritoNotifLaunch()
                 helper.negocioNotifLaunch()
+                helper.encuestaNotifLaunch()
             }
         }
     }
@@ -143,6 +146,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
                     wi.tags.contains(W_USER) -> helper.userNotif()
                     wi.tags.contains(W_DISTRITO) -> helper.distritoNotif()
                     wi.tags.contains(W_NEGOCIO) -> helper.negocioNotif()
+                    wi.tags.contains(W_ENCUESTA) -> helper.encuestaNotif()
                 }
             }
         }

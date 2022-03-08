@@ -23,6 +23,7 @@ interface Repository {
     suspend fun getEmpleados(): List<Vendedor>
     suspend fun getDistritos(): List<Combo>
     suspend fun getNegocios(): List<Combo>
+    suspend fun getEncuestas(): List<Encuesta>
     suspend fun getClienteDetail(cliente: String): List<DataCliente>
     suspend fun getDataAlta(alta: String): DataCliente
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
