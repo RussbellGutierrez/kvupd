@@ -24,6 +24,7 @@ object Constant {
     var MSG_NEGOCIO = ""
     var MSG_ENCUESTA = ""
 
+    var IMEI = ""
     var VISICOOLER_ID = 0
     var DIA_FILTRO = 0
     var POS_LOC: Location? = null
@@ -103,24 +104,18 @@ object Constant {
     const val API_BAJALIS = "empleado/movil/baja/lista"
     const val API_BAJAESTLIS = "empleado/movil/baja/lista/estado"
 
-
-
-
+    /*  Send server */
     const val API_SEGUIMIENTO = "empleado/movil/seguimiento"
     const val API_VISITA = "empleado/movil/visita"
     const val API_ALTA = "empleado/movil/alta"
-    const val API_ALTALIS = "empleado/movil/alta/lista"
-    const val API_ALTAMOD = "empleado/movil/alta/modificar"
-    const val API_DETALLE = "empleado/movil/alta/detalle"
-
-
-    const val API_BAJAS = "empleado/movil/baja"
-
-    const val API_BAJACONF = "empleado/movil/baja/confirmar"
-
-
-    const val API_FOTO = "empleado/movil/encuesta/foto"
+    const val API_ALTADETALLE = "empleado/movil/alta/detalle"
+    const val API_BAJA = "empleado/movil/baja"
+    const val API_BAJACONFIR = "empleado/movil/baja/confirmar"
     const val API_RESPUESTA = "empleado/movil/encuesta/respuesta"
+    const val API_FOTO = "empleado/movil/encuesta/foto"
+
+    //const val API_ALTALIS = "empleado/movil/alta/lista"
+    //const val API_ALTAMOD = "empleado/movil/alta/modificar"
     //const val VOUCHER = "empleado/movil/recibo/foto"
     //const val DATOVOUCHER = "empleado/movil/recibo/nuevo"
     //const val COMPRAS = "empleado/movil/reporte/cliente/venta"

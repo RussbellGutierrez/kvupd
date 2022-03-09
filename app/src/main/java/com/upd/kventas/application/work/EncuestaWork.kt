@@ -34,7 +34,7 @@ class EncuestaWork @WorkerInject constructor(
                     repository.getWebEncuesta(req).collect { response ->
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
-                            MSG_ENCUESTA = "Respuesta vacia"
+                            MSG_ENCUESTA = "Respuesta: ${response.message}"
                             Result.failure()
                         } else {
                             repository.saveEncuesta(rsp)

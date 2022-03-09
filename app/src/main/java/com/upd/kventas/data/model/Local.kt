@@ -217,7 +217,7 @@ data class TSeguimiento(
     val latitud: Double,
     val precision: Double,
     val bateria: Double,
-    val estado: String
+    var estado: String
 )
 
 @Entity(primaryKeys = ["cliente"])
@@ -229,7 +229,7 @@ data class TVisita(
     val latitud: Double,
     val observacion: Int,
     val precision: Double,
-    val estado: String
+    var estado: String
 )
 
 @Entity(primaryKeys = ["cliente"])
@@ -243,7 +243,7 @@ data class TBaja(
     val precision: Double,
     val fecha: String,
     val anulado: Int,
-    val estado: String
+    var estado: String
 )
 
 @Entity(primaryKeys = ["idaux"])
@@ -254,7 +254,7 @@ data class TAlta(
     val longitud: Double,
     val latitud: Double,
     val precision: Double,
-    val estado: String,
+    var estado: String,
     val datos: Int
 )
 
@@ -282,7 +282,7 @@ data class TADatos(
     val giro: String,
     val ruta: String,
     val secuencia: String,
-    val estado: String
+    var estado: String
 )
 
 @Entity(primaryKeys = ["clicodigo", "creado"])
@@ -346,7 +346,7 @@ fun BajaSupervisor.asTBajaSuper(): TBajaSuper =
     )
 
 @Entity(primaryKeys = ["cliente","fecha"])
-data class TBajaEstado(
+data class TBEstado(
     var empleado: Int,
     var cliente: Int,
     var procede: Int,

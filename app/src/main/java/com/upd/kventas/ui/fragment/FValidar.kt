@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.R
-import com.upd.kventas.data.model.TBajaEstado
+import com.upd.kventas.data.model.TBEstado
 import com.upd.kventas.data.model.TBajaSuper
 import com.upd.kventas.databinding.FragmentFValidarBinding
 import com.upd.kventas.service.ServicePosicion
@@ -73,7 +73,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             sup.getMapAsync(this)
         }
 
-        viewmodel.bss.observe(viewLifecycleOwner) {
+        viewmodel.bajasuperspecif.observe(viewLifecycleOwner) {
             bs = it
             setupUI(bs)
         }
@@ -166,7 +166,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
         val observacion = bind.edtComentario.text.toString().trim()
         val fechaconf = viewmodel.fecha(4)
-        val item = TBajaEstado(
+        val item = TBEstado(
             CONF.codigo,
             bs.clicodigo,
             procede,

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0586fd85dbab94789dfbb663a38cc7af",
+    "identityHash": "d1dcad45a47ac85fbe924ba9b1240ea8",
     "entities": [
       {
         "tableName": "TConfiguracion",
@@ -969,7 +969,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "TBajaEstado",
+        "tableName": "TBEstado",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`empleado` INTEGER NOT NULL, `cliente` INTEGER NOT NULL, `procede` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `precision` REAL NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `fechaconf` TEXT NOT NULL, `observacion` TEXT NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `fecha`))",
         "fields": [
           {
@@ -1047,7 +1047,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0586fd85dbab94789dfbb663a38cc7af')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1dcad45a47ac85fbe924ba9b1240ea8')"
     ]
   }
 }

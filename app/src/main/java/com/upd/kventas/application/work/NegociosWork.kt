@@ -33,7 +33,7 @@ class NegociosWork @WorkerInject constructor(
                     repository.getWebNegocios(req).collect { response ->
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
-                            MSG_NEGOCIO = "Respuesta vacia"
+                            MSG_NEGOCIO = "Respuesta: ${response.message}"
                             Result.failure()
                         } else {
                             repository.saveNegocio(rsp)

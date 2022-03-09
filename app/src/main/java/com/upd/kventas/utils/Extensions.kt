@@ -1,5 +1,6 @@
 package com.upd.kventas.utils
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
@@ -71,6 +72,11 @@ fun DialogFragment.setResume(short: Boolean = true) {
 
 fun Fragment.snack(text: String) {
     val view = this.requireActivity().window.decorView.findViewById<View>(android.R.id.content)
+    Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
+}
+
+fun Activity.snack(text: String) {
+    val view = this.window.decorView.findViewById<View>(android.R.id.content)
     Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
 }
 

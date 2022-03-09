@@ -270,10 +270,10 @@
             android:orientation="vertical">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_otros"
+                android:id="@+id/fab_servidor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/otros"
+                android:src="@drawable/servidor"
                 app:useCompatPadding="true"
                 app:elevation="1dp"/>
 
@@ -283,7 +283,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:textColor="@color/lightgray"
-                android:text="OTROS"/>
+                android:text="SERVIDOR"/>
 
         </LinearLayout>
 

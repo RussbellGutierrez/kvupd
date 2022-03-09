@@ -4,8 +4,12 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.upd.kventas.data.model.*
 import com.upd.kventas.data.model.QueryConstant.GET_ALTADATOS
+import com.upd.kventas.data.model.QueryConstant.GET_ALTADATO_SERVER
 import com.upd.kventas.data.model.QueryConstant.GET_ALTAS
+import com.upd.kventas.data.model.QueryConstant.GET_ALTA_SERVER
 import com.upd.kventas.data.model.QueryConstant.GET_BAJA
+import com.upd.kventas.data.model.QueryConstant.GET_BAJAESTADO_SERVER
+import com.upd.kventas.data.model.QueryConstant.GET_BAJA_SERVER
 import com.upd.kventas.data.model.QueryConstant.GET_BAJA_SPECIFIC
 import com.upd.kventas.data.model.QueryConstant.GET_BAJA_SUPER
 import com.upd.kventas.data.model.QueryConstant.GET_CLIENTES
@@ -21,7 +25,8 @@ import com.upd.kventas.data.model.QueryConstant.GET_MARKERS
 import com.upd.kventas.data.model.QueryConstant.GET_NEGOCIOS
 import com.upd.kventas.data.model.QueryConstant.GET_ROW_BAJAS
 import com.upd.kventas.data.model.QueryConstant.GET_ROW_CLIENTES
-import com.upd.kventas.data.model.QueryConstant.GET_VISITA
+import com.upd.kventas.data.model.QueryConstant.GET_SEGUIMIENTO_SERVER
+import com.upd.kventas.data.model.QueryConstant.GET_VISITA_SERVER
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -91,6 +96,21 @@ interface QueryDAO {
     suspend fun getBajaSuper(codigo: String, fecha: String): TBajaSuper
 
     /*  Dao send data to server    */
-    @Query(GET_VISITA)
-    suspend fun visitaServer(): List<TVisita>
+    @Query(GET_SEGUIMIENTO_SERVER)
+    suspend fun seguimientoServer(estado: String): List<TSeguimiento>
+
+    @Query(GET_VISITA_SERVER)
+    suspend fun visitaServer(estado: String): List<TVisita>
+
+    @Query(GET_ALTA_SERVER)
+    suspend fun altaServer(estado: String): List<TAlta>
+
+    @Query(GET_ALTADATO_SERVER)
+    suspend fun altadatosServer(estado: String): List<TADatos>
+
+    @Query(GET_BAJA_SERVER)
+    suspend fun bajaServer(estado: String): List<TBaja>
+
+    @Query(GET_BAJAESTADO_SERVER)
+    suspend fun bajaestadoServer(estado: String): List<TBEstado>
 }

@@ -8,7 +8,7 @@ import com.upd.kventas.data.model.*
     version = 1,
     entities = [TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class, TNegocio::class, TEncuesta::class,
         TEstado::class, TSeguimiento::class, TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class,
-        TBajaEstado::class],
+        TBEstado::class],
     exportSchema = true
 )
 

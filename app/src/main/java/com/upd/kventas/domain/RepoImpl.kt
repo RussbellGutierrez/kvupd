@@ -197,8 +197,32 @@ class RepoImpl @Inject constructor(
         localDataSource.saveBajaSuper(baja)
     }
 
-    override suspend fun saveEstadoBaja(estado: TBajaEstado) {
+    override suspend fun saveEstadoBaja(estado: TBEstado) {
         localDataSource.saveEstadoBaja(estado)
+    }
+
+    override suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
+        return localDataSource.getServerSeguimiento(estado)
+    }
+
+    override suspend fun getServerVisita(estado: String): List<TVisita> {
+        return localDataSource.getServerVisita(estado)
+    }
+
+    override suspend fun getServerAlta(estado: String): List<TAlta> {
+        return localDataSource.getServerAlta(estado)
+    }
+
+    override suspend fun getServerAltadatos(estado: String): List<TADatos> {
+        return localDataSource.getServerAltadatos(estado)
+    }
+
+    override suspend fun getServerBaja(estado: String): List<TBaja> {
+        return localDataSource.getServerBaja(estado)
+    }
+
+    override suspend fun getServerBajaestado(estado: String): List<TBEstado> {
+        return localDataSource.getServerBajaestado(estado)
     }
 
     override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
@@ -428,6 +452,42 @@ class RepoImpl @Inject constructor(
     override suspend fun getWebBajaSupervisor(body: RequestBody): Flow<Network<JBajaSupervisor>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebBajaSupervisor(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebSeguimiento(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerSeguimiento(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebVisita(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerVisita(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebAlta(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerAlta(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebAltaDatos(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerAltaDatos(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebBaja(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerBaja(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerBajaEstados(body) })
         }.flowOn(Dispatchers.IO)
     }
 }

@@ -39,8 +39,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _altamark: MutableLiveData<Event<DataCliente>> = MutableLiveData()
     val altamark: LiveData<Event<DataCliente>> = _altamark
 
-    private val _bss: MutableLiveData<TBajaSuper> = MutableLiveData()
-    val bss: LiveData<TBajaSuper> = _bss
+    private val _bajasuperspecif: MutableLiveData<TBajaSuper> = MutableLiveData()
+    val bajasuperspecif: LiveData<TBajaSuper> = _bajasuperspecif
 
     private val _register: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
     val register: LiveData<Event<Network<JObj>>> = _register
@@ -50,6 +50,9 @@ class AppViewModel @ViewModelInject constructor(
 
     private val _cliente: MutableLiveData<Event<Network<JCliente>>> = MutableLiveData()
     val cliente: LiveData<Event<Network<JCliente>>> = _cliente
+
+    private val _encuesta: MutableLiveData<Event<Network<JEncuesta>>> = MutableLiveData()
+    val encuesta: LiveData<Event<Network<JEncuesta>>> = _encuesta
 
     private val _preventa: MutableLiveData<Event<Network<JVolumen>>> = MutableLiveData()
     val preventa: LiveData<Event<Network<JVolumen>>> = _preventa
@@ -123,6 +126,101 @@ class AppViewModel @ViewModelInject constructor(
 
     fun rowBajaObs() = repository.getFlowRowBaja().asLiveData()
 
+    private val _servseguimiento: MutableLiveData<Event<List<TSeguimiento>>> = MutableLiveData()
+    val servseguimiento: LiveData<Event<List<TSeguimiento>>> = _servseguimiento
+
+    private val _servvisita: MutableLiveData<Event<List<TVisita>>> = MutableLiveData()
+    val servvisita: LiveData<Event<List<TVisita>>> = _servvisita
+
+    private val _servalta: MutableLiveData<Event<List<TAlta>>> = MutableLiveData()
+    val servalta: LiveData<Event<List<TAlta>>> = _servalta
+
+    private val _servaltadatos: MutableLiveData<Event<List<TADatos>>> = MutableLiveData()
+    val servaltadatos: LiveData<Event<List<TADatos>>> = _servaltadatos
+
+    private val _servbaja: MutableLiveData<Event<List<TBaja>>> = MutableLiveData()
+    val servbaja: LiveData<Event<List<TBaja>>> = _servbaja
+
+    private val _servbajaestado: MutableLiveData<Event<List<TBEstado>>> = MutableLiveData()
+    val servbajaestado: LiveData<Event<List<TBEstado>>> = _servbajaestado
+
+    private val _respseguimiento: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respseguimiento: LiveData<Event<Network<JObj>>> = _respseguimiento
+
+    private val _respvisita: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respvisita: LiveData<Event<Network<JObj>>> = _respvisita
+
+    private val _respalta: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respalta: LiveData<Event<Network<JObj>>> = _respalta
+
+    private val _respaltadatos: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respaltadatos: LiveData<Event<Network<JObj>>> = _respaltadatos
+
+    private val _respbaja: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respbaja: LiveData<Event<Network<JObj>>> = _respbaja
+
+    private val _respbajaestado: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respbajaestado: LiveData<Event<Network<JObj>>> = _respbajaestado
+
+    fun fetchServerAll(estado: String) {
+        viewModelScope.launch {
+            repository.getServerSeguimiento(estado).let {
+                _servseguimiento.value = Event(it)
+            }
+            repository.getServerVisita(estado).let {
+                _servvisita.value = Event(it)
+            }
+            repository.getServerAlta(estado).let {
+                _servalta.value = Event(it)
+            }
+            repository.getServerAltadatos(estado).let {
+                _servaltadatos.value = Event(it)
+            }
+            repository.getServerBaja(estado).let {
+                _servbaja.value = Event(it)
+            }
+            repository.getServerBajaestado(estado).let {
+                _servbajaestado.value = Event(it)
+            }
+        }
+    }
+
+    fun webSeguimiento(body: RequestBody) = viewModelScope.launch {
+        repository.setWebSeguimiento(body).collect {
+            _respseguimiento.value = Event(it)
+        }
+    }
+
+    fun webVisita(body: RequestBody) = viewModelScope.launch {
+        repository.setWebVisita(body).collect {
+            _respvisita.value = Event(it)
+        }
+    }
+
+    fun webAlta(body: RequestBody) = viewModelScope.launch {
+        repository.setWebAlta(body).collect {
+            _respalta.value = Event(it)
+        }
+    }
+
+    fun webAltaDatos(body: RequestBody) = viewModelScope.launch {
+        repository.setWebAltaDatos(body).collect {
+            _respaltadatos.value = Event(it)
+        }
+    }
+
+    fun webBaja(body: RequestBody) = viewModelScope.launch {
+        repository.setWebBaja(body).collect {
+            _respbaja.value = Event(it)
+        }
+    }
+
+    fun webBajaEstado(body: RequestBody) = viewModelScope.launch {
+        repository.setWebBajaEstados(body).collect {
+            _respbajaestado.value = Event(it)
+        }
+    }
+
     fun fetchRegisterDevice(body: RequestBody) = viewModelScope.launch {
         repository.registerWebDevice(body).collect {
             _register.value = Event(it)
@@ -139,6 +237,13 @@ class AppViewModel @ViewModelInject constructor(
         repository.getWebClientes(body).collect { values ->
             values.data?.jobl?.let { repository.saveClientes(it) }
             _cliente.value = Event(values)
+        }
+    }
+
+    fun fetchEncuesta(body: RequestBody) = viewModelScope.launch {
+        repository.getWebEncuesta(body).collect { values ->
+            values.data?.jobl?.let { repository.saveEncuesta(it) }
+            _encuesta.value = Event(values)
         }
     }
 
@@ -301,7 +406,7 @@ class AppViewModel @ViewModelInject constructor(
     fun getBajaSuperSpecific(codigo: String, fecha: String) {
         viewModelScope.launch {
             val result = repository.getBajaSuperSpecific(codigo, fecha)
-            _bss.value = result
+            _bajasuperspecif.value = result
         }
     }
 
@@ -320,7 +425,7 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     //  change to suspend
-    fun workDay(E: () -> Unit, S: () -> Unit) {
+    /*fun workDay(E: () -> Unit, S: () -> Unit) {
         viewModelScope.launch {
             repository.workDay()?.let {
                 if (it) {
@@ -334,7 +439,7 @@ class AppViewModel @ViewModelInject constructor(
                 }
             }
         }
-    }
+    }*/
 
     fun getIMEI(add: Boolean = false) =
         functions.parseQRtoIMEI(add)
@@ -402,9 +507,45 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    fun saveEstadoBaja(dato: TBajaEstado) {
+    fun saveEstadoBaja(dato: TBEstado) {
         viewModelScope.launch {
             repository.saveEstadoBaja(dato)
+        }
+    }
+
+    fun updSeguimiento(it: TSeguimiento) {
+        viewModelScope.launch {
+            repository.saveSeguimiento(it)
+        }
+    }
+
+    fun updVisita(it: TVisita) {
+        viewModelScope.launch {
+            repository.saveVisita(it)
+        }
+    }
+
+    fun updAlta(it: TAlta) {
+        viewModelScope.launch {
+            repository.saveAlta(it)
+        }
+    }
+
+    fun updAltaDatos(it: TADatos) {
+        viewModelScope.launch {
+            repository.saveAltaDatos(it)
+        }
+    }
+
+    fun updBaja(it: TBaja) {
+        viewModelScope.launch {
+            repository.saveBaja(it)
+        }
+    }
+
+    fun updBajaEstado(it: TBEstado) {
+        viewModelScope.launch {
+            repository.saveEstadoBaja(it)
         }
     }
 }

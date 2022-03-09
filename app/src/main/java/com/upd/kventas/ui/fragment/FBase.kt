@@ -12,13 +12,12 @@ import com.upd.kventas.BuildConfig
 import com.upd.kventas.R
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.databinding.FragmentFBaseBinding
+import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
-import com.upd.kventas.utils.consume
-import com.upd.kventas.utils.isGPSDisabled
-import com.upd.kventas.utils.setUI
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @AndroidEntryPoint
 class FBase : Fragment() {
@@ -59,14 +58,25 @@ class FBase : Fragment() {
         bind.fabReporte.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FReporte) }
         bind.fabAltas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FAlta) }
         bind.fabBajas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FBaja) }
-        bind.fabOtros.setOnClickListener {  }
+        bind.fabServidor.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FServidor) }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewmodel.setupApp { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
         }
         viewmodel.configObserver().observe(viewLifecycleOwner) { result ->
-            if (result.isNotEmpty()) {
+            if (!result.isNullOrEmpty()) {
                 setParams(result[0])
+            }
+        }
+        viewmodel.encuesta.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is Network.Success -> showDialog(
+                        "Correcto",
+                        "Encuesta descargada correctamente"
+                    ) {}
+                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
+                }
             }
         }
     }
@@ -78,6 +88,7 @@ class FBase : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_DLogin) }
+        R.id.encuesta -> consume { launchEncuesta() }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> super.onOptionsItemSelected(item)
     }
@@ -107,5 +118,13 @@ class FBase : Fragment() {
         }else {
             "${item.nombre} - ${item.codigo}"
         }
+    }
+
+    private fun launchEncuesta() {
+        val p = JSONObject()
+        p.put("empleado", CONF.codigo)
+        p.put("empresa", CONF.empresa)
+        progress("Descargando encuesta")
+        viewmodel.fetchEncuesta(p.toReqBody())
     }
 }

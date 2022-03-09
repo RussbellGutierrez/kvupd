@@ -1,6 +1,7 @@
 package com.upd.kventas.application.work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.*
@@ -36,7 +37,7 @@ class UserWork @WorkerInject constructor(
                         repository.getWebClientes(req).collect { response ->
                             val rsp = response.data?.jobl
                             rst = if (rsp.isNullOrEmpty()) {
-                                MSG_USER = "Respuesta vacia"
+                                MSG_USER = "Respuesta: ${response.message}"
                                 Result.failure()
                             } else {
                                 repository.saveClientes(rsp)
@@ -57,7 +58,7 @@ class UserWork @WorkerInject constructor(
                         repository.getWebEmpleados(req).collect { response ->
                             val rsp = response.data?.jobl
                             rst = if (rsp.isNullOrEmpty()) {
-                                MSG_USER = "Respuesta vacia"
+                                MSG_USER = "Respuesta: ${response.message}"
                                 Result.failure()
                             } else {
                                 repository.saveEmpleados(rsp)
@@ -81,7 +82,8 @@ class UserWork @WorkerInject constructor(
         val json = JSONObject()
         json.put("empleado", conf.codigo)
         json.put("empresa", conf.empresa)
-        json.put("fecha", functions.dateToday(6))
+        if (conf.tipo == "V")
+            json.put("fecha", functions.dateToday(6))
         return json.toReqBody()
     }
 }

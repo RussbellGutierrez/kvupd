@@ -3,15 +3,21 @@ package com.upd.kventas.domain
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.work.*
+import android.util.Log
+import androidx.work.BackoffPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.vision.Frame
+import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
@@ -33,7 +39,6 @@ import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okio.FileNotFoundException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -64,7 +69,7 @@ class FunImpl @Inject constructor(
     override fun saveQR(bm: Bitmap) {
         try {
             val bytes = ByteArrayOutputStream()
-            bm.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+            bm.compress(Bitmap.CompressFormat.JPEG, 50, bytes)
             val rootPath = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/"
             val root = File(rootPath)
             if (!root.exists()) {
@@ -91,13 +96,13 @@ class FunImpl @Inject constructor(
     override fun parseQRtoIMEI(add: Boolean): String {
         val bitmap = getQR()
         val campo = StringBuilder()
-        val qrRecognizer = BarcodeDetector.Builder(ctx).build()
-        if (bitmap != null) {
-            val frame = Frame.Builder().setBitmap(bitmap).build()
-            val result = qrRecognizer.detect(frame)
-            for (i in 0 until result.size()) {
-                campo.append(result.valueAt(i).rawValue)
-            }
+        val qrRecognizer = BarcodeDetector.Builder(ctx)
+            .setBarcodeFormats(Barcode.QR_CODE)
+            .build()
+        val frame = Frame.Builder().setBitmap(bitmap).build()
+        val result = qrRecognizer.detect(frame)
+        for (i in 0 until result.size()) {
+            campo.append(result.valueAt(i).rawValue)
         }
         return if (add) {
             "$campo-V"
@@ -106,25 +111,9 @@ class FunImpl @Inject constructor(
         }
     }
 
-    override fun getQR(): Bitmap? {
-        var rsl: Bitmap? = null
-        try {
-            val path = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/qrcode.png"
-            val file = File(path)
-            val uri = Uri.fromFile(file)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val source = ImageDecoder.createSource(ctx.contentResolver, uri)
-                val listener = ImageDecoder.OnHeaderDecodedListener { imageDecoder, _, _ ->
-                    imageDecoder.isMutableRequired = true
-                }
-                rsl = ImageDecoder.decodeBitmap(source, listener)
-            } else {
-                rsl = MediaStore.Images.Media.getBitmap(ctx.contentResolver, uri)
-            }
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
-        return rsl
+    override fun getQR(): Bitmap {
+        val path = "${ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)}/qrcode.png"
+        return BitmapFactory.decodeFile(path)
     }
 
     override fun dateToday(formato: Int): String {

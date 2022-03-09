@@ -59,7 +59,7 @@ interface AppDAO {
     suspend fun insertBajaSupervisor(baja: List<TBajaSuper>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEstadoBaja(estado: TBajaEstado)
+    suspend fun insertEstadoBaja(estado: TBEstado)
 
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)

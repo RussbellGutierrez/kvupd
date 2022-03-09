@@ -143,7 +143,7 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertBajaSupervisor(baja.map { it.asTBajaSuper() })
     }
 
-    suspend fun saveEstadoBaja(estado: TBajaEstado) {
+    suspend fun saveEstadoBaja(estado: TBEstado) {
         dao.insertEstadoBaja(estado)
     }
 
@@ -212,5 +212,29 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteEstadoBaja() {
         dao.deleteEstadoBaja()
+    }
+
+    suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
+        return qdao.seguimientoServer(estado)
+    }
+
+    suspend fun getServerVisita(estado: String): List<TVisita> {
+        return qdao.visitaServer(estado)
+    }
+
+    suspend fun getServerAlta(estado: String): List<TAlta> {
+        return qdao.altaServer(estado)
+    }
+
+    suspend fun getServerAltadatos(estado: String): List<TADatos> {
+        return qdao.altadatosServer(estado)
+    }
+
+    suspend fun getServerBaja(estado: String): List<TBaja> {
+        return qdao.bajaServer(estado)
+    }
+
+    suspend fun getServerBajaestado(estado: String): List<TBEstado> {
+        return qdao.bajaestadoServer(estado)
     }
 }

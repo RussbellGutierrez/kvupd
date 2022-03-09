@@ -47,7 +47,14 @@ interface Repository {
     suspend fun saveAlta(alta: TAlta)
     suspend fun saveAltaDatos(da: TADatos)
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
-    suspend fun saveEstadoBaja(estado: TBajaEstado)
+    suspend fun saveEstadoBaja(estado: TBEstado)
+
+    suspend fun getServerSeguimiento(estado: String): List<TSeguimiento>
+    suspend fun getServerVisita(estado: String): List<TVisita>
+    suspend fun getServerAlta(estado: String): List<TAlta>
+    suspend fun getServerAltadatos(estado: String): List<TADatos>
+    suspend fun getServerBaja(estado: String): List<TBaja>
+    suspend fun getServerBajaestado(estado: String): List<TBEstado>
 
     suspend fun updateLocationAlta(locationAlta: LocationAlta)
     suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
@@ -99,4 +106,12 @@ interface Repository {
     suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>>
     suspend fun getWebBajaVendedor(body: RequestBody): Flow<Network<JBajaVendedor>>
     suspend fun getWebBajaSupervisor(body: RequestBody): Flow<Network<JBajaSupervisor>>
+
+    //  Send Server
+    suspend fun setWebSeguimiento(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebVisita(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebAlta(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebAltaDatos(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebBaja(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>>
 }

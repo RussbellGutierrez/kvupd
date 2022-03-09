@@ -5,7 +5,7 @@
     <item
         android:id="@+id/descargar"
         android:title="Descargar clientes"
-        android:icon="@drawable/persona"
+        android:icon="@drawable/descargar"
         app:showAsAction="ifRoom"/>
 
     <item

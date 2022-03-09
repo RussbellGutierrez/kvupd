@@ -114,4 +114,28 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
     suspend fun getWebBajaSupervisor(body: RequestBody): Response<JBajaSupervisor> {
         return web.getApiBajaSupervisor(body)
     }
+
+    suspend fun setServerSeguimiento(body: RequestBody): Response<JObj> {
+        return  web.setApiSeguimiento(body)
+    }
+
+    suspend fun setServerVisita(body: RequestBody): Response<JObj> {
+        return web.setApiVisita(body)
+    }
+
+    suspend fun setServerAlta(body: RequestBody): Response<JObj> {
+        return web.setApiAlta(body)
+    }
+
+    suspend fun setServerAltaDatos(body: RequestBody): Response<JObj> {
+        return web.setApiAltadatos(body)
+    }
+
+    suspend fun setServerBaja(body: RequestBody): Response<JObj> {
+        return web.setApiBaja(body)
+    }
+
+    suspend fun setServerBajaEstados(body: RequestBody): Response<JObj> {
+        return web.setApiBajaestado(body)
+    }
 }

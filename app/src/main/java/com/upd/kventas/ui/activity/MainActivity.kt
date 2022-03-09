@@ -11,8 +11,11 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.upd.kventas.databinding.ActivityMainBinding
 import com.upd.kventas.service.ServiceSetup
+import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.Constant.REQ_BACK_CODE
 import com.upd.kventas.utils.Constant.REQ_CODE
 import com.upd.kventas.utils.Permission
+import com.upd.kventas.utils.snack
 import com.upd.kventas.utils.toast
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +50,8 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode) {
-            REQ_CODE -> { permission.reqBackPermission() }
+            REQ_CODE -> permission.reqBackPermission()
+            REQ_BACK_CODE -> snack("GPS segundo plano")
         }
     }
 
@@ -77,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun checkApp() {
+    /*private fun checkApp() {
         viewModel.workDay({
             toast("Bienvenido")
         },{
@@ -85,5 +89,5 @@ class MainActivity : AppCompatActivity() {
             stopService(Intent(this,ServiceSetup::class.java))//Momentaneo
             finishAndRemoveTask()
         })
-    }
+    }*/
 }

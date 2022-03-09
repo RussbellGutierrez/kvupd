@@ -8,7 +8,6 @@ object QueryConstant {
     const val GET_DISTRITOS = "SELECT * FROM TDistrito"
     const val GET_NEGOCIOS = "SELECT * FROM TNegocio"
     const val GET_ENCUESTAS = "SELECT * FROM TEncuesta"
-    const val GET_VISITA = "SELECT * FROM TVisita ORDER BY fecha ASC"
     const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
     const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
@@ -27,7 +26,20 @@ object QueryConstant {
     const val DEL_ALTA = "DELETE FROM TAlta"
     const val DEL_ALTADATOS = "DELETE FROM TADatos"
     const val DEL_BAJASUPER = "DELETE FROM TBajaSuper"
-    const val DEL_ESTADOBAJA = "DELETE FROM TBajaEstado"
+    const val DEL_ESTADOBAJA = "DELETE FROM TBEstado"
+
+    const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
+    const val GET_VISITA_SERVER = "SELECT * FROM TVisita " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
+    const val GET_ALTA_SERVER = "SELECT * FROM TAlta " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
+    const val GET_ALTADATO_SERVER = "SELECT * FROM TADatos " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo')"
+    const val GET_BAJA_SERVER = "SELECT * FROM TBaja " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
+    const val GET_BAJAESTADO_SERVER = "SELECT * FROM TBEstado " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fechaconf ASC"
 
     const val GET_ROW_CLIENTES = "" +
             "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, c.secuencia, c.ruta " +
@@ -71,7 +83,7 @@ object QueryConstant {
     const val GET_ROW_BAJAS = "" +
             "SELECT b.clicodigo as id, b.clinombre as nombre, b.direccion, b.creado as fecha, b.dia, b.descripcion as motivo, b.negocio, IFNULL(e.procede,2) as procede " +
             "FROM TBajaSuper b " +
-            "LEFT JOIN TBajaEstado e on b.clicodigo=e.cliente and b.creado=e.fecha " +
+            "LEFT JOIN TBEstado e on b.clicodigo=e.cliente and b.creado=e.fecha " +
             "WHERE e.procede ISNULL " +
             "ORDER BY creado ASC "
 }

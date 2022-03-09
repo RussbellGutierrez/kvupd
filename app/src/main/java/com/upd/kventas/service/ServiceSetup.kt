@@ -23,6 +23,7 @@ import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.FIRST_LOCATION
+import com.upd.kventas.utils.Constant.IMEI
 import com.upd.kventas.utils.Constant.SETUP_NOTIF
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
@@ -86,6 +87,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
             this.registerReceiver(null, ifilter)
         }
 
+        IMEI = functions.parseQRtoIMEI(true)
         notificationLaunch()
 
         workManager.getWorkInfosByTagLiveData(W_CONFIG).observe(this, workInfoObserver())
@@ -96,7 +98,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
         workManager.getWorkInfosByTagLiveData(W_ENCUESTA).observe(this, workInfoObserver())
 
         repository.getFlowConfig().asLiveData().observe(this) { result ->
-            if (result.isNotEmpty()) {
+            if (!result.isNullOrEmpty()) {
                 startLocation()
                 helper.userNotifLaunch()
                 helper.distritoNotifLaunch()

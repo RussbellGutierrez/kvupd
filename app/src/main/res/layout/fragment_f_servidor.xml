@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="20dp"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.FServidor">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@color/purple_500"
+                android:text="Subiendo informacion almacenada en el celular"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="3dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/lightgreen"
+                android:layout_marginVertical="3dp"
+                android:text="Registros almacenados:"/>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="3dp"
+                app:flexWrap="wrap">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/minicard_seguimiento"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_seguimiento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Posiciones GPS: 100000"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_visita"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Visita: 1"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_alta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Detalle altas: 99"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_altadato"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Alta datos: 1"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_baja"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Baja: 1"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/minicard_bajaestado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_flexBasisPercent="50%"
+                    app:cardBackgroundColor="@color/primaryColor"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true">
+
+                    <TextView
+                        android:id="@+id/txt_bajaestado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
+                        android:layout_marginHorizontal="3dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Baja estado: 1"/>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="3dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="3dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_seguimiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO INFORMACION DE GPS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO INFORMACION DE VISITAS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO ALTAS GENERADAS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO DETALLE DE LAS ALTAS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO INFORMACION DE BAJAS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_bajaestado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:gravity="center"
+                            android:text="SUBIENDO REVISIONES DE BAJAS AL SERVIDOR"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            style="?android:attr/progressBarStyleHorizontal"/>
+
+                        <TextView
+                            android:id="@+id/txt_comp6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/lightcrimson"
+                            android:gravity="center"
+                            android:text="COMPLETO"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

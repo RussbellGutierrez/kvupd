@@ -33,7 +33,7 @@ class DistritosWork @WorkerInject constructor(
                     repository.getWebDistritos(req).collect { response ->
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
-                            MSG_DISTRITO = "Respuesta vacia"
+                            MSG_DISTRITO = "Respuesta: ${response.message}"
                             Result.failure()
                         } else {
                             repository.saveDistrito(rsp)

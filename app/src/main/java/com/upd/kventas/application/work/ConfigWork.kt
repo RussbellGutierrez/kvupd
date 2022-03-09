@@ -15,6 +15,7 @@ import com.upd.kventas.domain.Repository
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.CONFIG_CHANNEL
 import com.upd.kventas.utils.Constant.CONFIG_NOTIF
+import com.upd.kventas.utils.Constant.IMEI
 import com.upd.kventas.utils.Constant.MSG_CONFIG
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ class ConfigWork @WorkerInject constructor(
                     repository.getWebConfiguracion(getRequestBody()).collect { response ->
                         val config = response.data?.jobl
                         rst = if (config.isNullOrEmpty()) {
-                            MSG_CONFIG = "Respuesta vacia"
+                            MSG_CONFIG = "Respuesta: ${response.message}"
                             Result.failure()
                         } else {
                             CONF = config[0]
@@ -63,10 +64,9 @@ class ConfigWork @WorkerInject constructor(
         }
 
     private fun getRequestBody(): RequestBody {
-        val imei = functions.parseQRtoIMEI(true)
         val app = functions.appSO()
         val json = JSONObject()
-        json.put("imei", imei)
+        json.put("imei", IMEI)
         json.put("version", app)
         json.put("fecha", functions.dateToday(6))
         return json.toReqBody()

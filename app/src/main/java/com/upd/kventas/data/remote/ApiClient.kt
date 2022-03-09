@@ -1,6 +1,11 @@
 package com.upd.kventas.data.remote
 
+import androidx.room.Query
 import com.upd.kventas.data.model.*
+import com.upd.kventas.utils.Constant.API_ALTA
+import com.upd.kventas.utils.Constant.API_ALTADETALLE
+import com.upd.kventas.utils.Constant.API_BAJA
+import com.upd.kventas.utils.Constant.API_BAJACONFIR
 import com.upd.kventas.utils.Constant.API_BAJAESTLIS
 import com.upd.kventas.utils.Constant.API_BAJALIS
 import com.upd.kventas.utils.Constant.API_CARTERA
@@ -20,6 +25,7 @@ import com.upd.kventas.utils.Constant.API_PREVENTA
 import com.upd.kventas.utils.Constant.API_REGISTRO
 import com.upd.kventas.utils.Constant.API_REPOEMP
 import com.upd.kventas.utils.Constant.API_REPOGEN
+import com.upd.kventas.utils.Constant.API_SEGUIMIENTO
 import com.upd.kventas.utils.Constant.API_SOLES
 import com.upd.kventas.utils.Constant.API_SOLESGEN
 import com.upd.kventas.utils.Constant.API_UMES
@@ -27,6 +33,7 @@ import com.upd.kventas.utils.Constant.API_UMESDET
 import com.upd.kventas.utils.Constant.API_UMESGEN
 import com.upd.kventas.utils.Constant.API_VISIC
 import com.upd.kventas.utils.Constant.API_VISICSUPER
+import com.upd.kventas.utils.Constant.API_VISITA
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -117,4 +124,23 @@ interface ApiClient {
 
     @POST(API_BAJALIS)
     suspend fun getApiBajaSupervisor(@Body body: RequestBody): Response<JBajaSupervisor>//@param empleado, empresa
+
+    /*  Send Server */
+    @POST(API_SEGUIMIENTO)
+    suspend fun setApiSeguimiento(@Body body: RequestBody): Response<JObj>//@param empresa, fecha, empleado, longitud, latitud, precision, imei, bateria, sucursal, esquema
+
+    @POST(API_VISITA)
+    suspend fun setApiVisita(@Body body: RequestBody): Response<JObj>//@param empresa, cliente, fecha, empleado, longitud, latitud, motivo, precision, sucursal, esquema
+
+    @POST(API_ALTA)
+    suspend fun setApiAlta(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, fecha, id, longitud, latitud, precision, sucursal, esquema
+
+    @POST(API_ALTADETALLE)
+    suspend fun setApiAltadatos(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, id, appaterno, apmaterno, nombre, razon, tipo, tipodoc, giro, movil1, movil2, email, calle, urbanizacion, altura, distrito, ruta, secuencia, sucursal, esquema
+
+    @POST(API_BAJA)
+    suspend fun setApiBaja(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, fecha, cliente, motivo, observacion, xcoord, ycoord, precision, anulado
+
+    @POST(API_BAJACONFIR)
+    suspend fun setApiBajaestado(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, fecha, cliente, cfecha, observacion, precision, xcoord, ycoord, confirmar
 }

@@ -66,6 +66,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FBase_to_FServidor"
+            app:destination="@id/FServidor"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -394,4 +401,9 @@
             app:argType="string"
             app:nullable="true"/>
     </fragment>
+    <fragment
+        android:id="@+id/FServidor"
+        android:name="com.upd.kventas.ui.fragment.FServidor"
+        android:label="Servidor"
+        tools:layout="@layout/fragment_f_servidor" />
 </navigation>
