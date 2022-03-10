@@ -25,6 +25,7 @@ class FBase : Fragment() {
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFBaseBinding? = null
     private val bind get() = _bind!!
+    private var opt = 0
     private val _tag by lazy { FBase::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -48,24 +49,59 @@ class FBase : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bind.fabVendedor.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FRastreo) }
-        bind.fabCliente.setOnClickListener {
-            if (CONF.tipo == "V")
-                findNavController().navigate(R.id.action_FBase_to_FCliente)
-            else
-                findNavController().navigate(R.id.action_FBase_to_FVendedor)
+        bind.fabVendedor.setOnClickListener {
+            opt = 1
+            viewmodel.dataDowloaded()
         }
-        bind.fabReporte.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FReporte) }
-        bind.fabAltas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FAlta) }
-        bind.fabBajas.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FBaja) }
-        bind.fabServidor.setOnClickListener { findNavController().navigate(R.id.action_FBase_to_FServidor) }
+        bind.fabCliente.setOnClickListener {
+            opt = 2
+            viewmodel.dataDowloaded()
+        }
+        bind.fabReporte.setOnClickListener {
+            opt = 3
+            viewmodel.dataDowloaded()
+        }
+        bind.fabAltas.setOnClickListener {
+            opt = 4
+            viewmodel.dataDowloaded()
+        }
+        bind.fabBajas.setOnClickListener {
+            opt = 5
+            viewmodel.dataDowloaded()
+        }
+        bind.fabServidor.setOnClickListener {
+            opt = 6
+            viewmodel.dataDowloaded()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewmodel.setupApp { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
         }
-        viewmodel.configObserver().observe(viewLifecycleOwner) { result ->
-            if (!result.isNullOrEmpty()) {
-                setParams(result[0])
+        viewmodel.inicio.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                if (y) {
+                    when (opt) {
+                        1 -> findNavController().navigate(R.id.action_FBase_to_FRastreo)
+                        2 -> {
+                            if (CONF.tipo == "V") {
+                                findNavController().navigate(R.id.action_FBase_to_FCliente)
+                            } else {
+                                findNavController().navigate(R.id.action_FBase_to_FVendedor)
+                            }
+                        }
+                        3 -> findNavController().navigate(R.id.action_FBase_to_FReporte)
+                        4 -> findNavController().navigate(R.id.action_FBase_to_FAlta)
+                        5 -> findNavController().navigate(R.id.action_FBase_to_FBaja)
+                        6 -> findNavController().navigate(R.id.action_FBase_to_FServidor)
+                    }
+                } else {
+                    snack("Los datos no se han descargado")
+                }
+            }
+        }
+        viewmodel.configObserver().observe(viewLifecycleOwner) {
+            if (!it.isNullOrEmpty()) {
+                setParams(it[0])
             }
         }
         viewmodel.encuesta.observe(viewLifecycleOwner) {
@@ -95,13 +131,14 @@ class FBase : Fragment() {
 
     private fun setParams(config: Config) {
         if (config.tipo != "S") {
-            bind.lnrVendedor.setUI("v",false)
+            bind.lnrVendedor.setUI("v", false)
         }
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
         val version = "ver. ${BuildConfig.VERSION_NAME}"
         val usuario = getUsuario(config)
         val gps = if (isGPSDisabled()) Color.rgb(221, 150, 6) else Color.rgb(4, 106, 97)
-        val seguimiento = if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
+        val seguimiento =
+            if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
         bind.imgEmpresa.setImageResource(img)
         bind.txtUsuario.text = usuario
         bind.txtVersion.text = version
@@ -111,11 +148,11 @@ class FBase : Fragment() {
 
     private fun getUsuario(item: Config): String {
         return if (item.nombre == "") {
-            when(item.tipo) {
+            when (item.tipo) {
                 "S" -> "Supervisor de ventas - ${item.codigo}"
                 else -> "Usuario de ventas - ${item.codigo}"
             }
-        }else {
+        } else {
             "${item.nombre} - ${item.codigo}"
         }
     }

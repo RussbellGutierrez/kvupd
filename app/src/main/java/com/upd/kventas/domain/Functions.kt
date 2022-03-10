@@ -2,6 +2,7 @@ package com.upd.kventas.domain
 
 import android.graphics.Bitmap
 import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.data.model.MarkerMap
@@ -17,16 +18,29 @@ interface Functions {
     fun getQR(): Bitmap?
     fun dateToday(formato: Int): String
     fun appSO(): String
+
     fun setupMarkers(map: GoogleMap,list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap,list: List<Pedimap>): List<Marker>
     fun altaMarkers(map: GoogleMap,list: List<TAlta>): List<Marker>
     fun bajaMarker(map: GoogleMap,baja: TBajaSuper): Marker
+
     fun executeService(service: String, foreground: Boolean)
     fun launchWorkers()
+    fun closePeriodicWorkers()
     fun workerSetup(long: Long)
+    fun workerFinish(long: Long)
+
     fun workerConfiguracion(): OneTimeWorkRequest
     fun workerUser(): OneTimeWorkRequest
     fun workerDistritos(): OneTimeWorkRequest
     fun workerNegocios(): OneTimeWorkRequest
+    fun workerRutas(): OneTimeWorkRequest
     fun workerEncuestas(): OneTimeWorkRequest
+
+    fun workerperSeguimiento()
+    fun workerperVisita()
+    fun workerperAlta()
+    fun workerperAltaEstado()
+    fun workerperBaja()
+    fun workerperBajaEstado()
 }

@@ -34,9 +34,9 @@ class NegociosWork @WorkerInject constructor(
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
                             MSG_NEGOCIO = "Respuesta: ${response.message}"
-                            Result.failure()
+                            Result.success()
                         } else {
-                            repository.saveNegocio(rsp)
+                            repository.saveNegocios(rsp)
                             MSG_NEGOCIO = "Negocios descargados"
                             Result.success()
                         }

@@ -1,8 +1,10 @@
 package com.upd.kventas.ui.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +18,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import com.upd.kventas.R
+import com.upd.kventas.data.model.TRutas
 import com.upd.kventas.databinding.FragmentFAltaMapaBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.ALTADATOS
@@ -34,6 +34,7 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     OnInfoWindowLongClickListener, OnMarkerDragListener {
 
     private val viewmodel by activityViewModels<AppViewModel>()
+    private val args: FAltaMapaArgs by navArgs()
     private var _bind: FragmentFAltaMapaBinding? = null
     private val bind get() = _bind!!
     private var snippet = ""
@@ -41,7 +42,7 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     private lateinit var map: GoogleMap
     private lateinit var location: Location
     private lateinit var markers: List<Marker>
-    private val args: FAltaMapaArgs by navArgs()
+    private lateinit var rutas: List<TRutas>
     private val _tag by lazy { FAltaMapa::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -71,14 +72,19 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
             sup.getMapAsync(this)
         }
 
-        viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            location.longitude = result[0].longitud
-            location.latitude = result[0].latitud
+        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            rutas = it
         }
 
-        viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+        viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
+            location.longitude = it[0].longitud
+            location.latitude = it[0].latitud
+        }
+
+        viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             map.clear()
-            markers = viewmodel.altaMarker(map, result)
+            markers = viewmodel.altaMarker(map, it)
+            drawRoutes()
         }
 
         viewmodel.altamark.observe(viewLifecycleOwner) {
@@ -171,6 +177,29 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
             }
             markers.isEmpty() -> snack("Sin marcadores para ubicar")
+        }
+    }
+
+    private fun drawRoutes() {
+        val polygon = mutableListOf<LatLng>()
+        if (::rutas.isInitialized && !rutas.isNullOrEmpty()) {
+            rutas.forEach { i ->
+                val coordenadas = i.corte.split(",")
+                coordenadas.forEach { j ->
+                    val item = j.trim().split(" ")
+                    polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                }
+                map.addPolygon(
+                    PolygonOptions()
+                        .addAll(polygon)
+                        .strokeWidth(2f)
+                        .strokeColor(Color.parseColor("#D01215"))
+                        .fillColor(Color.argb(102, 118, 131, 219))
+                )
+                polygon.clear()
+            }
+        } else {
+            snack("No se encontraron rutas")
         }
     }
 }

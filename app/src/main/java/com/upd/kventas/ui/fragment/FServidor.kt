@@ -67,10 +67,7 @@ class FServidor : Fragment() {
             bind.minicardSeguimiento.setUI("v",false)
         }
 
-        Timer().schedule(3000) {
-            viewmodel.fetchServerAll("Todo")
-        }
-
+        viewmodel.fetchServerAll("Todo")
         getDataRoom()
         updateDataRoom()
     }
@@ -80,20 +77,22 @@ class FServidor : Fragment() {
             viewmodel.servseguimiento.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { y ->
                     setTextUI(y.size,0)
-                    y.forEach { j ->
-                        seguimiento = j
-                        val p = JSONObject()
-                        p.put("fecha", j.fecha)
-                        p.put("empleado", j.usuario)
-                        p.put("longitud", j.longitud)
-                        p.put("latitud", j.latitud)
-                        p.put("precision", j.precision)
-                        p.put("imei", IMEI)
-                        p.put("bateria", j.bateria)
-                        p.put("sucursal", CONF.sucursal)
-                        p.put("esquema", CONF.esquema)
-                        p.put("empresa", CONF.empresa)
-                        viewmodel.webSeguimiento(p.toReqBody())
+                    Timer().schedule(3000) {
+                        y.forEach { j ->
+                            seguimiento = j
+                            val p = JSONObject()
+                            p.put("fecha", j.fecha)
+                            p.put("empleado", j.usuario)
+                            p.put("longitud", j.longitud)
+                            p.put("latitud", j.latitud)
+                            p.put("precision", j.precision)
+                            p.put("imei", IMEI)
+                            p.put("bateria", j.bateria)
+                            p.put("sucursal", CONF.sucursal)
+                            p.put("esquema", CONF.esquema)
+                            p.put("empresa", CONF.empresa)
+                            viewmodel.webSeguimiento(p.toReqBody())
+                        }
                     }
                 }
             }
@@ -102,20 +101,22 @@ class FServidor : Fragment() {
         viewmodel.servvisita.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,1)
-                y.forEach { j ->
-                    visita = j
-                    val p = JSONObject()
-                    p.put("cliente", j.cliente)
-                    p.put("fecha", j.fecha)
-                    p.put("empleado", j.usuario)
-                    p.put("longitud", j.longitud)
-                    p.put("latitud", j.latitud)
-                    p.put("motivo", j.observacion)
-                    p.put("precision", j.precision)
-                    p.put("sucursal", CONF.sucursal)
-                    p.put("esquema", CONF.esquema)
-                    p.put("empresa", CONF.empresa)
-                    viewmodel.webVisita(p.toReqBody())
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        visita = j
+                        val p = JSONObject()
+                        p.put("cliente", j.cliente)
+                        p.put("fecha", j.fecha)
+                        p.put("empleado", j.usuario)
+                        p.put("longitud", j.longitud)
+                        p.put("latitud", j.latitud)
+                        p.put("motivo", j.observacion)
+                        p.put("precision", j.precision)
+                        p.put("sucursal", CONF.sucursal)
+                        p.put("esquema", CONF.esquema)
+                        p.put("empresa", CONF.empresa)
+                        viewmodel.webVisita(p.toReqBody())
+                    }
                 }
             }
         }
@@ -123,19 +124,21 @@ class FServidor : Fragment() {
         viewmodel.servalta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,2)
-                y.forEach { j ->
-                    alta = j
-                    val p = JSONObject()
-                    p.put("empleado", j.empleado)
-                    p.put("fecha", j.fecha)
-                    p.put("id", j.idaux)
-                    p.put("longitud", j.longitud)
-                    p.put("latitud", j.latitud)
-                    p.put("precision", j.precision)
-                    p.put("sucursal", CONF.sucursal)
-                    p.put("esquema", CONF.esquema)
-                    p.put("empresa", CONF.empresa)
-                    viewmodel.webAlta(p.toReqBody())
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        alta = j
+                        val p = JSONObject()
+                        p.put("empleado", j.empleado)
+                        p.put("fecha", j.fecha)
+                        p.put("id", j.idaux)
+                        p.put("longitud", j.longitud)
+                        p.put("latitud", j.latitud)
+                        p.put("precision", j.precision)
+                        p.put("sucursal", CONF.sucursal)
+                        p.put("esquema", CONF.esquema)
+                        p.put("empresa", CONF.empresa)
+                        viewmodel.webAlta(p.toReqBody())
+                    }
                 }
             }
         }
@@ -143,38 +146,40 @@ class FServidor : Fragment() {
         viewmodel.servaltadatos.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,3)
-                y.forEach { j ->
-                    altadatos = j
-                    val p = JSONObject()
-                    p.put("empleado", j.empleado)
-                    p.put("id", j.idaux)
-                    p.put("appaterno", j.appaterno)
-                    p.put("apmaterno", j.apmaterno)
-                    p.put("nombre", j.nombre)
-                    p.put("razon", j.razon)
-                    p.put("tipo", j.tipo)
-                    p.put("tipodoc", j.documento)
-                    p.put("giro", j.giro.split("-")[0].trim())
-                    p.put("movil1", j.movil1)
-                    p.put("movil2", j.movil2)
-                    p.put("email", j.correo)
-                    p.put("urbanizacion", "${j.zona} ${j.zonanombre}")
-                    p.put("altura", j.numero)
-                    p.put("distrito", j.distrito.split("-")[0].trim())
-                    p.put("ruta", j.ruta)
-                    p.put("secuencia", j.secuencia)
-                    p.put("sucursal", CONF.sucursal)
-                    p.put("esquema", CONF.esquema)
-                    p.put("empresa", CONF.empresa)
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        altadatos = j
+                        val p = JSONObject()
+                        p.put("empleado", j.empleado)
+                        p.put("id", j.idaux)
+                        p.put("appaterno", j.appaterno)
+                        p.put("apmaterno", j.apmaterno)
+                        p.put("nombre", j.nombre)
+                        p.put("razon", j.razon)
+                        p.put("tipo", j.tipo)
+                        p.put("tipodoc", j.documento)
+                        p.put("giro", j.giro.split("-")[0].trim())
+                        p.put("movil1", j.movil1)
+                        p.put("movil2", j.movil2)
+                        p.put("email", j.correo)
+                        p.put("urbanizacion", "${j.zona} ${j.zonanombre}")
+                        p.put("altura", j.numero)
+                        p.put("distrito", j.distrito.split("-")[0].trim())
+                        p.put("ruta", j.ruta)
+                        p.put("secuencia", j.secuencia)
+                        p.put("sucursal", CONF.sucursal)
+                        p.put("esquema", CONF.esquema)
+                        p.put("empresa", CONF.empresa)
 
-                    when (j.manzana) {
-                        "" -> p.put("calle", "${j.via} ${j.direccion} ${j.ubicacion}")
-                        else -> p.put(
-                            "calle",
-                            "${j.via} ${j.direccion} MZ ${j.manzana} ${j.ubicacion}"
-                        )
+                        when (j.manzana) {
+                            "" -> p.put("calle", "${j.via} ${j.direccion} ${j.ubicacion}")
+                            else -> p.put(
+                                "calle",
+                                "${j.via} ${j.direccion} MZ ${j.manzana} ${j.ubicacion}"
+                            )
+                        }
+                        viewmodel.webAltaDatos(p.toReqBody())
                     }
-                    viewmodel.webAltaDatos(p.toReqBody())
                 }
             }
         }
@@ -182,20 +187,22 @@ class FServidor : Fragment() {
         viewmodel.servbaja.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,4)
-                y.forEach { j ->
-                    baja = j
-                    val p = JSONObject()
-                    p.put("empleado", CONF.codigo)
-                    p.put("fecha", j.fecha)
-                    p.put("cliente", j.cliente)
-                    p.put("motivo", j.motivo)
-                    p.put("observacion", j.comentario)
-                    p.put("xcoord", j.longitud)
-                    p.put("ycoord", j.latitud)
-                    p.put("precision", j.precision)
-                    p.put("anulado", j.anulado)
-                    p.put("empresa", CONF.empresa)
-                    viewmodel.webBaja(p.toReqBody())
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        baja = j
+                        val p = JSONObject()
+                        p.put("empleado", CONF.codigo)
+                        p.put("fecha", j.fecha)
+                        p.put("cliente", j.cliente)
+                        p.put("motivo", j.motivo)
+                        p.put("observacion", j.comentario)
+                        p.put("xcoord", j.longitud)
+                        p.put("ycoord", j.latitud)
+                        p.put("precision", j.precision)
+                        p.put("anulado", j.anulado)
+                        p.put("empresa", CONF.empresa)
+                        viewmodel.webBaja(p.toReqBody())
+                    }
                 }
             }
         }
@@ -203,20 +210,22 @@ class FServidor : Fragment() {
         viewmodel.servbajaestado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,5)
-                y.forEach { j ->
-                    bajaestado = j
-                    val p = JSONObject()
-                    p.put("empleado", j.empleado)
-                    p.put("fecha", j.fecha)
-                    p.put("cliente", j.cliente)
-                    p.put("cfecha", j.fechaconf)
-                    p.put("observacion", j.observacion)
-                    p.put("precision", j.precision)
-                    p.put("xcoord", j.longitud)
-                    p.put("ycoord", j.latitud)
-                    p.put("confirmar", j.procede)
-                    p.put("empresa", CONF.empresa)
-                    viewmodel.webBajaEstado(p.toReqBody())
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        bajaestado = j
+                        val p = JSONObject()
+                        p.put("empleado", j.empleado)
+                        p.put("fecha", j.fecha)
+                        p.put("cliente", j.cliente)
+                        p.put("cfecha", j.fechaconf)
+                        p.put("observacion", j.observacion)
+                        p.put("precision", j.precision)
+                        p.put("xcoord", j.longitud)
+                        p.put("ycoord", j.latitud)
+                        p.put("confirmar", j.procede)
+                        p.put("empresa", CONF.empresa)
+                        viewmodel.webBajaEstado(p.toReqBody())
+                    }
                 }
             }
         }
@@ -304,36 +313,67 @@ class FServidor : Fragment() {
 
     private fun setTextUI(size: Int, opt: Int) {
         var texto = ""
+        val mensaje = "SIN DATOS PARA ENVIAR"
         when(opt) {
             0 -> {
                 list1 = size
                 texto = "Ubicaciones : $size"
                 bind.txtSeguimiento.text = texto
+                if (size == 0) {
+                    bind.progress1.setUI("v", false)
+                    bind.txtComp1.setUI("v", true)
+                    bind.txtComp1.text = mensaje
+                }
             }
             1 -> {
                 list2 = size
                 texto = "Visitas : $size"
                 bind.txtVisita.text = texto
+                if (size == 0) {
+                    bind.progress2.setUI("v", false)
+                    bind.txtComp2.setUI("v", true)
+                    bind.txtComp2.text = mensaje
+                }
             }
             2 -> {
                 list3 = size
                 texto = "Altas : $size"
                 bind.txtAlta.text = texto
+                if (size == 0) {
+                    bind.progress3.setUI("v", false)
+                    bind.txtComp3.setUI("v", true)
+                    bind.txtComp3.text = mensaje
+                }
             }
             3 -> {
                 list4 = size
                 texto = "Detalle altas : $size"
                 bind.txtAltadato.text = texto
+                if (size == 0) {
+                    bind.progress4.setUI("v", false)
+                    bind.txtComp4.setUI("v", true)
+                    bind.txtComp4.text = mensaje
+                }
             }
             4 -> {
                 list5 = size
                 texto = "Bajas : $size"
                 bind.txtBaja.text = texto
+                if (size == 0) {
+                    bind.progress5.setUI("v", false)
+                    bind.txtComp5.setUI("v", true)
+                    bind.txtComp5.text = mensaje
+                }
             }
             5 -> {
                 list6 = size
                 texto = "Bajas confirmadas : $size"
                 bind.txtBajaestado.text = texto
+                if (size == 0) {
+                    bind.progress6.setUI("v", false)
+                    bind.txtComp6.setUI("v", true)
+                    bind.txtComp6.text = mensaje
+                }
             }
         }
     }

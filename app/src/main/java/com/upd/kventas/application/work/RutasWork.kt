@@ -1,13 +1,14 @@
 package com.upd.kventas.application.work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Repository
-import com.upd.kventas.utils.Constant.MSG_DISTRITO
+import com.upd.kventas.utils.Constant.MSG_RUTA
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,38 +16,38 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
 
-class DistritosWork @WorkerInject constructor(
+class RutasWork @WorkerInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository
 ) : CoroutineWorker(appContext, workerParameters) {
-    private val _tag by lazy { DistritosWork::class.java.simpleName }
+    private val _tag by lazy { RutasWork::class.java.simpleName }
 
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
             val conf = repository.getConfig()[0]
-            val dist = repository.getDistritos()
+            val rut = repository.getRutas()
             val req = requestBody(conf)
-            if (dist.isNullOrEmpty()) {
+            if (rut.isNullOrEmpty()) {
                 try {
-                    repository.getWebDistritos(req).collect { response ->
+                    repository.getWebRutas(req).collect { response ->
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
-                            MSG_DISTRITO = "Respuesta: ${response.message}"
+                            MSG_RUTA = "Respuesta: ${response.message}"
                             Result.success()
                         } else {
-                            repository.saveDistritos(rsp)
-                            MSG_DISTRITO = "Distritos descargados"
+                            repository.saveRutas(rsp)
+                            MSG_RUTA = "Rutas descargadas"
                             Result.success()
                         }
                     }
                 } catch (e: HttpException) {
                     println(e.message())
-                    rst = Result.retry()
+                    rst = Result.failure()
                 }
             } else {
-                MSG_DISTRITO = "Full"
+                MSG_RUTA = "Full"
                 rst = Result.success()
             }
             return@withContext rst
@@ -54,6 +55,7 @@ class DistritosWork @WorkerInject constructor(
 
     private fun requestBody(conf: Config): RequestBody {
         val json = JSONObject()
+        json.put("empleado", conf.codigo)
         json.put("empresa", conf.empresa)
         return json.toReqBody()
     }

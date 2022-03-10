@@ -83,6 +83,13 @@
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="location"/>
+
+        <service
+            android:name=".service.ServiceFinish"
+            android:directBootAware="true"
+            android:enabled="true"
+            tools:targetApi="n"
+            android:foregroundServiceType="dataSync"/>
         
         <receiver
             android:name=".application.Receiver"

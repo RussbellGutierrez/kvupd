@@ -15,14 +15,11 @@ import com.upd.kventas.data.model.TAlta
 import com.upd.kventas.databinding.FragmentFAltaBinding
 import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.ui.adapter.AltaAdapter
-import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.ALTADATOS
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.POS_LOC
 import com.upd.kventas.utils.Interface.altaListener
-import com.upd.kventas.utils.consume
-import com.upd.kventas.utils.setUI
-import com.upd.kventas.utils.showDialog
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -72,7 +69,13 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         }
 
         bind.fabAlta.setOnClickListener {
-            showDialog("Advertencia","¿Desea agregar un alta?") { viewmodel.addingAlta(POS_LOC!!) }
+            showDialog("Advertencia", "¿Desea agregar un alta?") {
+                if (POS_LOC != null) {
+                    viewmodel.addingAlta(POS_LOC!!)
+                } else {
+                    snack("Procesando coordenadas, intente nuevamente")
+                }
+            }
         }
     }
 
@@ -81,7 +84,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         inflater.inflate(R.menu.alta_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.manual -> consume { findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) }
         else -> super.onOptionsItemSelected(item)
     }

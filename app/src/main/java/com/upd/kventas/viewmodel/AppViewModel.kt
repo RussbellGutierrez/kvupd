@@ -6,7 +6,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import com.upd.kventas.application.ToastHelper
 import com.upd.kventas.data.model.*
 import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
@@ -17,13 +16,15 @@ import okhttp3.RequestBody
 
 class AppViewModel @ViewModelInject constructor(
     private val repository: Repository,
-    private val functions: Functions,
-    private val toastHelper: ToastHelper
+    private val functions: Functions
 ) : ViewModel() {
 
     private val _tag by lazy { AppViewModel::class.java.simpleName }
 
     //  MutableLiveData with Event trigger only once
+    private val _inicio: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val inicio: LiveData<Event<Boolean>> = _inicio
+
     private val _fecha: MutableLiveData<Event<String>> = MutableLiveData()
     val fecha: LiveData<Event<String>> = _fecha
 
@@ -125,6 +126,8 @@ class AppViewModel @ViewModelInject constructor(
     fun bajasObs() = repository.getFlowBajas().asLiveData()
 
     fun rowBajaObs() = repository.getFlowRowBaja().asLiveData()
+
+    fun rutasObs() = repository.getFlowRutas().asLiveData()
 
     private val _servseguimiento: MutableLiveData<Event<List<TSeguimiento>>> = MutableLiveData()
     val servseguimiento: LiveData<Event<List<TSeguimiento>>> = _servseguimiento
@@ -509,7 +512,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun saveEstadoBaja(dato: TBEstado) {
         viewModelScope.launch {
-            repository.saveEstadoBaja(dato)
+            repository.saveBajaEstado(dato)
         }
     }
 
@@ -545,7 +548,29 @@ class AppViewModel @ViewModelInject constructor(
 
     fun updBajaEstado(it: TBEstado) {
         viewModelScope.launch {
-            repository.saveEstadoBaja(it)
+            repository.saveBajaEstado(it)
+        }
+    }
+
+    fun dataDowloaded() {
+        viewModelScope.launch {
+            val conf = repository.getConfig()
+            if (conf.isNullOrEmpty()) {
+                _inicio.value = Event(false)
+            }else {
+                val user = when(conf[0].tipo) {
+                    "V" -> repository.getClientes()
+                    else -> repository.getEmpleados()
+                }
+                val dist = repository.getDistritos()
+                val neg = repository.getNegocios()
+
+                val userb = !user.isNullOrEmpty()
+                val distb = !dist.isNullOrEmpty()
+                val negb = !neg.isNullOrEmpty()
+
+                _inicio.value = Event(userb && distb && negb)
+            }
         }
     }
 }

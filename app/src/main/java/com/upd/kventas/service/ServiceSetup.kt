@@ -28,7 +28,9 @@ import com.upd.kventas.utils.Constant.SETUP_NOTIF
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
 import com.upd.kventas.utils.Constant.W_ENCUESTA
+import com.upd.kventas.utils.Constant.W_FINISH
 import com.upd.kventas.utils.Constant.W_NEGOCIO
+import com.upd.kventas.utils.Constant.W_RUTA
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +62,11 @@ class ServiceSetup : LifecycleService(), LocationListener {
     @Inject
     lateinit var locationSettingsRequest: LocationSettingsRequest
 
+    private var user = false
+    private var distrito = false
+    private var negocio = false
+    private var ruta = false
+    private var encuesta = false
     private val _tag by lazy { ServiceSetup::class.java.simpleName }
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val callback = object : LocationCallback() {
@@ -92,9 +99,11 @@ class ServiceSetup : LifecycleService(), LocationListener {
 
         workManager.getWorkInfosByTagLiveData(W_CONFIG).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_SETUP).observe(this, workInfoObserver())
+        workManager.getWorkInfosByTagLiveData(W_FINISH).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_USER).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_DISTRITO).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_NEGOCIO).observe(this, workInfoObserver())
+        workManager.getWorkInfosByTagLiveData(W_RUTA).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_ENCUESTA).observe(this, workInfoObserver())
 
         repository.getFlowConfig().asLiveData().observe(this) { result ->
@@ -103,6 +112,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
                 helper.userNotifLaunch()
                 helper.distritoNotifLaunch()
                 helper.negocioNotifLaunch()
+                helper.rutaNotifLaunch()
                 helper.encuestaNotifLaunch()
             }
         }
@@ -138,27 +148,71 @@ class ServiceSetup : LifecycleService(), LocationListener {
                         else -> {}
                     }
                 }
-                when {
-                    wi.tags.contains(W_CONFIG) -> {
-                        helper.configNotif()
-                        if (wi.state == WorkInfo.State.SUCCEEDED) {
-                            setupWorker()
+                if (wi.tags.contains(W_FINISH)) {
+                    when (wi.state) {
+                        WorkInfo.State.SUCCEEDED -> Log.d(_tag, "FinishW succees")
+                        WorkInfo.State.FAILED -> Log.d(_tag, "FinishW fail")
+                        else -> {}
+                    }
+                }
+                if (wi.state.isFinished) {
+                    when {
+                        wi.tags.contains(W_CONFIG) -> {
+                            helper.configNotif()
+                            if (wi.state == WorkInfo.State.SUCCEEDED) {
+                                priorityWorkers()
+                            }
+                        }
+                        wi.tags.contains(W_USER) -> {
+                            user = true
+                            helper.userNotif()
+                            periodicWorkers()
+                        }
+                        wi.tags.contains(W_DISTRITO) -> {
+                            distrito = true
+                            helper.distritoNotif()
+                            periodicWorkers()
+                        }
+                        wi.tags.contains(W_NEGOCIO) -> {
+                            negocio = true
+                            helper.negocioNotif()
+                            periodicWorkers()
+                        }
+                        wi.tags.contains(W_RUTA) -> {
+                            ruta = true
+                            helper.rutaNotif()
+                            periodicWorkers()
+                        }
+                        wi.tags.contains(W_ENCUESTA) -> {
+                            encuesta = true
+                            helper.encuestaNotif()
+                            periodicWorkers()
                         }
                     }
-                    wi.tags.contains(W_USER) -> helper.userNotif()
-                    wi.tags.contains(W_DISTRITO) -> helper.distritoNotif()
-                    wi.tags.contains(W_NEGOCIO) -> helper.negocioNotif()
-                    wi.tags.contains(W_ENCUESTA) -> helper.encuestaNotif()
                 }
             }
         }
     }
 
-    private fun setupWorker() {
+    private fun priorityWorkers() {
         CoroutineScope(Dispatchers.IO).launch {
             repository.getStarterTime()?.let {
                 functions.workerSetup(it)
             }
+            repository.getFinishTime()?.let {
+                functions.workerFinish(it)
+            }
+        }
+    }
+
+    private fun periodicWorkers() {
+        if (user && distrito && negocio && ruta && encuesta) {
+            functions.workerperSeguimiento()
+            functions.workerperVisita()
+            functions.workerperAlta()
+            functions.workerperAltaEstado()
+            functions.workerperBaja()
+            functions.workerperBajaEstado()
         }
     }
 
@@ -209,5 +263,9 @@ class ServiceSetup : LifecycleService(), LocationListener {
             )
             repository.saveSeguimiento(item)
         }
+    }
+
+    interface OnServiceListener {
+        fun onClosingActivity()
     }
 }

@@ -25,6 +25,7 @@ import com.upd.kventas.utils.Constant.API_PREVENTA
 import com.upd.kventas.utils.Constant.API_REGISTRO
 import com.upd.kventas.utils.Constant.API_REPOEMP
 import com.upd.kventas.utils.Constant.API_REPOGEN
+import com.upd.kventas.utils.Constant.API_RUTA
 import com.upd.kventas.utils.Constant.API_SEGUIMIENTO
 import com.upd.kventas.utils.Constant.API_SOLES
 import com.upd.kventas.utils.Constant.API_SOLESGEN
@@ -64,6 +65,9 @@ interface ApiClient {
 
     @POST(API_NEGOCIO)
     suspend fun getApiNegocios(@Body body: RequestBody): Response<JCombo>//@param empresa
+
+    @POST(API_RUTA)
+    suspend fun getApiRutas(@Body body: RequestBody): Response<JRuta>//@param empleado, empresa
 
     @POST(API_ENCUESTA)
     suspend fun getApiEncuesta(@Body body: RequestBody): Response<JEncuesta>//@param empleado,empresa

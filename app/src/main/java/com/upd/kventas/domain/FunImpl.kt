@@ -4,16 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
-import android.util.Log
-import androidx.work.BackoffPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.vision.Frame
@@ -29,13 +22,23 @@ import com.upd.kventas.data.model.MarkerMap
 import com.upd.kventas.data.model.Pedimap
 import com.upd.kventas.data.model.TAlta
 import com.upd.kventas.data.model.TBajaSuper
+import com.upd.kventas.service.ServiceFinish
 import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.service.ServiceSetup
 import com.upd.kventas.utils.*
+import com.upd.kventas.utils.Constant.PERIODIC_WORK
+import com.upd.kventas.utils.Constant.WP_ALTA
+import com.upd.kventas.utils.Constant.WP_ALTADATO
+import com.upd.kventas.utils.Constant.WP_BAJA
+import com.upd.kventas.utils.Constant.WP_BAJAESTADO
+import com.upd.kventas.utils.Constant.WP_SEGUIMIENTO
+import com.upd.kventas.utils.Constant.WP_VISITA
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
 import com.upd.kventas.utils.Constant.W_ENCUESTA
+import com.upd.kventas.utils.Constant.W_FINISH
 import com.upd.kventas.utils.Constant.W_NEGOCIO
+import com.upd.kventas.utils.Constant.W_RUTA
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -147,7 +150,7 @@ class FunImpl @Inject constructor(
                 (i.longitud < 0 && i.latitud > 0) ||
                 (i.longitud > 0 && i.latitud < 0)
             ) {
-                when(i.observacion) {
+                when (i.observacion) {
                     0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
                     in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
                     9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
@@ -166,9 +169,9 @@ class FunImpl @Inject constructor(
                 (p.longitud < 0 && p.latitud > 0) ||
                 (p.longitud > 0 && p.latitud < 0)
             ) {
-                when(i.emitiendo) {
-                    0 -> m.add(map.markerPedimap(i,R.drawable.pin_noemite))
-                    1 -> m.add(map.markerPedimap(i,R.drawable.pin_emite))
+                when (i.emitiendo) {
+                    0 -> m.add(map.markerPedimap(i, R.drawable.pin_noemite))
+                    1 -> m.add(map.markerPedimap(i, R.drawable.pin_emite))
                 }
             }
         }
@@ -183,7 +186,7 @@ class FunImpl @Inject constructor(
                 (i.longitud < 0 && i.latitud > 0) ||
                 (i.longitud > 0 && i.latitud < 0)
             ) {
-                m.add(map.markerAlta(i,R.drawable.pin_altas))
+                m.add(map.markerAlta(i, R.drawable.pin_altas))
             }
         }
         return m
@@ -198,7 +201,7 @@ class FunImpl @Inject constructor(
             (longitud < 0 && latitud > 0) ||
             (longitud > 0 && latitud < 0)
         ) {
-            m.add(map.markerBaja(baja,R.drawable.pin_bajas))
+            m.add(map.markerBaja(baja, R.drawable.pin_bajas))
         }
         return m[0]
     }
@@ -206,7 +209,8 @@ class FunImpl @Inject constructor(
     override fun executeService(service: String, foreground: Boolean) {
         val cs: Class<*> = when (service) {
             "setup" -> ServiceSetup::class.java
-            else -> ServicePosicion::class.java
+            "position" -> ServicePosicion::class.java
+            else -> ServiceFinish::class.java
         }
         val intent = Intent(ctx, cs)
         if (!ctx.isServiceRunning(cs)) {
@@ -226,8 +230,13 @@ class FunImpl @Inject constructor(
     override fun launchWorkers() {
         workManager
             .beginWith(workerConfiguracion())
-            .then(listOf(workerUser(), workerDistritos(), workerNegocios(), workerEncuestas()))
+            .then(listOf(workerUser(), workerDistritos(), workerNegocios(), workerRutas()))
+            .then(workerEncuestas())
             .enqueue()
+    }
+
+    override fun closePeriodicWorkers() {
+        workManager.cancelAllWorkByTag(PERIODIC_WORK)
     }
 
     override fun workerSetup(long: Long) {
@@ -241,6 +250,20 @@ class FunImpl @Inject constructor(
             .addTag(W_SETUP)
             .build()
         workManager.enqueueUniqueWork(W_SETUP, ExistingWorkPolicy.REPLACE, work)
+    }
+
+    override fun workerFinish(long: Long) {
+        val delay = if (long < 0) 5000 else long
+        val work = OneTimeWorkRequestBuilder<FinishWork>()
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                5,
+                TimeUnit.MINUTES
+            )
+            .addTag(W_FINISH)
+            .build()
+        workManager.enqueueUniqueWork(W_FINISH, ExistingWorkPolicy.REPLACE, work)
     }
 
     override fun workerConfiguracion() =
@@ -283,6 +306,16 @@ class FunImpl @Inject constructor(
             .addTag(W_NEGOCIO)
             .build()
 
+    override fun workerRutas() =
+        OneTimeWorkRequestBuilder<RutasWork>()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                5,
+                TimeUnit.MINUTES
+            )
+            .addTag(W_RUTA)
+            .build()
+
     override fun workerEncuestas() =
         OneTimeWorkRequestBuilder<EncuestaWork>()
             .setBackoffCriteria(
@@ -292,4 +325,100 @@ class FunImpl @Inject constructor(
             )
             .addTag(W_ENCUESTA)
             .build()
+
+    override fun workerperSeguimiento() {
+        val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_SEGUIMIENTO,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperVisita() {
+        val wp = PeriodicWorkRequestBuilder<VisitaPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_VISITA,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperAlta() {
+        val wp = PeriodicWorkRequestBuilder<AltaPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_ALTA,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperAltaEstado() {
+        val wp = PeriodicWorkRequestBuilder<AltaDatoPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_ALTADATO,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperBaja() {
+        val wp = PeriodicWorkRequestBuilder<BajaPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_BAJA,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperBajaEstado() {
+        val wp = PeriodicWorkRequestBuilder<BajaEstadoPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_BAJAESTADO,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
 }

@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/voz"
+        android:title="Busqueda por voz"
+        android:icon="@drawable/microfono"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/descargar"
         android:title="Descargar clientes"
         android:icon="@drawable/descargar"

@@ -13,6 +13,7 @@ import com.upd.kventas.data.model.QueryConstant.DEL_ENCUESTA
 import com.upd.kventas.data.model.QueryConstant.DEL_ESTADO
 import com.upd.kventas.data.model.QueryConstant.DEL_ESTADOBAJA
 import com.upd.kventas.data.model.QueryConstant.DEL_NEGOCIOS
+import com.upd.kventas.data.model.QueryConstant.DEL_RUTAS
 import com.upd.kventas.data.model.QueryConstant.DEL_SEGUIMIENTO
 import com.upd.kventas.data.model.QueryConstant.DEL_VISITA
 
@@ -33,6 +34,9 @@ interface AppDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNeg(neg: List<TNegocio>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRut(rut: List<TRutas>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEnc(enc: List<TEncuesta>)
@@ -84,6 +88,9 @@ interface AppDAO {
 
     @Query(DEL_NEGOCIOS)
     suspend fun deleteNegocio()
+
+    @Query(DEL_RUTAS)
+    suspend fun deleteRutas()
 
     @Query(DEL_ENCUESTA)
     suspend fun deleteEncuesta()

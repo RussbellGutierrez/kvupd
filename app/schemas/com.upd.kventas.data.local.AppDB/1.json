@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d1dcad45a47ac85fbe924ba9b1240ea8",
+    "identityHash": "69d48333ba65f753938e0fdc340f3390",
     "entities": [
       {
         "tableName": "TConfiguracion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `hfin` TEXT NOT NULL, `hini` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`, `empresa`, `sucursal`, `esquema`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `hfin` TEXT NOT NULL, `hini` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
             "fieldPath": "codigo",
@@ -95,10 +95,7 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "codigo",
-            "empresa",
-            "sucursal",
-            "esquema"
+            "codigo"
           ],
           "autoGenerate": false
         },
@@ -107,7 +104,7 @@
       },
       {
         "tableName": "TClientes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `nomcli` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `domicli` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `fecha` TEXT NOT NULL, `secuencia` INTEGER NOT NULL, `numcuit` TEXT NOT NULL, `encuestas` TEXT NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `nomcli` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `domicli` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `fecha` TEXT NOT NULL, `secuencia` INTEGER NOT NULL, `numcuit` TEXT NOT NULL, `encuestas` TEXT NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
         "fields": [
           {
             "fieldPath": "idcliente",
@@ -149,6 +146,18 @@
             "fieldPath": "latitud",
             "columnName": "latitud",
             "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "telefono",
+            "columnName": "telefono",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "negocio",
+            "columnName": "negocio",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -271,8 +280,46 @@
         "foreignKeys": []
       },
       {
+        "tableName": "TRutas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruta` INTEGER NOT NULL, `corte` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, PRIMARY KEY(`ruta`))",
+        "fields": [
+          {
+            "fieldPath": "ruta",
+            "columnName": "ruta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "corte",
+            "columnName": "corte",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitud",
+            "columnName": "longitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitud",
+            "columnName": "latitud",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ruta"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
         "tableName": "TEncuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, `necesaria` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -338,6 +385,12 @@
             "fieldPath": "eleccion",
             "columnName": "eleccion",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "necesaria",
+            "columnName": "necesaria",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -1047,7 +1100,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1dcad45a47ac85fbe924ba9b1240ea8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69d48333ba65f753938e0fdc340f3390')"
     ]
   }
 }

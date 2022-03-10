@@ -1,20 +1,23 @@
 package com.upd.kventas.ui.activity
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.upd.kventas.databinding.ActivityMainBinding
+import com.upd.kventas.service.ServiceFinish
+import com.upd.kventas.service.ServicePosicion
 import com.upd.kventas.service.ServiceSetup
-import com.upd.kventas.utils.Constant
 import com.upd.kventas.utils.Constant.REQ_BACK_CODE
 import com.upd.kventas.utils.Constant.REQ_CODE
+import com.upd.kventas.utils.Interface.serviceListener
 import com.upd.kventas.utils.Permission
+import com.upd.kventas.utils.isServiceRunning
 import com.upd.kventas.utils.snack
 import com.upd.kventas.utils.toast
 import com.upd.kventas.viewmodel.AppViewModel
@@ -22,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
 
     private val viewModel by viewModels<AppViewModel>()
     private lateinit var bind: ActivityMainBinding
@@ -31,12 +34,28 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var permission: Permission
 
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceListener = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityMainBinding.inflate(layoutInflater)
         setContentView(bind.root)
         setSupportActionBar(bind.toolbar)
         setupApp()
+        serviceListener = this
+    }
+
+    override fun onClosingActivity() {
+        if (isServiceRunning(ServiceFinish::class.java))
+            stopService(Intent(this, ServiceFinish::class.java))
+
+        runOnUiThread {
+            toast("Cerrando KVentas")
+            finishAndRemoveTask()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -80,6 +99,8 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
+
+
 
     /*private fun checkApp() {
         viewModel.workDay({

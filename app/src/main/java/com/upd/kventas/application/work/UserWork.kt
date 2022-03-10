@@ -38,7 +38,7 @@ class UserWork @WorkerInject constructor(
                             val rsp = response.data?.jobl
                             rst = if (rsp.isNullOrEmpty()) {
                                 MSG_USER = "Respuesta: ${response.message}"
-                                Result.failure()
+                                Result.success()
                             } else {
                                 repository.saveClientes(rsp)
                                 MSG_USER = "Clientes descargados"
@@ -59,7 +59,7 @@ class UserWork @WorkerInject constructor(
                             val rsp = response.data?.jobl
                             rst = if (rsp.isNullOrEmpty()) {
                                 MSG_USER = "Respuesta: ${response.message}"
-                                Result.failure()
+                                Result.success()
                             } else {
                                 repository.saveEmpleados(rsp)
                                 MSG_USER = "Vendedores descargados"

@@ -1,8 +1,12 @@
 package com.upd.kventas.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.view.*
 import android.widget.SearchView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
@@ -22,6 +26,7 @@ import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -64,9 +69,9 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
 
         bind.searchView.setOnQueryTextListener(this)
 
-        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            row = result
-            setupList(result)
+        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            row = it
+            setupList(it)
         }
 
         viewmodel.vendedor.observe(viewLifecycleOwner) {
@@ -94,6 +99,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { DVendedor().show(parentFragmentManager, "dialog") }
         R.id.encuesta -> consume {  }
         R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
@@ -129,6 +135,29 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(1,cliente)
+        }
+    }
+
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
+            bind.searchView.setQuery(codigo, true)
+        } else {
+            snack("Error procesando codigo")
+        }
+    }
+
+    private fun searchVoice() {
+        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).also { intent ->
+            intent.resolveActivity(requireActivity().packageManager).also {
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                )
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione el codigo o nombre del cliente")
+                resultLauncher.launch(intent)
+            }
         }
     }
 

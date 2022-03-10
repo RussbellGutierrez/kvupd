@@ -35,7 +35,7 @@ class EncuestaWork @WorkerInject constructor(
                         val rsp = response.data?.jobl
                         rst = if (rsp.isNullOrEmpty()) {
                             MSG_ENCUESTA = "Respuesta: ${response.message}"
-                            Result.failure()
+                            Result.success()
                         } else {
                             repository.saveEncuesta(rsp)
                             MSG_ENCUESTA = "Encuestas descargadas"

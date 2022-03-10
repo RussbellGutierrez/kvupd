@@ -7,6 +7,7 @@ object QueryConstant {
     const val GET_EMPLEADOS = "SELECT * FROM TEmpleados"
     const val GET_DISTRITOS = "SELECT * FROM TDistrito"
     const val GET_NEGOCIOS = "SELECT * FROM TNegocio"
+    const val GET_RUTAS = "SELECT * FROM TRutas"
     const val GET_ENCUESTAS = "SELECT * FROM TEncuesta"
     const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
@@ -18,6 +19,7 @@ object QueryConstant {
     const val DEL_EMPLEADOS = "DELETE FROM TEmpleados"
     const val DEL_DISTRITOS = "DELETE FROM TDistrito"
     const val DEL_NEGOCIOS = "DELETE FROM TNegocio"
+    const val DEL_RUTAS = "DELETE FROM TRutas"
     const val DEL_ENCUESTA = "DELETE FROM TEncuesta"
     const val DEL_SEGUIMIENTO = "DELETE FROM TSeguimiento"
     const val DEL_VISITA = "DELETE FROM TVisita"
@@ -51,7 +53,7 @@ object QueryConstant {
     const val GET_LAST_ALTA = "" +
             "SELECT * " +
             "FROM TAlta " +
-            "ORDER BY fecha DESC LIMIT 1"
+            "ORDER BY idaux DESC LIMIT 1"
 
     const val GET_LAST_LOCATION = "" +
             "SELECT * " +
@@ -67,7 +69,7 @@ object QueryConstant {
             "ORDER BY c.idcliente ASC "
 
     const val GET_DATA_CLIENTE = "" +
-            "SELECT idcliente, nomcli, domicli, ruta, '---' as negocio, '---' as telefono " +
+            "SELECT idcliente, nomcli, domicli, ruta, negocio, telefono " +
             "FROM TClientes " +
             "WHERE ((:cliente <> '0' AND idcliente = :cliente) OR :cliente = '0') "
 

@@ -17,12 +17,14 @@ interface Repository {
     fun getFlowNegocios(): Flow<List<Combo>>
     fun getFlowBajas(): Flow<List<TBaja>>
     fun getFlowRowBaja(): Flow<List<RowBaja>>
+    fun getFlowRutas(): Flow<List<TRutas>>
 
     suspend fun getConfig(): List<Config>
     suspend fun getClientes(): List<Cliente>
     suspend fun getEmpleados(): List<Vendedor>
     suspend fun getDistritos(): List<Combo>
     suspend fun getNegocios(): List<Combo>
+    suspend fun getRutas(): List<Ruta>
     suspend fun getEncuestas(): List<Encuesta>
     suspend fun getClienteDetail(cliente: String): List<DataCliente>
     suspend fun getDataAlta(alta: String): DataCliente
@@ -32,13 +34,15 @@ interface Repository {
     suspend fun getLastAlta(): TAlta?
     suspend fun processAlta(fecha: String, location: Location)
     suspend fun getStarterTime(): Long?
+    suspend fun getFinishTime(): Long?
     suspend fun workDay(): Boolean?
 
     suspend fun saveConfiguracion(config: List<Config>)
     suspend fun saveClientes(cliente: List<Cliente>)
     suspend fun saveEmpleados(empleado: List<Vendedor>)
-    suspend fun saveDistrito(distrito: List<Combo>)
-    suspend fun saveNegocio(negocio: List<Combo>)
+    suspend fun saveDistritos(distrito: List<Combo>)
+    suspend fun saveRutas(ruta: List<Ruta>)
+    suspend fun saveNegocios(negocio: List<Combo>)
     suspend fun saveEncuesta(encuesta: List<Encuesta>)
     suspend fun saveSeguimiento(seguimiento: TSeguimiento)
     suspend fun saveVisita(visita: TVisita)
@@ -47,7 +51,7 @@ interface Repository {
     suspend fun saveAlta(alta: TAlta)
     suspend fun saveAltaDatos(da: TADatos)
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
-    suspend fun saveEstadoBaja(estado: TBEstado)
+    suspend fun saveBajaEstado(estado: TBEstado)
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento>
     suspend fun getServerVisita(estado: String): List<TVisita>
@@ -65,6 +69,7 @@ interface Repository {
     suspend fun deleteEmpleados()
     suspend fun deleteDistritos()
     suspend fun deleteNegocios()
+    suspend fun deleteRutas()
     suspend fun deleteEncuesta()
     suspend fun deleteSeguimiento()
     suspend fun deleteVisita()
@@ -73,7 +78,7 @@ interface Repository {
     suspend fun deleteAlta()
     suspend fun deleteAltaDatos()
     suspend fun deleteBajaSuper()
-    suspend fun deleteEstadoBaja()
+    suspend fun deleteBajaEstado()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>>
@@ -83,6 +88,7 @@ interface Repository {
     suspend fun getWebEmpleados(body: RequestBody): Flow<Network<JVendedores>>
     suspend fun getWebDistritos(body: RequestBody): Flow<Network<JCombo>>
     suspend fun getWebNegocios(body: RequestBody): Flow<Network<JCombo>>
+    suspend fun getWebRutas(body: RequestBody): Flow<Network<JRuta>>
     suspend fun getWebEncuesta(body: RequestBody): Flow<Network<JEncuesta>>
 
     suspend fun getWebPreventa(body: RequestBody): Flow<Network<JVolumen>>

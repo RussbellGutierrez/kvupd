@@ -48,6 +48,8 @@ data class Cliente(
     @Json(name = "domicli") val domicilio: String,
     @Json(name = "XCoord") val longitud: Double,
     @Json(name = "YCoord") val latitud: Double,
+    @Json(name = "telefos") val telefono: String,
+    @Json(name = "tiponego") val negocio: String,
     @Json(name = "fecha") val fecha: String,
     @Json(name = "secuencia") val secuencia: Int,
     @Json(name = "numcuit") val numcuit: String,
@@ -94,7 +96,8 @@ data class Encuesta(
     @Json(name = "FORMATO") val formato: String,
     @Json(name = "CONDICIONAL") val condicional: Boolean,
     @Json(name = "PREVIA") val previa: Int,
-    @Json(name = "ELECCION") val eleccion: String
+    @Json(name = "ELECCION") val eleccion: String,
+    @Json(name = "NECESARIA") val necesaria: Boolean
 )
 
 @JsonClass(generateAdapter = true)
@@ -125,19 +128,18 @@ data class DataEmpleado(
     @Json(name = "nombre") val nombre: String
 )
 
-//  Pendiente momentaneamente
-/*@JsonClass(generateAdapter = true)
+@JsonClass(generateAdapter = true)
 data class JRuta(
-    @Json(name = "data") val data: List<Ruta>
+    @Json(name = "data") val jobl: List<Ruta>
 )
 
 @JsonClass(generateAdapter = true)
 data class Ruta(
-    @Json(name = "ruta") val ruta: String,
+    @Json(name = "ruta") val ruta: Int,
     @Json(name = "coords") val coords: String,
-    @Json(name = "XCoord") val longitud: String,
-    @Json(name = "YCoord") val latitud: String
-)*/
+    @Json(name = "XCoord") val longitud: Double,
+    @Json(name = "YCoord") val latitud: Double
+)
 
 @Parcelize
 @JsonClass(generateAdapter = true)

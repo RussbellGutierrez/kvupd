@@ -22,6 +22,7 @@ object Constant {
     var MSG_USER = ""
     var MSG_DISTRITO = ""
     var MSG_NEGOCIO = ""
+    var MSG_RUTA = ""
     var MSG_ENCUESTA = ""
 
     var IMEI = ""
@@ -34,12 +35,22 @@ object Constant {
     lateinit var IWAM: DataCliente
     lateinit var IWP: Pedimap
 
+    const val PERIODIC_WORK = "WorkVentas"
     const val W_SETUP = "VSetup"
+    const val W_FINISH = "VFinish"
     const val W_CONFIG = "VConfiguracion"
     const val W_USER = "VUser"
     const val W_DISTRITO = "VDistrito"
     const val W_NEGOCIO = "VNegocio"
+    const val W_RUTA = "VRuta"
     const val W_ENCUESTA = "VEncuesta"
+
+    const val WP_SEGUIMIENTO = "VPSeguimiento"
+    const val WP_VISITA = "VPVisita"
+    const val WP_ALTA = "VPAlta"
+    const val WP_ALTADATO = "VPAltadato"
+    const val WP_BAJA = "VPBaja"
+    const val WP_BAJAESTADO = "VPBajaestado"
 
     const val SETUP_CHANNEL = "1"
     const val SETUP_NOTIF = 1
@@ -51,8 +62,10 @@ object Constant {
     const val DISTRITO_NOTIF = 4
     const val NEGOCIO_CHANNEL = "5"
     const val NEGOCIO_NOTIF = 5
-    const val ENCUESTA_CHANNEL = "6"
-    const val ENCUESTA_NOTIF = 6
+    const val RUTA_CHANNEL = "6"
+    const val RUTA_NOTIF = 6
+    const val ENCUESTA_CHANNEL = "7"
+    const val ENCUESTA_NOTIF = 7
 
     const val GPS_NORMAL_INTERVAL = 300000L
     const val GPS_FAST_INTERVAL = 120000L

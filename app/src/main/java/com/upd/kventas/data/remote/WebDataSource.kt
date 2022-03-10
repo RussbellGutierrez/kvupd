@@ -35,6 +35,10 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
         return web.getApiNegocios(body)
     }
 
+    suspend fun getWebRutas(body: RequestBody): Response<JRuta> {
+        return web.getApiRutas(body)
+    }
+
     suspend fun getWebEncuesta(body: RequestBody): Response<JEncuesta> {
         return web.getApiEncuesta(body)
     }

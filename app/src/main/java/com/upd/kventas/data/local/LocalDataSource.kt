@@ -43,6 +43,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getRowBajas()
     }
 
+    fun getObsRutas(): Flow<List<TRutas>> {
+        return qdao.getObsRutas()
+    }
+
     suspend fun getConfig(): List<Config> {
         return qdao.getConfig().asConfigList()
     }
@@ -61,6 +65,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun getNegocios(): List<Combo> {
         return qdao.getNegocio().asNegocioList()
+    }
+
+    suspend fun getRutas(): List<Ruta> {
+        return qdao.getRutas().asRutaList()
     }
 
     suspend fun getEncuestas(): List<Encuesta> {
@@ -109,6 +117,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun saveNegocio(neg: List<Combo>) {
         dao.insertNeg(neg.map { it.asTNegocio() })
+    }
+
+    suspend fun saveRuta(rut: List<Ruta>) {
+        dao.insertRut(rut.map { it.asTRutas() })
     }
 
     suspend fun saveEncuesta(enc: List<Encuesta>) {
@@ -177,6 +189,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteNegocio() {
         dao.deleteNegocio()
+    }
+
+    suspend fun deleteRuta() {
+        dao.deleteRutas()
     }
 
     suspend fun deleteEncuesta() {

@@ -25,6 +25,7 @@ import com.upd.kventas.data.model.QueryConstant.GET_MARKERS
 import com.upd.kventas.data.model.QueryConstant.GET_NEGOCIOS
 import com.upd.kventas.data.model.QueryConstant.GET_ROW_BAJAS
 import com.upd.kventas.data.model.QueryConstant.GET_ROW_CLIENTES
+import com.upd.kventas.data.model.QueryConstant.GET_RUTAS
 import com.upd.kventas.data.model.QueryConstant.GET_SEGUIMIENTO_SERVER
 import com.upd.kventas.data.model.QueryConstant.GET_VISITA_SERVER
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +60,9 @@ interface QueryDAO {
     @Query(GET_ROW_BAJAS)
     fun getRowBajas(): Flow<List<RowBaja>>
 
+    @Query(GET_RUTAS)
+    fun getObsRutas(): Flow<List<TRutas>>
+
     @Query(GET_CONFIG)
     suspend fun getConfig(): List<TConfiguracion>
 
@@ -73,6 +77,9 @@ interface QueryDAO {
 
     @Query(GET_NEGOCIOS)
     suspend fun getNegocio(): List<TNegocio>
+
+    @Query(GET_RUTAS)
+    suspend fun getRutas(): List<TRutas>
 
     @Query(GET_ENCUESTAS)
     suspend fun getEncuesta(): List<TEncuesta>

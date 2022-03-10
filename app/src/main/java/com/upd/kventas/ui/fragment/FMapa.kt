@@ -3,6 +3,7 @@ package com.upd.kventas.ui.fragment
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -20,8 +21,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kventas.R
 import com.upd.kventas.data.model.DataCliente
+import com.upd.kventas.data.model.TRutas
 import com.upd.kventas.databinding.FragmentFMapaBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.FIRST_LOCATION
@@ -41,6 +44,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     private lateinit var map: GoogleMap
     private lateinit var location: Location
     private lateinit var markers: List<Marker>
+    private lateinit var rutas: List<TRutas>
     private lateinit var mclk: Marker
     private val _tag by lazy { FMapa::class.java.simpleName }
 
@@ -71,14 +75,19 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             sup.getMapAsync(this)
         }
 
-        viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            location.longitude = result[0].longitud
-            location.latitude = result[0].latitud
+        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            rutas = it
         }
 
-        viewmodel.markerMap().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+        viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
+            location.longitude = it[0].longitud
+            location.latitude = it[0].latitud
+        }
+
+        viewmodel.markerMap().distinctUntilChanged().observe(viewLifecycleOwner) {
             map.clear()
-            markers = viewmodel.setMarker(map, result)
+            markers = viewmodel.setMarker(map, it)
+            drawRoutes()
         }
 
         viewmodel.detail.observe(viewLifecycleOwner) {
@@ -137,11 +146,11 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     override fun onInfoWindowClick(p0: Marker) {
-        navigateToDialog(0,IWAM)
+        navigateToDialog(0, IWAM)
     }
 
     override fun onInfoWindowLongClick(p0: Marker) {
-        navigateToDialog(1,IWAM)
+        navigateToDialog(1, IWAM)
     }
 
     private fun centerMarkers() {
@@ -213,13 +222,36 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
         val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
-        when(dialog) {
+        when (dialog) {
             0 -> findNavController().navigate(
                 FMapaDirections.actionFMapaToDObservacion(cli)
             )
             1 -> findNavController().navigate(
                 FMapaDirections.actionFMapaToDBaja(cli)
             )
+        }
+    }
+
+    private fun drawRoutes() {
+        val polygon = mutableListOf<LatLng>()
+        if (::rutas.isInitialized && !rutas.isNullOrEmpty()) {
+            rutas.forEach { i ->
+                val coordenadas = i.corte.split(",")
+                coordenadas.forEach { j ->
+                    val item = j.trim().split(" ")
+                    polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                }
+                map.addPolygon(
+                    PolygonOptions()
+                        .addAll(polygon)
+                        .strokeWidth(2f)
+                        .strokeColor(Color.parseColor("#D01215"))
+                        .fillColor(Color.argb(102, 118, 131, 219))
+                )
+                polygon.clear()
+            }
+        } else {
+            snack("No se encontraron rutas")
         }
     }
 }

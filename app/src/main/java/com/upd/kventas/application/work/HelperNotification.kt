@@ -18,9 +18,12 @@ import com.upd.kventas.utils.Constant.MSG_CONFIG
 import com.upd.kventas.utils.Constant.MSG_DISTRITO
 import com.upd.kventas.utils.Constant.MSG_ENCUESTA
 import com.upd.kventas.utils.Constant.MSG_NEGOCIO
+import com.upd.kventas.utils.Constant.MSG_RUTA
 import com.upd.kventas.utils.Constant.MSG_USER
 import com.upd.kventas.utils.Constant.NEGOCIO_CHANNEL
 import com.upd.kventas.utils.Constant.NEGOCIO_NOTIF
+import com.upd.kventas.utils.Constant.RUTA_CHANNEL
+import com.upd.kventas.utils.Constant.RUTA_NOTIF
 import com.upd.kventas.utils.Constant.SETUP_CHANNEL
 import com.upd.kventas.utils.Constant.USER_CHANNEL
 import com.upd.kventas.utils.Constant.USER_NOTIF
@@ -178,6 +181,40 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(NEGOCIO_NOTIF, notif.build())
+    }
+
+    fun rutaNotifLaunch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(RUTA_CHANNEL, "Rutas", NotificationManager.IMPORTANCE_DEFAULT)
+            channel.description = "Notificacion para rutas"
+            val notificationManager =
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder = NotificationCompat.Builder(ctx, RUTA_CHANNEL)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setContentTitle("Download")
+            .setContentText("Rutas programadas")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setProgress(0,0,true)
+            .setOngoing(true)
+        val manager = NotificationManagerCompat.from(ctx)
+        manager.notify(RUTA_NOTIF,builder.build())
+    }
+
+    fun rutaNotif() {
+        val manager = NotificationManagerCompat.from(ctx)
+        val notif = NotificationCompat.Builder(ctx, RUTA_CHANNEL)
+            .setSmallIcon(R.drawable.notf_ruta)
+            .setContentTitle("KV Ruta")
+            .setContentText(MSG_RUTA)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setVibrate(LongArray(0))
+            .setProgress(0, 0, false)
+            .setOngoing(false)
+        notif.setCategory(Notification.CATEGORY_EVENT)
+        manager.notify(RUTA_NOTIF, notif.build())
     }
 
     fun encuestaNotifLaunch() {

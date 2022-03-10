@@ -1,6 +1,7 @@
 package com.upd.kventas.domain
 
 import android.location.Location
+import android.util.Log
 import com.upd.kventas.data.local.LocalDataSource
 import com.upd.kventas.data.model.*
 import com.upd.kventas.data.remote.WebDataSource
@@ -55,6 +56,10 @@ class RepoImpl @Inject constructor(
         return localDataSource.getRowBajas().distinctUntilChanged()
     }
 
+    override fun getFlowRutas(): Flow<List<TRutas>> {
+        return localDataSource.getObsRutas().distinctUntilChanged()
+    }
+
     override suspend fun getConfig(): List<Config> {
         return localDataSource.getConfig()
     }
@@ -73,6 +78,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun getNegocios(): List<Combo> {
         return localDataSource.getNegocios()
+    }
+
+    override suspend fun getRutas(): List<Ruta> {
+        return localDataSource.getRutas()
     }
 
     override suspend fun getEncuestas(): List<Encuesta> {
@@ -135,6 +144,18 @@ class RepoImpl @Inject constructor(
         return null
     }
 
+    override suspend fun getFinishTime(): Long? {
+        localDataSource.getConfig().forEach { i ->
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, i.hfin.split(":")[0].toInt())
+                set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
+                set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
+            }
+            return calendar.timeInMillis - System.currentTimeMillis()
+        }
+        return null
+    }
+
     override suspend fun workDay(): Boolean? {
         val time = Calendar.getInstance().time.timeToText(3).replace(":", "").toInt()
         localDataSource.getConfig().forEach { i ->
@@ -157,12 +178,16 @@ class RepoImpl @Inject constructor(
         localDataSource.saveEmpleados(empleado)
     }
 
-    override suspend fun saveDistrito(distrito: List<Combo>) {
+    override suspend fun saveDistritos(distrito: List<Combo>) {
         localDataSource.saveDistrito(distrito)
     }
 
-    override suspend fun saveNegocio(negocio: List<Combo>) {
+    override suspend fun saveNegocios(negocio: List<Combo>) {
         localDataSource.saveNegocio(negocio)
+    }
+
+    override suspend fun saveRutas(ruta: List<Ruta>) {
+        localDataSource.saveRuta(ruta)
     }
 
     override suspend fun saveEncuesta(encuesta: List<Encuesta>) {
@@ -197,7 +222,7 @@ class RepoImpl @Inject constructor(
         localDataSource.saveBajaSuper(baja)
     }
 
-    override suspend fun saveEstadoBaja(estado: TBEstado) {
+    override suspend fun saveBajaEstado(estado: TBEstado) {
         localDataSource.saveEstadoBaja(estado)
     }
 
@@ -257,6 +282,10 @@ class RepoImpl @Inject constructor(
         localDataSource.deleteNegocio()
     }
 
+    override suspend fun deleteRutas() {
+        localDataSource.deleteRuta()
+    }
+
     override suspend fun deleteEncuesta() {
         localDataSource.deleteEncuesta()
     }
@@ -289,7 +318,7 @@ class RepoImpl @Inject constructor(
         localDataSource.deleteBajaSuper()
     }
 
-    override suspend fun deleteEstadoBaja() {
+    override suspend fun deleteBajaEstado() {
         localDataSource.deleteEstadoBaja()
     }
 
@@ -332,6 +361,12 @@ class RepoImpl @Inject constructor(
     override suspend fun getWebNegocios(body: RequestBody): Flow<Network<JCombo>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebNegocios(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getWebRutas(body: RequestBody): Flow<Network<JRuta>> {
+        return flow {
+            emit(safeApiCall { webDataSource.getWebRutas(body) })
         }.flowOn(Dispatchers.IO)
     }
 

@@ -1,5 +1,6 @@
 package com.upd.kventas.utils
 
+import com.upd.kventas.service.ServiceSetup
 import com.upd.kventas.ui.adapter.*
 
 object Interface {
@@ -12,4 +13,5 @@ object Interface {
     lateinit var altaListener: AltaAdapter.OnAltaListener
     lateinit var bajaListener: BajaAdapter.OnBajaListener
     lateinit var bajaSuperListener: BajaSupervisorAdapter.OnBajaSuperListener
+    var serviceListener: ServiceSetup.OnServiceListener? = null
 }

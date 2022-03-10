@@ -35,11 +35,12 @@
         android:id="@+id/fab_alta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
         android:src="@drawable/persona"
         app:elevation="1dp"
         app:useCompatPadding="true"
         app:layout_anchor="@id/cst_contenedor"
-        app:layout_anchorGravity="bottom|left|end"/>
+        app:layout_anchorGravity="bottom|right|end"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

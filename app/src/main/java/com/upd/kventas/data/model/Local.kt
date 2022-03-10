@@ -4,7 +4,7 @@ import androidx.room.Entity
 import com.squareup.moshi.Json
 import com.upd.kventas.utils.Constant.CONF
 
-@Entity(primaryKeys = ["codigo", "empresa", "sucursal", "esquema"])
+@Entity(primaryKeys = ["codigo"])
 data class TConfiguracion(
     val codigo: Int,
     val empresa: Int,
@@ -50,8 +50,8 @@ fun Config.asTConfig(): TConfiguracion =
         this.nombre,
         this.codsuper,
         this.supervisor,
-        this.hini,
         this.hfin,
+        this.hini,
         this.ipp,
         this.ips,
         this.seguimiento,
@@ -68,6 +68,8 @@ data class TClientes(
     val domicli: String,
     val longitud: Double,
     val latitud: Double,
+    val telefono: String,
+    val negocio: String,
     val fecha: String,
     val secuencia: Int,
     val numcuit: String,
@@ -83,6 +85,8 @@ fun List<TClientes>.asClienteList(): List<Cliente> = this.map {
         it.domicli,
         it.longitud,
         it.latitud,
+        it.telefono,
+        it.negocio,
         it.fecha,
         it.secuencia,
         it.numcuit,
@@ -99,6 +103,8 @@ fun Cliente.asTCliente(): TClientes =
         this.domicilio,
         this.longitud,
         this.latitud,
+        this.telefono,
+        this.negocio,
         this.fecha,
         this.secuencia,
         this.numcuit,
@@ -161,7 +167,8 @@ data class TEncuesta(
     val formato: String,
     val condicional: Boolean,
     val previa: Int,
-    val eleccion: String
+    val eleccion: String,
+    val necesaria: Boolean
 )
 
 fun List<TEncuesta>.asEncuestaList(): List<Encuesta> = this.map {
@@ -176,7 +183,8 @@ fun List<TEncuesta>.asEncuestaList(): List<Encuesta> = this.map {
         it.formato,
         it.condicional,
         it.previa,
-        it.eleccion
+        it.eleccion,
+        it.necesaria
     )
 }
 
@@ -192,7 +200,33 @@ fun Encuesta.asTEncuesta(): TEncuesta =
         this.formato,
         this.condicional,
         this.previa,
-        this.eleccion
+        this.eleccion,
+        this.necesaria
+    )
+
+@Entity(primaryKeys = ["ruta"])
+data class TRutas(
+    val ruta: Int,
+    val corte: String,
+    val longitud: Double,
+    val latitud: Double
+)
+
+fun List<TRutas>.asRutaList(): List<Ruta> = this.map {
+    Ruta(
+        it.ruta,
+        it.corte,
+        it.longitud,
+        it.latitud
+    )
+}
+
+fun Ruta.asTRutas(): TRutas =
+    TRutas(
+        this.ruta,
+        this.coords,
+        this.longitud,
+        this.latitud
     )
 
 @Entity(primaryKeys = ["idcliente", "ruta"])
