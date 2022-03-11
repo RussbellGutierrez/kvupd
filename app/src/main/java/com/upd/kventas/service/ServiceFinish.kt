@@ -77,22 +77,23 @@ class ServiceFinish : LifecycleService() {
                 pbe = it
                 sendServer(5)
             }
-            //close periodic work
+
             functions.closePeriodicWorkers()
 
             Timer().schedule(10000) {
-                Log.d(_tag,"Final part")
-                //delete bd
+                Log.d(_tag, "Final part")
                 deleteTables()
-                //close services
-                if (isServiceRunning(ServiceSetup::class.java))
-                    stopService(Intent(this@ServiceFinish,ServiceSetup::class.java))
+                if (serviceListener != null) {
+                    serviceListener?.onClosingActivity()
+                } else {
+                    if (isServiceRunning(ServiceSetup::class.java))
+                        stopService(Intent(this@ServiceFinish, ServiceSetup::class.java))
 
-                if (isServiceRunning(ServicePosicion::class.java))
-                    stopService(Intent(this@ServiceFinish,ServicePosicion::class.java))
+                    if (isServiceRunning(ServicePosicion::class.java))
+                        stopService(Intent(this@ServiceFinish, ServicePosicion::class.java))
 
-                //close activity
-                serviceListener?.onClosingActivity()
+                    stopSelf()
+                }
             }
         }
     }

@@ -14,6 +14,8 @@ import com.upd.kventas.data.model.Config
 import com.upd.kventas.databinding.FragmentFBaseBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
+import com.upd.kventas.utils.Constant.IN_HOURS
+import com.upd.kventas.utils.Interface.serviceListener
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -49,6 +51,10 @@ class FBase : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewmodel.setupApp { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
+        }
+
         bind.fabVendedor.setOnClickListener {
             opt = 1
             viewmodel.dataDowloaded()
@@ -74,9 +80,15 @@ class FBase : Fragment() {
             viewmodel.dataDowloaded()
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewmodel.setupApp { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
+        viewmodel.checking.observe(viewLifecycleOwner) {
+            IN_HOURS = it
+            if (it) {
+                snack("Bienvenido")
+            } else {
+                serviceListener?.onClosingActivity()
+            }
         }
+
         viewmodel.inicio.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (y) {

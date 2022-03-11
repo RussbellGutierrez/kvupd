@@ -28,6 +28,8 @@ object Constant {
     var IMEI = ""
     var VISICOOLER_ID = 0
     var DIA_FILTRO = 0
+    var CONFIG_RENEW = false
+    var IN_HOURS = true
     var POS_LOC: Location? = null
     lateinit var ALTADATOS: String
     lateinit var FIRST_LOCATION: Location

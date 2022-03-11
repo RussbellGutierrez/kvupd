@@ -49,6 +49,12 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
     }
 
     override fun onClosingActivity() {
+        if (isServiceRunning(ServiceSetup::class.java))
+            stopService(Intent(this, ServiceSetup::class.java))
+
+        if (isServiceRunning(ServicePosicion::class.java))
+            stopService(Intent(this, ServicePosicion::class.java))
+
         if (isServiceRunning(ServiceFinish::class.java))
             stopService(Intent(this, ServiceFinish::class.java))
 
@@ -75,7 +81,6 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
     }
 
     private fun setupApp() {
-        //checkApp()
         if (isPlayServicesEnabled()) {
             permission.reqPerm()
             setUpNavController()
@@ -99,16 +104,4 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         }
         return true
     }
-
-
-
-    /*private fun checkApp() {
-        viewModel.workDay({
-            toast("Bienvenido")
-        },{
-            toast("Cerrando KVentas")
-            stopService(Intent(this,ServiceSetup::class.java))//Momentaneo
-            finishAndRemoveTask()
-        })
-    }*/
 }

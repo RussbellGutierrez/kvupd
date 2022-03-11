@@ -2,6 +2,7 @@ package com.upd.kventas.viewmodel
 
 import android.graphics.Bitmap
 import android.location.Location
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
@@ -13,6 +14,7 @@ import com.upd.kventas.utils.Event
 import com.upd.kventas.utils.Network
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
+import java.util.*
 
 class AppViewModel @ViewModelInject constructor(
     private val repository: Repository,
@@ -24,6 +26,9 @@ class AppViewModel @ViewModelInject constructor(
     //  MutableLiveData with Event trigger only once
     private val _inicio: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val inicio: LiveData<Event<Boolean>> = _inicio
+
+    private val _checking: MutableLiveData<Boolean> = MutableLiveData()
+    val checking: LiveData<Boolean> = _checking
 
     private val _fecha: MutableLiveData<Event<String>> = MutableLiveData()
     val fecha: LiveData<Event<String>> = _fecha
@@ -415,6 +420,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun setupApp(T: () -> Unit) {
         if (functions.existQR()) {
+            intoHours()
             functions.executeService("setup", true)
         } else {
             T()
@@ -426,23 +432,6 @@ class AppViewModel @ViewModelInject constructor(
         functions.saveQR(qr)
         return qr
     }
-
-    //  change to suspend
-    /*fun workDay(E: () -> Unit, S: () -> Unit) {
-        viewModelScope.launch {
-            repository.workDay()?.let {
-                if (it) {
-                    E()
-                } else {
-                    repository.deleteClientes()
-                    repository.deleteEmpleados()
-                    repository.deleteDistritos()
-                    repository.deleteNegocios()
-                    S()
-                }
-            }
-        }
-    }*/
 
     fun getIMEI(add: Boolean = false) =
         functions.parseQRtoIMEI(add)
@@ -491,7 +480,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun saveAltaDatos(datos: TADatos) {
         viewModelScope.launch {
-            val mini = MiniUpdAlta(datos.idaux,1)
+            val mini = MiniUpdAlta(datos.idaux, 1)
             repository.saveAltaDatos(datos)
             repository.updateMiniAlta(mini)
         }
@@ -499,7 +488,14 @@ class AppViewModel @ViewModelInject constructor(
 
     fun updateLocationAlta(m: Marker) {
         viewModelScope.launch {
-            val item = LocationAlta(m.snippet!!.toInt(),functions.dateToday(4), m.position.longitude,m.position.latitude,10.0,"Pendiente")
+            val item = LocationAlta(
+                m.snippet!!.toInt(),
+                functions.dateToday(4),
+                m.position.longitude,
+                m.position.latitude,
+                10.0,
+                "Pendiente"
+            )
             repository.updateLocationAlta(item)
         }
     }
@@ -552,13 +548,29 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
+    fun intoHours() {
+        viewModelScope.launch {
+            val conf = repository.getConfig()
+            if (conf.isNullOrEmpty()) {
+                _checking.value = true
+            } else {
+                conf.forEach { i ->
+                    val hora = functions.dateToday(3).replace(":","").toInt()
+                    val inicio = i.hini.replace(":","").toInt()
+                    val fin = i.hfin.replace(":","").toInt()
+                    _checking.value = hora in inicio..fin
+                }
+            }
+        }
+    }
+
     fun dataDowloaded() {
         viewModelScope.launch {
             val conf = repository.getConfig()
             if (conf.isNullOrEmpty()) {
                 _inicio.value = Event(false)
-            }else {
-                val user = when(conf[0].tipo) {
+            } else {
+                val user = when (conf[0].tipo) {
                     "V" -> repository.getClientes()
                     else -> repository.getEmpleados()
                 }

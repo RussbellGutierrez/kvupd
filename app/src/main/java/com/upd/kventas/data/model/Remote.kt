@@ -86,10 +86,10 @@ data class JEncuesta(
 
 @JsonClass(generateAdapter = true)
 data class Encuesta(
-    @Json(name = "ENCUESTA_ID") val id: String,
+    @Json(name = "ENCUESTA_ID") val id: Int,
     @Json(name = "ENCUESTA_NOMBRE") val nombre: String,
     @Json(name = "FOTO") val foto: Boolean,
-    @Json(name = "PREGUNTA_ID") val pregunta: String,
+    @Json(name = "PREGUNTA_ID") val pregunta: Int,
     @Json(name = "DESCRIP") val descripcion: String,
     @Json(name = "TIPO") val tipo: String,
     @Json(name = "RESPUESTAS") val respuesta: String,

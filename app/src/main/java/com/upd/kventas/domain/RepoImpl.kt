@@ -130,30 +130,46 @@ class RepoImpl @Inject constructor(
         saveAlta(item)
     }
 
-    override suspend fun getStarterTime(): Long? {
+    override suspend fun isDataToday(today: String): Boolean {
+        var resp = false
         localDataSource.getConfig().forEach { i ->
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, i.hini.split(":")[0].toInt())
-                set(Calendar.MINUTE, i.hini.split(":")[1].toInt())
-                set(Calendar.SECOND, i.hini.split(":")[2].toInt())
-            }
-            if (calendar.before(Calendar.getInstance()))
-                calendar.add(Calendar.DAY_OF_MONTH, 1)
-            return calendar.timeInMillis - System.currentTimeMillis()
+            resp = i.fecha == today
         }
-        return null
+        return resp
     }
 
-    override suspend fun getFinishTime(): Long? {
-        localDataSource.getConfig().forEach { i ->
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, i.hfin.split(":")[0].toInt())
-                set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
-                set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
+    override suspend fun getStarterTime(): Long {
+        var l = 0L
+        val conf = localDataSource.getConfig()
+        if (!conf.isNullOrEmpty()) {
+            conf.forEach { i ->
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, i.hini.split(":")[0].toInt())
+                    set(Calendar.MINUTE, i.hini.split(":")[1].toInt())
+                    set(Calendar.SECOND, i.hini.split(":")[2].toInt())
+                }
+                if (calendar.before(Calendar.getInstance()))
+                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                l = calendar.timeInMillis - System.currentTimeMillis()
             }
-            return calendar.timeInMillis - System.currentTimeMillis()
         }
-        return null
+        return l
+    }
+
+    override suspend fun getFinishTime(): Long {
+        var l = 0L
+        val conf = localDataSource.getConfig()
+        if (!conf.isNullOrEmpty()) {
+            conf.forEach { i ->
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, i.hfin.split(":")[0].toInt())
+                    set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
+                    set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
+                }
+                l = calendar.timeInMillis - System.currentTimeMillis()
+            }
+        }
+        return l
     }
 
     override suspend fun workDay(): Boolean? {

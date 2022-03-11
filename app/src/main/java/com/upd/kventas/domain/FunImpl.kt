@@ -270,7 +270,7 @@ class FunImpl @Inject constructor(
         OneTimeWorkRequestBuilder<ConfigWork>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                15,
+                5,
                 TimeUnit.MINUTES
             )
             .addTag(W_CONFIG)
@@ -280,7 +280,7 @@ class FunImpl @Inject constructor(
         OneTimeWorkRequestBuilder<UserWork>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                2,
                 TimeUnit.MINUTES
             )
             .addTag(W_USER)
@@ -290,7 +290,7 @@ class FunImpl @Inject constructor(
         OneTimeWorkRequestBuilder<DistritosWork>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                2,
                 TimeUnit.MINUTES
             )
             .addTag(W_DISTRITO)
@@ -300,7 +300,7 @@ class FunImpl @Inject constructor(
         OneTimeWorkRequestBuilder<NegociosWork>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                2,
                 TimeUnit.MINUTES
             )
             .addTag(W_NEGOCIO)
@@ -310,7 +310,7 @@ class FunImpl @Inject constructor(
         OneTimeWorkRequestBuilder<RutasWork>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                2,
                 TimeUnit.MINUTES
             )
             .addTag(W_RUTA)

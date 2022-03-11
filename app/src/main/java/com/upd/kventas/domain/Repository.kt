@@ -33,8 +33,9 @@ interface Repository {
     suspend fun isClienteBaja(cliente: String): Boolean
     suspend fun getLastAlta(): TAlta?
     suspend fun processAlta(fecha: String, location: Location)
-    suspend fun getStarterTime(): Long?
-    suspend fun getFinishTime(): Long?
+    suspend fun isDataToday(today: String): Boolean
+    suspend fun getStarterTime(): Long
+    suspend fun getFinishTime(): Long
     suspend fun workDay(): Boolean?
 
     suspend fun saveConfiguracion(config: List<Config>)

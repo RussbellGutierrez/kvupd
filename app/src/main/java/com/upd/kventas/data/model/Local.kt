@@ -157,10 +157,10 @@ fun List<Combo>.asSpinner(): List<String> = this.map {
 
 @Entity(primaryKeys = ["id"])
 data class TEncuesta(
-    val id: String,
+    val id: Int,
     val nombre: String,
     val foto: Boolean,
-    val pregunta: String,
+    val pregunta: Int,
     val descripcion: String,
     val tipo: String,
     val respuesta: String,
@@ -203,6 +203,16 @@ fun Encuesta.asTEncuesta(): TEncuesta =
         this.eleccion,
         this.necesaria
     )
+
+@Entity(primaryKeys = ["cliente","encuesta","pregunta"])
+data class TRespuesta(
+    val cliente: Int,
+    val fecha: String,
+    val encuesta: Int,
+    val pregunta: Int,
+    val respuesta: String,
+    val rutafoto: String
+)
 
 @Entity(primaryKeys = ["ruta"])
 data class TRutas(

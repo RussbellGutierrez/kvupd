@@ -17,6 +17,7 @@ import com.upd.kventas.utils.Constant.CONFIG_CHANNEL
 import com.upd.kventas.utils.Constant.CONFIG_NOTIF
 import com.upd.kventas.utils.Constant.IMEI
 import com.upd.kventas.utils.Constant.MSG_CONFIG
+import com.upd.kventas.utils.Constant.CONFIG_RENEW
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,7 +37,7 @@ class ConfigWork @WorkerInject constructor(
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
             val conf = repository.getConfig()
-            if (conf.isEmpty()) {
+            if (CONFIG_RENEW) {
                 try {
                     configNotif()
                     repository.getWebConfiguracion(getRequestBody()).collect { response ->
@@ -51,14 +52,36 @@ class ConfigWork @WorkerInject constructor(
                             Result.success()
                         }
                     }
+                    CONFIG_RENEW = false
                 } catch (e: HttpException) {
                     println(e.message())
                     rst = Result.retry()
                 }
-            } else {
-                MSG_CONFIG = "Full"
-                CONF = conf[0]
-                rst = Result.success()
+            }else {
+                if (conf.isEmpty()) {
+                    try {
+                        configNotif()
+                        repository.getWebConfiguracion(getRequestBody()).collect { response ->
+                            val config = response.data?.jobl
+                            rst = if (config.isNullOrEmpty()) {
+                                MSG_CONFIG = "Respuesta: ${response.message}"
+                                Result.failure()
+                            } else {
+                                CONF = config[0]
+                                repository.saveConfiguracion(config)
+                                MSG_CONFIG = "Configuracion completa"
+                                Result.success()
+                            }
+                        }
+                    } catch (e: HttpException) {
+                        println(e.message())
+                        rst = Result.retry()
+                    }
+                } else {
+                    MSG_CONFIG = "Full"
+                    CONF = conf[0]
+                    rst = Result.success()
+                }
             }
             return@withContext rst
         }

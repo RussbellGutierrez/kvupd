@@ -24,6 +24,8 @@ import com.upd.kventas.domain.Repository
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.FIRST_LOCATION
 import com.upd.kventas.utils.Constant.IMEI
+import com.upd.kventas.utils.Constant.CONFIG_RENEW
+import com.upd.kventas.utils.Constant.IN_HOURS
 import com.upd.kventas.utils.Constant.SETUP_NOTIF
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
@@ -33,6 +35,8 @@ import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_RUTA
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
+import com.upd.kventas.utils.Interface.serviceListener
+import com.upd.kventas.utils.isServiceRunning
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,7 +99,6 @@ class ServiceSetup : LifecycleService(), LocationListener {
         }
 
         IMEI = functions.parseQRtoIMEI(true)
-        notificationLaunch()
 
         workManager.getWorkInfosByTagLiveData(W_CONFIG).observe(this, workInfoObserver())
         workManager.getWorkInfosByTagLiveData(W_SETUP).observe(this, workInfoObserver())
@@ -107,7 +110,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
         workManager.getWorkInfosByTagLiveData(W_ENCUESTA).observe(this, workInfoObserver())
 
         repository.getFlowConfig().asLiveData().observe(this) { result ->
-            if (!result.isNullOrEmpty()) {
+            if (!result.isNullOrEmpty() && IN_HOURS) {
                 startLocation()
                 helper.userNotifLaunch()
                 helper.distritoNotifLaunch()
@@ -121,11 +124,14 @@ class ServiceSetup : LifecycleService(), LocationListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.d(_tag, "Service startcommand")
-        functions.launchWorkers()
+        serviceNotification()
+        verifyData {
+            functions.launchWorkers()
+        }
         return START_STICKY
     }
 
-    private fun notificationLaunch() {
+    private fun serviceNotification() {
         val not = helper.setupNotif()
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> startForeground(SETUP_NOTIF, not)
@@ -155,14 +161,19 @@ class ServiceSetup : LifecycleService(), LocationListener {
                         else -> {}
                     }
                 }
+                if (wi.tags.contains(W_CONFIG)) {
+                    when (wi.state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            helper.configNotif()
+                            priorityWorkers()
+                        }
+                        WorkInfo.State.FAILED -> checkConfiguration()
+                        else -> {}
+                    }
+                }
+
                 if (wi.state.isFinished) {
                     when {
-                        wi.tags.contains(W_CONFIG) -> {
-                            helper.configNotif()
-                            if (wi.state == WorkInfo.State.SUCCEEDED) {
-                                priorityWorkers()
-                            }
-                        }
                         wi.tags.contains(W_USER) -> {
                             user = true
                             helper.userNotif()
@@ -196,10 +207,10 @@ class ServiceSetup : LifecycleService(), LocationListener {
 
     private fun priorityWorkers() {
         CoroutineScope(Dispatchers.IO).launch {
-            repository.getStarterTime()?.let {
+            repository.getStarterTime().let {
                 functions.workerSetup(it)
             }
-            repository.getFinishTime()?.let {
+            repository.getFinishTime().let {
                 functions.workerFinish(it)
             }
         }
@@ -262,6 +273,56 @@ class ServiceSetup : LifecycleService(), LocationListener {
                 "Pendiente"
             )
             repository.saveSeguimiento(item)
+        }
+    }
+
+    private fun checkConfiguration() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val conf = repository.getConfig()
+            if (conf.isNullOrEmpty()) {
+                if (serviceListener != null) {
+                    serviceListener?.onClosingActivity()
+                } else {
+                    if (isServiceRunning(ServicePosicion::class.java))
+                        stopService(Intent(this@ServiceSetup, ServicePosicion::class.java))
+
+                    if (isServiceRunning(ServiceFinish::class.java))
+                        stopService(Intent(this@ServiceSetup, ServiceFinish::class.java))
+
+                    stopSelf()
+                }
+            } else {
+                repository.getStarterTime().let {
+                    functions.workerSetup(it)
+                }
+            }
+        }
+    }
+
+    private fun verifyData(T: () -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val fecha = functions.dateToday(5)
+            val today = repository.isDataToday(fecha)
+            if (today) {
+                T()
+            } else {
+                CONFIG_RENEW = true
+                repository.deleteClientes()
+                repository.deleteEmpleados()
+                repository.deleteDistritos()
+                repository.deleteNegocios()
+                repository.deleteRutas()
+                repository.deleteEncuesta()
+                repository.deleteEstado()
+                repository.deleteSeguimiento()
+                repository.deleteVisita()
+                repository.deleteAlta()
+                repository.deleteAltaDatos()
+                repository.deleteBaja()
+                repository.deleteBajaSuper()
+                repository.deleteBajaEstado()
+                T()
+            }
         }
     }
 
