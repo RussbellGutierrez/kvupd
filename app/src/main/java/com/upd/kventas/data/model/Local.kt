@@ -5,6 +5,19 @@ import com.squareup.moshi.Json
 import com.upd.kventas.utils.Constant.CONF
 
 @Entity(primaryKeys = ["codigo"])
+data class TSesion(
+    val codigo: Int,
+    val empresa: Int,
+    val esquema: Int,
+    val sucursal: Int,
+    val fecha: String,
+    val hini: String
+)
+
+fun Config.asTSesion(): TSesion =
+    TSesion(this.codigo, this.empresa, this.esquema, this.sucursal, this.fecha,this.hini)
+
+@Entity(primaryKeys = ["codigo"])
 data class TConfiguracion(
     val codigo: Int,
     val empresa: Int,
@@ -21,25 +34,6 @@ data class TConfiguracion(
     val sucursal: Int,
     val tipo: String
 )
-
-fun List<TConfiguracion>.asConfigList(): List<Config> = this.map {
-    Config(
-        it.codigo,
-        it.empresa,
-        it.esquema,
-        it.fecha,
-        it.nombre,
-        it.codsuper,
-        it.supervisor,
-        it.hfin,
-        it.hini,
-        it.ipp,
-        it.ips,
-        it.seguimiento,
-        it.sucursal,
-        it.tipo
-    )
-}
 
 fun Config.asTConfig(): TConfiguracion =
     TConfiguracion(
@@ -204,7 +198,7 @@ fun Encuesta.asTEncuesta(): TEncuesta =
         this.necesaria
     )
 
-@Entity(primaryKeys = ["cliente","encuesta","pregunta"])
+@Entity(primaryKeys = ["cliente", "encuesta", "pregunta"])
 data class TRespuesta(
     val cliente: Int,
     val fecha: String,
@@ -389,7 +383,7 @@ fun BajaSupervisor.asTBajaSuper(): TBajaSuper =
         this.compra
     )
 
-@Entity(primaryKeys = ["cliente","fecha"])
+@Entity(primaryKeys = ["cliente", "fecha"])
 data class TBEstado(
     var empleado: Int,
     var cliente: Int,

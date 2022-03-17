@@ -5,9 +5,11 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.MSG_NEGOCIO
+import com.upd.kventas.utils.Constant.W_NEGOCIO
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,9 +27,8 @@ class NegociosWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()[0]
             val neg = repository.getNegocios()
-            val req = requestBody(conf)
+            val req = requestBody()
             if (neg.isNullOrEmpty()) {
                 try {
                     repository.getWebNegocios(req).collect { response ->
@@ -43,18 +44,20 @@ class NegociosWork @WorkerInject constructor(
                     }
                 } catch (e: HttpException) {
                     println(e.message())
+                    MSG_NEGOCIO = e.message()
                     rst = Result.retry()
                 }
             } else {
                 MSG_NEGOCIO = "Full"
                 rst = Result.success()
             }
+            workListener?.onFinishWork(W_NEGOCIO)
             return@withContext rst
         }
 
-    private fun requestBody(conf: Config): RequestBody {
+    private fun requestBody(): RequestBody {
         val json = JSONObject()
-        json.put("empresa", conf.empresa)
+        json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
 }

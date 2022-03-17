@@ -20,7 +20,7 @@ class RepoImpl @Inject constructor(
     private val localDataSource: LocalDataSource
 ) : BaseApiResponse(), Repository {
     //Room
-    override fun getFlowConfig(): Flow<List<Config>> {
+    override fun getFlowConfig(): Flow<List<TConfiguracion>> {
         return localDataSource.getObsConfiguracion().distinctUntilChanged()
     }
 
@@ -60,7 +60,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getObsRutas().distinctUntilChanged()
     }
 
-    override suspend fun getConfig(): List<Config> {
+    override suspend fun getSesion(): TSesion? {
+        return localDataSource.getSesion()
+    }
+
+    override suspend fun getConfig(): TConfiguracion? {
         return localDataSource.getConfig()
     }
 
@@ -132,54 +136,47 @@ class RepoImpl @Inject constructor(
 
     override suspend fun isDataToday(today: String): Boolean {
         var resp = false
-        localDataSource.getConfig().forEach { i ->
+        localDataSource.getConfig()?.let { i ->
             resp = i.fecha == today
         }
         return resp
     }
 
     override suspend fun getStarterTime(): Long {
-        var l = 0L
-        val conf = localDataSource.getConfig()
-        if (!conf.isNullOrEmpty()) {
-            conf.forEach { i ->
-                val calendar = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, i.hini.split(":")[0].toInt())
-                    set(Calendar.MINUTE, i.hini.split(":")[1].toInt())
-                    set(Calendar.SECOND, i.hini.split(":")[2].toInt())
-                }
-                if (calendar.before(Calendar.getInstance()))
-                    calendar.add(Calendar.DAY_OF_MONTH, 1)
-                l = calendar.timeInMillis - System.currentTimeMillis()
-            }
+        val l: Long
+        val config = localDataSource.getConfig()
+        val sesion = localDataSource.getSesion()
+        val hini = when {
+            config != null -> config.hini
+            sesion != null -> sesion.hini
+            else -> ""
         }
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hini.split(":")[0].toInt())
+            set(Calendar.MINUTE, hini.split(":")[1].toInt())
+            set(Calendar.SECOND, hini.split(":")[2].toInt())
+        }
+        if (calendar.before(Calendar.getInstance()))
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        l = calendar.timeInMillis - System.currentTimeMillis()
         return l
     }
 
     override suspend fun getFinishTime(): Long {
         var l = 0L
-        val conf = localDataSource.getConfig()
-        if (!conf.isNullOrEmpty()) {
-            conf.forEach { i ->
-                val calendar = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, i.hfin.split(":")[0].toInt())
-                    set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
-                    set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
-                }
-                l = calendar.timeInMillis - System.currentTimeMillis()
+        localDataSource.getConfig()?.let { i ->
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, i.hfin.split(":")[0].toInt())
+                set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
+                set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
             }
+            l = calendar.timeInMillis - System.currentTimeMillis()
         }
         return l
     }
 
-    override suspend fun workDay(): Boolean? {
-        val time = Calendar.getInstance().time.timeToText(3).replace(":", "").toInt()
-        localDataSource.getConfig().forEach { i ->
-            val inicio = i.hini.replace(":", "").toInt()
-            val final = i.hfin.replace(":", "").toInt()
-            return time in inicio..final
-        }
-        return null
+    override suspend fun saveSesion(config: Config) {
+        localDataSource.saveSesion(config)
     }
 
     override suspend fun saveConfiguracion(config: List<Config>) {
@@ -280,6 +277,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja) {
         localDataSource.updateMiniBaja(miniUpdBaja)
+    }
+
+    override suspend fun deleteConfig() {
+        localDataSource.deleteConfig()
     }
 
     override suspend fun deleteClientes() {

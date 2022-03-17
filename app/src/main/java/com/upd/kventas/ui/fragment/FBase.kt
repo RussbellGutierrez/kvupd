@@ -10,11 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kventas.BuildConfig
 import com.upd.kventas.R
-import com.upd.kventas.data.model.Config
+import com.upd.kventas.data.model.TConfiguracion
 import com.upd.kventas.databinding.FragmentFBaseBinding
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
-import com.upd.kventas.utils.Constant.IN_HOURS
 import com.upd.kventas.utils.Interface.serviceListener
 import com.upd.kventas.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,36 +56,27 @@ class FBase : Fragment() {
 
         bind.fabVendedor.setOnClickListener {
             opt = 1
-            viewmodel.dataDowloaded()
+            viewmodel.dataDownloaded()
         }
         bind.fabCliente.setOnClickListener {
             opt = 2
-            viewmodel.dataDowloaded()
+            viewmodel.dataDownloaded()
         }
         bind.fabReporte.setOnClickListener {
             opt = 3
-            viewmodel.dataDowloaded()
+            viewmodel.dataDownloaded()
         }
         bind.fabAltas.setOnClickListener {
             opt = 4
-            viewmodel.dataDowloaded()
+            viewmodel.dataDownloaded()
         }
         bind.fabBajas.setOnClickListener {
             opt = 5
-            viewmodel.dataDowloaded()
+            viewmodel.dataDownloaded()
         }
         bind.fabServidor.setOnClickListener {
             opt = 6
-            viewmodel.dataDowloaded()
-        }
-
-        viewmodel.checking.observe(viewLifecycleOwner) {
-            IN_HOURS = it
-            if (it) {
-                snack("Bienvenido")
-            } else {
-                serviceListener?.onClosingActivity()
-            }
+            viewmodel.dataDownloaded()
         }
 
         viewmodel.inicio.observe(viewLifecycleOwner) {
@@ -129,6 +119,17 @@ class FBase : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewmodel.checking.observe(viewLifecycleOwner) {
+            if (it) {
+                viewmodel.launchSetup()
+            } else {
+                serviceListener?.onClosingActivity()
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
@@ -141,7 +142,7 @@ class FBase : Fragment() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun setParams(config: Config) {
+    private fun setParams(config: TConfiguracion) {
         if (config.tipo != "S") {
             bind.lnrVendedor.setUI("v", false)
         }
@@ -158,7 +159,7 @@ class FBase : Fragment() {
         bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
     }
 
-    private fun getUsuario(item: Config): String {
+    private fun getUsuario(item: TConfiguracion): String {
         return if (item.nombre == "") {
             when (item.tipo) {
                 "S" -> "Supervisor de ventas - ${item.codigo}"

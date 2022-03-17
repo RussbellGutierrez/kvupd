@@ -8,7 +8,12 @@ import androidx.work.*
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.MSG_USER
+import com.upd.kventas.utils.Constant.W_USER
+import com.upd.kventas.utils.Interface
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -27,11 +32,10 @@ class UserWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()[0]
             val cli = repository.getClientes()
             val emp = repository.getEmpleados()
-            val req = requestBody(conf)
-            when (conf.tipo) {
+            val req = requestBody()
+            when (CONF.tipo) {
                 "V" -> if (cli.isNullOrEmpty()) {
                     try {
                         repository.getWebClientes(req).collect { response ->
@@ -47,6 +51,7 @@ class UserWork @WorkerInject constructor(
                         }
                     } catch (e: HttpException) {
                         println(e.message())
+                        MSG_USER = e.message()
                         rst = Result.retry()
                     }
                 } else {
@@ -68,6 +73,7 @@ class UserWork @WorkerInject constructor(
                         }
                     } catch (e: HttpException) {
                         println(e.message())
+                        MSG_USER = e.message()
                         rst = Result.retry()
                     }
                 } else {
@@ -75,14 +81,15 @@ class UserWork @WorkerInject constructor(
                     rst = Result.success()
                 }
             }
+            workListener?.onFinishWork(W_USER)
             return@withContext rst
         }
 
-    private fun requestBody(conf: Config): RequestBody {
+    private fun requestBody(): RequestBody {
         val json = JSONObject()
-        json.put("empleado", conf.codigo)
-        json.put("empresa", conf.empresa)
-        if (conf.tipo == "V")
+        json.put("empleado", CONF.codigo)
+        json.put("empresa", CONF.empresa)
+        if (CONF.tipo == "V")
             json.put("fecha", functions.dateToday(6))
         return json.toReqBody()
     }

@@ -1,6 +1,7 @@
 package com.upd.kventas.application.work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.Worker
@@ -15,6 +16,7 @@ class SetupWork @WorkerInject constructor(
     private val _tag by lazy { SetupWork::class.java.simpleName }
 
     override fun doWork(): Result {
+        Log.w(_tag,"Setup Work Launch")
         functions.executeService("setup",true)
         return Result.success()
     }

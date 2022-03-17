@@ -10,8 +10,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.gms.location.*
@@ -21,11 +22,10 @@ import com.upd.kventas.di.LocationRequestGps
 import com.upd.kventas.di.LocationSettingsRequestGps
 import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.domain.ServiceWork
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.FIRST_LOCATION
 import com.upd.kventas.utils.Constant.IMEI
-import com.upd.kventas.utils.Constant.CONFIG_RENEW
-import com.upd.kventas.utils.Constant.IN_HOURS
 import com.upd.kventas.utils.Constant.SETUP_NOTIF
 import com.upd.kventas.utils.Constant.W_CONFIG
 import com.upd.kventas.utils.Constant.W_DISTRITO
@@ -35,8 +35,9 @@ import com.upd.kventas.utils.Constant.W_NEGOCIO
 import com.upd.kventas.utils.Constant.W_RUTA
 import com.upd.kventas.utils.Constant.W_SETUP
 import com.upd.kventas.utils.Constant.W_USER
+import com.upd.kventas.utils.Event
 import com.upd.kventas.utils.Interface.serviceListener
-import com.upd.kventas.utils.isServiceRunning
+import com.upd.kventas.utils.Interface.workListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ServiceSetup : LifecycleService(), LocationListener {
+class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     @Inject
     lateinit var workManager: WorkManager
@@ -71,6 +72,12 @@ class ServiceSetup : LifecycleService(), LocationListener {
     private var negocio = false
     private var ruta = false
     private var encuesta = false
+    private lateinit var configLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var userLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var distritoLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var negocioLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var rutaLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var encuestaLiveData: LiveData<Event<List<WorkInfo>>>
     private val _tag by lazy { ServiceSetup::class.java.simpleName }
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val callback = object : LocationCallback() {
@@ -87,48 +94,135 @@ class ServiceSetup : LifecycleService(), LocationListener {
             fusedLocationProviderClient.removeLocationUpdates(callback)
         }
         batteryStatus = null
+        workListener = null
         super.onDestroy()
     }
 
     override fun onCreate() {
         super.onCreate()
         Log.d(_tag, "Service setup launch")
+        functions.chooseCloseWorker("setup")
+
+        workListener = this
+        serviceNotification()
 
         batteryStatus = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
             this.registerReceiver(null, ifilter)
         }
 
         IMEI = functions.parseQRtoIMEI(true)
-
-        workManager.getWorkInfosByTagLiveData(W_CONFIG).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_SETUP).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_FINISH).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_USER).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_DISTRITO).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_NEGOCIO).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_RUTA).observe(this, workInfoObserver())
-        workManager.getWorkInfosByTagLiveData(W_ENCUESTA).observe(this, workInfoObserver())
-
-        repository.getFlowConfig().asLiveData().observe(this) { result ->
-            if (!result.isNullOrEmpty() && IN_HOURS) {
-                startLocation()
-                helper.userNotifLaunch()
-                helper.distritoNotifLaunch()
-                helper.negocioNotifLaunch()
-                helper.rutaNotifLaunch()
-                helper.encuestaNotifLaunch()
-            }
-        }
+        initObsWork()
+        verifyHours()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.d(_tag, "Service startcommand")
-        serviceNotification()
-        verifyData {
-            functions.launchWorkers()
-        }
         return START_STICKY
+    }
+
+    override fun onFinishWork(work: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            when(work) {
+                W_CONFIG -> {
+                    Log.d(_tag,"Config reach")
+                    configLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    Log.d(_tag, "W_CONFIG state ${j.state}")
+                                    helper.configNotif()
+                                    when (j.state) {
+                                        WorkInfo.State.SUCCEEDED -> priorityWorkers()
+                                        WorkInfo.State.FAILED -> configFailed()
+                                        else -> {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                W_USER -> {
+                    Log.d(_tag,"User reach")
+                    userLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    user = true
+                                    helper.userNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_DISTRITO -> {
+                    Log.d(_tag,"Distrito reach")
+                    distritoLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    distrito = true
+                                    helper.distritoNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_NEGOCIO -> {
+                    Log.d(_tag,"Negocio reach")
+                    negocioLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    negocio = true
+                                    helper.negocioNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_RUTA -> {
+                    Log.d(_tag,"Ruta reach")
+                    rutaLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    ruta = true
+                                    helper.rutaNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_ENCUESTA -> {
+                    Log.d(_tag,"Encuesta reach")
+                    encuestaLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    encuesta = true
+                                    helper.encuestaNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initObsWork() {
+        configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { Event(it) }
+        userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { Event(it) }
+        distritoLiveData = workManager.getWorkInfosByTagLiveData(W_DISTRITO).map { Event(it) }
+        negocioLiveData = workManager.getWorkInfosByTagLiveData(W_NEGOCIO).map { Event(it) }
+        rutaLiveData = workManager.getWorkInfosByTagLiveData(W_RUTA).map { Event(it) }
+        encuestaLiveData = workManager.getWorkInfosByTagLiveData(W_ENCUESTA).map { Event(it) }
     }
 
     private fun serviceNotification() {
@@ -140,77 +234,17 @@ class ServiceSetup : LifecycleService(), LocationListener {
         }
     }
 
-    private fun workInfoObserver(): Observer<List<WorkInfo>> {
-        return Observer { list ->
-            if (list.isNullOrEmpty()) {
-                return@Observer
-            }
-
-            list.forEach { wi ->
-                if (wi.tags.contains(W_SETUP)) {
-                    when (wi.state) {
-                        WorkInfo.State.SUCCEEDED -> Log.d(_tag, "SetupW succees")
-                        WorkInfo.State.FAILED -> Log.d(_tag, "SetupW fail")
-                        else -> {}
-                    }
-                }
-                if (wi.tags.contains(W_FINISH)) {
-                    when (wi.state) {
-                        WorkInfo.State.SUCCEEDED -> Log.d(_tag, "FinishW succees")
-                        WorkInfo.State.FAILED -> Log.d(_tag, "FinishW fail")
-                        else -> {}
-                    }
-                }
-                if (wi.tags.contains(W_CONFIG)) {
-                    when (wi.state) {
-                        WorkInfo.State.SUCCEEDED -> {
-                            helper.configNotif()
-                            priorityWorkers()
-                        }
-                        WorkInfo.State.FAILED -> checkConfiguration()
-                        else -> {}
-                    }
-                }
-
-                if (wi.state.isFinished) {
-                    when {
-                        wi.tags.contains(W_USER) -> {
-                            user = true
-                            helper.userNotif()
-                            periodicWorkers()
-                        }
-                        wi.tags.contains(W_DISTRITO) -> {
-                            distrito = true
-                            helper.distritoNotif()
-                            periodicWorkers()
-                        }
-                        wi.tags.contains(W_NEGOCIO) -> {
-                            negocio = true
-                            helper.negocioNotif()
-                            periodicWorkers()
-                        }
-                        wi.tags.contains(W_RUTA) -> {
-                            ruta = true
-                            helper.rutaNotif()
-                            periodicWorkers()
-                        }
-                        wi.tags.contains(W_ENCUESTA) -> {
-                            encuesta = true
-                            helper.encuestaNotif()
-                            periodicWorkers()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun priorityWorkers() {
         CoroutineScope(Dispatchers.IO).launch {
-            repository.getStarterTime().let {
-                functions.workerSetup(it)
-            }
+            startLocation()
+            helper.userNotifLaunch()
+            helper.distritoNotifLaunch()
+            helper.negocioNotifLaunch()
+            helper.rutaNotifLaunch()
+            helper.encuestaNotifLaunch()
+
             repository.getFinishTime().let {
+                Log.d(_tag, "Finish time $it")
                 functions.workerFinish(it)
             }
         }
@@ -218,6 +252,7 @@ class ServiceSetup : LifecycleService(), LocationListener {
 
     private fun periodicWorkers() {
         if (user && distrito && negocio && ruta && encuesta) {
+            Log.d(_tag,"Launch periodic workers")
             functions.workerperSeguimiento()
             functions.workerperVisita()
             functions.workerperAlta()
@@ -233,6 +268,61 @@ class ServiceSetup : LifecycleService(), LocationListener {
         if (p0.accuracy <= 50f) {
             saveLocation(p0)
         }
+    }
+
+    private fun verifyHours() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val sesion = repository.getSesion() != null
+            val config = repository.getConfig() != null
+
+            if (sesion && config) {
+                Log.d(_tag,"Sesion and config")
+                repository.getConfig()!!.let {
+                    val hora = functions.dateToday(3).replace(":", "").toInt()
+                    val inicio = it.hini.replace(":", "").toInt()
+                    val fin = it.hfin.replace(":", "").toInt()
+                    val inhours = hora in inicio..fin
+
+                    if (inhours) {
+                        checkingData()
+                    } else {
+                        closeEntireApp()
+                    }
+                }
+            } else {
+                Log.e(_tag,"No sesion and config")
+                functions.launchWorkers()
+            }
+        }
+    }
+
+    private fun checkingData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val fecha = functions.dateToday(5)
+            val today = repository.isDataToday(fecha)
+            if (!today) {
+                repository.deleteConfig()
+                repository.deleteClientes()
+                repository.deleteEmpleados()
+                repository.deleteDistritos()
+                repository.deleteNegocios()
+                repository.deleteRutas()
+                repository.deleteEncuesta()
+                repository.deleteEstado()
+                repository.deleteSeguimiento()
+                repository.deleteVisita()
+                repository.deleteAlta()
+                repository.deleteAltaDatos()
+                repository.deleteBaja()
+                repository.deleteBajaSuper()
+                repository.deleteBajaEstado()
+            }
+            functions.launchWorkers()
+        }
+    }
+
+    private fun closeEntireApp() {
+        functions.executeService("finish", false)
     }
 
     @SuppressLint("MissingPermission")
@@ -276,52 +366,19 @@ class ServiceSetup : LifecycleService(), LocationListener {
         }
     }
 
-    private fun checkConfiguration() {
+    private fun configFailed() {
         CoroutineScope(Dispatchers.IO).launch {
-            val conf = repository.getConfig()
-            if (conf.isNullOrEmpty()) {
+            val sesion = repository.getSesion()
+            if (sesion != null) {
+                Log.d(_tag,"Finishing app")
+                functions.executeService("finish", false)
+            } else {
+                Log.e(_tag,"Never download data")
                 if (serviceListener != null) {
                     serviceListener?.onClosingActivity()
                 } else {
-                    if (isServiceRunning(ServicePosicion::class.java))
-                        stopService(Intent(this@ServiceSetup, ServicePosicion::class.java))
-
-                    if (isServiceRunning(ServiceFinish::class.java))
-                        stopService(Intent(this@ServiceSetup, ServiceFinish::class.java))
-
                     stopSelf()
                 }
-            } else {
-                repository.getStarterTime().let {
-                    functions.workerSetup(it)
-                }
-            }
-        }
-    }
-
-    private fun verifyData(T: () -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val fecha = functions.dateToday(5)
-            val today = repository.isDataToday(fecha)
-            if (today) {
-                T()
-            } else {
-                CONFIG_RENEW = true
-                repository.deleteClientes()
-                repository.deleteEmpleados()
-                repository.deleteDistritos()
-                repository.deleteNegocios()
-                repository.deleteRutas()
-                repository.deleteEncuesta()
-                repository.deleteEstado()
-                repository.deleteSeguimiento()
-                repository.deleteVisita()
-                repository.deleteAlta()
-                repository.deleteAltaDatos()
-                repository.deleteBaja()
-                repository.deleteBajaSuper()
-                repository.deleteBajaEstado()
-                T()
             }
         }
     }

@@ -7,7 +7,12 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.MSG_DISTRITO
+import com.upd.kventas.utils.Constant.W_DISTRITO
+import com.upd.kventas.utils.Interface
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,9 +30,8 @@ class DistritosWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()[0]
             val dist = repository.getDistritos()
-            val req = requestBody(conf)
+            val req = requestBody()
             if (dist.isNullOrEmpty()) {
                 try {
                     repository.getWebDistritos(req).collect { response ->
@@ -43,18 +47,20 @@ class DistritosWork @WorkerInject constructor(
                     }
                 } catch (e: HttpException) {
                     println(e.message())
+                    MSG_DISTRITO = e.message()
                     rst = Result.retry()
                 }
             } else {
                 MSG_DISTRITO = "Full"
                 rst = Result.success()
             }
+            workListener?.onFinishWork(W_DISTRITO)
             return@withContext rst
         }
 
-    private fun requestBody(conf: Config): RequestBody {
+    private fun requestBody(): RequestBody {
         val json = JSONObject()
-        json.put("empresa", conf.empresa)
+        json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
 }

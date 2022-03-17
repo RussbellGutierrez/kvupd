@@ -7,8 +7,8 @@ import javax.inject.Inject
 
 class LocalDataSource @Inject constructor(private val dao: AppDAO, private val qdao: QueryDAO) {
 
-    fun getObsConfiguracion(): Flow<List<Config>> {
-        return qdao.getObsConfig().map { it.asConfigList() }
+    fun getObsConfiguracion(): Flow<List<TConfiguracion>> {
+        return qdao.getObsConfig()
     }
 
     fun getRowClientes(): Flow<List<RowCliente>> {
@@ -47,8 +47,12 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getObsRutas()
     }
 
-    suspend fun getConfig(): List<Config> {
-        return qdao.getConfig().asConfigList()
+    suspend fun getSesion(): TSesion? {
+        return qdao.getSesion()
+    }
+
+    suspend fun getConfig(): TConfiguracion? {
+        return qdao.getConfig()
     }
 
     suspend fun getClientes(): List<Cliente> {
@@ -97,6 +101,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun getLastAlta(): TAlta? {
         return qdao.getLastAlta()
+    }
+
+    suspend fun saveSesion(config: Config) {
+        dao.insertSesion(config.asTSesion())
     }
 
     suspend fun saveConfiguracion(conf: List<Config>) {
@@ -173,6 +181,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun updateMiniBaja(mini: MiniUpdBaja) {
         dao.updateMiniBaja(mini)
+    }
+
+    suspend fun deleteConfig() {
+        dao.deleteConfig()
     }
 
     suspend fun deleteCliente() {

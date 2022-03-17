@@ -1,5 +1,6 @@
 package com.upd.kventas.utils
 
+import com.upd.kventas.domain.ServiceWork
 import com.upd.kventas.service.ServiceSetup
 import com.upd.kventas.ui.adapter.*
 
@@ -14,4 +15,5 @@ object Interface {
     lateinit var bajaListener: BajaAdapter.OnBajaListener
     lateinit var bajaSuperListener: BajaSupervisorAdapter.OnBajaSuperListener
     var serviceListener: ServiceSetup.OnServiceListener? = null
+    var workListener: ServiceWork? = null
 }

@@ -8,7 +8,7 @@ import okhttp3.RequestBody
 
 interface Repository {
     //  Room Functions
-    fun getFlowConfig(): Flow<List<Config>>
+    fun getFlowConfig(): Flow<List<TConfiguracion>>
     fun getFlowRowCliente(): Flow<List<RowCliente>>
     fun getFlowLocation(): Flow<List<TSeguimiento>>
     fun getFlowMarker(): Flow<List<MarkerMap>>
@@ -19,7 +19,8 @@ interface Repository {
     fun getFlowRowBaja(): Flow<List<RowBaja>>
     fun getFlowRutas(): Flow<List<TRutas>>
 
-    suspend fun getConfig(): List<Config>
+    suspend fun getSesion(): TSesion?
+    suspend fun getConfig(): TConfiguracion?
     suspend fun getClientes(): List<Cliente>
     suspend fun getEmpleados(): List<Vendedor>
     suspend fun getDistritos(): List<Combo>
@@ -36,8 +37,8 @@ interface Repository {
     suspend fun isDataToday(today: String): Boolean
     suspend fun getStarterTime(): Long
     suspend fun getFinishTime(): Long
-    suspend fun workDay(): Boolean?
 
+    suspend fun saveSesion(config: Config)
     suspend fun saveConfiguracion(config: List<Config>)
     suspend fun saveClientes(cliente: List<Cliente>)
     suspend fun saveEmpleados(empleado: List<Vendedor>)
@@ -66,6 +67,7 @@ interface Repository {
     suspend fun updateAltaDatos(upd: TADatos)
     suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja)
 
+    suspend fun deleteConfig()
     suspend fun deleteClientes()
     suspend fun deleteEmpleados()
     suspend fun deleteDistritos()

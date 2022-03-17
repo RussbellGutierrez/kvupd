@@ -7,8 +7,13 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.MSG_ENCUESTA
 import com.upd.kventas.utils.Constant.MSG_NEGOCIO
+import com.upd.kventas.utils.Constant.W_ENCUESTA
+import com.upd.kventas.utils.Interface
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,9 +31,8 @@ class EncuestaWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()[0]
             val enc = repository.getEncuestas()
-            val req = requestBody(conf)
+            val req = requestBody()
             if (enc.isNullOrEmpty()) {
                 try {
                     repository.getWebEncuesta(req).collect { response ->
@@ -44,19 +48,21 @@ class EncuestaWork @WorkerInject constructor(
                     }
                 } catch (e: HttpException) {
                     println(e.message())
+                    MSG_ENCUESTA = e.message()
                     rst = Result.retry()
                 }
             } else {
                 MSG_ENCUESTA = "Full"
                 rst = Result.success()
             }
+            workListener?.onFinishWork(W_ENCUESTA)
             return@withContext rst
         }
 
-    private fun requestBody(conf: Config): RequestBody {
+    private fun requestBody(): RequestBody {
         val json = JSONObject()
-        json.put("empleado", conf.codigo)
-        json.put("empresa", conf.empresa)
+        json.put("empleado", CONF.codigo)
+        json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
 }

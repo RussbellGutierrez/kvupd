@@ -235,8 +235,12 @@ class FunImpl @Inject constructor(
             .enqueue()
     }
 
-    override fun closePeriodicWorkers() {
-        workManager.cancelAllWorkByTag(PERIODIC_WORK)
+    override fun chooseCloseWorker(work: String) {
+        when(work) {
+            "setup" -> workManager.cancelUniqueWork(W_SETUP)
+            "finish" -> workManager.cancelUniqueWork(W_FINISH)
+            "periodic" -> workManager.cancelAllWorkByTag(PERIODIC_WORK)
+        }
     }
 
     override fun workerSetup(long: Long) {
@@ -244,7 +248,7 @@ class FunImpl @Inject constructor(
             .setInitialDelay(long, TimeUnit.MILLISECONDS)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                3,
                 TimeUnit.MINUTES
             )
             .addTag(W_SETUP)
@@ -258,7 +262,7 @@ class FunImpl @Inject constructor(
             .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                5,
+                3,
                 TimeUnit.MINUTES
             )
             .addTag(W_FINISH)
@@ -268,61 +272,31 @@ class FunImpl @Inject constructor(
 
     override fun workerConfiguracion() =
         OneTimeWorkRequestBuilder<ConfigWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                5,
-                TimeUnit.MINUTES
-            )
             .addTag(W_CONFIG)
             .build()
 
     override fun workerUser() =
         OneTimeWorkRequestBuilder<UserWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                2,
-                TimeUnit.MINUTES
-            )
             .addTag(W_USER)
             .build()
 
     override fun workerDistritos() =
         OneTimeWorkRequestBuilder<DistritosWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                2,
-                TimeUnit.MINUTES
-            )
             .addTag(W_DISTRITO)
             .build()
 
     override fun workerNegocios() =
         OneTimeWorkRequestBuilder<NegociosWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                2,
-                TimeUnit.MINUTES
-            )
             .addTag(W_NEGOCIO)
             .build()
 
     override fun workerRutas() =
         OneTimeWorkRequestBuilder<RutasWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                2,
-                TimeUnit.MINUTES
-            )
             .addTag(W_RUTA)
             .build()
 
     override fun workerEncuestas() =
         OneTimeWorkRequestBuilder<EncuestaWork>()
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                5,
-                TimeUnit.MINUTES
-            )
             .addTag(W_ENCUESTA)
             .build()
 

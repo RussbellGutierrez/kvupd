@@ -2,6 +2,7 @@ package com.upd.kventas.data.model
 
 object QueryConstant {
 
+    const val GET_SESION = "SELECT * FROM TSesion"
     const val GET_CONFIG = "SELECT * FROM TConfiguracion"
     const val GET_CLIENTES = "SELECT * FROM TClientes"
     const val GET_EMPLEADOS = "SELECT * FROM TEmpleados"
@@ -15,6 +16,7 @@ object QueryConstant {
     const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
     const val GET_BAJA_SUPER = "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
 
+    const val DEL_CONFIG = "DELETE FROM TConfiguracion"
     const val DEL_CLIENTES = "DELETE FROM TClientes"
     const val DEL_EMPLEADOS = "DELETE FROM TEmpleados"
     const val DEL_DISTRITOS = "DELETE FROM TDistrito"

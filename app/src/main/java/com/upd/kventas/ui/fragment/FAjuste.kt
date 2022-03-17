@@ -47,6 +47,8 @@ class FAjuste : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        bind.edtImei.setText("868825047897476")//   Borrar antes de subir correcciones
+
         bind.btnOriunda.setOnClickListener {
             empresa = 1
             setParamButton(1)

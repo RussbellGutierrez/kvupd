@@ -6,9 +6,9 @@ import com.upd.kventas.data.model.*
 
 @Database(
     version = 1,
-    entities = [TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class, TNegocio::class,
-        TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class, TVisita::class,
-        TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class],
+    entities = [TSesion::class, TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class,
+        TNegocio::class, TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class,
+        TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class],
     exportSchema = true
 )
 

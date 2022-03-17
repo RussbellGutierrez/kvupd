@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.upd.kventas.R
@@ -70,6 +71,7 @@ class HelperNotification @Inject constructor(
     }
 
     fun configNotif() {
+        Log.d("Notif","Config notif change")
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, CONFIG_CHANNEL)
             .setSmallIcon(R.drawable.notf_configuracion)

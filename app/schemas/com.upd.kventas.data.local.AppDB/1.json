@@ -2,8 +2,58 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "69d48333ba65f753938e0fdc340f3390",
+    "identityHash": "772c4390cd1493b52db34c84e215ad74",
     "entities": [
+      {
+        "tableName": "TSesion",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `hini` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
+        "fields": [
+          {
+            "fieldPath": "codigo",
+            "columnName": "codigo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "empresa",
+            "columnName": "empresa",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "esquema",
+            "columnName": "esquema",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sucursal",
+            "columnName": "sucursal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hini",
+            "columnName": "hini",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "codigo"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
       {
         "tableName": "TConfiguracion",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `hfin` TEXT NOT NULL, `hini` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
@@ -319,12 +369,12 @@
       },
       {
         "tableName": "TEncuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, `necesaria` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, `necesaria` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -342,7 +392,7 @@
           {
             "fieldPath": "pregunta",
             "columnName": "pregunta",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -397,6 +447,58 @@
         "primaryKey": {
           "columnNames": [
             "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TRespuesta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
+        "fields": [
+          {
+            "fieldPath": "cliente",
+            "columnName": "cliente",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encuesta",
+            "columnName": "encuesta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pregunta",
+            "columnName": "pregunta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "respuesta",
+            "columnName": "respuesta",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rutafoto",
+            "columnName": "rutafoto",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "cliente",
+            "encuesta",
+            "pregunta"
           ],
           "autoGenerate": false
         },
@@ -1100,7 +1202,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69d48333ba65f753938e0fdc340f3390')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '772c4390cd1493b52db34c84e215ad74')"
     ]
   }
 }

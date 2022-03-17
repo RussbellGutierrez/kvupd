@@ -26,7 +26,7 @@ interface Functions {
 
     fun executeService(service: String, foreground: Boolean)
     fun launchWorkers()
-    fun closePeriodicWorkers()
+    fun chooseCloseWorker(work: String)
     fun workerSetup(long: Long)
     fun workerFinish(long: Long)
 

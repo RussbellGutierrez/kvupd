@@ -377,7 +377,7 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     suspend fun isConfigEmpty(): Boolean =
-        repository.getConfig().isNullOrEmpty()
+        repository.getConfig() == null
 
     suspend fun isClienteBaja(cliente: String): Boolean =
         repository.isClienteBaja(cliente)
@@ -421,7 +421,6 @@ class AppViewModel @ViewModelInject constructor(
     fun setupApp(T: () -> Unit) {
         if (functions.existQR()) {
             intoHours()
-            functions.executeService("setup", true)
         } else {
             T()
         }
@@ -453,6 +452,10 @@ class AppViewModel @ViewModelInject constructor(
 
     fun launchPosition() {
         functions.executeService("position", false)
+    }
+
+    fun launchSetup() {
+        functions.executeService("setup", false)
     }
 
     fun fecha(opt: Int) =
@@ -548,40 +551,40 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    fun intoHours() {
+    private fun intoHours() {
         viewModelScope.launch {
-            val conf = repository.getConfig()
-            if (conf.isNullOrEmpty()) {
-                _checking.value = true
-            } else {
-                conf.forEach { i ->
-                    val hora = functions.dateToday(3).replace(":","").toInt()
-                    val inicio = i.hini.replace(":","").toInt()
-                    val fin = i.hfin.replace(":","").toInt()
+            repository.getConfig().let {
+                if (it != null) {
+                    val hora = functions.dateToday(3).replace(":", "").toInt()
+                    val inicio = it.hini.replace(":", "").toInt()
+                    val fin = it.hfin.replace(":", "").toInt()
                     _checking.value = hora in inicio..fin
+                } else {
+                    _checking.value = true
                 }
             }
         }
     }
 
-    fun dataDowloaded() {
+    fun dataDownloaded() {
         viewModelScope.launch {
-            val conf = repository.getConfig()
-            if (conf.isNullOrEmpty()) {
-                _inicio.value = Event(false)
-            } else {
-                val user = when (conf[0].tipo) {
-                    "V" -> repository.getClientes()
-                    else -> repository.getEmpleados()
+            repository.getConfig().let {
+                if (it != null) {
+                    val user = when (it.tipo) {
+                        "V" -> repository.getClientes()
+                        else -> repository.getEmpleados()
+                    }
+                    val dist = repository.getDistritos()
+                    val neg = repository.getNegocios()
+
+                    val userb = !user.isNullOrEmpty()
+                    val distb = !dist.isNullOrEmpty()
+                    val negb = !neg.isNullOrEmpty()
+
+                    _inicio.value = Event(userb && distb && negb)
+                }else {
+                    _inicio.value = Event(false)
                 }
-                val dist = repository.getDistritos()
-                val neg = repository.getNegocios()
-
-                val userb = !user.isNullOrEmpty()
-                val distb = !dist.isNullOrEmpty()
-                val negb = !neg.isNullOrEmpty()
-
-                _inicio.value = Event(userb && distb && negb)
             }
         }
     }

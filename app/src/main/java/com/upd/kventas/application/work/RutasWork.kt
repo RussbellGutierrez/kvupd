@@ -8,7 +8,12 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.domain.Repository
+import com.upd.kventas.utils.Constant
+import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.MSG_RUTA
+import com.upd.kventas.utils.Constant.W_RUTA
+import com.upd.kventas.utils.Interface
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,9 +31,8 @@ class RutasWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()[0]
             val rut = repository.getRutas()
-            val req = requestBody(conf)
+            val req = requestBody()
             if (rut.isNullOrEmpty()) {
                 try {
                     repository.getWebRutas(req).collect { response ->
@@ -44,19 +48,21 @@ class RutasWork @WorkerInject constructor(
                     }
                 } catch (e: HttpException) {
                     println(e.message())
+                    MSG_RUTA = e.message()
                     rst = Result.failure()
                 }
             } else {
                 MSG_RUTA = "Full"
                 rst = Result.success()
             }
+            workListener?.onFinishWork(W_RUTA)
             return@withContext rst
         }
 
-    private fun requestBody(conf: Config): RequestBody {
+    private fun requestBody(): RequestBody {
         val json = JSONObject()
-        json.put("empleado", conf.codigo)
-        json.put("empresa", conf.empresa)
+        json.put("empleado", CONF.codigo)
+        json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
 }

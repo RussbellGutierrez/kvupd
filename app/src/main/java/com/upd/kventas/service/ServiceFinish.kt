@@ -39,14 +39,19 @@ class ServiceFinish : LifecycleService() {
     private val _tag by lazy { ServiceFinish::class.java.simpleName }
 
     override fun onDestroy() {
-        Log.d(_tag, "Service finish destroyed")
+        Log.v(_tag, "Service finish destroyed")
         super.onDestroy()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        functions.chooseCloseWorker("finish")
+        procedureExit()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.d(_tag, "Processing")
-        procedureExit()
         return START_NOT_STICKY
     }
 
@@ -78,10 +83,15 @@ class ServiceFinish : LifecycleService() {
                 sendServer(5)
             }
 
-            functions.closePeriodicWorkers()
+            functions.chooseCloseWorker("periodic")
+
+            repository.getStarterTime().let {
+                Log.i(_tag, "Starter time $it")
+                functions.workerSetup(it)
+            }
 
             Timer().schedule(10000) {
-                Log.d(_tag, "Final part")
+                Log.w(_tag, "Cleaning and closing app")
                 deleteTables()
                 if (serviceListener != null) {
                     serviceListener?.onClosingActivity()
@@ -278,6 +288,7 @@ class ServiceFinish : LifecycleService() {
 
     private fun deleteTables() {
         CoroutineScope(Dispatchers.IO).launch {
+            repository.deleteConfig()
             repository.deleteClientes()
             repository.deleteEmpleados()
             repository.deleteDistritos()

@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.Marker
 import com.upd.kventas.data.model.Config
 import com.upd.kventas.data.model.DataCliente
 import com.upd.kventas.data.model.Pedimap
+import com.upd.kventas.data.model.TConfiguracion
 
 object Constant {
 
@@ -18,22 +19,20 @@ object Constant {
     const val M_NOEXISTE = "Cliente no existe"
     const val M_ALTA = "Alta cliente"
 
-    var MSG_CONFIG = ""
-    var MSG_USER = ""
-    var MSG_DISTRITO = ""
-    var MSG_NEGOCIO = ""
-    var MSG_RUTA = ""
-    var MSG_ENCUESTA = ""
+    var MSG_CONFIG = "Message"
+    var MSG_USER = "Message"
+    var MSG_DISTRITO = "Message"
+    var MSG_NEGOCIO = "Message"
+    var MSG_RUTA = "Message"
+    var MSG_ENCUESTA = "Message"
 
     var IMEI = ""
     var VISICOOLER_ID = 0
     var DIA_FILTRO = 0
-    var CONFIG_RENEW = false
-    var IN_HOURS = true
     var POS_LOC: Location? = null
     lateinit var ALTADATOS: String
     lateinit var FIRST_LOCATION: Location
-    lateinit var CONF: Config
+    lateinit var CONF: TConfiguracion
     lateinit var IWAM: DataCliente
     lateinit var IWP: Pedimap
 

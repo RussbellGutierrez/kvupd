@@ -4,12 +4,14 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.upd.kventas.data.model.asTConfig
 import com.upd.kventas.domain.Functions
 import com.upd.kventas.domain.Repository
 import com.upd.kventas.utils.Constant.CONF
@@ -17,7 +19,8 @@ import com.upd.kventas.utils.Constant.CONFIG_CHANNEL
 import com.upd.kventas.utils.Constant.CONFIG_NOTIF
 import com.upd.kventas.utils.Constant.IMEI
 import com.upd.kventas.utils.Constant.MSG_CONFIG
-import com.upd.kventas.utils.Constant.CONFIG_RENEW
+import com.upd.kventas.utils.Constant.W_CONFIG
+import com.upd.kventas.utils.Interface.workListener
 import com.upd.kventas.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,38 +39,20 @@ class ConfigWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             lateinit var rst: Result
-            val conf = repository.getConfig()
-            if (CONFIG_RENEW) {
-                try {
-                    configNotif()
-                    repository.getWebConfiguracion(getRequestBody()).collect { response ->
-                        val config = response.data?.jobl
-                        rst = if (config.isNullOrEmpty()) {
-                            MSG_CONFIG = "Respuesta: ${response.message}"
-                            Result.failure()
-                        } else {
-                            CONF = config[0]
-                            repository.saveConfiguracion(config)
-                            MSG_CONFIG = "Configuracion completa"
-                            Result.success()
-                        }
-                    }
-                    CONFIG_RENEW = false
-                } catch (e: HttpException) {
-                    println(e.message())
-                    rst = Result.retry()
-                }
-            }else {
-                if (conf.isEmpty()) {
+            configNotif()
+            Log.d(_tag,"Launch ConfigWork")
+            repository.getConfig().let {
+                if (it == null) {
                     try {
-                        configNotif()
                         repository.getWebConfiguracion(getRequestBody()).collect { response ->
                             val config = response.data?.jobl
+                            Log.e(_tag,"Message: ${response.message}")
+                            Log.w(_tag,"Config $config")
                             rst = if (config.isNullOrEmpty()) {
                                 MSG_CONFIG = "Respuesta: ${response.message}"
                                 Result.failure()
                             } else {
-                                CONF = config[0]
+                                CONF = config[0].asTConfig()
                                 repository.saveConfiguracion(config)
                                 MSG_CONFIG = "Configuracion completa"
                                 Result.success()
@@ -75,14 +60,16 @@ class ConfigWork @WorkerInject constructor(
                         }
                     } catch (e: HttpException) {
                         println(e.message())
+                        MSG_CONFIG = e.message()
                         rst = Result.retry()
                     }
-                } else {
+                }else {
                     MSG_CONFIG = "Full"
-                    CONF = conf[0]
+                    CONF = it
                     rst = Result.success()
                 }
             }
+            workListener?.onFinishWork(W_CONFIG)
             return@withContext rst
         }
 

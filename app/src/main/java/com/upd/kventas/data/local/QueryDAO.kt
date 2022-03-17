@@ -27,6 +27,7 @@ import com.upd.kventas.data.model.QueryConstant.GET_ROW_BAJAS
 import com.upd.kventas.data.model.QueryConstant.GET_ROW_CLIENTES
 import com.upd.kventas.data.model.QueryConstant.GET_RUTAS
 import com.upd.kventas.data.model.QueryConstant.GET_SEGUIMIENTO_SERVER
+import com.upd.kventas.data.model.QueryConstant.GET_SESION
 import com.upd.kventas.data.model.QueryConstant.GET_VISITA_SERVER
 import kotlinx.coroutines.flow.Flow
 
@@ -63,8 +64,11 @@ interface QueryDAO {
     @Query(GET_RUTAS)
     fun getObsRutas(): Flow<List<TRutas>>
 
+    @Query(GET_SESION)
+    suspend fun getSesion(): TSesion?
+
     @Query(GET_CONFIG)
-    suspend fun getConfig(): List<TConfiguracion>
+    suspend fun getConfig(): TConfiguracion?
 
     @Query(GET_CLIENTES)
     suspend fun getClientes(): List<TClientes>

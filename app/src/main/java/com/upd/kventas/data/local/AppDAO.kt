@@ -7,6 +7,7 @@ import com.upd.kventas.data.model.QueryConstant.DEL_ALTADATOS
 import com.upd.kventas.data.model.QueryConstant.DEL_BAJA
 import com.upd.kventas.data.model.QueryConstant.DEL_BAJASUPER
 import com.upd.kventas.data.model.QueryConstant.DEL_CLIENTES
+import com.upd.kventas.data.model.QueryConstant.DEL_CONFIG
 import com.upd.kventas.data.model.QueryConstant.DEL_DISTRITOS
 import com.upd.kventas.data.model.QueryConstant.DEL_EMPLEADOS
 import com.upd.kventas.data.model.QueryConstant.DEL_ENCUESTA
@@ -19,6 +20,9 @@ import com.upd.kventas.data.model.QueryConstant.DEL_VISITA
 
 @Dao
 interface AppDAO {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSesion(sesion: TSesion)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConf(conf: List<TConfiguracion>)
@@ -76,6 +80,9 @@ interface AppDAO {
 
     @Update(entity = TBaja::class)
     suspend fun updateMiniBaja(upd: MiniUpdBaja)
+
+    @Query(DEL_CONFIG)
+    suspend fun deleteConfig()
 
     @Query(DEL_CLIENTES)
     suspend fun deleteClientes()
