@@ -3,6 +3,7 @@ package com.upd.kventas.ui.dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -172,6 +173,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun preventa(list: List<Volumen>) {
+        bind.lnrMini.removeAllViews()
         list.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cuota = "Cuota: ${i.cuota}"
@@ -190,6 +192,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun cobertura(list: List<CobCart>) {
+        bind.lnrMini.removeAllViews()
         list.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cuota = "Cuota: ${i.cartera}"
@@ -211,6 +214,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun cambios(list: List<Cambio>) {
+        bind.lnrMini.removeAllViews()
         list.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cambio = "Cambios: ${i.cambios}"
@@ -226,6 +230,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun visicooler(list: List<Visicooler>) {
+        bind.lnrMini.removeAllViews()
         list.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cliente = "${i.cliente.codigo} - ${i.cliente.descripcion}"
@@ -267,6 +272,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun setUmeSoles(list: List<Generico>?) {
+        bind.lnrMini.removeAllViews()
         list?.forEach { i ->
             val minbind = RowReporteBinding.inflate(layoutInflater, view as ViewGroup, false)
 
@@ -304,6 +310,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun setCoberturaPendiente(list: List<Coberturados>?) {
+        bind.lnrMini.removeAllViews()
         list?.forEach { i ->
             val minbind = RowTarjetaClienteBinding.inflate(layoutInflater, view as ViewGroup, false)
 
@@ -318,6 +325,7 @@ class DMiniDetalle : DialogFragment() {
     }
 
     private fun setPedidosRealizados(list: List<PediGen>?) {
+        bind.lnrMini.removeAllViews()
         list?.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
 

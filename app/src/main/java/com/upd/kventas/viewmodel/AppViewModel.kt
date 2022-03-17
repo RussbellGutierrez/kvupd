@@ -30,6 +30,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _checking: MutableLiveData<Boolean> = MutableLiveData()
     val checking: LiveData<Boolean> = _checking
 
+    private val _filtro: MutableLiveData<Event<Int>> = MutableLiveData()
+    val filtro: LiveData<Event<Int>> = _filtro
+
     private val _fecha: MutableLiveData<Event<String>> = MutableLiveData()
     val fecha: LiveData<Event<String>> = _fecha
 
@@ -387,6 +390,10 @@ class AppViewModel @ViewModelInject constructor(
 
     fun setFecha(fecha: String) {
         _fecha.value = Event(fecha)
+    }
+
+    fun setFiltro(filtro: Int) {
+        _filtro.value = Event(filtro)
     }
 
     fun setClienteSelect(cliente: String) {

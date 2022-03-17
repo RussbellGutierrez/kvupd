@@ -14,6 +14,8 @@ import com.upd.kventas.data.model.RowBaja
 import com.upd.kventas.databinding.FragmentFBajaDatosBinding
 import com.upd.kventas.ui.adapter.BajaSupervisorAdapter
 import com.upd.kventas.ui.adapter.BajaVendedorAdapter
+import com.upd.kventas.ui.dialog.DCliente
+import com.upd.kventas.ui.dialog.DFiltro
 import com.upd.kventas.utils.*
 import com.upd.kventas.utils.Constant.CONF
 import com.upd.kventas.utils.Constant.DIA_FILTRO
@@ -73,6 +75,12 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
 
         bind.searchView.setOnQueryTextListener(this)
 
+        viewmodel.filtro.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                changeFilter(y)
+            }
+        }
+
         viewmodel.rowBajaObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
             row = result
             filter = row
@@ -113,7 +121,7 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.descargar -> consume { launchApi() }
-        R.id.filtro -> consume { changeFilter() }
+        R.id.filtro -> consume { DFiltro().show(parentFragmentManager, "dialog") }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -142,13 +150,8 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         )
     }
 
-    private fun changeFilter() {
-        if (DIA_FILTRO < 6) {
-            DIA_FILTRO++
-        } else {
-            DIA_FILTRO = 0
-        }
-        when(DIA_FILTRO) {
+    private fun changeFilter(dia: Int) {
+        when(dia) {
             0 -> {
                 filter = row
                 snack("Filtrar todos los dias")
