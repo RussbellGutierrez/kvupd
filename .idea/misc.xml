@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3505" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/actualizar.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/agregar.xml" value="0.354" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/ajustes.xml" value="0.3365" />
@@ -18,6 +19,7 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/diamante.xml" value="0.371" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/encuesta.xml" value="0.347" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/horizontal.xml" value="0.371" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3505" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/imagen.xml" value="0.332" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/lista.xml" value="0.354" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/mayorista.xml" value="0.371" />
@@ -90,6 +92,9 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/rastreo_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/reporte_menu.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/menu/vendedor_menu.xml" value="0.5578125" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1995" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1995" />
+        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/mipmap-anydpi-v26/logo_kventas_round.xml" value="0.3505" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/back_gold.xml" value="0.2755" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/back_white.xml" value="0.2755" />
         <entry key="..\:/Users/Russbell_PC/AndroidStudioProjects/KVUPD/app/src/main/res/drawable-mdpi/l_todo.xml" value="0.2755" />

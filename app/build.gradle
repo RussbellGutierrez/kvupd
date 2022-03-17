@@ -12,7 +12,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.upd.kventas"
+        applicationId "com.upd.kvupd"
         minSdk 23
         targetSdk 32
         versionCode 230010000
