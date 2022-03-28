@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.upd.kventas">
+    package="com.upd.kvupd">
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".application.App"
+        android:name="com.upd.kvupd.application.App"
         android:enabled="true"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -46,7 +46,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="kventas"
+            android:authorities="kvupd"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -61,7 +61,7 @@
             tools:replace="android:authorities"/>
         
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name="com.upd.kvupd.ui.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
@@ -73,28 +73,28 @@
         </activity>
 
         <service
-            android:name=".service.ServiceSetup"
+            android:name="com.upd.kvupd.service.ServiceSetup"
             android:directBootAware="true"
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="location"/>
 
         <service
-            android:name=".service.ServicePosicion"
+            android:name="com.upd.kvupd.service.ServicePosicion"
             android:directBootAware="true"
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="location"/>
 
         <service
-            android:name=".service.ServiceFinish"
+            android:name="com.upd.kvupd.service.ServiceFinish"
             android:directBootAware="true"
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="dataSync"/>
         
         <receiver
-            android:name=".application.Receiver"
+            android:name="com.upd.kvupd.application.Receiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />

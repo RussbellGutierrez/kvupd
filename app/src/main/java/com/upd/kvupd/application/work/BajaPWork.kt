@@ -1,0 +1,61 @@
+package com.upd.kvupd.application.work
+
+import android.content.Context
+import android.util.Log
+import androidx.hilt.Assisted
+import androidx.hilt.work.WorkerInject
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.domain.Repository
+import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.toReqBody
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.RequestBody
+import org.json.JSONObject
+
+class BajaPWork @WorkerInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParameters: WorkerParameters,
+    private val repository: Repository
+) : CoroutineWorker(appContext, workerParameters) {
+    private val _tag by lazy { BajaPWork::class.java.simpleName }
+
+    override suspend fun doWork(): Result =
+        withContext(Dispatchers.IO) {
+            val item = repository.getServerBaja("Pendiente")
+            if (!item.isNullOrEmpty()) {
+                item.forEach { i ->
+                    val p = requestBody(i)
+                    repository.setWebBaja(p).collect {
+                        when(it) {
+                            is Network.Success -> {
+                                i.estado = "Enviado"
+                                repository.saveBaja(i)
+                                Log.d(_tag,"Baja enviado $i")
+                            }
+                            is Network.Error -> Log.e(_tag,"Baja Error ${it.message}")
+                        }
+                    }
+                }
+            }
+            return@withContext Result.success()
+        }
+
+    private fun requestBody(j: TBaja): RequestBody {
+        val p = JSONObject()
+        p.put("empleado", CONF.codigo)
+        p.put("fecha", j.fecha)
+        p.put("cliente", j.cliente)
+        p.put("motivo", j.motivo)
+        p.put("observacion", j.comentario)
+        p.put("xcoord", j.longitud)
+        p.put("ycoord", j.latitud)
+        p.put("precision", j.precision)
+        p.put("anulado", j.anulado)
+        p.put("empresa", CONF.empresa)
+        return p.toReqBody()
+    }
+}

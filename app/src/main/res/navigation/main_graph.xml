@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FBase"
-        android:name="com.upd.kventas.ui.fragment.FBase"
+        android:name="com.upd.kvupd.ui.fragment.FBase"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_f_base">
         <action
@@ -76,13 +76,13 @@
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
-        android:name="com.upd.kventas.ui.fragment.FAjuste"
+        android:name="com.upd.kvupd.ui.fragment.FAjuste"
         android:label="Ajustes"
         tools:layout="@layout/fragment_f_ajuste" >
     </fragment>
     <dialog
         android:id="@+id/DLogin"
-        android:name="com.upd.kventas.ui.dialog.BDLogin"
+        android:name="com.upd.kvupd.ui.dialog.BDLogin"
         android:label="Login"
         tools:layout="@layout/bottom_dialog_login">
         <action
@@ -95,7 +95,7 @@
     </dialog>
     <fragment
         android:id="@+id/FCliente"
-        android:name="com.upd.kventas.ui.fragment.FCliente"
+        android:name="com.upd.kvupd.ui.fragment.FCliente"
         android:label="Clientes"
         tools:layout="@layout/fragment_f_cliente" >
         <action
@@ -106,8 +106,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
         <action
-            android:id="@+id/action_FCliente_to_DObservacion"
-            app:destination="@id/DObservacion"
+            android:id="@+id/action_FCliente_to_BDObservacion"
+            app:destination="@id/BDObservacion"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -122,12 +122,12 @@
     </fragment>
     <fragment
         android:id="@+id/FMapa"
-        android:name="com.upd.kventas.ui.fragment.FMapa"
+        android:name="com.upd.kvupd.ui.fragment.FMapa"
         android:label="Mapa"
         tools:layout="@layout/fragment_f_mapa">
         <action
-            android:id="@+id/action_FMapa_to_DObservacion"
-            app:destination="@id/DObservacion"
+            android:id="@+id/action_FMapa_to_BDObservacion"
+            app:destination="@id/BDObservacion"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -141,34 +141,35 @@
             app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <dialog
-        android:id="@+id/DObservacion"
-        android:name="com.upd.kventas.ui.dialog.DObservacion"
+        android:id="@+id/BDObservacion"
+        android:name="com.upd.kvupd.ui.dialog.BDObservacion"
         android:label="Observacion"
-        tools:layout="@layout/dialog_observacion">
-        <action
-            android:id="@+id/action_DObservacion_to_FEncuesta"
-            app:destination="@id/FEncuesta"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+        tools:layout="@layout/bottom_dialog_observacion">
         <argument
             android:name="cliente"
             android:defaultValue=''
             app:argType="string" />
+        <action
+            android:id="@+id/action_BDObservacion_to_FEncuesta"
+            app:destination="@id/FEncuesta" />
     </dialog>
     <fragment
         android:id="@+id/FEncuesta"
-        android:name="com.upd.kventas.ui.fragment.FEncuesta"
+        android:name="com.upd.kvupd.ui.fragment.FEncuesta"
         android:label="Encuesta"
         app:enterAnim="@anim/slide_in_right"
         app:exitAnim="@anim/slide_out_left"
         app:popEnterAnim="@anim/slide_in_left"
         app:popExitAnim="@anim/slide_out_right"
-        tools:layout="@layout/fragment_f_encuesta" />
+        tools:layout="@layout/fragment_f_encuesta" >
+        <argument
+            android:name="cliente"
+            android:defaultValue=''
+            app:argType="string" />
+    </fragment>
     <dialog
         android:id="@+id/DBaja"
-        android:name="com.upd.kventas.ui.dialog.DBaja"
+        android:name="com.upd.kvupd.ui.dialog.DBaja"
         android:label="Baja"
         tools:layout="@layout/dialog_baja">
         <argument
@@ -178,7 +179,7 @@
     </dialog>
     <fragment
         android:id="@+id/FReporte"
-        android:name="com.upd.kventas.ui.fragment.FReporte"
+        android:name="com.upd.kvupd.ui.fragment.FReporte"
         android:label="Reporte"
         tools:layout="@layout/fragment_f_reporte" >
         <action
@@ -198,20 +199,20 @@
     </fragment>
     <fragment
         android:id="@+id/FDetalle"
-        android:name="com.upd.kventas.ui.fragment.FDetalle"
+        android:name="com.upd.kvupd.ui.fragment.FDetalle"
         android:label="Detalle"
         tools:layout="@layout/fragment_f_detalle">
         <argument
             android:name="ume"
-            app:argType="com.upd.kventas.data.model.Umes"
+            app:argType="com.upd.kvupd.data.model.Umes"
             app:nullable="true"/>
         <argument
             android:name="soles"
-            app:argType="com.upd.kventas.data.model.Soles"
+            app:argType="com.upd.kvupd.data.model.Soles"
             app:nullable="true"/>
         <argument
             android:name="visisuper"
-            app:argType="com.upd.kventas.data.model.Visisuper[]"
+            app:argType="com.upd.kvupd.data.model.Visisuper[]"
             app:nullable="true"/>
         <action
             android:id="@+id/action_FDetalle_to_DMiniDetalle"
@@ -223,40 +224,40 @@
     </fragment>
     <dialog
         android:id="@+id/DMiniDetalle"
-        android:name="com.upd.kventas.ui.dialog.DMiniDetalle"
+        android:name="com.upd.kvupd.ui.dialog.DMiniDetalle"
         android:label="dialog_mini_detalle"
         tools:layout="@layout/dialog_mini_detalle" >
         <argument
             android:name="preventa"
-            app:argType="com.upd.kventas.data.model.Volumen[]"
+            app:argType="com.upd.kvupd.data.model.Volumen[]"
             app:nullable="true" />
         <argument
             android:name="cobertura"
-            app:argType="com.upd.kventas.data.model.CobCart[]"
+            app:argType="com.upd.kvupd.data.model.CobCart[]"
             app:nullable="true"/>
         <argument
             android:name="cartera"
-            app:argType="com.upd.kventas.data.model.CobCart[]"
+            app:argType="com.upd.kvupd.data.model.CobCart[]"
             app:nullable="true"/>
         <argument
             android:name="cambios"
-            app:argType="com.upd.kventas.data.model.Cambio[]"
+            app:argType="com.upd.kvupd.data.model.Cambio[]"
             app:nullable="true"/>
         <argument
             android:name="visicooler"
-            app:argType="com.upd.kventas.data.model.Visicooler[]"
+            app:argType="com.upd.kvupd.data.model.Visicooler[]"
             app:nullable="true"/>
         <argument
             android:name="generico"
-            app:argType="com.upd.kventas.data.model.Generico"
+            app:argType="com.upd.kvupd.data.model.Generico"
             app:nullable="true"/>
         <argument
             android:name="umes"
-            app:argType="com.upd.kventas.data.model.Umes"
+            app:argType="com.upd.kvupd.data.model.Umes"
             app:nullable="true" />
         <argument
             android:name="soles"
-            app:argType="com.upd.kventas.data.model.Soles"
+            app:argType="com.upd.kvupd.data.model.Soles"
             app:nullable="true" />
         <argument
             android:name="pedidos"
@@ -265,12 +266,12 @@
     </dialog>
     <fragment
         android:id="@+id/FVendedor"
-        android:name="com.upd.kventas.ui.fragment.FVendedor"
+        android:name="com.upd.kvupd.ui.fragment.FVendedor"
         android:label="Clientes"
         tools:layout="@layout/fragment_f_vendedor">
         <action
-            android:id="@+id/action_FVendedor_to_DObservacion"
-            app:destination="@id/DObservacion"
+            android:id="@+id/action_FVendedor_to_BDObservacion"
+            app:destination="@id/BDObservacion"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -292,12 +293,12 @@
     </fragment>
     <fragment
         android:id="@+id/FRastreo"
-        android:name="com.upd.kventas.ui.fragment.FRastreo"
+        android:name="com.upd.kvupd.ui.fragment.FRastreo"
         android:label="Monitoreo"
         tools:layout="@layout/fragment_f_rastreo" />
     <fragment
         android:id="@+id/FAlta"
-        android:name="com.upd.kventas.ui.fragment.FAlta"
+        android:name="com.upd.kvupd.ui.fragment.FAlta"
         android:label="Alta"
         tools:layout="@layout/fragment_f_alta" >
         <action
@@ -317,7 +318,7 @@
     </fragment>
     <fragment
         android:id="@+id/FAltaMapa"
-        android:name="com.upd.kventas.ui.fragment.FAltaMapa"
+        android:name="com.upd.kvupd.ui.fragment.FAltaMapa"
         android:label="Alta manual"
         tools:layout="@layout/fragment_f_alta_mapa" >
         <action
@@ -334,7 +335,7 @@
     </fragment>
     <fragment
         android:id="@+id/FAltaDatos"
-        android:name="com.upd.kventas.ui.fragment.FAltaDatos"
+        android:name="com.upd.kvupd.ui.fragment.FAltaDatos"
         android:label="Datos del alta"
         tools:layout="@layout/fragment_f_alta_datos" >
         <action
@@ -359,7 +360,7 @@
     </fragment>
     <fragment
         android:id="@+id/FBaja"
-        android:name="com.upd.kventas.ui.fragment.FBaja"
+        android:name="com.upd.kvupd.ui.fragment.FBaja"
         android:label="Baja"
         tools:layout="@layout/fragment_f_baja" >
         <action
@@ -372,7 +373,7 @@
     </fragment>
     <fragment
         android:id="@+id/FBajaDatos"
-        android:name="com.upd.kventas.ui.fragment.FBajaDatos"
+        android:name="com.upd.kvupd.ui.fragment.FBajaDatos"
         android:label="Bajas generadas"
         tools:layout="@layout/fragment_f_baja_datos" >
         <action
@@ -385,7 +386,7 @@
     </fragment>
     <fragment
         android:id="@+id/FValidar"
-        android:name="com.upd.kventas.ui.fragment.FValidar"
+        android:name="com.upd.kvupd.ui.fragment.FValidar"
         android:label="Validar"
         tools:layout="@layout/fragment_f_validar" >
         <action
@@ -403,7 +404,7 @@
     </fragment>
     <fragment
         android:id="@+id/FServidor"
-        android:name="com.upd.kventas.ui.fragment.FServidor"
+        android:name="com.upd.kvupd.ui.fragment.FServidor"
         android:label="Servidor"
         tools:layout="@layout/fragment_f_servidor" />
 </navigation>
