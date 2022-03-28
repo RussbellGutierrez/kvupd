@@ -177,7 +177,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_marginVertical="3dp"
-                android:text="Vendedor no agrego observacion"/>
+                android:text="Vendedor no agrego observacion"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/sincronizar"
+        android:title="Sincronizar datos"
+        android:icon="@drawable/actualizar"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/ajustes"
         android:title="Ajustes"
         android:icon="@drawable/ajustes"
