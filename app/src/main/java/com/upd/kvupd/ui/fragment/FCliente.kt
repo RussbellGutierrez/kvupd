@@ -20,6 +20,7 @@ import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.dialog.DCliente
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.utils.Interface.clienteListener
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,11 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         clienteListener = this
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PROCEDE = "Cliente"
     }
 
     override fun onCreateView(

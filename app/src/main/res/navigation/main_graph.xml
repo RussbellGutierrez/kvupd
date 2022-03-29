@@ -139,6 +139,22 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FMapa_to_FCliente"
+            app:destination="@id/FCliente"
+            app:popUpTo="@+id/FBase"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_FMapa_to_FVendedor"
+            app:destination="@id/FVendedor"
+            app:popUpTo="@+id/FBase"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <dialog
         android:id="@+id/BDObservacion"
@@ -151,7 +167,11 @@
             app:argType="string" />
         <action
             android:id="@+id/action_BDObservacion_to_FEncuesta"
-            app:destination="@id/FEncuesta" />
+            app:destination="@id/FEncuesta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </dialog>
     <fragment
         android:id="@+id/FEncuesta"
@@ -166,6 +186,27 @@
             android:name="cliente"
             android:defaultValue=''
             app:argType="string" />
+        <action
+            android:id="@+id/action_FEncuesta_to_FMapa"
+            app:destination="@+id/FMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FEncuesta_to_FVendedor"
+            app:popUpTo="@+id/FVendedor"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FEncuesta_to_FCliente"
+            app:popUpTo="@+id/FCliente"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <dialog
         android:id="@+id/DBaja"

@@ -142,4 +142,12 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
     suspend fun setServerBajaEstados(body: RequestBody): Response<JObj> {
         return web.setApiBajaestado(body)
     }
+
+    suspend fun setServerRespuestas(body: RequestBody): Response<JObj> {
+        return web.setApiRespuesta(body)
+    }
+
+    suspend fun setServerFotos(body: RequestBody): Response<JObj> {
+        return web.setApiFoto(body)
+    }
 }

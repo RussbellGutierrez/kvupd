@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import com.upd.kvupd.ui.dialog.DListaEncuesta
 import com.upd.kvupd.ui.dialog.DVendedor
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.utils.Interface.clienteListener
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,6 +55,11 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         clienteListener = this
     }
 
+    override fun onResume() {
+        super.onResume()
+        PROCEDE = "Vendedor"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,6 +77,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         bind.searchView.setOnQueryTextListener(this)
 
         viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            Log.d(_tag,"Row cliente observer")
             row = it
             setupList(it)
         }

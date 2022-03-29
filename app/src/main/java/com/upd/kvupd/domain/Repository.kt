@@ -38,7 +38,8 @@ interface Repository {
     suspend fun isDataToday(today: String): Boolean
     suspend fun getStarterTime(): Long
     suspend fun getFinishTime(): Long
-    suspend fun isEncuestaSeleccionado(): Boolean
+    suspend fun getSeleccionado(): TEncuestaSeleccionado?
+    suspend fun clienteRespondio(cliente: String): Boolean
 
     suspend fun saveSesion(config: Config)
     suspend fun saveConfiguracion(config: List<Config>)
@@ -56,7 +57,10 @@ interface Repository {
     suspend fun saveAltaDatos(da: TADatos)
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
     suspend fun saveBajaEstado(estado: TBEstado)
+    suspend fun saveRespuestaOneByOne(respuesta: TRespuesta)
+    suspend fun saveFoto(respuesta: TRespuesta)
     suspend fun saveSeleccionado(selec: TEncuestaSeleccionado)
+    suspend fun saveRespuesta(respuesta: List<TRespuesta>)
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento>
     suspend fun getServerVisita(estado: String): List<TVisita>
@@ -64,6 +68,8 @@ interface Repository {
     suspend fun getServerAltadatos(estado: String): List<TADatos>
     suspend fun getServerBaja(estado: String): List<TBaja>
     suspend fun getServerBajaestado(estado: String): List<TBEstado>
+    suspend fun getServerRespuesta(estado: String): List<TRespuesta>
+    suspend fun getServerFoto(estado: String): List<TRespuesta>
 
     suspend fun updateLocationAlta(locationAlta: LocationAlta)
     suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
@@ -86,6 +92,7 @@ interface Repository {
     suspend fun deleteBajaSuper()
     suspend fun deleteBajaEstado()
     suspend fun deleteSeleccionado()
+    suspend fun deleteRespuesta()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>>
@@ -127,4 +134,6 @@ interface Repository {
     suspend fun setWebAltaDatos(body: RequestBody): Flow<Network<JObj>>
     suspend fun setWebBaja(body: RequestBody): Flow<Network<JObj>>
     suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebRespuestas(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebFotos(body: RequestBody): Flow<Network<JObj>>
 }

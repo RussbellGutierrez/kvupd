@@ -21,10 +21,13 @@ import com.upd.kvupd.data.model.QueryConstant.GET_EMPLEADOS
 import com.upd.kvupd.data.model.QueryConstant.GET_SELECCION
 import com.upd.kvupd.data.model.QueryConstant.GET_CABE_ENCUESTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
+import com.upd.kvupd.data.model.QueryConstant.GET_FOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_ALTA
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_LOCATION
 import com.upd.kvupd.data.model.QueryConstant.GET_MARKERS
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
+import com.upd.kvupd.data.model.QueryConstant.GET_RESPUESTA_CLIENTE
+import com.upd.kvupd.data.model.QueryConstant.GET_RESPUESTA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ROW_BAJAS
 import com.upd.kvupd.data.model.QueryConstant.GET_ROW_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
@@ -114,6 +117,9 @@ interface QueryDAO {
     @Query(GET_SELECCION)
     suspend fun getSeleccionado(): TEncuestaSeleccionado?
 
+    @Query(GET_RESPUESTA_CLIENTE)
+    suspend fun getRespuesta(cliente: String): RespuestaCliente?
+
     /*  Dao send data to server    */
     @Query(GET_SEGUIMIENTO_SERVER)
     suspend fun seguimientoServer(estado: String): List<TSeguimiento>
@@ -132,4 +138,10 @@ interface QueryDAO {
 
     @Query(GET_BAJAESTADO_SERVER)
     suspend fun bajaestadoServer(estado: String): List<TBEstado>
+
+    @Query(GET_RESPUESTA_SERVER)
+    suspend fun respuestaServer(estado: String): List<TRespuesta>
+
+    @Query(GET_FOTO_SERVER)
+    suspend fun fotoServer(estado: String): List<TRespuesta>
 }

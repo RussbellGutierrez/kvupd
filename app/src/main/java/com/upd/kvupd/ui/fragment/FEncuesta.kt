@@ -1,6 +1,11 @@
 package com.upd.kvupd.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -10,16 +15,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.RadioButton
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Respuesta
 import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
+import com.upd.kvupd.utils.Constant.PROCEDE
+import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.IOException
 
 @AndroidEntryPoint
 class FEncuesta : Fragment() {
@@ -35,13 +50,14 @@ class FEncuesta : Fragment() {
     private var total = 0
     private var previo = ""
     private var radiocheck = ""
+    private var abspath = ""
     private var necesario = false
     private var foto = false
     private val _tag by lazy { FEncuesta::class.java.simpleName }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.e(_tag,"Datos iniciales: encuesta $encuesta, posicion $posicion, total $total, previo $previo")
+    override fun onDestroy() {
+        super.onDestroy()
+        _bind = null
     }
 
     override fun onCreateView(
@@ -70,9 +86,9 @@ class FEncuesta : Fragment() {
 
             override fun afterTextChanged(p0: Editable?) = Unit
         })
-        bind.btnCancelar.setOnClickListener { }
+        bind.btnCancelar.setOnClickListener { returnFragment() }
         bind.btnSiguiente.setOnClickListener { storeAnswer() }
-        bind.btnGuardar.setOnClickListener { Log.d(_tag,"Respuestas $respuesta") }
+        bind.btnGuardar.setOnClickListener { saveRespuesta() }
 
         viewmodel.preguntas.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -87,29 +103,25 @@ class FEncuesta : Fragment() {
         }
     }
 
+    private fun returnFragment() {
+        when (PROCEDE) {
+            "Cliente" -> findNavController().navigate(R.id.action_FEncuesta_to_FCliente)
+            "Vendedor" -> findNavController().navigate(R.id.action_FEncuesta_to_FVendedor)
+            "Mapa" -> findNavController().navigate(R.id.action_FEncuesta_to_FMapa)
+        }
+    }
+
     private fun setup() {
-        val mensaje = "Completo la encuesta del cliente ${args.cliente}"
+        val mensaje = "Completó la encuesta del cliente ${args.cliente}"
         bind.txtCliente.text = args.cliente
         bind.txtFoto.text = args.cliente
         bind.txtMensaje.text = mensaje
-        bind.txtEncuesta
-        bind.lnrPregunta
-        bind.txtPregunta
-        bind.rbUnico
-        bind.lnrMultiple
-        bind.txtLibre
-        bind.edtLibre
-        bind.cardPregunta
-        bind.cardFoto
-        bind.cardMensaje
         viewmodel.getPreguntas()
     }
 
     private fun drawQuestion() {
         if (posicion < total) {
-            Log.w(_tag,"Compare $posicion < $total")
             preguntas[posicion].let {
-                Log.w(_tag, "Pregunta $it")
                 hasPrevio(it) {
                     cleanFields(it)
                     when (it.tipo) {
@@ -118,7 +130,6 @@ class FEncuesta : Fragment() {
                                 "N" -> bind.edtLibre.inputType = InputType.TYPE_CLASS_NUMBER
                                 "A" -> bind.edtLibre.inputType = InputType.TYPE_CLASS_TEXT
                             }
-                            posicion++
                         }
                         "U" -> {
                             it.respuesta.split("|").forEach { y ->
@@ -136,7 +147,6 @@ class FEncuesta : Fragment() {
                                     }
                                 }
                             }
-                            posicion++
                         }
                         "M" -> {
                             val checkbox = arrayListOf<CheckBox>()
@@ -172,18 +182,15 @@ class FEncuesta : Fragment() {
                                     }
                                 }
                             }
-                            posicion++
                         }
                     }
                 }
             }
-            Log.w(_tag, "Posicion after draw $posicion")
         } else {
             if (foto) {
                 bind.cardPregunta.setUI("v", false)
                 bind.cardFoto.setUI("v", true)
-                bind.imgFoto.setOnClickListener {  }
-                bind.txtRuta
+                bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
             } else {
                 bind.lnrPregunta.setUI("v", false)
                 bind.cardMensaje.setUI("v", true)
@@ -226,7 +233,6 @@ class FEncuesta : Fragment() {
     }
 
     private fun hasPrevio(pregunta: TEncuesta, T: () -> Unit) {
-        Log.e(_tag,"Posicion $posicion")
         if (pregunta.previa == 0) {
             T()
         } else {
@@ -246,7 +252,7 @@ class FEncuesta : Fragment() {
 
     private fun storeAnswer() {
         if (posicion < total) {
-            preguntas[posicion - 1].let {
+            preguntas[posicion].let {
                 when (it.tipo) {
                     "L" -> {
                         if (it.condicional) {
@@ -255,6 +261,7 @@ class FEncuesta : Fragment() {
                         val rsp = bind.edtLibre.text.toString()
                         val item = Respuesta(it.id, it.pregunta, rsp, "")
                         respuesta.add(item)
+                        posicion++
                         drawQuestion()
                     }
                     "U" -> {
@@ -263,11 +270,13 @@ class FEncuesta : Fragment() {
                         }
                         val item = Respuesta(it.id, it.pregunta, radiocheck, "")
                         respuesta.add(item)
+                        posicion++
                         drawQuestion()
                     }
                     "M" -> {
                         val item = Respuesta(it.id, it.pregunta, radiocheck, "")
                         respuesta.add(item)
+                        posicion++
                         drawQuestion()
                     }
                     else -> "Nothing"
@@ -281,36 +290,69 @@ class FEncuesta : Fragment() {
                 } else {
                     val item = Respuesta(encuesta, 0, "", rt)
                     respuesta.add(item)
-                    drawQuestion()
+                    foto = false
                 }
             }
+            drawQuestion()
         }
     }
 
-    /*private fun dispatchTakePictureIntent() {
+    private fun createPhoto(): File {
+        val time = viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
+        val directory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile("Kvupd_${time}_", ".jpg", directory).apply {
+            abspath = absolutePath
+        }
+    }
+
+    private fun thumbnailPhoto() {
+        val bitmap = BitmapFactory.decodeFile(abspath)
+        bind.txtRuta.setUI("v", true)
+        bind.txtRuta.text = abspath
+        Glide
+            .with(requireContext())
+            .load(bitmap)
+            .override(500, 650)
+            .centerCrop()
+            .into(bind.imgFoto)
+    }
+
+    private fun dispatchTakePictureIntent() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(requireActivity().packageManager).also {
-                val photo: File? = try{
-                    crearArchivoImagen()
-                }catch (ex: IOException) {
-                    Log.e(_tag,"Error ->${ex.stackTrace} ->${ex.message}")
+                val photo: File? = try {
+                    createPhoto()
+                } catch (ex: IOException) {
+                    Log.e(_tag, "Error ->${ex.stackTrace} ->${ex.message}")
                     null
                 }
                 photo?.also {
-                    val fotoURI: Uri = FileProvider.getUriForFile(requireContext(),"com.upd.kvupd",it)
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,fotoURI)
-                    startActivityForResult(takePictureIntent, SOLICITAR_FOTO)
+                    val uriPhoto = FileProvider.getUriForFile(requireContext(), "com.upd.kvupd", it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriPhoto)
+                    resultLauncher.launch(takePictureIntent)
                 }
             }
         }
     }
 
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-            bind.searchView.setQuery(codigo, true)
-        } else {
-            snack("Error procesando codigo")
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                thumbnailPhoto()
+            } else {
+                snack("Error procesando foto")
+            }
         }
-    }*/
+
+    private fun saveRespuesta() {
+        val list = mutableListOf<TRespuesta>()
+        val cliente = args.cliente.split("-")[0].trim().toInt()
+        val fecha = viewmodel.fecha(4)
+        respuesta.forEach {
+            val item = TRespuesta(cliente, fecha, it.encuesta, it.pregunta, it.respuesta, it.ruta,"Pendiente")
+            list.add(item)
+        }
+        viewmodel.savingRespuestas(list)
+        returnFragment()
+    }
 }

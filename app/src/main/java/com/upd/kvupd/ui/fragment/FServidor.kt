@@ -1,6 +1,9 @@
 package com.upd.kvupd.ui.fragment
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +20,7 @@ import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -32,12 +36,16 @@ class FServidor : Fragment() {
     private var list4 = 0
     private var list5 = 0
     private var list6 = 0
+    private var list7 = 0
+    private var list8 = 0
     private lateinit var seguimiento: TSeguimiento
     private lateinit var visita: TVisita
     private lateinit var alta: TAlta
     private lateinit var altadatos: TADatos
     private lateinit var baja: TBaja
     private lateinit var bajaestado: TBEstado
+    private lateinit var respuesta: TRespuesta
+    private lateinit var foto: TRespuesta
 
     private val _tag by lazy { FServidor::class.java.simpleName }
 
@@ -229,6 +237,49 @@ class FServidor : Fragment() {
                 }
             }
         }
+
+        viewmodel.servrespuesta.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                setTextUI(y.size,6)
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        respuesta = j
+                        val p = JSONObject()
+                        p.put("empresa", CONF.empresa)
+                        p.put("empleado", CONF.codigo)
+                        p.put("cliente", j.cliente)
+                        p.put("encuesta", j.encuesta)
+                        p.put("pregunta", j.pregunta)
+                        p.put("respuesta", j.respuesta)
+                        p.put("fecha", j.fecha)
+                        viewmodel.webRespuesta(p.toReqBody())
+                    }
+                }
+            }
+        }
+
+        viewmodel.servfoto.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                setTextUI(y.size,7)
+                y.forEach { j ->
+                    foto = j
+                    val baos = ByteArrayOutputStream()
+                    val bm = BitmapFactory.decodeFile(j.rutafoto)
+                    bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                    val byteArray = baos.toByteArray()
+                    val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+                    val p = JSONObject()
+                    p.put("empresa", CONF.empresa)
+                    p.put("empleado", CONF.codigo)
+                    p.put("cliente", j.cliente)
+                    p.put("encuesta", j.encuesta)
+                    p.put("sucursal", CONF.sucursal)
+                    p.put("foto", foto)
+                    viewmodel.webFoto(p.toReqBody())
+                }
+            }
+        }
     }
 
     private fun updateDataRoom() {
@@ -309,6 +360,32 @@ class FServidor : Fragment() {
                 outputUI(5)
             }
         }
+
+        viewmodel.resprespuesta.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when(y) {
+                    is Network.Success -> {
+                        respuesta.estado = "Enviado"
+                        viewmodel.updRespuesta(respuesta)
+                    }
+                    is Network.Error -> Log.e(_tag,"R Error ${y.message} $respuesta")
+                }
+                outputUI(6)
+            }
+        }
+
+        viewmodel.respfoto.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when(y) {
+                    is Network.Success -> {
+                        foto.estado = "Enviado"
+                        viewmodel.updFoto(respuesta)
+                    }
+                    is Network.Error -> Log.e(_tag,"F Error ${y.message} $foto")
+                }
+                outputUI(7)
+            }
+        }
     }
 
     private fun setTextUI(size: Int, opt: Int) {
@@ -375,6 +452,26 @@ class FServidor : Fragment() {
                     bind.txtComp6.text = mensaje
                 }
             }
+            6 -> {
+                list7 = size
+                texto = "Respuesta encuesta : $size"
+                bind.txtRespuesta.text = texto
+                if (size == 0) {
+                    bind.progress7.setUI("v", false)
+                    bind.txtComp7.setUI("v", true)
+                    bind.txtComp7.text = mensaje
+                }
+            }
+            7 -> {
+                list8 = size
+                texto = "Fotos encuesta : $size"
+                bind.txtFoto.text = texto
+                if (size == 0) {
+                    bind.progress8.setUI("v", false)
+                    bind.txtComp8.setUI("v", true)
+                    bind.txtComp8.text = mensaje
+                }
+            }
         }
     }
 
@@ -426,6 +523,22 @@ class FServidor : Fragment() {
                     bind.txtComp6.setUI("v", true)
                 } else {
                     list6--
+                }
+            }
+            6 -> {
+                if (list7 == 1) {
+                    bind.progress7.setUI("v", false)
+                    bind.txtComp7.setUI("v", true)
+                } else {
+                    list7--
+                }
+            }
+            7 -> {
+                if (list8 == 1) {
+                    bind.progress8.setUI("v", false)
+                    bind.txtComp8.setUI("v", true)
+                } else {
+                    list8--
                 }
             }
         }

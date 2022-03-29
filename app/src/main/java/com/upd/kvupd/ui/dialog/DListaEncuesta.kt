@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.dialog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,7 @@ class DListaEncuesta : DialogFragment() {
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: DialogListaEncuestaBinding? = null
     private val bind get() = _bind!!
-    private var cabecera = ""
+    private var seleccion = ""
     private val lista = mutableListOf<Cabecera>()
     private val _tag by lazy { DListaEncuesta::class.java.simpleName }
 
@@ -51,7 +52,7 @@ class DListaEncuesta : DialogFragment() {
         bind.rbGrupo.setOnCheckedChangeListener { _, id ->
             lista.forEach {
                 if (it.id == id) {
-                    cabecera = "${it.id}@${it.foto}"
+                    seleccion = "${it.id}@${it.foto}"
                 }
             }
         }
@@ -60,9 +61,14 @@ class DListaEncuesta : DialogFragment() {
         viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 y.forEach { j ->
+                    Log.d(_tag,"Encuesta $j")
                     val rb = RadioButton(requireActivity())
                     rb.text = j.nombre
                     rb.id = j.id
+                    if (j.seleccion > 0) {
+                        rb.isChecked = true
+                        seleccion = "${j.id}@${j.foto}"
+                    }
                     bind.rbGrupo.addView(rb)
                     lista.add(j)
                 }
@@ -75,7 +81,7 @@ class DListaEncuesta : DialogFragment() {
     }
 
     private fun saveSeleccion() {
-        val datos = cabecera.split("@")
+        val datos = seleccion.split("@")
         val item = TEncuestaSeleccionado(1,datos[0].toInt(),datos[1].toBoolean())
         viewmodel.saveSeleccion(item)
         dismiss()

@@ -15,6 +15,7 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADOBAJA
 import com.upd.kvupd.data.model.QueryConstant.DEL_NEGOCIOS
+import com.upd.kvupd.data.model.QueryConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.DEL_SEGUIMIENTO
 import com.upd.kvupd.data.model.QueryConstant.DEL_VISITA
@@ -72,6 +73,15 @@ interface AppDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSeleccionado(selec: TEncuestaSeleccionado)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRespuesta(rsp: List<TRespuesta>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRespuestaIndividual(rsp: TRespuesta)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFoto(rsp: TRespuesta)
 
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)
@@ -132,4 +142,7 @@ interface AppDAO {
 
     @Query(DEL_SELECCION)
     suspend fun deleteSeleccionado()
+
+    @Query(DEL_RESPUESTA)
+    suspend fun deleteRespuesta()
 }

@@ -244,6 +244,14 @@ fun LatLng.toLocation(): Location {
     return location
 }
 
+fun String.multiReplace(old: List<String>, new: String): String {
+    var replaced = this
+    old.forEach {
+        replaced = replaced.replace(it,new)
+    }
+    return replaced
+}
+
 @Suppress("DEPRECATION") // Deprecated for third party Services.
 fun <T> Context.isServiceRunning(service: Class<T>) =
     (getSystemService(ACTIVITY_SERVICE) as ActivityManager)

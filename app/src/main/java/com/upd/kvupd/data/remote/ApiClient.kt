@@ -18,12 +18,14 @@ import com.upd.kvupd.utils.Constant.API_EMPCAMBIO
 import com.upd.kvupd.utils.Constant.API_EMPLEADO
 import com.upd.kvupd.utils.Constant.API_EMPMARCADOR
 import com.upd.kvupd.utils.Constant.API_ENCUESTA
+import com.upd.kvupd.utils.Constant.API_FOTO
 import com.upd.kvupd.utils.Constant.API_LOGIN
 import com.upd.kvupd.utils.Constant.API_NEGOCIO
 import com.upd.kvupd.utils.Constant.API_PREVENTA
 import com.upd.kvupd.utils.Constant.API_REGISTRO
 import com.upd.kvupd.utils.Constant.API_REPOEMP
 import com.upd.kvupd.utils.Constant.API_REPOGEN
+import com.upd.kvupd.utils.Constant.API_RESPUESTA
 import com.upd.kvupd.utils.Constant.API_RUTA
 import com.upd.kvupd.utils.Constant.API_SEGUIMIENTO
 import com.upd.kvupd.utils.Constant.API_SOLES
@@ -146,4 +148,10 @@ interface ApiClient {
 
     @POST(API_BAJACONFIR)
     suspend fun setApiBajaestado(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, fecha, cliente, cfecha, observacion, precision, xcoord, ycoord, confirmar
+
+    @POST(API_RESPUESTA)
+    suspend fun setApiRespuesta(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, cliente, encuesta, pregunta, respuesta, fecha
+
+    @POST(API_FOTO)
+    suspend fun setApiFoto(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, cliente, encuesta, sucursal, foto
 }

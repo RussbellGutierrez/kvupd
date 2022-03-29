@@ -18,6 +18,7 @@ interface Functions {
     fun dateToday(formato: Int): String
     fun appSO(): String
     fun isConnected(): Boolean
+    fun deleteFotos()
 
     fun setupMarkers(map: GoogleMap,list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap,list: List<Pedimap>): List<Marker>
@@ -44,4 +45,6 @@ interface Functions {
     fun workerperAltaEstado()
     fun workerperBaja()
     fun workerperBajaEstado()
+    fun workerperRespuesta()
+    fun workerperFoto()
 }

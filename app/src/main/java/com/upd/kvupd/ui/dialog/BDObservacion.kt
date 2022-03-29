@@ -2,10 +2,12 @@ package com.upd.kvupd.ui.dialog
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -17,6 +19,9 @@ import com.upd.kvupd.utils.Constant.POS_LOC
 import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BDObservacion : BottomSheetDialogFragment() {
@@ -64,8 +69,17 @@ class BDObservacion : BottomSheetDialogFragment() {
 
         viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                dismiss()
                 if (!y.isNullOrEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
+                    viewmodel.clienteRespondio(parg[0].trim())
+                }else {
+                    dismiss()
+                }
+            }
+        }
+        viewmodel.respuesta.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                dismiss()
+                if (!y) {
                     findNavController().navigate(
                         BDObservacionDirections.actionBDObservacionToFEncuesta(nameCliente(parg))
                     )

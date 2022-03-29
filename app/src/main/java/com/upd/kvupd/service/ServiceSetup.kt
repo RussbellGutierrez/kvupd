@@ -258,12 +258,14 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun periodicWorkers() {
         if (user && distrito && negocio && ruta && encuesta) {
             Log.d(_tag, "Launch periodic workers")
-            /*functions.workerperSeguimiento()
+            functions.workerperSeguimiento()
             functions.workerperVisita()
             functions.workerperAlta()
             functions.workerperAltaEstado()
             functions.workerperBaja()
-            functions.workerperBajaEstado()*/
+            functions.workerperBajaEstado()
+            functions.workerperRespuesta()
+            functions.workerperFoto()
         }
     }
 
@@ -314,6 +316,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 repository.deleteRutas()
                 repository.deleteEncuesta()
                 repository.deleteSeleccionado()
+                repository.deleteRespuesta()
                 repository.deleteEstado()
                 repository.deleteSeguimiento()
                 repository.deleteVisita()
@@ -322,6 +325,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 repository.deleteBaja()
                 repository.deleteBajaSuper()
                 repository.deleteBajaEstado()
+                functions.deleteFotos()
             }
             functions.launchWorkers()
         }
@@ -373,7 +377,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     }
 
     private fun configFailed() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             val sesion = repository.getSesion()
             if (sesion != null) {
                 Log.d(_tag, "Finishing app")

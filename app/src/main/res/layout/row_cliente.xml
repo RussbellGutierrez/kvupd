@@ -64,17 +64,9 @@
                 android:id="@+id/txt_secuencia"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="0.7"
+                android:layout_weight="0.8"
                 android:gravity="center_vertical"
                 tools:text="Sec 123"/>
-
-            <TextView
-                android:id="@+id/txt_ruta"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0.6"
-                android:gravity="center_vertical"
-                tools:text="Ruta 123"/>
 
             <ImageView
                 android:id="@+id/img_visita"
@@ -89,6 +81,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 app:srcCompat="@drawable/anulado"/>
+
+            <ImageView
+                android:id="@+id/img_encuesta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/lista"/>
 
         </LinearLayout>
 

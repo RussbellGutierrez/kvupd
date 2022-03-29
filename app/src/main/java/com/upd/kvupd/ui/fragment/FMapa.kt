@@ -7,7 +7,9 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,6 +32,7 @@ import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWAM
+import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -60,6 +63,11 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         location = GPS_LOC
     }
 
+    override fun onResume() {
+        super.onResume()
+        PROCEDE = "Mapa"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,18 +87,10 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
         }
-
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
             location.longitude = it[0].longitud
             location.latitude = it[0].latitud
         }
-
-        viewmodel.markerMap().distinctUntilChanged().observe(viewLifecycleOwner) {
-            map.clear()
-            markers = viewmodel.setMarker(map, it)
-            drawRoutes()
-        }
-
         viewmodel.detail.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (y.size > 1) {
@@ -102,15 +102,23 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 }
             }
         }
-
         viewmodel.climap.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 showMarker(y)
             }
         }
+        viewmodel.marker.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                if (::map.isInitialized) {
+                    map.clear()
+                    markers = viewmodel.setMarker(map, y)
+                }
+            }
+        }
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
+        backButton()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -121,6 +129,12 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.lista -> consume { viewmodel.getClientDet("0") }
         R.id.voz -> consume { searchVoice() }
+        android.R.id.home -> consume {
+            when(CONF.tipo) {
+                "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
+                "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
+            }
+        }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -136,6 +150,8 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 setOnInfoWindowLongClickListener(this@FMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
+            drawRoutes()
+            viewmodel.markerMap()
             moveCamera(location)
         }
     }
@@ -231,7 +247,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 "S" -> viewmodel.checkingEncuesta {
                     if (it) {
                         findNavController().navigate(
-                            FVendedorDirections.actionFVendedorToBDObservacion(cli)
+                            FMapaDirections.actionFMapaToBDObservacion(cli)
                         )
                     } else {
                         snack("Regrese a la lista y elija una encuesta")
@@ -265,5 +281,19 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         } else {
             snack("No se encontraron rutas")
         }
+    }
+
+    private fun backButton() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    when(CONF.tipo) {
+                        "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
+                        "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
+                    }
+                }
+            }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 }

@@ -34,6 +34,8 @@ import com.upd.kvupd.utils.Constant.WP_ALTA
 import com.upd.kvupd.utils.Constant.WP_ALTADATO
 import com.upd.kvupd.utils.Constant.WP_BAJA
 import com.upd.kvupd.utils.Constant.WP_BAJAESTADO
+import com.upd.kvupd.utils.Constant.WP_FOTO
+import com.upd.kvupd.utils.Constant.WP_RESPUESTA
 import com.upd.kvupd.utils.Constant.WP_SEGUIMIENTO
 import com.upd.kvupd.utils.Constant.WP_VISITA
 import com.upd.kvupd.utils.Constant.W_CONFIG
@@ -142,7 +144,7 @@ class FunImpl @Inject constructor(
                 resultado += "SO: ${i.name}"
             }
         }
-        return "App: ${BuildConfig.VERSION_NAME} $resultado"
+        return "App: KVU Ver: ${BuildConfig.VERSION_NAME} $resultado"
     }
 
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
@@ -162,6 +164,18 @@ class FunImpl @Inject constructor(
             false
         }
         return resultado
+    }
+
+    override fun deleteFotos() {
+        val file = ctx.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        if (file.exists()) {
+            val fotos = file.listFiles()
+            if (fotos != null) {
+                for (i in fotos.indices) {
+                    fotos[i].delete()
+                }
+            }
+        }
     }
 
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {
@@ -419,6 +433,38 @@ class FunImpl @Inject constructor(
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_BAJAESTADO,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperRespuesta() {
+        val wp = PeriodicWorkRequestBuilder<RespuestaPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_RESPUESTA,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
+
+    override fun workerperFoto() {
+        val wp = PeriodicWorkRequestBuilder<FotoPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_FOTO,
             ExistingPeriodicWorkPolicy.REPLACE,
             wp
         )

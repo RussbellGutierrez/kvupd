@@ -25,8 +25,8 @@ object Constant {
     var MSG_ENCUESTA = "Message"
 
     var IMEI = ""
+    var PROCEDE = ""
     var VISICOOLER_ID = 0
-    var DIA_FILTRO = 0
     var POS_LOC: Location? = null
     lateinit var ALTADATOS: String
     lateinit var GPS_LOC: Location
@@ -50,6 +50,8 @@ object Constant {
     const val WP_ALTADATO = "VPAltadato"
     const val WP_BAJA = "VPBaja"
     const val WP_BAJAESTADO = "VPBajaestado"
+    const val WP_RESPUESTA = "VPRespuesta"
+    const val WP_FOTO = "VPFoto"
 
     const val SETUP_CHANNEL = "1"
     const val SETUP_NOTIF = 1

@@ -211,7 +211,8 @@ data class TRespuesta(
     val encuesta: Int,
     val pregunta: Int,
     val respuesta: String,
-    val rutafoto: String
+    val rutafoto: String,
+    var estado: String
 )
 
 @Entity(primaryKeys = ["ruta"])

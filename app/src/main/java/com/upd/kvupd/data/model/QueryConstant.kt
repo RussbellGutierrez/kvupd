@@ -9,12 +9,12 @@ object QueryConstant {
     const val GET_DISTRITOS = "SELECT * FROM TDistrito"
     const val GET_NEGOCIOS = "SELECT * FROM TNegocio"
     const val GET_RUTAS = "SELECT * FROM TRutas"
-    const val GET_CABE_ENCUESTAS = "SELECT distinct id, nombre, foto FROM TEncuesta"
     const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
     const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
     const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
-    const val GET_BAJA_SUPER = "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
+    const val GET_BAJA_SUPER =
+        "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
     const val GET_SELECCION = "SELECT * FROM TEncuestaSeleccionado"
 
     const val DEL_CONFIG = "DELETE FROM TConfiguracion"
@@ -33,6 +33,7 @@ object QueryConstant {
     const val DEL_BAJASUPER = "DELETE FROM TBajaSuper"
     const val DEL_ESTADOBAJA = "DELETE FROM TBEstado"
     const val DEL_SELECCION = "DELETE FROM TEncuestaSeleccionado"
+    const val DEL_RESPUESTA = "DELETE FROM TRespuesta"
 
     const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
@@ -47,11 +48,25 @@ object QueryConstant {
     const val GET_BAJAESTADO_SERVER = "SELECT * FROM TBEstado " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fechaconf ASC"
 
+    const val GET_RESPUESTA_SERVER = "SELECT * FROM TRespuesta " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND respuesta != '' ORDER BY fecha ASC"
+
+    const val GET_FOTO_SERVER = "SELECT * FROM TRespuesta " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND respuesta = '' ORDER BY fecha ASC"
+
+    const val GET_RESPUESTA_CLIENTE = "" +
+            "SELECT encuesta " +
+            "FROM TRespuesta " +
+            "WHERE cliente = :cliente " +
+            "GROUP BY encuesta "
+
     const val GET_ROW_CLIENTES = "" +
-            "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, c.secuencia, c.ruta " +
+            "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, IFNULL(r.encuesta,0) as resuelto, c.secuencia, c.ruta " +
             "FROM TClientes c " +
             "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
             "LEFT JOIN TEmpleados p on c.empleado=p.codigo " +
+            "LEFT JOIN TRespuesta r on c.idcliente=r.cliente " +
+            "GROUP BY c.idcliente " +
             "ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC "
 
     const val GET_LAST_ALTA = "" +
@@ -63,6 +78,11 @@ object QueryConstant {
             "SELECT * " +
             "FROM TSeguimiento " +
             "ORDER BY fecha DESC LIMIT 1 "
+
+    const val GET_CABE_ENCUESTAS = "" +
+            "SELECT distinct e.id, e.nombre, e.foto, IFNULL(s.id,0) as seleccion " +
+            "FROM TEncuesta e " +
+            "LEFT JOIN TEncuestaSeleccionado s on e.id=s.encuesta "
 
     const val GET_MARKERS = "" +
             "SELECT c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +

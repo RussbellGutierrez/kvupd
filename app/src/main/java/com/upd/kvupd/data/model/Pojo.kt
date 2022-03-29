@@ -11,7 +11,8 @@ data class RowCliente(
     @ColumnInfo(name = "ruta") val ruta: Int,
     @ColumnInfo(name = "atendido") val atendido: Int,
     @ColumnInfo(name = "fecha") val fecha: String,
-    @ColumnInfo(name = "encuestas") val encuestas: String
+    @ColumnInfo(name = "encuestas") val encuestas: String,
+    @ColumnInfo(name = "resuelto") val resuelto: Int
 )
 
 data class MarkerMap(
@@ -65,7 +66,8 @@ data class RowBaja(
 data class Cabecera(
     @ColumnInfo(name = "id") val id: Int,
     @ColumnInfo(name = "nombre") val nombre: String,
-    @ColumnInfo(name = "foto") val foto: Boolean
+    @ColumnInfo(name = "foto") val foto: Boolean,
+    @ColumnInfo(name = "seleccion") val seleccion: Int
 )
 
 data class Respuesta(
@@ -73,4 +75,8 @@ data class Respuesta(
     val pregunta: Int,
     val respuesta: String,
     val ruta: String
+)
+
+data class RespuestaCliente(
+    @ColumnInfo(name = "encuesta") val encuesta: Int
 )

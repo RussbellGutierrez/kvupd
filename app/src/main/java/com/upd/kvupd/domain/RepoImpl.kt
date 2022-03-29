@@ -177,8 +177,12 @@ class RepoImpl @Inject constructor(
         return l
     }
 
-    override suspend fun isEncuestaSeleccionado() =
-        localDataSource.isEncuestaSeleccion()
+    override suspend fun getSeleccionado(): TEncuestaSeleccionado? {
+        return localDataSource.getEncuestaSeleccion()
+    }
+
+    override suspend fun clienteRespondio(cliente: String) =
+        localDataSource.clienteRespondio(cliente)
 
     override suspend fun saveSesion(config: Config) {
         localDataSource.saveSesion(config)
@@ -244,8 +248,20 @@ class RepoImpl @Inject constructor(
         localDataSource.saveEstadoBaja(estado)
     }
 
+    override suspend fun saveRespuestaOneByOne(respuesta: TRespuesta) {
+        localDataSource.saveRespuestaIndividual(respuesta)
+    }
+
+    override suspend fun saveFoto(respuesta: TRespuesta) {
+        localDataSource.saveFoto(respuesta)
+    }
+
     override suspend fun saveSeleccionado(selec: TEncuestaSeleccionado) {
         localDataSource.saveSeleccionado(selec)
+    }
+
+    override suspend fun saveRespuesta(respuesta: List<TRespuesta>) {
+        localDataSource.saveRespuesta(respuesta)
     }
 
     override suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
@@ -270,6 +286,14 @@ class RepoImpl @Inject constructor(
 
     override suspend fun getServerBajaestado(estado: String): List<TBEstado> {
         return localDataSource.getServerBajaestado(estado)
+    }
+
+    override suspend fun getServerRespuesta(estado: String): List<TRespuesta> {
+        return localDataSource.getServerRespuesta(estado)
+    }
+
+    override suspend fun getServerFoto(estado: String): List<TRespuesta> {
+        return localDataSource.getServerFoto(estado)
     }
 
     override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
@@ -350,6 +374,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun deleteSeleccionado() {
         localDataSource.deleteSeleccionado()
+    }
+
+    override suspend fun deleteRespuesta() {
+        localDataSource.deleteRespuesta()
     }
 
     override suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>> {
@@ -553,6 +581,18 @@ class RepoImpl @Inject constructor(
     override suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerBajaEstados(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebRespuestas(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerRespuestas(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebFotos(body: RequestBody): Flow<Network<JObj>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerFotos(body) })
         }.flowOn(Dispatchers.IO)
     }
 }

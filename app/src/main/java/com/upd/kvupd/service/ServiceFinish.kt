@@ -1,6 +1,9 @@
 package com.upd.kvupd.service
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import com.upd.kvupd.data.model.*
@@ -17,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.inject.Inject
 import kotlin.concurrent.schedule
@@ -36,6 +40,8 @@ class ServiceFinish : LifecycleService() {
     private var pad: List<TADatos>? = null
     private var pba: List<TBaja>? = null
     private var pbe: List<TBEstado>? = null
+    private var pre: List<TRespuesta>? = null
+    private var pfo: List<TRespuesta>? = null
     private val _tag by lazy { ServiceFinish::class.java.simpleName }
 
     override fun onDestroy() {
@@ -81,6 +87,14 @@ class ServiceFinish : LifecycleService() {
             repository.getServerBajaestado("Todo").also {
                 pbe = it
                 sendServer(5)
+            }
+            repository.getServerRespuesta("Todo").also {
+                pre = it
+                sendServer(6)
+            }
+            repository.getServerFoto("Todo").also {
+                pfo = it
+                sendServer(7)
             }
 
             functions.chooseCloseWorker("periodic")
@@ -282,6 +296,55 @@ class ServiceFinish : LifecycleService() {
                         }
                     }
                 }
+                6 -> {
+                    pre?.forEach { i ->
+                        val p = JSONObject()
+                        p.put("empresa", CONF.empresa)
+                        p.put("empleado", CONF.codigo)
+                        p.put("cliente", i.cliente)
+                        p.put("encuesta", i.encuesta)
+                        p.put("pregunta", i.pregunta)
+                        p.put("respuesta", i.respuesta)
+                        p.put("fecha", i.fecha)
+                        repository.setWebRespuestas(p.toReqBody()).collect {
+                            when (it) {
+                                is Network.Success -> {
+                                    i.estado = "Enviado"
+                                    repository.saveRespuestaOneByOne(i)
+                                    Log.d(_tag,"Respuesta enviado $i")
+                                }
+                                is Network.Error -> Log.e(_tag,"Respuesta Error ${it.message}")
+                            }
+                        }
+                    }
+                }
+                7 -> {
+                    pfo?.forEach { i ->
+                        val baos = ByteArrayOutputStream()
+                        val bm = BitmapFactory.decodeFile(i.rutafoto)
+                        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                        val byteArray = baos.toByteArray()
+                        val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+                        val p = JSONObject()
+                        p.put("empresa", CONF.empresa)
+                        p.put("empleado", CONF.codigo)
+                        p.put("cliente", i.cliente)
+                        p.put("encuesta", i.encuesta)
+                        p.put("sucursal", CONF.sucursal)
+                        p.put("foto", foto)
+                        repository.setWebFotos(p.toReqBody()).collect {
+                            when(it) {
+                                is Network.Success -> {
+                                    i.estado = "Enviado"
+                                    repository.saveFoto(i)
+                                    Log.d(_tag,"Foto enviado $i")
+                                }
+                                is Network.Error -> Log.e(_tag,"Foto Error ${it.message}")
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -296,6 +359,7 @@ class ServiceFinish : LifecycleService() {
             repository.deleteRutas()
             repository.deleteEncuesta()
             repository.deleteSeleccionado()
+            repository.deleteRespuesta()
             repository.deleteEstado()
             repository.deleteSeguimiento()
             repository.deleteVisita()
@@ -304,6 +368,7 @@ class ServiceFinish : LifecycleService() {
             repository.deleteBaja()
             repository.deleteBajaSuper()
             repository.deleteBajaEstado()
+            functions.deleteFotos()
         }
     }
 }

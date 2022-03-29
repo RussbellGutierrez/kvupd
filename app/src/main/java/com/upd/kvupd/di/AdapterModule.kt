@@ -2,6 +2,7 @@ package com.upd.kvupd.di
 
 import android.content.Context
 import com.upd.kvupd.domain.Functions
+import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.ui.adapter.*
 import dagger.Module
 import dagger.Provides
@@ -16,8 +17,9 @@ object AdapterModule {
     @Provides
     fun prodiverClienteAdapter(
         @ApplicationContext ctx: Context,
-        functions: Functions
-    ) = ClienteAdapter(ctx, functions)
+        functions: Functions,
+        repository: Repository
+    ) = ClienteAdapter(ctx, functions, repository)
 
     @Provides
     fun prodiverUmeAdapter() = UmesAdapter()

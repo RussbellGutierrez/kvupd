@@ -105,8 +105,12 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getLastAlta()
     }
 
-    suspend fun isEncuestaSeleccion(): Boolean =
-        qdao.getSeleccionado() != null
+    suspend fun getEncuestaSeleccion(): TEncuestaSeleccionado? {
+        return qdao.getSeleccionado()
+    }
+
+    suspend fun clienteRespondio(cliente: String) =
+        qdao.getRespuesta(cliente) != null
 
     suspend fun saveSesion(config: Config) {
         dao.insertSesion(config.asTSesion())
@@ -172,8 +176,20 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertEstadoBaja(estado)
     }
 
+    suspend fun saveRespuestaIndividual(rsp: TRespuesta) {
+        dao.insertRespuestaIndividual(rsp)
+    }
+
+    suspend fun saveFoto(rsp: TRespuesta) {
+        dao.insertFoto(rsp)
+    }
+
     suspend fun saveSeleccionado(selec: TEncuestaSeleccionado) {
         dao.insertSeleccionado(selec)
+    }
+
+    suspend fun saveRespuesta(rsp: List<TRespuesta>) {
+        dao.insertRespuesta(rsp)
     }
 
     suspend fun updateLocationAlta(locationAlta: LocationAlta) {
@@ -255,6 +271,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.deleteSeleccionado()
     }
 
+    suspend fun deleteRespuesta() {
+        dao.deleteRespuesta()
+    }
+
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
         return qdao.seguimientoServer(estado)
     }
@@ -277,5 +297,13 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun getServerBajaestado(estado: String): List<TBEstado> {
         return qdao.bajaestadoServer(estado)
+    }
+
+    suspend fun getServerRespuesta(estado: String): List<TRespuesta> {
+        return qdao.respuestaServer(estado)
+    }
+
+    suspend fun getServerFoto(estado: String): List<TRespuesta> {
+        return qdao.fotoServer(estado)
     }
 }

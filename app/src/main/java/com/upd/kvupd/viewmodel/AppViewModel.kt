@@ -43,6 +43,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _climap: MutableLiveData<Event<String>> = MutableLiveData()
     val climap: LiveData<Event<String>> = _climap
 
+    private val _marker: MutableLiveData<Event<List<MarkerMap>>> = MutableLiveData()
+    val marker: LiveData<Event<List<MarkerMap>>> = _marker
+
     private val _vendedor: MutableLiveData<Event<List<String>>> = MutableLiveData()
     val vendedor: LiveData<Event<List<String>>> = _vendedor
 
@@ -130,8 +133,6 @@ class AppViewModel @ViewModelInject constructor(
 
     fun lastLocation() = repository.getFlowLocation().asLiveData()
 
-    fun markerMap() = repository.getFlowMarker().asLiveData()
-
     fun altasObs() = repository.getFlowAltas().asLiveData()
 
     fun distritosObs() = repository.getFlowDistritos().asLiveData()
@@ -162,6 +163,12 @@ class AppViewModel @ViewModelInject constructor(
     private val _servbajaestado: MutableLiveData<Event<List<TBEstado>>> = MutableLiveData()
     val servbajaestado: LiveData<Event<List<TBEstado>>> = _servbajaestado
 
+    private val _servrespuesta: MutableLiveData<Event<List<TRespuesta>>> = MutableLiveData()
+    val servrespuesta: LiveData<Event<List<TRespuesta>>> = _servrespuesta
+
+    private val _servfoto: MutableLiveData<Event<List<TRespuesta>>> = MutableLiveData()
+    val servfoto: LiveData<Event<List<TRespuesta>>> = _servfoto
+
     private val _respseguimiento: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
     val respseguimiento: LiveData<Event<Network<JObj>>> = _respseguimiento
 
@@ -180,8 +187,25 @@ class AppViewModel @ViewModelInject constructor(
     private val _respbajaestado: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
     val respbajaestado: LiveData<Event<Network<JObj>>> = _respbajaestado
 
+    private val _resprespuesta: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val resprespuesta: LiveData<Event<Network<JObj>>> = _resprespuesta
+
+    private val _respfoto: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
+    val respfoto: LiveData<Event<Network<JObj>>> = _respfoto
+
     private val _cabecera: MutableLiveData<Event<List<Cabecera>>> = MutableLiveData()
     val cabecera: LiveData<Event<List<Cabecera>>> = _cabecera
+
+    private val _respuesta: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val respuesta: LiveData<Event<Boolean>> = _respuesta
+
+    fun markerMap() {
+        viewModelScope.launch {
+            repository.getFlowMarker().collect {
+                _marker.value = Event(it)
+            }
+        }
+    }
 
     fun fetchServerAll(estado: String) {
         viewModelScope.launch {
@@ -202,6 +226,12 @@ class AppViewModel @ViewModelInject constructor(
             }
             repository.getServerBajaestado(estado).let {
                 _servbajaestado.value = Event(it)
+            }
+            repository.getServerRespuesta(estado).let {
+                _servrespuesta.value = Event(it)
+            }
+            repository.getServerFoto(estado).let {
+                _servfoto.value = Event(it)
             }
         }
     }
@@ -239,6 +269,18 @@ class AppViewModel @ViewModelInject constructor(
     fun webBajaEstado(body: RequestBody) = viewModelScope.launch {
         repository.setWebBajaEstados(body).collect {
             _respbajaestado.value = Event(it)
+        }
+    }
+
+    fun webRespuesta(body: RequestBody) = viewModelScope.launch {
+        repository.setWebRespuestas(body).collect {
+            _resprespuesta.value = Event(it)
+        }
+    }
+
+    fun webFoto(body: RequestBody) = viewModelScope.launch {
+        repository.setWebFotos(body).collect {
+            _respfoto.value = Event(it)
         }
     }
 
@@ -547,6 +589,7 @@ class AppViewModel @ViewModelInject constructor(
     fun saveSeleccion(datos: TEncuestaSeleccionado) {
         viewModelScope.launch {
             repository.saveSeleccionado(datos)
+            rowClienteObs()
         }
     }
 
@@ -583,6 +626,18 @@ class AppViewModel @ViewModelInject constructor(
     fun updBajaEstado(it: TBEstado) {
         viewModelScope.launch {
             repository.saveBajaEstado(it)
+        }
+    }
+
+    fun updRespuesta(it: TRespuesta) {
+        viewModelScope.launch {
+            repository.saveRespuestaOneByOne(it)
+        }
+    }
+
+    fun updFoto(it: TRespuesta) {
+        viewModelScope.launch {
+            repository.saveFoto(it)
         }
     }
 
@@ -680,7 +735,7 @@ class AppViewModel @ViewModelInject constructor(
     fun checkingEncuesta(T: (Boolean) -> Unit) {
         viewModelScope.launch {
             val lista = repository.getListEncuestas()
-            val seleccionado = repository.isEncuestaSeleccionado()
+            val seleccionado = repository.getSeleccionado() != null
             when {
                 lista.isNullOrEmpty() -> T(true)
                 seleccionado -> T(true)
@@ -693,6 +748,19 @@ class AppViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             val list = repository.getListEncuestas()
             _cabecera.value = Event(list)
+        }
+    }
+
+    fun savingRespuestas(list: List<TRespuesta>) {
+        viewModelScope.launch {
+            repository.saveRespuesta(list)
+        }
+    }
+
+    fun clienteRespondio(cliente: String) {
+        viewModelScope.launch {
+            val rsp = repository.clienteRespondio(cliente)
+            _respuesta.value = Event(rsp)
         }
     }
 }
