@@ -607,6 +607,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
     }
 
     private fun executeUpdater() {
+        val fecha = viewmodel.fecha(3)
         val url = when (CONF.empresa) {
             1 -> SOCKET_ORIUNDA
             else -> SOCKET_TERRANORTE
@@ -614,7 +615,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         val opcion = IO.Options()
         opcion.forceNew = false
         opcion.timeout = 30000
-        progress("Actualizando reporte")
+        progress("Comenzo actualizacion $fecha, culminara aprox. 2 min a 3 min")
 
         if (::socket.isInitialized && socket.connected()) {
             socket.disconnect()

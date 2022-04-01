@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "15750209aa634c1226a650f76e32d21d",
+    "identityHash": "4c45a429b2479be3d5fe8764f13f425c",
     "entities": [
       {
         "tableName": "TSesion",
@@ -456,7 +456,7 @@
       },
       {
         "tableName": "TRespuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
         "fields": [
           {
             "fieldPath": "cliente",
@@ -491,6 +491,12 @@
           {
             "fieldPath": "rutafoto",
             "columnName": "rutafoto",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "estado",
+            "columnName": "estado",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -1235,7 +1241,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '15750209aa634c1226a650f76e32d21d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c45a429b2479be3d5fe8764f13f425c')"
     ]
   }
 }

@@ -78,18 +78,25 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            rutas = it
+        }
         if (!::sup.isInitialized) {
             sup = childFragmentManager.findFragmentById(bind.map.id) as SupportMapFragment
             sup.getMapAsync(this)
         }
-
-        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            rutas = it
-        }
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
             location.longitude = it[0].longitud
             location.latitude = it[0].latitud
+        }
+        viewmodel.marker.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                if (::map.isInitialized) {
+                    map.clear()
+                    markers = viewmodel.setMarker(map, y)
+                    drawRoutes()
+                }
+            }
         }
         viewmodel.detail.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -107,14 +114,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 showMarker(y)
             }
         }
-        viewmodel.marker.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                if (::map.isInitialized) {
-                    map.clear()
-                    markers = viewmodel.setMarker(map, y)
-                }
-            }
-        }
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
@@ -130,7 +129,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         R.id.lista -> consume { viewmodel.getClientDet("0") }
         R.id.voz -> consume { searchVoice() }
         android.R.id.home -> consume {
-            when(CONF.tipo) {
+            when (CONF.tipo) {
                 "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
                 "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
             }
@@ -150,7 +149,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 setOnInfoWindowLongClickListener(this@FMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
-            drawRoutes()
             viewmodel.markerMap()
             moveCamera(location)
         }
@@ -240,7 +238,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
         val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
         when (dialog) {
-            0 -> when(CONF.tipo) {
+            0 -> when (CONF.tipo) {
                 "V" -> findNavController().navigate(
                     FMapaDirections.actionFMapaToBDObservacion(cli)
                 )
@@ -287,7 +285,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    when(CONF.tipo) {
+                    when (CONF.tipo) {
                         "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
                         "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
                     }
