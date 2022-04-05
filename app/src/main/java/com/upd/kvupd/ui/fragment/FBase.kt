@@ -56,28 +56,40 @@ class FBase : Fragment() {
         }
 
         bind.fabVendedor.setOnClickListener {
-            opt = 1
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 1
+                viewmodel.dataDownloaded()
+            }
         }
         bind.fabCliente.setOnClickListener {
-            opt = 2
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 2
+                viewmodel.dataDownloaded()
+            }
         }
         bind.fabReporte.setOnClickListener {
-            opt = 3
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 3
+                viewmodel.dataDownloaded()
+            }
         }
         bind.fabAltas.setOnClickListener {
-            opt = 4
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 4
+                viewmodel.dataDownloaded()
+            }
         }
         bind.fabBajas.setOnClickListener {
-            opt = 5
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 5
+                viewmodel.dataDownloaded()
+            }
         }
         bind.fabServidor.setOnClickListener {
-            opt = 6
-            viewmodel.dataDownloaded()
+            checkingGPS {
+                opt = 6
+                viewmodel.dataDownloaded()
+            }
         }
 
         viewmodel.inicio.observe(viewLifecycleOwner) {
@@ -121,7 +133,7 @@ class FBase : Fragment() {
         viewmodel.sincro.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 sincro += y
-                when(sincro) {
+                when (sincro) {
                     4 -> {
                         sincro = 0
                         snack("Sincronizacion completa")
@@ -197,6 +209,14 @@ class FBase : Fragment() {
             viewmodel.fetchSinchro()
         } else {
             snack("No tenemos señal de internet")
+        }
+    }
+
+    private fun checkingGPS(T:()->Unit) {
+        if (isGPSDisabled()) {
+            snack("Habilite el GPS primero")
+        } else {
+            T()
         }
     }
 }
