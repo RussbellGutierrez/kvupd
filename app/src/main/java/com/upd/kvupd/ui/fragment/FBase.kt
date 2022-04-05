@@ -91,7 +91,6 @@ class FBase : Fragment() {
                 viewmodel.dataDownloaded()
             }
         }
-
         viewmodel.inicio.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (y) {
