@@ -24,6 +24,9 @@ object Constant {
     var MSG_RUTA = "Message"
     var MSG_ENCUESTA = "Message"
 
+    var IS_SUNDAY = false
+    var IS_CONFIG_FAILED = false
+
     var IMEI = ""
     var PROCEDE = ""
     var VISICOOLER_ID = 0

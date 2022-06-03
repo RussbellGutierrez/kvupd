@@ -18,8 +18,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
-import com.upd.kvupd.R
 import com.upd.kvupd.BuildConfig
+import com.upd.kvupd.R
 import com.upd.kvupd.application.work.*
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
@@ -176,6 +176,12 @@ class FunImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun isSunday(): Boolean {
+        val calendar = Calendar.getInstance()
+        val day = calendar[Calendar.DAY_OF_WEEK]
+        return day == Calendar.SUNDAY
     }
 
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {

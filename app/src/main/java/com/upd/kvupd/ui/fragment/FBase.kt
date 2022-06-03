@@ -138,7 +138,10 @@ class FBase : Fragment() {
                         sincro = 0
                         snack("Sincronizacion completa")
                     }
-                    10 -> snack("Archivo de configuracion no encontrado")
+                    90 -> {
+                        sincro = 0
+                        snack("Archivo de configuracion no encontrado")
+                    }
                 }
             }
         }

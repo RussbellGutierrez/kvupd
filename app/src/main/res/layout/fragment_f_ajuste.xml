@@ -27,11 +27,19 @@
                 android:textSize="20sp"
                 android:textColor="@color/teal"/>
 
+            <TextView
+                android:id="@+id/txt_empresa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/lightcrimson"
+                android:layout_marginTop="5dp"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp">
 
                 <Button

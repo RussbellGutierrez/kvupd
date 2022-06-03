@@ -13,13 +13,12 @@ import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
+import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
+import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
 import com.upd.kvupd.utils.Constant.REQ_CODE
 import com.upd.kvupd.utils.Interface.serviceListener
-import com.upd.kvupd.utils.Permission
-import com.upd.kvupd.utils.isServiceRunning
-import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -48,7 +47,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         serviceListener = this
     }
 
-    override fun onClosingActivity() {
+    override fun onClosingActivity(notRegister: Boolean) {
         if (isServiceRunning(ServiceSetup::class.java))
             stopService(Intent(this, ServiceSetup::class.java))
 
@@ -59,8 +58,20 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
             stopService(Intent(this, ServiceFinish::class.java))
 
         runOnUiThread {
-            toast("Cerrando KVentas")
-            finishAndRemoveTask()
+            if (notRegister) {
+                showDialog("error","Revise en la lista de dispositivos si está registrado su equipo celular") {
+                    finishAndRemoveTask()
+                }
+            } else {
+                if (!IS_SUNDAY && IS_CONFIG_FAILED) {
+                    showDialog("error","Al parecer se elimino su registro, consulte con sistemas") {
+                        finishAndRemoveTask()
+                    }
+                } else {
+                    toast("Cerrando KVentas")
+                    finishAndRemoveTask()
+                }
+            }
         }
     }
 

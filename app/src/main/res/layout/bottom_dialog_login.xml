@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="10dp"
+        android:layout_marginVertical="10dp"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="5dp"
         app:cardElevation="3dp">
@@ -38,10 +38,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/lightcrimson"
+                android:text="Antes de ingresar a los ajustes, suba su información al servidor, porque se limpiara TODOS los datos"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 app:boxBackgroundColor="@null"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 

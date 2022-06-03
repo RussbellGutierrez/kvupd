@@ -13,6 +13,8 @@ import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Network
 import com.upd.kvupd.utils.toReqBody
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -128,6 +130,8 @@ class AppViewModel @ViewModelInject constructor(
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
 
     fun configObserver() = repository.getFlowConfig().asLiveData()
+
+    fun sessionObserver() = repository.getFlowSession().asLiveData()
 
     fun rowClienteObs() = repository.getFlowRowCliente().asLiveData()
 
@@ -686,7 +690,7 @@ class AppViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             val conf = repository.getConfig()
             if (conf == null) {
-                _sincro.value = Event(10)
+                _sincro.value = Event(90)
             } else {
                 val j = JSONObject()
                 j.put("empleado",conf.codigo)
@@ -761,6 +765,31 @@ class AppViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             val rsp = repository.clienteRespondio(cliente)
             _respuesta.value = Event(rsp)
+        }
+    }
+
+    fun appSo() = functions.appSO()
+
+    fun deleteTables() {
+        viewModelScope.launch {
+            repository.deleteConfig()
+            repository.deleteClientes()
+            repository.deleteEmpleados()
+            repository.deleteDistritos()
+            repository.deleteNegocios()
+            repository.deleteRutas()
+            repository.deleteEncuesta()
+            repository.deleteSeleccionado()
+            repository.deleteRespuesta()
+            repository.deleteEstado()
+            repository.deleteSeguimiento()
+            repository.deleteVisita()
+            repository.deleteAlta()
+            repository.deleteAltaDatos()
+            repository.deleteBaja()
+            repository.deleteBajaSuper()
+            repository.deleteBajaEstado()
+            functions.deleteFotos()
         }
     }
 }

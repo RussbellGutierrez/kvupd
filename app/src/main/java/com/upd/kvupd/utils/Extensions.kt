@@ -148,6 +148,27 @@ fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
     }
 }
 
+fun Activity.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
+    val icon = when (titulo.lowercase()) {
+        "advertencia" -> R.drawable.advertencia
+        "correcto" -> R.drawable.correcto
+        "error" -> R.drawable.error
+        else -> R.drawable.informacion
+    }
+
+    MaterialDialog(this).show {
+        icon(icon)
+        title(null, titulo.uppercase())
+        message(null, mensaje)
+        positiveButton(null, "Ok") {
+            dismiss()
+            T()
+        }
+        if (titulo == "advertencia")
+            negativeButton(null, "Cancelar")
+    }
+}
+
 inline fun consume(f: () -> Unit): Boolean {
     f()
     return true

@@ -133,94 +133,6 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
-    override fun onFinishWork(work: String) {
-        CoroutineScope(Dispatchers.Main).launch {
-            when (work) {
-                W_CONFIG -> {
-                    configLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    helper.configNotif()
-                                    when (j.state) {
-                                        WorkInfo.State.SUCCEEDED -> priorityWorkers()
-                                        WorkInfo.State.FAILED -> configFailed()
-                                        else -> {}
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                W_USER -> {
-                    userLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    user = true
-                                    helper.userNotif()
-                                    periodicWorkers()
-                                }
-                            }
-                        }
-                    }
-                }
-                W_DISTRITO -> {
-                    distritoLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    distrito = true
-                                    helper.distritoNotif()
-                                    periodicWorkers()
-                                }
-                            }
-                        }
-                    }
-                }
-                W_NEGOCIO -> {
-                    negocioLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    negocio = true
-                                    helper.negocioNotif()
-                                    periodicWorkers()
-                                }
-                            }
-                        }
-                    }
-                }
-                W_RUTA -> {
-                    rutaLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    ruta = true
-                                    helper.rutaNotif()
-                                    periodicWorkers()
-                                }
-                            }
-                        }
-                    }
-                }
-                W_ENCUESTA -> {
-                    encuestaLiveData.observe(this@ServiceSetup) {
-                        it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
-                                if (j.state.isFinished) {
-                                    encuesta = true
-                                    helper.encuestaNotif()
-                                    periodicWorkers()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun initObsWork() {
         configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { Event(it) }
         userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { Event(it) }
@@ -376,6 +288,94 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
+    override fun onFinishWork(work: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            when (work) {
+                W_CONFIG -> {
+                    configLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    helper.configNotif()
+                                    when (j.state) {
+                                        WorkInfo.State.SUCCEEDED -> priorityWorkers()
+                                        WorkInfo.State.FAILED -> configFailed()
+                                        else -> {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                W_USER -> {
+                    userLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    user = true
+                                    helper.userNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_DISTRITO -> {
+                    distritoLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    distrito = true
+                                    helper.distritoNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_NEGOCIO -> {
+                    negocioLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    negocio = true
+                                    helper.negocioNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_RUTA -> {
+                    rutaLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    ruta = true
+                                    helper.rutaNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+                W_ENCUESTA -> {
+                    encuestaLiveData.observe(this@ServiceSetup) {
+                        it.getContentIfNotHandled()?.let { y ->
+                            y[0].let { j ->
+                                if (j.state.isFinished) {
+                                    encuesta = true
+                                    helper.encuestaNotif()
+                                    periodicWorkers()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun configFailed() {
         CoroutineScope(Dispatchers.Main).launch {
             val sesion = repository.getSesion()
@@ -385,7 +385,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             } else {
                 Log.e(_tag, "Never download data")
                 if (serviceListener != null) {
-                    serviceListener?.onClosingActivity()
+                    serviceListener?.onClosingActivity(true)
                 } else {
                     stopSelf()
                 }
@@ -394,6 +394,6 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     }
 
     interface OnServiceListener {
-        fun onClosingActivity()
+        fun onClosingActivity(notRegister: Boolean = false)
     }
 }

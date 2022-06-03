@@ -19,6 +19,7 @@ interface Functions {
     fun appSO(): String
     fun isConnected(): Boolean
     fun deleteFotos()
+    fun isSunday(): Boolean
 
     fun setupMarkers(map: GoogleMap,list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap,list: List<Pedimap>): List<Marker>

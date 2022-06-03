@@ -15,8 +15,8 @@ android {
         applicationId "com.upd.kvupd"
         minSdk 23
         targetSdk 32
-        versionCode 230010000
-        versionName "1.0.0"
+        versionCode 230010001
+        versionName "1.0.1"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //ruta para schemas room

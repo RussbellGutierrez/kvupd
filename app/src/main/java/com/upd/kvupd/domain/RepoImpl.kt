@@ -22,6 +22,10 @@ class RepoImpl @Inject constructor(
         return localDataSource.getObsConfiguracion().distinctUntilChanged()
     }
 
+    override fun getFlowSession(): Flow<TSesion> {
+        return localDataSource.getObsSession().distinctUntilChanged()
+    }
+
     override fun getFlowRowCliente(): Flow<List<RowCliente>> {
         return localDataSource.getRowClientes().distinctUntilChanged()
     }

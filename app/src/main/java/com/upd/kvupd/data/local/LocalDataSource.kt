@@ -10,6 +10,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getObsConfig()
     }
 
+    fun getObsSession(): Flow<TSesion> {
+        return qdao.getObsSession()
+    }
+
     fun getRowClientes(): Flow<List<RowCliente>> {
         return qdao.getRowClientes()
     }

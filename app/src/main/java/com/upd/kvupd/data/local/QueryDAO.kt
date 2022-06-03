@@ -42,6 +42,9 @@ interface QueryDAO {
     @Query(GET_CONFIG)
     fun getObsConfig(): Flow<List<TConfiguracion>>
 
+    @Query(GET_SESION)
+    fun getObsSession(): Flow<TSesion>
+
     @Query(GET_ROW_CLIENTES)
     fun getRowClientes(): Flow<List<RowCliente>>
 

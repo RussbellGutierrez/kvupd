@@ -11,6 +11,7 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.upd.kvupd.data.model.TSesion
 import com.upd.kvupd.data.model.asTConfig
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
@@ -18,6 +19,8 @@ import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.CONFIG_CHANNEL
 import com.upd.kvupd.utils.Constant.CONFIG_NOTIF
 import com.upd.kvupd.utils.Constant.IMEI
+import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
+import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.MSG_CONFIG
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Interface.workListener
@@ -48,11 +51,16 @@ class ConfigWork @WorkerInject constructor(
                             Log.e(_tag,"Message: ${response.message}")
                             Log.w(_tag,"Config $config")
                             rst = if (config.isNullOrEmpty()) {
-                                MSG_CONFIG = "Respuesta: ${response.message}"
+                                IS_SUNDAY = functions.isSunday()
+                                IS_CONFIG_FAILED = true
+                                MSG_CONFIG = "Respuesta-> ${response.message}"
                                 Result.failure()
                             } else {
+                                IS_SUNDAY = false
+                                IS_CONFIG_FAILED = false
                                 CONF = config[0].asTConfig()
                                 repository.saveConfiguracion(config)
+                                repository.saveSesion(config[0])
                                 MSG_CONFIG = "Configuracion completa"
                                 Result.success()
                             }
@@ -74,8 +82,10 @@ class ConfigWork @WorkerInject constructor(
 
     private fun getRequestBody(): RequestBody {
         val app = functions.appSO()
+        val modelo = "${Build.MANUFACTURER} ${Build.MODEL}"
         val json = JSONObject()
         json.put("imei", IMEI)
+        json.put("modelo", modelo.uppercase())
         json.put("version", app)
         json.put("fecha", functions.dateToday(6))
         return json.toReqBody()

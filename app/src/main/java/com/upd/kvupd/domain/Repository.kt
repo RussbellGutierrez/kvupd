@@ -9,6 +9,7 @@ import okhttp3.RequestBody
 interface Repository {
     //  Room Functions
     fun getFlowConfig(): Flow<List<TConfiguracion>>
+    fun getFlowSession(): Flow<TSesion>
     fun getFlowRowCliente(): Flow<List<RowCliente>>
     fun getFlowLocation(): Flow<List<TSeguimiento>>
     fun getFlowMarker(): Flow<List<MarkerMap>>
