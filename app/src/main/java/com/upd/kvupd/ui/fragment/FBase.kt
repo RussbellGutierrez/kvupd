@@ -3,6 +3,7 @@ package com.upd.kvupd.ui.fragment
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -121,11 +122,19 @@ class FBase : Fragment() {
         }
         viewmodel.encuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
+                val d = y.data?.jobl
                 when (y) {
-                    is Network.Success -> showDialog(
-                        "Correcto",
-                        "Encuesta descargada correctamente"
-                    ) {}
+                    is Network.Success -> if (d.isNullOrEmpty()) {
+                        showDialog(
+                            "Advertencia",
+                            "No tiene encuesta programada"
+                        ) {}
+                    }else {
+                        showDialog(
+                            "Correcto",
+                            "Encuesta descargada correctamente"
+                        ) {}
+                    }
                     is Network.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }

@@ -13,8 +13,6 @@ import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Network
 import com.upd.kvupd.utils.toReqBody
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -309,11 +307,13 @@ class AppViewModel @ViewModelInject constructor(
 
     fun fetchEncuesta(body: RequestBody) = viewModelScope.launch {
         repository.getWebEncuesta(body).collect { values ->
-            values.data?.jobl?.let {
-                repository.saveEncuesta(it)
-                if (CONF.tipo == "V") {
-                    val item = TEncuestaSeleccionado(1,it[0].id,it[0].foto)
-                    repository.saveSeleccionado(item)
+            values.data?.jobl.let {
+                if (!it.isNullOrEmpty()) {
+                    repository.saveEncuesta(it)
+                    if (CONF.tipo == "V") {
+                        val item = TEncuestaSeleccionado(1,it[0].id,it[0].foto)
+                        repository.saveSeleccionado(item)
+                    }
                 }
             }
             _encuesta.value = Event(values)
