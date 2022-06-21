@@ -12,8 +12,11 @@ import androidx.navigation.fragment.navArgs
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.databinding.DialogBajaBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.POS_LOC
+import com.upd.kvupd.utils.setCreate
+import com.upd.kvupd.utils.setResume
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

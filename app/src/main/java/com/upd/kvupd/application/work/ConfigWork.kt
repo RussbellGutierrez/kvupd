@@ -11,7 +11,6 @@ import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TSesion
 import com.upd.kvupd.data.model.asTConfig
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository

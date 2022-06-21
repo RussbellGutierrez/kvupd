@@ -91,6 +91,8 @@ class BajaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
 
             if (item.anulado > 0) {
                 ImageViewCompat.setImageTintList(bind.imgAnulado, ColorStateList.valueOf(Color.parseColor("#DF3E5F")))
+            }else {
+                ImageViewCompat.setImageTintList(bind.imgAnulado, ColorStateList.valueOf(Color.parseColor("#7A7A7A")))
             }
 
             bind.lnrBaja.setOnLongClickListener {

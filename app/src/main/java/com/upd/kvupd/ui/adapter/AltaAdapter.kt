@@ -73,6 +73,8 @@ class AltaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
             bind.txtFecha.text = item.fecha
             if (item.datos > 0) {
                 ImageViewCompat.setImageTintList(bind.imgDatos, ColorStateList.valueOf(Color.parseColor("#1E90FF")))
+            }else {
+                ImageViewCompat.setImageTintList(bind.imgDatos, ColorStateList.valueOf(Color.parseColor("#7A7A7A")))
             }
             bind.lnrAlta.setOnClickListener { altaListener.onItemClick(item) }
         }

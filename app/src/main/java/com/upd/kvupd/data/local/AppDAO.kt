@@ -10,7 +10,6 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.DEL_CONFIG
 import com.upd.kvupd.data.model.QueryConstant.DEL_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_EMPLEADOS
-import com.upd.kvupd.data.model.QueryConstant.DEL_SELECCION
 import com.upd.kvupd.data.model.QueryConstant.DEL_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADOBAJA
@@ -18,6 +17,7 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.DEL_SEGUIMIENTO
+import com.upd.kvupd.data.model.QueryConstant.DEL_SELECCION
 import com.upd.kvupd.data.model.QueryConstant.DEL_VISITA
 
 @Dao

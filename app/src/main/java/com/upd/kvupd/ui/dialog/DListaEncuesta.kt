@@ -11,10 +11,10 @@ import androidx.fragment.app.activityViewModels
 import com.upd.kvupd.data.model.Cabecera
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.databinding.DialogListaEncuestaBinding
-import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.setCreate
+import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class DListaEncuesta : DialogFragment() {

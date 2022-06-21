@@ -3,7 +3,7 @@ package com.upd.kvupd.data.model
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
 @JsonClass(generateAdapter = true)

@@ -1,15 +1,17 @@
 package com.upd.kvupd.data.local
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.upd.kvupd.data.model.*
 
 @Database(
-    version = 1,
+    version = 2,
     entities = [TSesion::class, TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class,
         TNegocio::class, TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class,
         TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class, TEncuestaSeleccionado::class],
-    exportSchema = true
+    exportSchema = true,
+    autoMigrations = [AutoMigration (from = 1, to = 2)]
 )
 
 /** autoMigrations = [AutoMigration (from = 1, to = 2)]

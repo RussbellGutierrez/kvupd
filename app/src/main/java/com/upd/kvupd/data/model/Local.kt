@@ -10,11 +10,12 @@ data class TSesion(
     val esquema: Int,
     val sucursal: Int,
     val fecha: String,
-    val hini: String
+    val hini: String,
+    val hfin: String
 )
 
 fun Config.asTSesion(): TSesion =
-    TSesion(this.codigo, this.empresa, this.esquema, this.sucursal, this.fecha,this.hini)
+    TSesion(this.codigo, this.empresa, this.esquema, this.sucursal, this.fecha, this.hini, this.hfin)
 
 @Entity(primaryKeys = ["codigo"])
 data class TConfiguracion(

@@ -647,7 +647,7 @@ class AppViewModel @ViewModelInject constructor(
 
     private fun intoHours() {
         viewModelScope.launch {
-            repository.getConfig().let {
+            repository.getSesion().let {
                 if (it != null) {
                     val hora = functions.dateToday(3).replace(":", "").toInt()
                     val inicio = it.hini.replace(":", "").toInt()

@@ -125,6 +125,12 @@ fun castDate(day: Int,month: Int,year: Int): String {
     return "$year/$mr/$d"
 }
 
+fun Fragment.progressHide() {
+    this.parentFragmentManager.fragments.takeIf { it.isNotEmpty() }?.map {
+        (it as? DialogFragment)?.dismiss()
+    }
+}
+
 fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
     val icon = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia

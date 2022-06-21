@@ -11,7 +11,6 @@ import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class DFiltro : DialogFragment() {

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4c45a429b2479be3d5fe8764f13f425c",
+    "identityHash": "dee10af17b1204baff9175760d208b11",
     "entities": [
       {
         "tableName": "TSesion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `hini` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `hini` TEXT NOT NULL, `hfin` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
             "fieldPath": "codigo",
@@ -41,6 +41,12 @@
           {
             "fieldPath": "hini",
             "columnName": "hini",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hfin",
+            "columnName": "hfin",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -1241,7 +1247,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4c45a429b2479be3d5fe8764f13f425c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dee10af17b1204baff9175760d208b11')"
     ]
   }
 }

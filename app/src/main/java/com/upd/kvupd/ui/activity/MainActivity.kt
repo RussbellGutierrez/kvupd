@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
                     showDialog("error","Al parecer se elimino su registro, consulte con sistemas") {
                         finishAndRemoveTask()
                     }
-                } else {
+                }else {
                     toast("Cerrando KVentas")
                     finishAndRemoveTask()
                 }

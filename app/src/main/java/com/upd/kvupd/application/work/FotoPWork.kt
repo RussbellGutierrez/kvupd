@@ -3,15 +3,12 @@ package com.upd.kvupd.application.work
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF

@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.*
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -24,7 +24,6 @@ import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.databinding.FragmentFValidarBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.POS_LOC
 import com.upd.kvupd.utils.setUI
@@ -45,6 +44,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     private lateinit var map: GoogleMap
     private lateinit var bmk: Marker
     private lateinit var bs: TBajaSuper
+    private var codVend = 0
     private val _tag by lazy { FValidar::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -153,6 +153,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             "BOTICAS" -> bind.imgCanal.setImageResource(R.drawable.pildora)
         }
 
+        codVend = item.empleado
         bind.txtVendedor.text = vendedor
         bind.txtMotivo.text = item.descripcion
         val obs = item.observacion.trim()
@@ -176,7 +177,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             val observacion = bind.edtComentario.text.toString().trim()
             val fechaconf = viewmodel.fecha(4)
             val item = TBEstado(
-                CONF.codigo,
+                codVend,
                 bs.clicodigo,
                 procede,
                 bs.creado,

@@ -18,8 +18,8 @@ import com.upd.kvupd.utils.Constant.POSITION_N_INTERVAL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -27,13 +27,15 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object ProviderModule {
 
     @Singleton
     @Provides
     fun providerDB(@ApplicationContext ctx: Context) =
-        Room.databaseBuilder(ctx, AppDB::class.java, DB_NAME).build()
+        Room.databaseBuilder(ctx, AppDB::class.java, DB_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Singleton
     @Provides

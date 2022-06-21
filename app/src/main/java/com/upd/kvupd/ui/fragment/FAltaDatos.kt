@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
@@ -27,6 +28,7 @@ class FAltaDatos : Fragment() {
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
     private val args: FAltaDatosArgs by navArgs()
+    private lateinit var adStored: TADatos
     private val _tag by lazy { FAltaDatos::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -65,19 +67,19 @@ class FAltaDatos : Fragment() {
 
         viewmodel.distritosObs().observe(viewLifecycleOwner) {
             distrito = it.asSpinner()
-            bind.spnDistrito.adapter =
-                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distrito)
+            bind.spnDistrito.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distrito)
+            setupFields()
         }
 
         viewmodel.negociosObs().observe(viewLifecycleOwner) {
             giro = it.asSpinner()
-            bind.spnGiro.adapter =
-                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
+            bind.spnGiro.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
+            setupFields()
         }
 
         viewmodel.altadatos.observe(viewLifecycleOwner) {
             if (it != null) {
-                setupFields(it)
+                adStored = it
             }
         }
 
@@ -135,34 +137,53 @@ class FAltaDatos : Fragment() {
         viewmodel.fetchAltaDatos(args.idaux.toString())
     }
 
-    private fun setupFields(alta: TADatos) {
-        if (alta.tipo == "PJ")
-            bind.rbJuridica.isChecked = true
-        else
-            bind.rbNatural.isChecked = true
+    private fun setupFields() {
 
-        val ald = distrito.find { it == alta.distrito }
-        val alg = giro.find { it == alta.giro }
+        if (::adStored.isInitialized) {
 
-        bind.edtRazon.setText(alta.razon)
-        bind.edtPaterno.setText(alta.appaterno)
-        bind.edtMaterno.setText(alta.apmaterno)
-        bind.edtNombre.setText(alta.nombre)
-        bind.edtDocumento.setText(alta.documento)
-        bind.edtMovil1.setText(alta.movil1)
-        bind.edtMovil2.setText(alta.movil2)
-        bind.edtCorreo.setText(alta.correo)
-        bind.spnVia.setSelection(setVia(alta.via))
-        bind.edtManzana.setText(alta.manzana)
-        bind.edtDireccion.setText(alta.direccion)
-        bind.spnNumero.setSelection(setUbicacion(alta.ubicacion))
-        bind.edtNumero.setText(alta.numero)
-        bind.spnZona.setSelection(setZona(alta.zona))
-        bind.edtZona.setText(alta.zonanombre)
-        bind.edtRuta.setText(alta.ruta)
-        bind.edtSecuencia.setText(alta.secuencia)
-        bind.spnDistrito.setSelection(distrito.indexOf(ald))
-        bind.spnGiro.setSelection(giro.indexOf(alg))
+            if ( distrito.isNotEmpty() && giro.isNotEmpty()) {
+
+                progressHide()
+                Log.w(_tag,"Distrito: ${distrito.size}")
+                Log.w(_tag,"Giro: ${giro.size}")
+
+                if (adStored.tipo == "PJ")
+                    bind.rbJuridica.isChecked = true
+                else
+                    bind.rbNatural.isChecked = true
+
+                val ald = distrito.indexOf(adStored.distrito)//distrito.find { it == adStored.distrito }
+                val alg = giro.indexOf(adStored.giro)//giro.find {it == adStored.giro }
+
+                Log.w(_tag,"Distrito: ${distrito.size}")
+                Log.w(_tag,"Giro: ${giro.size}")
+
+                Log.w(_tag,"Distrito pos: $ald")
+                Log.w(_tag,"Giro pos: $alg")
+
+                bind.edtRazon.setText(adStored.razon)
+                bind.edtPaterno.setText(adStored.appaterno)
+                bind.edtMaterno.setText(adStored.apmaterno)
+                bind.edtNombre.setText(adStored.nombre)
+                bind.edtDocumento.setText(adStored.documento)
+                bind.edtMovil1.setText(adStored.movil1)
+                bind.edtMovil2.setText(adStored.movil2)
+                bind.edtCorreo.setText(adStored.correo)
+                bind.spnVia.setSelection(setVia(adStored.via))
+                bind.edtManzana.setText(adStored.manzana)
+                bind.edtDireccion.setText(adStored.direccion)
+                bind.spnNumero.setSelection(setUbicacion(adStored.ubicacion))
+                bind.edtNumero.setText(adStored.numero)
+                bind.spnZona.setSelection(setZona(adStored.zona))
+                bind.edtZona.setText(adStored.zonanombre)
+                bind.edtRuta.setText(adStored.ruta)
+                bind.edtSecuencia.setText(adStored.secuencia)
+                bind.spnDistrito.setSelection(ald)
+                bind.spnGiro.setSelection(alg)
+            }
+        }else {
+            progressHide()
+        }
     }
 
     private fun saveAltaDatos() {
