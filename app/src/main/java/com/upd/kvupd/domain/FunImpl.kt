@@ -124,11 +124,6 @@ class FunImpl @Inject constructor(
         return BitmapFactory.decodeFile(path)
     }
 
-    /*override fun dateToday(formato: Int): String {
-        val fecha = Calendar.getInstance().time
-        return fecha.timeToText(formato)
-    }*/
-
     override fun appSO(): String {
         var resultado = ""
         val data = Build.VERSION_CODES::class.java.fields

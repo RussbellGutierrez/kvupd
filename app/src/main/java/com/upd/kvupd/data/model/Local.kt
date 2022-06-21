@@ -1,7 +1,9 @@
 package com.upd.kvupd.data.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.upd.kvupd.utils.Constant.CONF
+import javax.annotation.Nullable
 
 @Entity(primaryKeys = ["codigo"])
 data class TSesion(
