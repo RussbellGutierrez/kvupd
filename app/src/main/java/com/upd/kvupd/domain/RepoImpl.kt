@@ -8,6 +8,7 @@ import com.upd.kvupd.data.remote.WebDataSource
 import com.upd.kvupd.utils.BaseApiResponse
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.dateToday
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -181,9 +182,31 @@ class RepoImpl @Inject constructor(
                 set(Calendar.MINUTE, i.hfin.split(":")[1].toInt())
                 set(Calendar.SECOND, i.hfin.split(":")[2].toInt())
             }
-            l = calendar.timeInMillis - System.currentTimeMillis()
+            l = if (getIntoHours()) {
+                calendar.timeInMillis - System.currentTimeMillis()
+            }else {
+                0
+            }
+
         }
         return l
+    }
+
+    override suspend fun getIntoHours(): Boolean {
+        var result: Boolean
+        localDataSource.getSesion().let {
+            result = if (it != null) {
+
+                val d = Calendar.getInstance().time
+                val hora = d.dateToday(3).replace(":", "").toInt()
+                val inicio = it.hini.replace(":", "").toInt()
+                val fin = it.hfin.replace(":", "").toInt()
+                hora in inicio..fin
+            }else {
+                true
+            }
+        }
+        return result
     }
 
     override suspend fun getSeleccionado(): TEncuestaSeleccionado? {

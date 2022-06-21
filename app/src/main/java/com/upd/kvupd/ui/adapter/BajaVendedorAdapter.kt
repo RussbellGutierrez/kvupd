@@ -10,7 +10,9 @@ import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.databinding.RowBajaVendedorBinding
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.utils.BaseViewHolder
+import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.daysBetween
+import java.util.*
 import javax.inject.Inject
 
 class BajaVendedorAdapter @Inject constructor(
@@ -71,7 +73,7 @@ class BajaVendedorAdapter @Inject constructor(
         override fun bind(item: BajaVendedor) {
 
             val cliente = "${item.cliente} - ${item.nombre}"
-            val hoy = functions.dateToday(5)
+            val hoy = Calendar.getInstance().time.dateToday(5)
             val dias = "Dias ${item.fecha.daysBetween(hoy)}"
 
             bind.txtFecha.text = item.fecha

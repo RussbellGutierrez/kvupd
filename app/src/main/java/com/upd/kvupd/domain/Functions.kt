@@ -15,7 +15,7 @@ interface Functions {
     fun existQR(): Boolean
     fun parseQRtoIMEI(add: Boolean = false): String
     fun getQR(): Bitmap?
-    fun dateToday(formato: Int): String
+    //fun dateToday(formato: Int): String
     fun appSO(): String
     fun isConnected(): Boolean
     fun deleteFotos()

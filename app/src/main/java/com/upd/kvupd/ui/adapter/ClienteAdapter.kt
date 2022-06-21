@@ -18,11 +18,13 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.BaseViewHolder
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Interface.clienteListener
+import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.setUI
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class ClienteAdapter @Inject constructor(
@@ -84,7 +86,7 @@ class ClienteAdapter @Inject constructor(
 
         override fun bind(item: RowCliente) {
             CoroutineScope(Dispatchers.Main).launch {
-                val fecha = functions.dateToday(5)
+                val fecha = Calendar.getInstance().time.dateToday(5)
                 val cliente = "${item.id} - ${item.nombre}"
                 val secuencia = "Sec ${item.secuencia}"
 

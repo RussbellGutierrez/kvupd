@@ -23,12 +23,14 @@ import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.MSG_CONFIG
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
+import java.util.*
 
 class ConfigWork @WorkerInject constructor(
     @Assisted appContext: Context,
@@ -86,7 +88,7 @@ class ConfigWork @WorkerInject constructor(
         json.put("imei", IMEI)
         json.put("modelo", modelo.uppercase())
         json.put("version", app)
-        json.put("fecha", functions.dateToday(6))
+        json.put("fecha", Calendar.getInstance().time.dateToday(6))
         return json.toReqBody()
     }
 

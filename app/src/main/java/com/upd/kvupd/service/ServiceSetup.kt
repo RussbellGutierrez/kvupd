@@ -35,10 +35,12 @@ import com.upd.kvupd.utils.Constant.W_USER
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Interface.serviceListener
 import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.dateToday
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -195,18 +197,12 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             val config = repository.getConfig() != null
 
             if (sesion && config) {
-                Log.d(_tag, "Sesion and config")
-                repository.getConfig()!!.let {
-                    val hora = functions.dateToday(3).replace(":", "").toInt()
-                    val inicio = it.hini.replace(":", "").toInt()
-                    val fin = it.hfin.replace(":", "").toInt()
-                    val inhours = hora in inicio..fin
 
-                    if (inhours) {
-                        checkingData()
-                    } else {
-                        closeEntireApp()
-                    }
+                Log.d(_tag, "Sesion and config")
+                if (repository.getIntoHours()) {
+                    checkingData()
+                } else {
+                    closeEntireApp()
                 }
             } else {
                 Log.e(_tag, "No sesion and config")
@@ -217,7 +213,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     private fun checkingData() {
         CoroutineScope(Dispatchers.IO).launch {
-            val fecha = functions.dateToday(5)
+            val fecha = Calendar.getInstance().time.dateToday(5)
             val today = repository.isDataToday(fecha)
             if (!today) {
                 repository.deleteConfig()
@@ -274,7 +270,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 level * 100 / scale.toFloat()
             } ?: 0.0
 
-            val fecha = functions.dateToday(4)
+            val fecha = Calendar.getInstance().time.dateToday(4)
             val item = TSeguimiento(
                 fecha,
                 CONF.codigo,

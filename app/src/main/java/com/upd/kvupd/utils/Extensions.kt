@@ -98,6 +98,9 @@ fun Fragment.progress(mensaje: String) {
     dlg.show(parentFragmentManager,"dialog")
 }
 
+fun Date.dateToday(formato: Int) =
+    this.timeToText(formato)
+
 fun Fragment.search(list: ArrayList<String>) {
     val bundle = bundleOf(
         "lista" to list

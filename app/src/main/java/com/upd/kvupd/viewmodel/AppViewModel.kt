@@ -2,6 +2,7 @@ package com.upd.kvupd.viewmodel
 
 import android.graphics.Bitmap
 import android.location.Location
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
@@ -12,10 +13,12 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.util.*
 
 class AppViewModel @ViewModelInject constructor(
     private val repository: Repository,
@@ -534,7 +537,7 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     fun fecha(opt: Int) =
-        functions.dateToday(opt)
+        Calendar.getInstance().time.dateToday(opt)
 
     fun saveVisita(visita: TVisita, ruta: Int) {
         viewModelScope.launch {
@@ -552,7 +555,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun addingAlta(location: Location) {
         viewModelScope.launch {
-            repository.processAlta(functions.dateToday(4), location)
+            repository.processAlta(Calendar.getInstance().time.dateToday(4), location)
         }
     }
 
@@ -568,7 +571,7 @@ class AppViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             val item = LocationAlta(
                 m.snippet!!.toInt(),
-                functions.dateToday(4),
+                Calendar.getInstance().time.dateToday(4),
                 m.position.longitude,
                 m.position.latitude,
                 10.0,
@@ -647,16 +650,7 @@ class AppViewModel @ViewModelInject constructor(
 
     private fun intoHours() {
         viewModelScope.launch {
-            repository.getSesion().let {
-                if (it != null) {
-                    val hora = functions.dateToday(3).replace(":", "").toInt()
-                    val inicio = it.hini.replace(":", "").toInt()
-                    val fin = it.hfin.replace(":", "").toInt()
-                    _checking.value = hora in inicio..fin
-                } else {
-                    _checking.value = true
-                }
-            }
+            _checking.value = repository.getIntoHours()
         }
     }
 

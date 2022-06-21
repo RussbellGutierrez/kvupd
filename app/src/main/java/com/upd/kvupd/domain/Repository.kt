@@ -39,6 +39,7 @@ interface Repository {
     suspend fun isDataToday(today: String): Boolean
     suspend fun getStarterTime(): Long
     suspend fun getFinishTime(): Long
+    suspend fun getIntoHours(): Boolean
     suspend fun getSeleccionado(): TEncuestaSeleccionado?
     suspend fun clienteRespondio(cliente: String): Boolean
 
