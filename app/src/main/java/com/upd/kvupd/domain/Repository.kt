@@ -41,7 +41,8 @@ interface Repository {
     suspend fun getFinishTime(): Long
     suspend fun getIntoHours(): Boolean
     suspend fun getSeleccionado(): TEncuestaSeleccionado?
-    suspend fun clienteRespondio(cliente: String): Boolean
+    suspend fun clienteRespondioActual(cliente: String): Boolean
+    suspend fun clienteRespondioAntes(cliente: String): String
 
     suspend fun saveSesion(config: Config)
     suspend fun saveConfiguracion(config: List<Config>)
@@ -137,5 +138,5 @@ interface Repository {
     suspend fun setWebBaja(body: RequestBody): Flow<Network<JObj>>
     suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>>
     suspend fun setWebRespuestas(body: RequestBody): Flow<Network<JObj>>
-    suspend fun setWebFotos(body: RequestBody): Flow<Network<JObj>>
+    suspend fun setWebFotos(body: RequestBody): Flow<Network<JFoto>>
 }

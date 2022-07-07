@@ -2,7 +2,6 @@ package com.upd.kvupd.viewmodel
 
 import android.graphics.Bitmap
 import android.location.Location
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.google.android.gms.maps.GoogleMap
@@ -195,8 +194,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _resprespuesta: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
     val resprespuesta: LiveData<Event<Network<JObj>>> = _resprespuesta
 
-    private val _respfoto: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respfoto: LiveData<Event<Network<JObj>>> = _respfoto
+    private val _respfoto: MutableLiveData<Event<Network<JFoto>>> = MutableLiveData()
+    val respfoto: LiveData<Event<Network<JFoto>>> = _respfoto
 
     private val _cabecera: MutableLiveData<Event<List<Cabecera>>> = MutableLiveData()
     val cabecera: LiveData<Event<List<Cabecera>>> = _cabecera
@@ -755,10 +754,29 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    fun clienteRespondio(cliente: String) {
+    fun clienteRespondio(cabecera: List<Cabecera>, cliente: String) {
         viewModelScope.launch {
-            val rsp = repository.clienteRespondio(cliente)
-            _respuesta.value = Event(rsp)
+
+            var respuesta = false
+            if (repository.clienteRespondioActual(cliente)) {
+                respuesta = true
+            }else {
+                cabecera.forEach { i ->
+                    if (i.seleccion == 1) {
+                        val rsp = repository.clienteRespondioAntes(cliente)
+                        if (rsp.isNullOrEmpty()) {
+                            respuesta = false
+                        }else {
+                            rsp.split(",").forEach { j ->
+                                if (j.trim() == i.id.toString()) {
+                                    respuesta = true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            _respuesta.value = Event(respuesta)
         }
     }
 

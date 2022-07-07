@@ -65,7 +65,7 @@ class BDObservacion : BottomSheetDialogFragment() {
         viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (!y.isNullOrEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
-                    viewmodel.clienteRespondio(parg[0].trim())
+                    viewmodel.clienteRespondio(y,parg[0].trim())
                 }else {
                     dismiss()
                 }
@@ -109,8 +109,23 @@ class BDObservacion : BottomSheetDialogFragment() {
             )
             viewmodel.saveVisita(item, ruta)
             viewmodel.gettingEncuestaLista()
+            toast("Cliente ${item.cliente} - ${checkObs(obs)}")
         } else {
             toast("No se encontro coordenadas")
         }
+    }
+
+    private fun checkObs(obs: Int): String {
+        var result = ""
+        when(obs) {
+            0 -> result = "Hizo pedido"
+            1 -> result = "Puesto cerrado"
+            2 -> result = "Tiene producto"
+            3 -> result = "Sin dinero"
+            4 -> result = "Sin encargado"
+            6 -> result = "Cliente ocupado"
+            7 -> result = "No existe"
+        }
+        return result
     }
 }

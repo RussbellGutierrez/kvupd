@@ -40,7 +40,7 @@ class FotoPWork @WorkerInject constructor(
                                 repository.saveFoto(i)
                                 Log.d(_tag,"Foto enviado $i")
                             }
-                            is Network.Error -> Log.e(_tag,"Foto Error ${it.message}")
+                            is Network.Error -> Log.e(_tag,"Foto Error -> ${it.message}")
                         }
                     }
                 }

@@ -153,5 +153,5 @@ interface ApiClient {
     suspend fun setApiRespuesta(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, cliente, encuesta, pregunta, respuesta, fecha
 
     @POST(API_FOTO)
-    suspend fun setApiFoto(@Body body: RequestBody): Response<JObj>//@param empresa, empleado, cliente, encuesta, sucursal, foto
+    suspend fun setApiFoto(@Body body: RequestBody): Response<JFoto>//@param empresa, empleado, cliente, encuesta, sucursal, foto
 }

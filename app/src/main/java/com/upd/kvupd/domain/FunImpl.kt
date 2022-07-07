@@ -287,8 +287,9 @@ class FunImpl @Inject constructor(
     }
 
     override fun workerSetup(long: Long) {
+        val delay = if (long < 0) 5000 else long
         val work = OneTimeWorkRequestBuilder<SetupWork>()
-            .setInitialDelay(long, TimeUnit.MILLISECONDS)
+            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 3,

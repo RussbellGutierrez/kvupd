@@ -60,6 +60,11 @@ object QueryConstant {
             "WHERE cliente = :cliente " +
             "GROUP BY encuesta "
 
+    const val GET_RESPUESTA_HISTORICO = "" +
+            "SELECT encuestas " +
+            "FROM TClientes " +
+            "WHERE idcliente = :cliente "
+
     const val GET_ROW_CLIENTES = "" +
             "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, IFNULL(r.encuesta,0) as resuelto, c.secuencia, c.ruta " +
             "FROM TClientes c " +

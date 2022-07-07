@@ -159,8 +159,8 @@ class RepoImpl @Inject constructor(
         val config = localDataSource.getConfig()
         val sesion = localDataSource.getSesion()
         val hini = when {
-            config != null -> config.hini
             sesion != null -> sesion.hini
+            config != null -> config.hini
             else -> ""
         }
         val calendar = Calendar.getInstance().apply {
@@ -168,8 +168,9 @@ class RepoImpl @Inject constructor(
             set(Calendar.MINUTE, hini.split(":")[1].toInt())
             set(Calendar.SECOND, hini.split(":")[2].toInt())
         }
-        if (calendar.before(Calendar.getInstance()))
+        if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
         l = calendar.timeInMillis - System.currentTimeMillis()
         return l
     }
@@ -187,7 +188,6 @@ class RepoImpl @Inject constructor(
             }else {
                 0
             }
-
         }
         return l
     }
@@ -213,8 +213,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getEncuestaSeleccion()
     }
 
-    override suspend fun clienteRespondio(cliente: String) =
+    override suspend fun clienteRespondioActual(cliente: String) =
         localDataSource.clienteRespondio(cliente)
+
+    override suspend fun clienteRespondioAntes(cliente: String) =
+        localDataSource.clienteRespondioHistorico(cliente).encuesta
 
     override suspend fun saveSesion(config: Config) {
         localDataSource.saveSesion(config)
@@ -622,7 +625,7 @@ class RepoImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebFotos(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebFotos(body: RequestBody): Flow<Network<JFoto>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerFotos(body) })
         }.flowOn(Dispatchers.IO)

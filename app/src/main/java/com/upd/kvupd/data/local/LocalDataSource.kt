@@ -116,6 +116,9 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
     suspend fun clienteRespondio(cliente: String) =
         qdao.getRespuesta(cliente) != null
 
+    suspend fun clienteRespondioHistorico(cliente: String) =
+        qdao.getRespuestaH(cliente)
+
     suspend fun saveSesion(config: Config) {
         dao.insertSesion(config.asTSesion())
     }

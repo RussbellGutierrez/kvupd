@@ -194,18 +194,16 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun verifyHours() {
         CoroutineScope(Dispatchers.IO).launch {
             val sesion = repository.getSesion() != null
-            val config = repository.getConfig() != null
 
-            if (sesion && config) {
-
-                Log.d(_tag, "Sesion and config")
+            if (sesion) {
+                Log.d(_tag, "Get Sesion")
                 if (repository.getIntoHours()) {
                     checkingData()
                 } else {
                     closeEntireApp()
                 }
             } else {
-                Log.e(_tag, "No sesion and config")
+                Log.e(_tag, "No sesion")
                 functions.launchWorkers()
             }
         }

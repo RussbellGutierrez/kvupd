@@ -147,7 +147,7 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
         return web.setApiRespuesta(body)
     }
 
-    suspend fun setServerFotos(body: RequestBody): Response<JObj> {
+    suspend fun setServerFotos(body: RequestBody): Response<JFoto> {
         return web.setApiFoto(body)
     }
 }

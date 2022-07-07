@@ -80,3 +80,7 @@ data class Respuesta(
 data class RespuestaCliente(
     @ColumnInfo(name = "encuesta") val encuesta: Int
 )
+
+data class RespuestaHistorico(
+    @ColumnInfo(name = "encuestas") val encuesta: String
+)

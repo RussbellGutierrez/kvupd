@@ -99,6 +99,7 @@ class FServidor : Fragment() {
                             p.put("sucursal", CONF.sucursal)
                             p.put("esquema", CONF.esquema)
                             p.put("empresa", CONF.empresa)
+                            Log.d(_tag,"Seg: $p")
                             viewmodel.webSeguimiento(p.toReqBody())
                         }
                     }
@@ -123,6 +124,7 @@ class FServidor : Fragment() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
+                        Log.d(_tag,"Vis: $p")
                         viewmodel.webVisita(p.toReqBody())
                     }
                 }
@@ -145,6 +147,7 @@ class FServidor : Fragment() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
+                        Log.d(_tag,"Alt: $p")
                         viewmodel.webAlta(p.toReqBody())
                     }
                 }
@@ -186,6 +189,7 @@ class FServidor : Fragment() {
                                 "${j.via} ${j.direccion} MZ ${j.manzana} ${j.ubicacion}"
                             )
                         }
+                        Log.d(_tag,"AltD: $p")
                         viewmodel.webAltaDatos(p.toReqBody())
                     }
                 }
@@ -209,6 +213,7 @@ class FServidor : Fragment() {
                         p.put("precision", j.precision)
                         p.put("anulado", j.anulado)
                         p.put("empresa", CONF.empresa)
+                        Log.d(_tag,"Baj: $p")
                         viewmodel.webBaja(p.toReqBody())
                     }
                 }
@@ -232,6 +237,7 @@ class FServidor : Fragment() {
                         p.put("ycoord", j.latitud)
                         p.put("confirmar", j.procede)
                         p.put("empresa", CONF.empresa)
+                        Log.d(_tag,"BajE: $p")
                         viewmodel.webBajaEstado(p.toReqBody())
                     }
                 }
@@ -240,7 +246,7 @@ class FServidor : Fragment() {
 
         viewmodel.servrespuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,6)
+                calcEncuestasTotal(y)
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         respuesta = j
@@ -252,6 +258,7 @@ class FServidor : Fragment() {
                         p.put("pregunta", j.pregunta)
                         p.put("respuesta", j.respuesta)
                         p.put("fecha", j.fecha)
+                        Log.d(_tag,"Resp: $p")
                         viewmodel.webRespuesta(p.toReqBody())
                     }
                 }
@@ -261,22 +268,25 @@ class FServidor : Fragment() {
         viewmodel.servfoto.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setTextUI(y.size,7)
-                y.forEach { j ->
-                    foto = j
-                    val baos = ByteArrayOutputStream()
-                    val bm = BitmapFactory.decodeFile(j.rutafoto)
-                    bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
-                    val byteArray = baos.toByteArray()
-                    val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        foto = j
+                        val baos = ByteArrayOutputStream()
+                        val bm = BitmapFactory.decodeFile(j.rutafoto)
+                        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                        val byteArray = baos.toByteArray()
+                        val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
-                    val p = JSONObject()
-                    p.put("empresa", CONF.empresa)
-                    p.put("empleado", CONF.codigo)
-                    p.put("cliente", j.cliente)
-                    p.put("encuesta", j.encuesta)
-                    p.put("sucursal", CONF.sucursal)
-                    p.put("foto", foto)
-                    viewmodel.webFoto(p.toReqBody())
+                        val p = JSONObject()
+                        p.put("empresa", CONF.empresa)
+                        p.put("empleado", CONF.codigo)
+                        p.put("cliente", j.cliente)
+                        p.put("encuesta", j.encuesta)
+                        p.put("sucursal", CONF.sucursal)
+                        p.put("foto", foto)
+                        Log.d(_tag,"Fot: $p")
+                        viewmodel.webFoto(p.toReqBody())
+                    }
                 }
             }
         }
@@ -290,7 +300,7 @@ class FServidor : Fragment() {
                         seguimiento.estado = "Enviado"
                         viewmodel.updSeguimiento(seguimiento)
                     }
-                    is Network.Error -> Log.w(_tag, "S Error ${y.message} $seguimiento")
+                    is Network.Error -> Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
                 }
                 outputUI(0)
             }
@@ -303,7 +313,7 @@ class FServidor : Fragment() {
                         visita.estado = "Enviado"
                         viewmodel.updVisita(visita)
                     }
-                    is Network.Error -> Log.w(_tag, "V Error ${y.message} $visita")
+                    is Network.Error -> Log.w(_tag, "Visita-> ${y.message} $visita")
                 }
                 outputUI(1)
             }
@@ -316,7 +326,7 @@ class FServidor : Fragment() {
                         alta.estado = "Enviado"
                         viewmodel.updAlta(alta)
                     }
-                    is Network.Error -> Log.w(_tag, "A Error ${y.message} $alta")
+                    is Network.Error -> Log.w(_tag, "Alta-> ${y.message} $alta")
                 }
                 outputUI(2)
             }
@@ -329,7 +339,7 @@ class FServidor : Fragment() {
                         altadatos.estado = "Enviado"
                         viewmodel.updAltaDatos(altadatos)
                     }
-                    is Network.Error -> Log.w(_tag, "AD Error ${y.message} $altadatos")
+                    is Network.Error -> Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
                 }
                 outputUI(3)
             }
@@ -342,7 +352,7 @@ class FServidor : Fragment() {
                         baja.estado = "Enviado"
                         viewmodel.updBaja(baja)
                     }
-                    is Network.Error -> Log.w(_tag, "B Error ${y.message} $baja")
+                    is Network.Error -> Log.w(_tag, "Baja-> ${y.message} $baja")
                 }
                 outputUI(4)
             }
@@ -355,7 +365,7 @@ class FServidor : Fragment() {
                         bajaestado.estado = "Enviado"
                         viewmodel.updBajaEstado(bajaestado)
                     }
-                    is Network.Error -> Log.w(_tag, "BE Error ${y.message} $bajaestado")
+                    is Network.Error -> Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
                 }
                 outputUI(5)
             }
@@ -368,7 +378,7 @@ class FServidor : Fragment() {
                         respuesta.estado = "Enviado"
                         viewmodel.updRespuesta(respuesta)
                     }
-                    is Network.Error -> Log.e(_tag,"R Error ${y.message} $respuesta")
+                    is Network.Error -> Log.e(_tag,"Respuesta-> ${y.message} $respuesta")
                 }
                 outputUI(6)
             }
@@ -381,7 +391,7 @@ class FServidor : Fragment() {
                         foto.estado = "Enviado"
                         viewmodel.updFoto(respuesta)
                     }
-                    is Network.Error -> Log.e(_tag,"F Error ${y.message} $foto")
+                    is Network.Error -> Log.e(_tag,"Foto-> ${y.message} $foto")
                 }
                 outputUI(7)
             }
@@ -454,7 +464,7 @@ class FServidor : Fragment() {
             }
             6 -> {
                 list7 = size
-                texto = "Respuesta encuesta : $size"
+                texto = "Encuestas resueltas : $size"
                 bind.txtRespuesta.text = texto
                 if (size == 0) {
                     bind.progress7.setUI("v", false)
@@ -542,5 +552,19 @@ class FServidor : Fragment() {
                 }
             }
         }
+    }
+
+    private fun calcEncuestasTotal(list: List<TRespuesta>) {
+        val tmn = arrayListOf<TRespuesta>()
+        var cli = 0
+        var enc = 0
+        list.forEach { g ->
+            if (cli != g.cliente || enc != g.encuesta) {
+                cli = g.cliente
+                enc = g.encuesta
+                tmn.add(g)
+            }
+        }
+        setTextUI(tmn.size,6)
     }
 }

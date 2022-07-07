@@ -12,6 +12,11 @@ data class JObj(
 )
 
 @JsonClass(generateAdapter = true)
+data class JFoto(
+    @Json(name = "message") val jfot: String
+)
+
+@JsonClass(generateAdapter = true)
 data class JConfig(
     @Json(name = "data") val jobl: List<Config>
 )

@@ -55,6 +55,7 @@ class ClienteAdapter @Inject constructor(
                 diff.putInt("atendido", newItem.atendido)
                 diff.putString("fecha", newItem.fecha)
                 diff.putString("encuestas", newItem.encuestas)
+                diff.putInt("resuelto", newItem.resuelto)
             }
             if (diff.size() == 0) {
                 return null
@@ -119,7 +120,7 @@ class ClienteAdapter @Inject constructor(
                                 )
                                 encuesta == selec.encuesta -> ImageViewCompat.setImageTintList(
                                     bind.imgEncuesta,
-                                    ColorStateList.valueOf(Color.parseColor("#1E90FF"))
+                                    ColorStateList.valueOf(Color.parseColor("#F564EE"))
                                 )
                                 item.resuelto > 0 -> ImageViewCompat.setImageTintList(
                                     bind.imgEncuesta,

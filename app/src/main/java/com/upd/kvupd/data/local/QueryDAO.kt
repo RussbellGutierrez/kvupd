@@ -26,6 +26,7 @@ import com.upd.kvupd.data.model.QueryConstant.GET_LAST_LOCATION
 import com.upd.kvupd.data.model.QueryConstant.GET_MARKERS
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
 import com.upd.kvupd.data.model.QueryConstant.GET_RESPUESTA_CLIENTE
+import com.upd.kvupd.data.model.QueryConstant.GET_RESPUESTA_HISTORICO
 import com.upd.kvupd.data.model.QueryConstant.GET_RESPUESTA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ROW_BAJAS
 import com.upd.kvupd.data.model.QueryConstant.GET_ROW_CLIENTES
@@ -122,6 +123,9 @@ interface QueryDAO {
 
     @Query(GET_RESPUESTA_CLIENTE)
     suspend fun getRespuesta(cliente: String): RespuestaCliente?
+
+    @Query(GET_RESPUESTA_HISTORICO)
+    suspend fun getRespuestaH(cliente: String): RespuestaHistorico
 
     /*  Dao send data to server    */
     @Query(GET_SEGUIMIENTO_SERVER)
