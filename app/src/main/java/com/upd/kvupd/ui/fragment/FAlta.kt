@@ -17,6 +17,7 @@ import com.upd.kvupd.ui.adapter.AltaAdapter
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.POS_LOC
+import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.utils.Interface.altaListener
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,8 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC = null
+        POS_LOC.longitude = 0.0
+        POS_LOC.latitude = 0.0
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -68,8 +70,9 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
 
         bind.fabAlta.setOnClickListener {
             showDialog("Advertencia", "¿Desea agregar un alta?") {
-                if (POS_LOC != null) {
-                    viewmodel.addingAlta(POS_LOC!!)
+                if (isPOSLOCinitialized() &&
+                        POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
+                    viewmodel.addingAlta(POS_LOC)
                 } else {
                     snack("Procesando coordenadas, intente nuevamente")
                 }

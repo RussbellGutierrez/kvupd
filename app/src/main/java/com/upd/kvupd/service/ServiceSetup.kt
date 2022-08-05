@@ -16,6 +16,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.gms.location.*
 import com.upd.kvupd.application.work.HelperNotification
+import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.di.LocationRequestGps
 import com.upd.kvupd.di.LocationSettingsRequestGps
@@ -34,7 +35,7 @@ import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_USER
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Interface.serviceListener
-import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.Interface.servworkListener
 import com.upd.kvupd.utils.dateToday
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -93,7 +94,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             fusedLocationProviderClient.removeLocationUpdates(callback)
         }
         batteryStatus = null
-        workListener = null
+        servworkListener = null
         super.onDestroy()
     }
 
@@ -101,8 +102,10 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         super.onCreate()
         Log.d(_tag, "Service setup launch")
         functions.chooseCloseWorker("setup")
+        functions.enableBroadcastGPS()
+        functions.mobileInternetState()
 
-        workListener = this
+        servworkListener = this
         serviceNotification()
 
         batteryStatus = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
@@ -131,6 +134,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             repository.deleteDistritos()
             repository.deleteNegocios()
             repository.deleteRutas()
+            repository.deleteIncidencia()
             functions.sinchroWorkers()
         }
     }
@@ -232,6 +236,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 repository.deleteBajaSuper()
                 repository.deleteBajaEstado()
                 functions.deleteFotos()
+                repository.deleteIncidencia()
             }
             functions.launchWorkers()
         }
@@ -282,13 +287,14 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
+    /***EVITAR USAR POSICIONES FIJAS (FIXED POSITIONS), PUEDE GENERAR PROBLEMAS EN EL CODIGO***/
     override fun onFinishWork(work: String) {
         CoroutineScope(Dispatchers.Main).launch {
             when (work) {
                 W_CONFIG -> {
                     configLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     helper.configNotif()
                                     when (j.state) {
@@ -304,7 +310,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 W_USER -> {
                     userLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     user = true
                                     helper.userNotif()
@@ -317,7 +323,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 W_DISTRITO -> {
                     distritoLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     distrito = true
                                     helper.distritoNotif()
@@ -330,7 +336,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 W_NEGOCIO -> {
                     negocioLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     negocio = true
                                     helper.negocioNotif()
@@ -343,7 +349,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 W_RUTA -> {
                     rutaLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     ruta = true
                                     helper.rutaNotif()
@@ -356,7 +362,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 W_ENCUESTA -> {
                     encuestaLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
-                            y[0].let { j ->
+                            y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     encuesta = true
                                     helper.encuestaNotif()
@@ -367,6 +373,12 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                     }
                 }
             }
+        }
+    }
+
+    override fun savingSystemReport(item: TIncidencia) {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.saveIncidencia(item)
         }
     }
 

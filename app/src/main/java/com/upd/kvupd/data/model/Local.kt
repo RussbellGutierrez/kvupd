@@ -406,3 +406,11 @@ data class TBEstado(
     var observacion: String,
     var estado: String
 )
+
+@Entity(primaryKeys = ["tipo", "fecha"])
+data class TIncidencia(
+    var tipo: String,
+    var usuario: Int,
+    var observacion: String,
+    var fecha: String
+)

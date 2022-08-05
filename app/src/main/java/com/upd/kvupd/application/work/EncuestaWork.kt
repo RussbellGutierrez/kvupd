@@ -10,7 +10,7 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_ENCUESTA
 import com.upd.kvupd.utils.Constant.W_ENCUESTA
-import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.Interface.servworkListener
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,7 +56,7 @@ class EncuestaWork @WorkerInject constructor(
                 MSG_ENCUESTA = "Full"
                 rst = Result.success()
             }
-            workListener?.onFinishWork(W_ENCUESTA)
+            servworkListener?.onFinishWork(W_ENCUESTA)
             return@withContext rst
         }
 

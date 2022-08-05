@@ -9,7 +9,7 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_USER
 import com.upd.kvupd.utils.Constant.W_USER
-import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.Interface.servworkListener
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -77,7 +77,7 @@ class UserWork @WorkerInject constructor(
                     rst = Result.success()
                 }
             }
-            workListener?.onFinishWork(W_USER)
+            servworkListener?.onFinishWork(W_USER)
             return@withContext rst
         }
 

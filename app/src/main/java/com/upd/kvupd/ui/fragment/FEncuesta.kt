@@ -2,7 +2,9 @@ package com.upd.kvupd.ui.fragment
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -14,26 +16,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomViewTarget
+import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Respuesta
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
+import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.PROCEDE
-import com.upd.kvupd.utils.multiReplace
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 @AndroidEntryPoint
@@ -309,12 +315,40 @@ class FEncuesta : Fragment() {
         val bitmap = BitmapFactory.decodeFile(abspath)
         bind.txtRuta.setUI("v", true)
         bind.txtRuta.text = abspath
+        //show on ImageView
         Glide
             .with(requireContext())
             .load(bitmap)
-            .override(500, 650)
+            .override(400, 500)
             .centerCrop()
             .into(bind.imgFoto)
+        //save on smartphone
+        /*Glide
+            .with(requireContext())
+            .load(bitmap)
+            .centerCrop()
+            .into(object : CustomViewTarget<ImageView, Drawable>(bind.imgFoto) {
+                override fun onLoadFailed(errorDrawable: Drawable?) {}
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    try {
+                        bind.imgFoto.setImageDrawable(resource)
+                        val out = FileOutputStream(abspath)
+                        resource.toBitmap().compress(Bitmap.CompressFormat.JPEG, 70, out)
+                        out.flush()
+                        out.close()
+                        toast("Photo saved!")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onResourceCleared(placeholder: Drawable?) {}
+            })*/
+            //.into(GlideFileTarget(this,abspath,bind.imgFoto,400,500))
     }
 
     private fun dispatchTakePictureIntent() {

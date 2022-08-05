@@ -49,7 +49,7 @@ class BDLogin : BottomSheetDialogFragment() {
         viewmodel.login.observe(viewLifecycleOwner) { result ->
             result.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> {
+                    is NetworkRetrofit.Success -> {
                         controlUI(false)
                         y.data?.let {
                             when (it.data.tipo.descripcion) {
@@ -61,7 +61,7 @@ class BDLogin : BottomSheetDialogFragment() {
                             }
                         }
                     }
-                    is Network.Error -> {
+                    is NetworkRetrofit.Error -> {
                         controlUI(false)
                         bind.txtMensaje.setUI("v", true)
                         bind.txtMensaje.text = y.message

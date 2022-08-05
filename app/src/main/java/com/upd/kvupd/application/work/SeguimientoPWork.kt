@@ -10,7 +10,8 @@ import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.Constant.isCONFinitialized
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,19 +27,19 @@ class SeguimientoPWork @WorkerInject constructor(
 
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
-            if (CONF.seguimiento == 1) {
+            if (isCONFinitialized() && CONF.seguimiento == 1) {
                 val item = repository.getServerSeguimiento("Pendiente")
                 if (!item.isNullOrEmpty()) {
                     item.forEach { i ->
                         val p = requestBody(i)
                         repository.setWebSeguimiento(p).collect {
                             when(it) {
-                                is Network.Success -> {
+                                is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.saveSeguimiento(i)
                                     Log.d(_tag,"Seguimiento enviado $i")
                                 }
-                                is Network.Error -> Log.e(_tag,"Seguimiento Error ${it.message}")
+                                is NetworkRetrofit.Error -> Log.e(_tag,"Seguimiento Error ${it.message}")
                             }
                         }
                     }

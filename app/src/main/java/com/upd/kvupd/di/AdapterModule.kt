@@ -47,4 +47,7 @@ object AdapterModule {
     fun providerBajaVendedorAdapter(
         functions: Functions
     ) = BajaVendedorAdapter(functions)
+
+    @Provides
+    fun providerIncidenciaAdapter() = IncidenciaAdapter()
 }

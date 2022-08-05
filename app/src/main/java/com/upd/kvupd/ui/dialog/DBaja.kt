@@ -12,11 +12,9 @@ import androidx.navigation.fragment.navArgs
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.databinding.DialogBajaBinding
 import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.POS_LOC
-import com.upd.kvupd.utils.setCreate
-import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.toast
+import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,7 +30,8 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC = null
+        POS_LOC.longitude = 0.0
+        POS_LOC.latitude = 0.0
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -84,7 +83,8 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun checkFields() {
-        if (POS_LOC != null) {
+        if (isPOSLOCinitialized() &&
+            POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
             val motivo = when (bind.spnMotivo.selectedItem.toString()) {
                 "DUPLICADO" -> 1
                 "NO EXISTE" -> 2
@@ -101,9 +101,9 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
                 nombre,
                 motivo,
                 comentario,
-                POS_LOC!!.longitude,
-                POS_LOC!!.latitude,
-                POS_LOC!!.accuracy.toDouble(),
+                POS_LOC.longitude,
+                POS_LOC.latitude,
+                POS_LOC.accuracy.toDouble(),
                 fecha,
                 0,
                 "Pendiente"

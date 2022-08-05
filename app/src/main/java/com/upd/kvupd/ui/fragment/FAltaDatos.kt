@@ -143,7 +143,7 @@ class FAltaDatos : Fragment() {
 
             if ( distrito.isNotEmpty() && giro.isNotEmpty()) {
 
-                progressHide()
+                hideprogress()
                 Log.w(_tag,"Distrito: ${distrito.size}")
                 Log.w(_tag,"Giro: ${giro.size}")
 
@@ -152,8 +152,8 @@ class FAltaDatos : Fragment() {
                 else
                     bind.rbNatural.isChecked = true
 
-                val ald = distrito.indexOf(adStored.distrito)//distrito.find { it == adStored.distrito }
-                val alg = giro.indexOf(adStored.giro)//giro.find {it == adStored.giro }
+                val ald = distrito.indexOf(adStored.distrito)
+                val alg = giro.indexOf(adStored.giro)
 
                 Log.w(_tag,"Distrito: ${distrito.size}")
                 Log.w(_tag,"Giro: ${giro.size}")
@@ -182,7 +182,7 @@ class FAltaDatos : Fragment() {
                 bind.spnGiro.setSelection(alg)
             }
         }else {
-            progressHide()
+            hideprogress()
         }
     }
 

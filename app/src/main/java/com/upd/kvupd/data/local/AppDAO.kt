@@ -13,6 +13,7 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_EMPLEADOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ESTADOBAJA
+import com.upd.kvupd.data.model.QueryConstant.DEL_INCIDENCIA
 import com.upd.kvupd.data.model.QueryConstant.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_RUTAS
@@ -83,6 +84,9 @@ interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFoto(rsp: TRespuesta)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertIncidencia(rsp: TIncidencia)
+
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)
 
@@ -145,4 +149,7 @@ interface AppDAO {
 
     @Query(DEL_RESPUESTA)
     suspend fun deleteRespuesta()
+
+    @Query(DEL_INCIDENCIA)
+    suspend fun deleteIncidencia()
 }

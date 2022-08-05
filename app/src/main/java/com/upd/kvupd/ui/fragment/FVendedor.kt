@@ -91,11 +91,11 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         viewmodel.cliente.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> showDialog(
+                    is NetworkRetrofit.Success -> showDialog(
                         "Correcto",
                         "Clientes descargados correctamente"
                     ) {}
-                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }

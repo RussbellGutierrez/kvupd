@@ -80,22 +80,12 @@ fun Activity.snack(text: String) {
     Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
 }
 
-fun Fragment.isGPSDisabled(): Boolean {
+fun Context.isGPSDisabled(): Boolean {
     val locationManager =
-        this.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     val network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     return (!gps && !network)
-}
-
-fun Fragment.progress(mensaje: String) {
-    val bundle = bundleOf(
-        "mensaje" to mensaje
-    )
-    val dlg = DProgress()
-    dlg.arguments = bundle
-    dlg.isCancelable = false
-    dlg.show(parentFragmentManager,"dialog")
 }
 
 fun Date.dateToday(formato: Int) =
@@ -128,10 +118,20 @@ fun castDate(day: Int,month: Int,year: Int): String {
     return "$year/$mr/$d"
 }
 
-fun Fragment.progressHide() {
+fun Fragment.hideprogress() {
     this.parentFragmentManager.fragments.takeIf { it.isNotEmpty() }?.map {
         (it as? DialogFragment)?.dismiss()
     }
+}
+
+fun Fragment.progress(mensaje: String) {
+    val bundle = bundleOf(
+        "mensaje" to mensaje
+    )
+    val dlg = DProgress()
+    dlg.arguments = bundle
+    dlg.isCancelable = false
+    dlg.show(parentFragmentManager,"dialog")
 }
 
 fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
@@ -169,6 +169,7 @@ fun Activity.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
         icon(icon)
         title(null, titulo.uppercase())
         message(null, mensaje)
+        cancelable(false)
         positiveButton(null, "Ok") {
             dismiss()
             T()
@@ -305,6 +306,7 @@ fun Date.timeToText(formato: Int, patronActual: String = ""): String {
         6 -> outputpattern = "yyyy/MM/dd"
         7 -> outputpattern = "yyyy_MM_dd_HHmmss"
         8 -> outputpattern = "yyyy-MM-dd"
+        9 -> outputpattern = "yyyy-MM-dd HH:mm"
     }
     val inputFormat = SimpleDateFormat(inputPattern, Locale.ENGLISH)
     val outputFormat = SimpleDateFormat(outputpattern, Locale.ENGLISH)
@@ -328,6 +330,7 @@ fun String.textToTime(tipeformat: Int): Date? {
         6 -> outputpattern = "yyyy/MM/dd"
         7 -> outputpattern = "yyyy_MM_dd_HHmmss"
         8 -> outputpattern = "yyyy-MM-dd"
+        9 -> outputpattern = "yyyy-MM-dd HH:mm"
     }
     val format = SimpleDateFormat(outputpattern, Locale.ENGLISH)
     var date: Date? = null

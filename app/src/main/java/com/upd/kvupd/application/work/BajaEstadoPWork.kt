@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,12 +31,12 @@ class BajaEstadoPWork @WorkerInject constructor(
                     val p = requestBody(i)
                     repository.setWebBajaEstados(p).collect {
                         when(it) {
-                            is Network.Success -> {
+                            is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
                                 repository.saveBajaEstado(i)
                                 Log.d(_tag,"Bajaestado enviado $i")
                             }
-                            is Network.Error -> Log.e(_tag,"Bajaestado Error ${it.message}")
+                            is NetworkRetrofit.Error -> Log.e(_tag,"Bajaestado Error ${it.message}")
                         }
                     }
                 }

@@ -88,11 +88,11 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         viewmodel.bajasuper.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> showDialog(
+                    is NetworkRetrofit.Success -> showDialog(
                         "Correcto",
                         "Bajas descargadas correctamente"
                     ) {}
-                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }
@@ -100,11 +100,11 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         viewmodel.bajavend.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> {
+                    is NetworkRetrofit.Success -> {
                         showDialog("Correcto", "Bajas descargadas correctamente") {}
                         setupVendedor(y.data!!.jobl)
                     }
-                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }

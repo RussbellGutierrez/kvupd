@@ -11,7 +11,7 @@ import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Event
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.launch
@@ -60,68 +60,68 @@ class AppViewModel @ViewModelInject constructor(
     private val _bajasuperspecif: MutableLiveData<Event<TBajaSuper>> = MutableLiveData()
     val bajasuperspecif: LiveData<Event<TBajaSuper>> = _bajasuperspecif
 
-    private val _register: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val register: LiveData<Event<Network<JObj>>> = _register
+    private val _register: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val register: LiveData<Event<NetworkRetrofit<JObj>>> = _register
 
-    private val _login: MutableLiveData<Event<Network<Login>>> = MutableLiveData()
-    val login: LiveData<Event<Network<Login>>> = _login
+    private val _login: MutableLiveData<Event<NetworkRetrofit<Login>>> = MutableLiveData()
+    val login: LiveData<Event<NetworkRetrofit<Login>>> = _login
 
-    private val _cliente: MutableLiveData<Event<Network<JCliente>>> = MutableLiveData()
-    val cliente: LiveData<Event<Network<JCliente>>> = _cliente
+    private val _cliente: MutableLiveData<Event<NetworkRetrofit<JCliente>>> = MutableLiveData()
+    val cliente: LiveData<Event<NetworkRetrofit<JCliente>>> = _cliente
 
-    private val _encuesta: MutableLiveData<Event<Network<JEncuesta>>> = MutableLiveData()
-    val encuesta: LiveData<Event<Network<JEncuesta>>> = _encuesta
+    private val _encuesta: MutableLiveData<Event<NetworkRetrofit<JEncuesta>>> = MutableLiveData()
+    val encuesta: LiveData<Event<NetworkRetrofit<JEncuesta>>> = _encuesta
 
-    private val _preventa: MutableLiveData<Event<Network<JVolumen>>> = MutableLiveData()
-    val preventa: LiveData<Event<Network<JVolumen>>> = _preventa
+    private val _preventa: MutableLiveData<Event<NetworkRetrofit<JVolumen>>> = MutableLiveData()
+    val preventa: LiveData<Event<NetworkRetrofit<JVolumen>>> = _preventa
 
-    private val _cobertura: MutableLiveData<Event<Network<JCobCart>>> = MutableLiveData()
-    val cobertura: LiveData<Event<Network<JCobCart>>> = _cobertura
+    private val _cobertura: MutableLiveData<Event<NetworkRetrofit<JCobCart>>> = MutableLiveData()
+    val cobertura: LiveData<Event<NetworkRetrofit<JCobCart>>> = _cobertura
 
-    private val _cartera: MutableLiveData<Event<Network<JCobCart>>> = MutableLiveData()
-    val cartera: LiveData<Event<Network<JCobCart>>> = _cartera
+    private val _cartera: MutableLiveData<Event<NetworkRetrofit<JCobCart>>> = MutableLiveData()
+    val cartera: LiveData<Event<NetworkRetrofit<JCobCart>>> = _cartera
 
-    private val _pedidos: MutableLiveData<Event<Network<JPedido>>> = MutableLiveData()
-    val pedidos: LiveData<Event<Network<JPedido>>> = _pedidos
+    private val _pedidos: MutableLiveData<Event<NetworkRetrofit<JPedido>>> = MutableLiveData()
+    val pedidos: LiveData<Event<NetworkRetrofit<JPedido>>> = _pedidos
 
-    private val _visicooler: MutableLiveData<Event<Network<JVisicooler>>> = MutableLiveData()
-    val visicooler: LiveData<Event<Network<JVisicooler>>> = _visicooler
+    private val _visicooler: MutableLiveData<Event<NetworkRetrofit<JVisicooler>>> = MutableLiveData()
+    val visicooler: LiveData<Event<NetworkRetrofit<JVisicooler>>> = _visicooler
 
-    private val _visisuper: MutableLiveData<Event<Network<JVisisuper>>> = MutableLiveData()
-    val visisuper: LiveData<Event<Network<JVisisuper>>> = _visisuper
+    private val _visisuper: MutableLiveData<Event<NetworkRetrofit<JVisisuper>>> = MutableLiveData()
+    val visisuper: LiveData<Event<NetworkRetrofit<JVisisuper>>> = _visisuper
 
-    private val _cambiocli: MutableLiveData<Event<Network<JCambio>>> = MutableLiveData()
-    val cambiocli: LiveData<Event<Network<JCambio>>> = _cambiocli
+    private val _cambiocli: MutableLiveData<Event<NetworkRetrofit<JCambio>>> = MutableLiveData()
+    val cambiocli: LiveData<Event<NetworkRetrofit<JCambio>>> = _cambiocli
 
-    private val _cambioemp: MutableLiveData<Event<Network<JCambio>>> = MutableLiveData()
-    val cambioemp: LiveData<Event<Network<JCambio>>> = _cambioemp
+    private val _cambioemp: MutableLiveData<Event<NetworkRetrofit<JCambio>>> = MutableLiveData()
+    val cambioemp: LiveData<Event<NetworkRetrofit<JCambio>>> = _cambioemp
 
-    private val _umes: MutableLiveData<Event<Network<JUmes>>> = MutableLiveData()
-    val umes: LiveData<Event<Network<JUmes>>> = _umes
+    private val _umes: MutableLiveData<Event<NetworkRetrofit<JUmes>>> = MutableLiveData()
+    val umes: LiveData<Event<NetworkRetrofit<JUmes>>> = _umes
 
-    private val _soles: MutableLiveData<Event<Network<JSoles>>> = MutableLiveData()
-    val soles: LiveData<Event<Network<JSoles>>> = _soles
+    private val _soles: MutableLiveData<Event<NetworkRetrofit<JSoles>>> = MutableLiveData()
+    val soles: LiveData<Event<NetworkRetrofit<JSoles>>> = _soles
 
-    private val _generico: MutableLiveData<Event<Network<JGenerico>>> = MutableLiveData()
-    val generico: LiveData<Event<Network<JGenerico>>> = _generico
+    private val _generico: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
+    val generico: LiveData<Event<NetworkRetrofit<JGenerico>>> = _generico
 
-    private val _detalle: MutableLiveData<Network<JGenerico>> = MutableLiveData()
-    val detalle: LiveData<Network<JGenerico>> = _detalle
+    private val _detalle: MutableLiveData<NetworkRetrofit<JGenerico>> = MutableLiveData()
+    val detalle: LiveData<NetworkRetrofit<JGenerico>> = _detalle
 
-    private val _cobpendiente: MutableLiveData<Network<JCoberturados>> = MutableLiveData()
-    val cobpendiente: LiveData<Network<JCoberturados>> = _cobpendiente
+    private val _cobpendiente: MutableLiveData<NetworkRetrofit<JCoberturados>> = MutableLiveData()
+    val cobpendiente: LiveData<NetworkRetrofit<JCoberturados>> = _cobpendiente
 
-    private val _pedigen: MutableLiveData<Network<JPediGen>> = MutableLiveData()
-    val pedigen: LiveData<Network<JPediGen>> = _pedigen
+    private val _pedigen: MutableLiveData<NetworkRetrofit<JPediGen>> = MutableLiveData()
+    val pedigen: LiveData<NetworkRetrofit<JPediGen>> = _pedigen
 
-    private val _pedimap: MutableLiveData<Event<Network<JPedimap>>> = MutableLiveData()
-    val pedimap: LiveData<Event<Network<JPedimap>>> = _pedimap
+    private val _pedimap: MutableLiveData<Event<NetworkRetrofit<JPedimap>>> = MutableLiveData()
+    val pedimap: LiveData<Event<NetworkRetrofit<JPedimap>>> = _pedimap
 
-    private val _bajasuper: MutableLiveData<Event<Network<JBajaSupervisor>>> = MutableLiveData()
-    val bajasuper: LiveData<Event<Network<JBajaSupervisor>>> = _bajasuper
+    private val _bajasuper: MutableLiveData<Event<NetworkRetrofit<JBajaSupervisor>>> = MutableLiveData()
+    val bajasuper: LiveData<Event<NetworkRetrofit<JBajaSupervisor>>> = _bajasuper
 
-    private val _bajaven: MutableLiveData<Event<Network<JBajaVendedor>>> = MutableLiveData()
-    val bajavend: LiveData<Event<Network<JBajaVendedor>>> = _bajaven
+    private val _bajaven: MutableLiveData<Event<NetworkRetrofit<JBajaVendedor>>> = MutableLiveData()
+    val bajavend: LiveData<Event<NetworkRetrofit<JBajaVendedor>>> = _bajaven
 
     private val _altadatos: MutableLiveData<TADatos> = MutableLiveData()
     val altadatos: LiveData<TADatos> = _altadatos
@@ -149,6 +149,8 @@ class AppViewModel @ViewModelInject constructor(
 
     fun rutasObs() = repository.getFlowRutas().asLiveData()
 
+    fun incidenciaObs() = repository.getFlowIncidencias().asLiveData()
+
     private val _servseguimiento: MutableLiveData<Event<List<TSeguimiento>>> = MutableLiveData()
     val servseguimiento: LiveData<Event<List<TSeguimiento>>> = _servseguimiento
 
@@ -173,29 +175,29 @@ class AppViewModel @ViewModelInject constructor(
     private val _servfoto: MutableLiveData<Event<List<TRespuesta>>> = MutableLiveData()
     val servfoto: LiveData<Event<List<TRespuesta>>> = _servfoto
 
-    private val _respseguimiento: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respseguimiento: LiveData<Event<Network<JObj>>> = _respseguimiento
+    private val _respseguimiento: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respseguimiento: LiveData<Event<NetworkRetrofit<JObj>>> = _respseguimiento
 
-    private val _respvisita: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respvisita: LiveData<Event<Network<JObj>>> = _respvisita
+    private val _respvisita: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respvisita: LiveData<Event<NetworkRetrofit<JObj>>> = _respvisita
 
-    private val _respalta: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respalta: LiveData<Event<Network<JObj>>> = _respalta
+    private val _respalta: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respalta: LiveData<Event<NetworkRetrofit<JObj>>> = _respalta
 
-    private val _respaltadatos: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respaltadatos: LiveData<Event<Network<JObj>>> = _respaltadatos
+    private val _respaltadatos: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respaltadatos: LiveData<Event<NetworkRetrofit<JObj>>> = _respaltadatos
 
-    private val _respbaja: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respbaja: LiveData<Event<Network<JObj>>> = _respbaja
+    private val _respbaja: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respbaja: LiveData<Event<NetworkRetrofit<JObj>>> = _respbaja
 
-    private val _respbajaestado: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val respbajaestado: LiveData<Event<Network<JObj>>> = _respbajaestado
+    private val _respbajaestado: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val respbajaestado: LiveData<Event<NetworkRetrofit<JObj>>> = _respbajaestado
 
-    private val _resprespuesta: MutableLiveData<Event<Network<JObj>>> = MutableLiveData()
-    val resprespuesta: LiveData<Event<Network<JObj>>> = _resprespuesta
+    private val _resprespuesta: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
+    val resprespuesta: LiveData<Event<NetworkRetrofit<JObj>>> = _resprespuesta
 
-    private val _respfoto: MutableLiveData<Event<Network<JFoto>>> = MutableLiveData()
-    val respfoto: LiveData<Event<Network<JFoto>>> = _respfoto
+    private val _respfoto: MutableLiveData<Event<NetworkRetrofit<JFoto>>> = MutableLiveData()
+    val respfoto: LiveData<Event<NetworkRetrofit<JFoto>>> = _respfoto
 
     private val _cabecera: MutableLiveData<Event<List<Cabecera>>> = MutableLiveData()
     val cabecera: LiveData<Event<List<Cabecera>>> = _cabecera
@@ -802,6 +804,7 @@ class AppViewModel @ViewModelInject constructor(
             repository.deleteBajaSuper()
             repository.deleteBajaEstado()
             functions.deleteFotos()
+            repository.deleteIncidencia()
         }
     }
 }

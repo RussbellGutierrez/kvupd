@@ -22,7 +22,7 @@ import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
 import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.MSG_CONFIG
 import com.upd.kvupd.utils.Constant.W_CONFIG
-import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.Interface.servworkListener
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
@@ -51,11 +51,11 @@ class ConfigWork @WorkerInject constructor(
                             val config = response.data?.jobl
                             Log.e(_tag,"Message: ${response.message}")
                             Log.w(_tag,"Config $config")
-                            rst = if (config.isNullOrEmpty()) {
+                            if (config.isNullOrEmpty()) {
                                 IS_SUNDAY = functions.isSunday()
                                 IS_CONFIG_FAILED = true
                                 MSG_CONFIG = "Respuesta-> ${response.message}"
-                                Result.failure()
+                                rst = Result.failure()
                             } else {
                                 IS_SUNDAY = false
                                 IS_CONFIG_FAILED = false
@@ -63,7 +63,7 @@ class ConfigWork @WorkerInject constructor(
                                 repository.saveConfiguracion(config)
                                 repository.saveSesion(config[0])
                                 MSG_CONFIG = "Configuracion completa"
-                                Result.success()
+                                rst = Result.success()
                             }
                         }
                     } catch (e: HttpException) {
@@ -77,7 +77,7 @@ class ConfigWork @WorkerInject constructor(
                     rst = Result.success()
                 }
             }
-            workListener?.onFinishWork(W_CONFIG)
+            servworkListener?.onFinishWork(W_CONFIG)
             return@withContext rst
         }
 

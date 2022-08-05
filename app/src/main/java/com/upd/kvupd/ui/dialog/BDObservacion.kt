@@ -14,6 +14,7 @@ import com.upd.kvupd.databinding.BottomDialogObservacionBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.POS_LOC
+import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +33,8 @@ class BDObservacion : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC = null
+        POS_LOC.longitude = 0.0
+        POS_LOC.latitude = 0.0
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -90,7 +92,8 @@ class BDObservacion : BottomSheetDialogFragment() {
     }
 
     private fun saveVisita(seleccion: Int) {
-        if (POS_LOC != null) {
+        if (isPOSLOCinitialized() &&
+            (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
 
             obs = seleccion
             cliente = args.cliente.split("-")[0].trim().toInt()
@@ -101,10 +104,10 @@ class BDObservacion : BottomSheetDialogFragment() {
                 cliente,
                 fecha,
                 CONF.codigo,
-                POS_LOC!!.longitude,
-                POS_LOC!!.latitude,
+                POS_LOC.longitude,
+                POS_LOC.latitude,
                 obs,
-                POS_LOC!!.accuracy.toDouble(),
+                POS_LOC.accuracy.toDouble(),
                 "Pendiente"
             )
             viewmodel.saveVisita(item, ruta)

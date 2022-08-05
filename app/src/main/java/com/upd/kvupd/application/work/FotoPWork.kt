@@ -12,7 +12,7 @@ import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,12 +35,12 @@ class FotoPWork @WorkerInject constructor(
                     val p = requestBody(i)
                     repository.setWebFotos(p).collect {
                         when(it) {
-                            is Network.Success -> {
+                            is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
                                 repository.saveFoto(i)
                                 Log.d(_tag,"Foto enviado $i")
                             }
-                            is Network.Error -> Log.e(_tag,"Foto Error -> ${it.message}")
+                            is NetworkRetrofit.Error -> Log.e(_tag,"Foto Error -> ${it.message}")
                         }
                     }
                 }

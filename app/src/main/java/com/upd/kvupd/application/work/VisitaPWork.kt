@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,12 +31,12 @@ class VisitaPWork @WorkerInject constructor(
                     val p = requestBody(i)
                     repository.setWebVisita(p).collect {
                         when(it) {
-                            is Network.Success -> {
+                            is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
                                 repository.saveVisita(i)
                                 Log.d(_tag,"Visita enviado $i")
                             }
-                            is Network.Error -> Log.e(_tag,"Visita Error ${it.message}")
+                            is NetworkRetrofit.Error -> Log.e(_tag,"Visita Error ${it.message}")
                         }
                     }
                 }

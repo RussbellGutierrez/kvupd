@@ -1,13 +1,12 @@
 package com.upd.kvupd.domain
 
 import android.location.Location
-import android.util.Log
 import com.upd.kvupd.data.local.LocalDataSource
 import com.upd.kvupd.data.model.*
 import com.upd.kvupd.data.remote.WebDataSource
 import com.upd.kvupd.utils.BaseApiResponse
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Network
+import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.RequestBody
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -66,6 +64,10 @@ class RepoImpl @Inject constructor(
 
     override fun getFlowRutas(): Flow<List<TRutas>> {
         return localDataSource.getObsRutas().distinctUntilChanged()
+    }
+
+    override fun getFlowIncidencias(): Flow<List<TIncidencia>> {
+        return localDataSource.getIncidencias().distinctUntilChanged()
     }
 
     override suspend fun getSesion(): TSesion? {
@@ -299,6 +301,10 @@ class RepoImpl @Inject constructor(
         localDataSource.saveRespuesta(respuesta)
     }
 
+    override suspend fun saveIncidencia(respuesta: TIncidencia) {
+        localDataSource.saveIncidencia(respuesta)
+    }
+
     override suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
         return localDataSource.getServerSeguimiento(estado)
     }
@@ -415,217 +421,221 @@ class RepoImpl @Inject constructor(
         localDataSource.deleteRespuesta()
     }
 
-    override suspend fun loginAdministrator(body: RequestBody): Flow<Network<Login>> {
+    override suspend fun deleteIncidencia() {
+        localDataSource.deleteIncidencia()
+    }
+
+    override suspend fun loginAdministrator(body: RequestBody): Flow<NetworkRetrofit<Login>> {
         return flow {
             emit(safeApiCall { webDataSource.loginUser(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun registerWebDevice(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun registerWebDevice(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.registerWebDevice(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebConfiguracion(body: RequestBody): Flow<Network<JConfig>> {
+    override suspend fun getWebConfiguracion(body: RequestBody): Flow<NetworkRetrofit<JConfig>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebConfiguracion(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebClientes(body: RequestBody): Flow<Network<JCliente>> {
+    override suspend fun getWebClientes(body: RequestBody): Flow<NetworkRetrofit<JCliente>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebClientes(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebEmpleados(body: RequestBody): Flow<Network<JVendedores>> {
+    override suspend fun getWebEmpleados(body: RequestBody): Flow<NetworkRetrofit<JVendedores>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebEmpleados(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebDistritos(body: RequestBody): Flow<Network<JCombo>> {
+    override suspend fun getWebDistritos(body: RequestBody): Flow<NetworkRetrofit<JCombo>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebDistritos(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebNegocios(body: RequestBody): Flow<Network<JCombo>> {
+    override suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JCombo>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebNegocios(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebRutas(body: RequestBody): Flow<Network<JRuta>> {
+    override suspend fun getWebRutas(body: RequestBody): Flow<NetworkRetrofit<JRuta>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebRutas(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebEncuesta(body: RequestBody): Flow<Network<JEncuesta>> {
+    override suspend fun getWebEncuesta(body: RequestBody): Flow<NetworkRetrofit<JEncuesta>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebEncuesta(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebPreventa(body: RequestBody): Flow<Network<JVolumen>> {
+    override suspend fun getWebPreventa(body: RequestBody): Flow<NetworkRetrofit<JVolumen>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebPreventa(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebCobertura(body: RequestBody): Flow<Network<JCobCart>> {
+    override suspend fun getWebCobertura(body: RequestBody): Flow<NetworkRetrofit<JCobCart>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebCobertura(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebCartera(body: RequestBody): Flow<Network<JCobCart>> {
+    override suspend fun getWebCartera(body: RequestBody): Flow<NetworkRetrofit<JCobCart>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebCartera(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebCambiosCli(body: RequestBody): Flow<Network<JCambio>> {
+    override suspend fun getWebCambiosCli(body: RequestBody): Flow<NetworkRetrofit<JCambio>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebCambiosCli(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebCambiosEmp(body: RequestBody): Flow<Network<JCambio>> {
+    override suspend fun getWebCambiosEmp(body: RequestBody): Flow<NetworkRetrofit<JCambio>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebCambiosEmp(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebPedidos(body: RequestBody): Flow<Network<JPedido>> {
+    override suspend fun getWebPedidos(body: RequestBody): Flow<NetworkRetrofit<JPedido>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebPedidos(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebVisicooler(body: RequestBody): Flow<Network<JVisicooler>> {
+    override suspend fun getWebVisicooler(body: RequestBody): Flow<NetworkRetrofit<JVisicooler>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebVisicooler(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebVisisuper(body: RequestBody): Flow<Network<JVisisuper>> {
+    override suspend fun getWebVisisuper(body: RequestBody): Flow<NetworkRetrofit<JVisisuper>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebVisisuper(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebUmes(body: RequestBody): Flow<Network<JUmes>> {
+    override suspend fun getWebUmes(body: RequestBody): Flow<NetworkRetrofit<JUmes>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebUmes(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebSoles(body: RequestBody): Flow<Network<JSoles>> {
+    override suspend fun getWebSoles(body: RequestBody): Flow<NetworkRetrofit<JSoles>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebSoles(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebUmesGenerico(body: RequestBody): Flow<Network<JGenerico>> {
+    override suspend fun getWebUmesGenerico(body: RequestBody): Flow<NetworkRetrofit<JGenerico>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebUmesGenerico(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebSolesGenerico(body: RequestBody): Flow<Network<JGenerico>> {
+    override suspend fun getWebSolesGenerico(body: RequestBody): Flow<NetworkRetrofit<JGenerico>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebSolesGenerico(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebUmesDetalle(body: RequestBody): Flow<Network<JGenerico>> {
+    override suspend fun getWebUmesDetalle(body: RequestBody): Flow<NetworkRetrofit<JGenerico>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebUmesDetalle(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebSolesDetalle(body: RequestBody): Flow<Network<JGenerico>> {
+    override suspend fun getWebSolesDetalle(body: RequestBody): Flow<NetworkRetrofit<JGenerico>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebSolesDetalle(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebCoberturaPendiente(body: RequestBody): Flow<Network<JCoberturados>> {
+    override suspend fun getWebCoberturaPendiente(body: RequestBody): Flow<NetworkRetrofit<JCoberturados>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebCoberturaPendiente(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebPedidosRealizados(body: RequestBody): Flow<Network<JPediGen>> {
+    override suspend fun getWebPedidosRealizados(body: RequestBody): Flow<NetworkRetrofit<JPediGen>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebPedidosRealizados(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebPedimap(body: RequestBody): Flow<Network<JPedimap>> {
+    override suspend fun getWebPedimap(body: RequestBody): Flow<NetworkRetrofit<JPedimap>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebPedimap(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebBajaVendedor(body: RequestBody): Flow<Network<JBajaVendedor>> {
+    override suspend fun getWebBajaVendedor(body: RequestBody): Flow<NetworkRetrofit<JBajaVendedor>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebBajaVendedor(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebBajaSupervisor(body: RequestBody): Flow<Network<JBajaSupervisor>> {
+    override suspend fun getWebBajaSupervisor(body: RequestBody): Flow<NetworkRetrofit<JBajaSupervisor>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebBajaSupervisor(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebSeguimiento(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebSeguimiento(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerSeguimiento(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebVisita(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebVisita(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerVisita(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebAlta(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebAlta(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerAlta(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebAltaDatos(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebAltaDatos(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerAltaDatos(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebBaja(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebBaja(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerBaja(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebBajaEstados(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebBajaEstados(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerBajaEstados(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebRespuestas(body: RequestBody): Flow<Network<JObj>> {
+    override suspend fun setWebRespuestas(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerRespuestas(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebFotos(body: RequestBody): Flow<Network<JFoto>> {
+    override suspend fun setWebFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>> {
         return flow {
             emit(safeApiCall { webDataSource.setServerFotos(body) })
         }.flowOn(Dispatchers.IO)

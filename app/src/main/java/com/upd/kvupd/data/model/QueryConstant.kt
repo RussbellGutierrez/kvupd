@@ -16,6 +16,7 @@ object QueryConstant {
     const val GET_BAJA_SUPER =
         "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
     const val GET_SELECCION = "SELECT * FROM TEncuestaSeleccionado"
+    const val GET_INCIDENCIA = "SELECT * FROM TIncidencia ORDER BY fecha DESC"
 
     const val DEL_CONFIG = "DELETE FROM TConfiguracion"
     const val DEL_CLIENTES = "DELETE FROM TClientes"
@@ -34,6 +35,7 @@ object QueryConstant {
     const val DEL_ESTADOBAJA = "DELETE FROM TBEstado"
     const val DEL_SELECCION = "DELETE FROM TEncuestaSeleccionado"
     const val DEL_RESPUESTA = "DELETE FROM TRespuesta"
+    const val DEL_INCIDENCIA = "DELETE FROM TIncidencia"
 
     const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"

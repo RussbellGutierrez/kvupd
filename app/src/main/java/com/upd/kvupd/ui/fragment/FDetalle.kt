@@ -70,13 +70,13 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
         viewmodel.generico.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> {
+                    is NetworkRetrofit.Success -> {
                         bind.emptyContainer.root.setUI("v", false)
                         bind.rcvDetalle.setUI("v", true)
                         generAdapter.mDiffer.submitList(y.data!!.jobl)
                         showDialog("Correcto", "Datos descargados") {}
                     }
-                    is Network.Error -> {
+                    is NetworkRetrofit.Error -> {
                         bind.emptyContainer.root.setUI("v", true)
                         bind.rcvDetalle.setUI("v", false)
                         showDialog("Error", "Server ${y.message}") {}
@@ -88,7 +88,7 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
         viewmodel.visicooler.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is Network.Success -> {
+                    is NetworkRetrofit.Success -> {
                         snack("Mostrando resultado")
                         findNavController().navigate(
                             FDetalleDirections.actionFDetalleToDMiniDetalle(
@@ -104,7 +104,7 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
                             )
                         )
                     }
-                    is Network.Error -> snack("Error ${y.message}")
+                    is NetworkRetrofit.Error -> snack("Error ${y.message}")
                 }
             }
         }

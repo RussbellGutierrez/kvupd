@@ -21,7 +21,6 @@ class DProgress: DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCreate()
-
         if (arguments != null)
             mensaje = arguments?.getString("mensaje")!!
     }

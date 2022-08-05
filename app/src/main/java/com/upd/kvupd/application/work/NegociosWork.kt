@@ -9,7 +9,7 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_NEGOCIO
-import com.upd.kvupd.utils.Interface.workListener
+import com.upd.kvupd.utils.Interface.servworkListener
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +51,7 @@ class NegociosWork @WorkerInject constructor(
                 MSG_NEGOCIO = "Full"
                 rst = Result.success()
             }
-            workListener?.onFinishWork(W_NEGOCIO)
+            servworkListener?.onFinishWork(W_NEGOCIO)
             return@withContext rst
         }
 

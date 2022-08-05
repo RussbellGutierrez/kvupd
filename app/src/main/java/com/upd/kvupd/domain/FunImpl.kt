@@ -2,12 +2,18 @@ package com.upd.kvupd.domain
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.net.LinkProperties
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
+import android.telephony.TelephonyManager
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.work.*
 import com.google.android.gms.maps.GoogleMap
@@ -20,15 +26,14 @@ import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
+import com.upd.kvupd.application.Receiver
 import com.upd.kvupd.application.work.*
-import com.upd.kvupd.data.model.MarkerMap
-import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.*
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.PERIODIC_WORK
 import com.upd.kvupd.utils.Constant.WP_ALTA
 import com.upd.kvupd.utils.Constant.WP_ALTADATO
@@ -46,6 +51,8 @@ import com.upd.kvupd.utils.Constant.W_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_SETUP
 import com.upd.kvupd.utils.Constant.W_USER
+import com.upd.kvupd.utils.Constant.isCONFinitialized
+import com.upd.kvupd.utils.Interface.servworkListener
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -179,6 +186,71 @@ class FunImpl @Inject constructor(
         return day == Calendar.SUNDAY
     }
 
+    override fun mobileInternetState() {
+        val connectivityManager = ctx.getSystemService(ConnectivityManager::class.java)
+        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+
+            override fun onLost(network : Network) {
+                val item = saveSystemActions("INTERNET","Servicio internet desconectado")
+                if (item != null) {
+                    servworkListener?.savingSystemReport(item)
+                }
+            }
+
+            override fun onCapabilitiesChanged(network : Network, nc : NetworkCapabilities) {
+                val st = when {
+                    nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                    nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
+                    nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        val tm = ctx.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+                        when (tm.dataNetworkType) {
+                            TelephonyManager.NETWORK_TYPE_IDEN -> "2G MOBILE 25 kbps"
+                            TelephonyManager.NETWORK_TYPE_CDMA -> "2G MOBILE 14-64 kbps"
+                            TelephonyManager.NETWORK_TYPE_1xRTT -> "2G MOBILE 50-100 kbps"
+                            TelephonyManager.NETWORK_TYPE_EDGE -> "2G MOBILE 50-100 kbps"
+                            TelephonyManager.NETWORK_TYPE_GPRS -> "2G MOBILE 100 kbps"
+                            TelephonyManager.NETWORK_TYPE_EVDO_0 -> "3G MOBILE 400-1000 kbps"
+                            TelephonyManager.NETWORK_TYPE_EVDO_A -> "3G MOBILE 600-1400 kbps"
+                            TelephonyManager.NETWORK_TYPE_HSPA -> "3G MOBILE 700-1700 kbps"
+                            TelephonyManager.NETWORK_TYPE_UMTS -> "3G MOBILE 400-7000 kbps"
+                            TelephonyManager.NETWORK_TYPE_EHRPD -> "3G MOBILE 1-2 Mbps"
+                            TelephonyManager.NETWORK_TYPE_HSUPA -> "3G MOBILE 1-23 Mbps"
+                            TelephonyManager.NETWORK_TYPE_HSDPA -> "3G MOBILE 2-14 Mbps"
+                            TelephonyManager.NETWORK_TYPE_EVDO_B -> "3G MOBILE 5 Mbps"
+                            TelephonyManager.NETWORK_TYPE_HSPAP -> "3G MOBILE 10-20 Mbps"
+                            TelephonyManager.NETWORK_TYPE_LTE -> "4G MOBILE 10+ Mbps"
+                            else -> "MOBILE UNKNOW"
+                        }
+                    }
+                    else -> "UNKNOW"
+                }
+                val item = saveSystemActions("INTERNET","Internet conectado $st")
+                if (item != null) {
+                    servworkListener?.savingSystemReport(item)
+                }
+            }
+        })
+    }
+
+    override fun enableBroadcastGPS() {
+        val filter = IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+        ctx.registerReceiver(Receiver(), filter)
+    }
+
+    override fun saveSystemActions(tipo: String, msg: String?): TIncidencia? {
+        val obs = when(tipo) {
+            "GPS" -> if (ctx.isGPSDisabled()) "Ubicacion GPS desactivada" else "Ubicacion GPS activada"
+            "TIME" -> "Fecha y hora fueron modificados"
+            "INTERNET" -> msg ?: "Nothing"
+            else -> ""
+        }
+        val fecha = Calendar.getInstance().time.dateToday(4)
+        if (isCONFinitialized()) {
+            return TIncidencia(tipo,CONF.codigo,obs,fecha)
+        }
+        return null
+    }
+
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {
         val m = mutableListOf<Marker>()
         list.forEach { i ->
@@ -264,6 +336,12 @@ class FunImpl @Inject constructor(
         }
     }
 
+    override fun constrainsWork(): Constraints {
+        return Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+    }
+
     override fun launchWorkers() {
         workManager
             .beginWith(workerConfiguracion())
@@ -296,6 +374,7 @@ class FunImpl @Inject constructor(
                 TimeUnit.MINUTES
             )
             .addTag(W_SETUP)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniqueWork(W_SETUP, ExistingWorkPolicy.REPLACE, work)
     }
@@ -310,6 +389,7 @@ class FunImpl @Inject constructor(
                 TimeUnit.MINUTES
             )
             .addTag(W_FINISH)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniqueWork(W_FINISH, ExistingWorkPolicy.REPLACE, work)
     }
@@ -317,31 +397,37 @@ class FunImpl @Inject constructor(
     override fun workerConfiguracion() =
         OneTimeWorkRequestBuilder<ConfigWork>()
             .addTag(W_CONFIG)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerUser() =
         OneTimeWorkRequestBuilder<UserWork>()
             .addTag(W_USER)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerDistritos() =
         OneTimeWorkRequestBuilder<DistritosWork>()
             .addTag(W_DISTRITO)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerNegocios() =
         OneTimeWorkRequestBuilder<NegociosWork>()
             .addTag(W_NEGOCIO)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerRutas() =
         OneTimeWorkRequestBuilder<RutasWork>()
             .addTag(W_RUTA)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerEncuestas() =
         OneTimeWorkRequestBuilder<EncuestaWork>()
             .addTag(W_ENCUESTA)
+            .setConstraints(constrainsWork())
             .build()
 
     override fun workerperSeguimiento() {
@@ -352,6 +438,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_SEGUIMIENTO,
@@ -368,6 +455,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_VISITA,
@@ -384,6 +472,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_ALTA,
@@ -400,6 +489,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_ALTADATO,
@@ -416,6 +506,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_BAJA,
@@ -432,6 +523,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_BAJAESTADO,
@@ -448,6 +540,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_RESPUESTA,
@@ -464,6 +557,7 @@ class FunImpl @Inject constructor(
             TimeUnit.MILLISECONDS
         )
             .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
             .build()
         workManager.enqueueUniquePeriodicWork(
             WP_FOTO,

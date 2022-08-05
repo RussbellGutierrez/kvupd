@@ -24,12 +24,10 @@ import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.databinding.FragmentFValidarBinding
 import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.POS_LOC
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.settingsMap
-import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toLocation
+import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,7 +48,8 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC = null
+        POS_LOC.longitude = 0.0
+        POS_LOC.latitude = 0.0
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -173,7 +172,8 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     }
 
     private fun saveBajaValidar(procede: Int) {
-        if (POS_LOC != null) {
+        if (isPOSLOCinitialized() &&
+            POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
             val observacion = bind.edtComentario.text.toString().trim()
             val fechaconf = viewmodel.fecha(4)
             val item = TBEstado(
@@ -181,9 +181,9 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
                 bs.clicodigo,
                 procede,
                 bs.creado,
-                POS_LOC!!.accuracy.toDouble(),
-                POS_LOC!!.longitude,
-                POS_LOC!!.latitude,
+                POS_LOC.accuracy.toDouble(),
+                POS_LOC.longitude,
+                POS_LOC.latitude,
                 fechaconf,
                 observacion,
                 "Pendiente"
