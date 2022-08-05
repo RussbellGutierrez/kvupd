@@ -50,10 +50,6 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getObsRutas()
     }
 
-    fun getIncidencias(): Flow<List<TIncidencia>> {
-        return qdao.getIncidencias()
-    }
-
     suspend fun getSesion(): TSesion? {
         return qdao.getSesion()
     }
@@ -203,10 +199,6 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertRespuesta(rsp)
     }
 
-    suspend fun saveIncidencia(rsp: TIncidencia) {
-        dao.insertIncidencia(rsp)
-    }
-
     suspend fun updateLocationAlta(locationAlta: LocationAlta) {
         dao.updateLocationAlta(locationAlta)
     }
@@ -288,10 +280,6 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteRespuesta() {
         dao.deleteRespuesta()
-    }
-
-    suspend fun deleteIncidencia() {
-        dao.deleteIncidencia()
     }
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {

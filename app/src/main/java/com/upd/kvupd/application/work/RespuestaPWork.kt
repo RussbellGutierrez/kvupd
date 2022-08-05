@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.Network
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,12 +31,12 @@ class RespuestaPWork @WorkerInject constructor(
                     val p = requestBody(i)
                     repository.setWebRespuestas(p).collect {
                         when(it) {
-                            is NetworkRetrofit.Success -> {
+                            is Network.Success -> {
                                 i.estado = "Enviado"
                                 repository.saveRespuestaOneByOne(i)
                                 Log.d(_tag,"Respuesta enviado $i")
                             }
-                            is NetworkRetrofit.Error -> Log.e(_tag,"Respuesta Error ${it.message}")
+                            is Network.Error -> Log.e(_tag,"Respuesta Error ${it.message}")
                         }
                     }
                 }

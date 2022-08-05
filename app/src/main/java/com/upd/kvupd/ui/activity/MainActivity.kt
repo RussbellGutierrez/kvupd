@@ -7,10 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.upd.kvupd.R
 import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
@@ -116,9 +114,5 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
             return false
         }
         return true
-    }
-
-    interface OnMainListener {
-        fun changeGPSstate(gps: Boolean)
     }
 }

@@ -21,7 +21,6 @@ import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.GET_EMPLEADOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.GET_FOTO_SERVER
-import com.upd.kvupd.data.model.QueryConstant.GET_INCIDENCIA
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_ALTA
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_LOCATION
 import com.upd.kvupd.data.model.QueryConstant.GET_MARKERS
@@ -73,9 +72,6 @@ interface QueryDAO {
 
     @Query(GET_RUTAS)
     fun getObsRutas(): Flow<List<TRutas>>
-
-    @Query(GET_INCIDENCIA)
-    fun getIncidencias(): Flow<List<TIncidencia>>
 
     @Query(GET_SESION)
     suspend fun getSesion(): TSesion?

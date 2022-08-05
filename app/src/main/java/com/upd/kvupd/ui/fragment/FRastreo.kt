@@ -88,7 +88,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         viewmodel.pedimap.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when(y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         if (y.data?.jobl.isNullOrEmpty()) {
                             showDialog("Error", "No se obtuvieron vendedores") {}
                         }else {
@@ -99,7 +99,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
                             drawRoutes()
                         }
                     }
-                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }

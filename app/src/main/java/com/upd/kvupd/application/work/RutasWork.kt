@@ -9,7 +9,7 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_RUTA
 import com.upd.kvupd.utils.Constant.W_RUTA
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.workListener
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +51,7 @@ class RutasWork @WorkerInject constructor(
                 MSG_RUTA = "Full"
                 rst = Result.success()
             }
-            servworkListener?.onFinishWork(W_RUTA)
+            workListener?.onFinishWork(W_RUTA)
             return@withContext rst
         }
 

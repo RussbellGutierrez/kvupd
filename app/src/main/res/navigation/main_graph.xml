@@ -73,13 +73,6 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
-        <action
-            android:id="@+id/action_FBase_to_FIncidencia"
-            app:destination="@id/FIncidencia"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -455,9 +448,4 @@
         android:name="com.upd.kvupd.ui.fragment.FServidor"
         android:label="Servidor"
         tools:layout="@layout/fragment_f_servidor" />
-    <fragment
-        android:id="@+id/FIncidencia"
-        android:name="com.upd.kvupd.ui.fragment.FIncidencia"
-        android:label="FIncidencia"
-        tools:layout="@layout/fragment_f_incidencia" />
 </navigation>

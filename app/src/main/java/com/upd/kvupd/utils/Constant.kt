@@ -26,20 +26,16 @@ object Constant {
 
     var IS_SUNDAY = false
     var IS_CONFIG_FAILED = false
-    var TAP_GPS_ONCE = false
 
     var IMEI = ""
     var PROCEDE = ""
     var VISICOOLER_ID = 0
-    lateinit var POS_LOC: Location
+    var POS_LOC: Location? = null
     lateinit var ALTADATOS: String
     lateinit var GPS_LOC: Location
     lateinit var CONF: TConfiguracion
     lateinit var IWAM: DataCliente
     lateinit var IWP: Pedimap
-
-    fun isPOSLOCinitialized(): Boolean = ::POS_LOC.isInitialized
-    fun isCONFinitialized(): Boolean = ::CONF.isInitialized
 
     const val PERIODIC_WORK = "WorkVentas"
     const val W_SETUP = "VSetup"

@@ -82,7 +82,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.preventa.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var cuota = 0.0
                         var avance = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -114,7 +114,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             }
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(0, false)
                         bind.txtMsg1.text = y.message
                     }
@@ -125,7 +125,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.cobertura.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var cartera = 0.0
                         var avance = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -157,7 +157,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             }
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(1, false)
                         bind.txtMsg2.text = y.message
                     }
@@ -168,7 +168,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.cartera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var cartera = 0.0
                         var avance = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -198,7 +198,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(2, false)
                         bind.txtMsg3.text = y.message
                     }
@@ -209,7 +209,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.pedidos.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var inicio = "S/N"
                         var ultimo = "S/N"
                         var pedido = 0
@@ -243,7 +243,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             }
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(3, false)
                         bind.txtMsg4.text = y.message
                     }
@@ -255,7 +255,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             Log.d(_tag, "launching visicooler")
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var venta = 0
                         y.data?.jobl?.forEach { i ->
                             if (i.avance > 0.0)
@@ -284,7 +284,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(4, false)
                         Log.d(_tag, "Er ${y.message}")
                         bind.txtMsg5.text = y.message
@@ -296,7 +296,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.visisuper.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var venta = 0.0
                         var total = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -320,7 +320,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(5, false)
                         bind.txtMsg5.text = y.message
                     }
@@ -331,7 +331,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.cambiocli.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var cambios = 0
                         var soles = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -361,7 +361,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(6, false)
                         bind.txtMsg6.text = y.message
                     }
@@ -372,7 +372,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.cambioemp.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         var cambios = 0
                         var soles = 0.0
                         y.data?.jobl?.forEach { i ->
@@ -402,7 +402,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         controlUI(7, false)
                         bind.txtMsg6.text = y.message
                     }
@@ -413,12 +413,12 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.umes.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         bind.txtMensaje.setUI("v", false)
                         bind.rcvReporte.setUI("v", true)
                         umesAdapter.mDiffer.submitList(y.data!!.jobl)
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         bind.rcvReporte.setUI("v", false)
                         bind.txtMensaje.setUI("v", true)
                         bind.txtMensaje.text = y.message
@@ -430,12 +430,12 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.soles.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         bind.txtMensaje.setUI("v", false)
                         bind.rcvReporte.setUI("v", true)
                         solesAdapter.mDiffer.submitList(y.data!!.jobl)
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         bind.rcvReporte.setUI("v", false)
                         bind.txtMensaje.setUI("v", true)
                         bind.txtMensaje.text = y.message

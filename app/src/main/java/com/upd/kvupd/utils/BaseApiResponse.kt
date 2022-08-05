@@ -4,13 +4,13 @@ import retrofit2.Response
 
 abstract class BaseApiResponse {
 
-    suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): NetworkRetrofit<T> {
+    suspend fun <T> safeApiCall(apiCall: suspend () -> Response<T>): Network<T> {
         try {
             val response = apiCall()
             if (response.isSuccessful) {
                 val body = response.body()
                 body?.let {
-                    return NetworkRetrofit.Success(body)
+                    return Network.Success(body)
                 }
             }
             return error("${response.code()} ${response.message()}")
@@ -19,6 +19,6 @@ abstract class BaseApiResponse {
         }
     }
 
-    private fun <T> error(errorMessage: String): NetworkRetrofit<T> =
-        NetworkRetrofit.Error("Error Api: $errorMessage")
+    private fun <T> error(errorMessage: String): Network<T> =
+        Network.Error("Error Api: $errorMessage")
 }

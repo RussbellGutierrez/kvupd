@@ -9,7 +9,7 @@ import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_DISTRITO
 import com.upd.kvupd.utils.Constant.W_DISTRITO
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.workListener
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +51,7 @@ class DistritosWork @WorkerInject constructor(
                 MSG_DISTRITO = "Full"
                 rst = Result.success()
             }
-            servworkListener?.onFinishWork(W_DISTRITO)
+            workListener?.onFinishWork(W_DISTRITO)
             return@withContext rst
         }
 

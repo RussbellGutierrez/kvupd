@@ -41,7 +41,6 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/notf_encuesta.xml" value="0.371" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/ojo.xml" value="0.354" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/oro.xml" value="0.371" />
-        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/otros.xml" value="0.196" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/persona.xml" value="0.3365" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/pildora.xml" value="0.371" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/drawable/plata.xml" value="0.371" />
@@ -75,7 +74,6 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_cliente.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_detalle.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_encuesta.xml" value="0.5" />
-        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_incidencia.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_mapa.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_otro.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/fragment_f_rastreo.xml" value="0.5578125" />
@@ -90,7 +88,6 @@
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_baja_supervisor.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_baja_vendedor.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_cliente.xml" value="0.5578125" />
-        <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_incidencia.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_informe.xml" value="0.5578125" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_mini_detalle.xml" value="0.67" />
         <entry key="..\:/Users/RussbellPC/StudioProjects/kvupd/app/src/main/res/layout/row_reporte.xml" value="0.5578125" />

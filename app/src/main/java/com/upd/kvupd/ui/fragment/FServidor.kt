@@ -14,7 +14,7 @@ import com.upd.kvupd.data.model.*
 import com.upd.kvupd.databinding.FragmentFServidorBinding
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.Network
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
@@ -296,11 +296,11 @@ class FServidor : Fragment() {
         viewmodel.respseguimiento.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         seguimiento.estado = "Enviado"
                         viewmodel.updSeguimiento(seguimiento)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
+                    is Network.Error -> Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
                 }
                 outputUI(0)
             }
@@ -309,11 +309,11 @@ class FServidor : Fragment() {
         viewmodel.respvisita.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         visita.estado = "Enviado"
                         viewmodel.updVisita(visita)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Visita-> ${y.message} $visita")
+                    is Network.Error -> Log.w(_tag, "Visita-> ${y.message} $visita")
                 }
                 outputUI(1)
             }
@@ -322,11 +322,11 @@ class FServidor : Fragment() {
         viewmodel.respalta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         alta.estado = "Enviado"
                         viewmodel.updAlta(alta)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Alta-> ${y.message} $alta")
+                    is Network.Error -> Log.w(_tag, "Alta-> ${y.message} $alta")
                 }
                 outputUI(2)
             }
@@ -335,11 +335,11 @@ class FServidor : Fragment() {
         viewmodel.respaltadatos.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         altadatos.estado = "Enviado"
                         viewmodel.updAltaDatos(altadatos)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
+                    is Network.Error -> Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
                 }
                 outputUI(3)
             }
@@ -348,11 +348,11 @@ class FServidor : Fragment() {
         viewmodel.respbaja.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         baja.estado = "Enviado"
                         viewmodel.updBaja(baja)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Baja-> ${y.message} $baja")
+                    is Network.Error -> Log.w(_tag, "Baja-> ${y.message} $baja")
                 }
                 outputUI(4)
             }
@@ -361,11 +361,11 @@ class FServidor : Fragment() {
         viewmodel.respbajaestado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         bajaestado.estado = "Enviado"
                         viewmodel.updBajaEstado(bajaestado)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
+                    is Network.Error -> Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
                 }
                 outputUI(5)
             }
@@ -374,11 +374,11 @@ class FServidor : Fragment() {
         viewmodel.resprespuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when(y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         respuesta.estado = "Enviado"
                         viewmodel.updRespuesta(respuesta)
                     }
-                    is NetworkRetrofit.Error -> Log.e(_tag,"Respuesta-> ${y.message} $respuesta")
+                    is Network.Error -> Log.e(_tag,"Respuesta-> ${y.message} $respuesta")
                 }
                 outputUI(6)
             }
@@ -387,11 +387,11 @@ class FServidor : Fragment() {
         viewmodel.respfoto.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when(y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         foto.estado = "Enviado"
                         viewmodel.updFoto(respuesta)
                     }
-                    is NetworkRetrofit.Error -> Log.e(_tag,"Foto-> ${y.message} $foto")
+                    is Network.Error -> Log.e(_tag,"Foto-> ${y.message} $foto")
                 }
                 outputUI(7)
             }

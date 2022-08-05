@@ -12,10 +12,8 @@ import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
-import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.mainListener
 import com.upd.kvupd.utils.Interface.serviceListener
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +21,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class FBase : Fragment(), MainActivity.OnMainListener {
+class FBase : Fragment() {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFBaseBinding? = null
@@ -35,13 +33,11 @@ class FBase : Fragment(), MainActivity.OnMainListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        mainListener = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        mainListener = this
     }
 
     override fun onCreateView(
@@ -127,7 +123,7 @@ class FBase : Fragment(), MainActivity.OnMainListener {
             it.getContentIfNotHandled()?.let { y ->
                 val d = y.data?.jobl
                 when (y) {
-                    is NetworkRetrofit.Success -> if (d.isNullOrEmpty()) {
+                    is Network.Success -> if (d.isNullOrEmpty()) {
                         showDialog(
                             "Advertencia",
                             "No tiene encuesta programada"
@@ -138,7 +134,7 @@ class FBase : Fragment(), MainActivity.OnMainListener {
                             "Encuesta descargada correctamente"
                         ) {}
                     }
-                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is Network.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }
@@ -179,14 +175,8 @@ class FBase : Fragment(), MainActivity.OnMainListener {
         R.id.sincronizar -> consume { sinchroData() }
         R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_DLogin) }
         R.id.encuesta -> consume { launchEncuesta() }
-        R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> super.onOptionsItemSelected(item)
-    }
-
-    override fun changeGPSstate(gps: Boolean) {
-        val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
-        bind.fabGps.imageTintList = ColorStateList.valueOf(color)
     }
 
     private fun setParams(config: TConfiguracion) {
@@ -196,8 +186,9 @@ class FBase : Fragment(), MainActivity.OnMainListener {
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
         val version = "ver. ${BuildConfig.VERSION_NAME}"
         val usuario = getUsuario(config)
-        val gps = if (requireContext().isGPSDisabled()) Color.rgb(255, 51, 51) else Color.rgb(4, 106, 97)
-        val seguimiento = if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
+        val gps = if (isGPSDisabled()) Color.rgb(221, 150, 6) else Color.rgb(4, 106, 97)
+        val seguimiento =
+            if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
         bind.imgEmpresa.setImageResource(img)
         bind.txtUsuario.text = usuario
         bind.txtVersion.text = version
@@ -233,7 +224,7 @@ class FBase : Fragment(), MainActivity.OnMainListener {
     }
 
     private fun checkingGPS(T:()->Unit) {
-        if (requireContext().isGPSDisabled()) {
+        if (isGPSDisabled()) {
             snack("Habilite el GPS primero")
         } else {
             T()

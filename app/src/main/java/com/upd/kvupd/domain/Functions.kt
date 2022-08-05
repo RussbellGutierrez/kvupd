@@ -1,11 +1,13 @@
 package com.upd.kvupd.domain
 
 import android.graphics.Bitmap
-import androidx.work.Constraints
 import androidx.work.OneTimeWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBajaSuper
 
 interface Functions {
     fun generateQR(value: String): Bitmap
@@ -17,9 +19,6 @@ interface Functions {
     fun isConnected(): Boolean
     fun deleteFotos()
     fun isSunday(): Boolean
-    fun mobileInternetState()
-    fun enableBroadcastGPS()
-    fun saveSystemActions(tipo: String, msg: String?): TIncidencia?
 
     fun setupMarkers(map: GoogleMap,list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap,list: List<Pedimap>): List<Marker>
@@ -27,7 +26,6 @@ interface Functions {
     fun bajaMarker(map: GoogleMap,baja: TBajaSuper): Marker
 
     fun executeService(service: String, foreground: Boolean)
-    fun constrainsWork(): Constraints
     fun launchWorkers()
     fun sinchroWorkers()
     fun chooseCloseWorker(work: String)

@@ -9,7 +9,7 @@ import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.Network
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,12 +31,12 @@ class AltaPWork @WorkerInject constructor(
                     val p = requestBody(i)
                     repository.setWebAlta(p).collect {
                         when(it) {
-                            is NetworkRetrofit.Success -> {
+                            is Network.Success -> {
                                 i.estado = "Enviado"
                                 repository.saveAlta(i)
                                 Log.d(_tag,"Alta enviado $i")
                             }
-                            is NetworkRetrofit.Error -> Log.e(_tag,"Alta Error ${it.message}")
+                            is Network.Error -> Log.e(_tag,"Alta Error ${it.message}")
                         }
                     }
                 }

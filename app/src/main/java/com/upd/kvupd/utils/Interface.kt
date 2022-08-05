@@ -2,7 +2,6 @@ package com.upd.kvupd.utils
 
 import com.upd.kvupd.domain.ServiceWork
 import com.upd.kvupd.service.ServiceSetup
-import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.ui.adapter.*
 
 object Interface {
@@ -16,6 +15,5 @@ object Interface {
     lateinit var bajaListener: BajaAdapter.OnBajaListener
     lateinit var bajaSuperListener: BajaSupervisorAdapter.OnBajaSuperListener
     var serviceListener: ServiceSetup.OnServiceListener? = null
-    var servworkListener: ServiceWork? = null
-    var mainListener: MainActivity.OnMainListener? = null
+    var workListener: ServiceWork? = null
 }

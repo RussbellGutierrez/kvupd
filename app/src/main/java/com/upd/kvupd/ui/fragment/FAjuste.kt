@@ -89,7 +89,7 @@ class FAjuste : Fragment() {
         viewmodel.register.observe(viewLifecycleOwner) { result ->
             result.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is Network.Success -> {
                         y.data?.jobl?.forEach { i ->
                             if (i.has("message")) {
                                 showDialog("Advertencia", i.getString("message")) {}
@@ -98,7 +98,7 @@ class FAjuste : Fragment() {
                             }
                         }
                     }
-                    is NetworkRetrofit.Error -> {
+                    is Network.Error -> {
                         showDialog("Error", y.message!!) {}
                     }
                 }

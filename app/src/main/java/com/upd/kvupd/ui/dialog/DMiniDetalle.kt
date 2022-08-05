@@ -57,14 +57,14 @@ class DMiniDetalle : DialogFragment() {
 
         viewmodel.detalle.observe(viewLifecycleOwner) { rsl ->
             when (rsl) {
-                is NetworkRetrofit.Success -> {
+                is Network.Success -> {
                     val list = rsl.data?.jobl
                     if (!list.isNullOrEmpty()) {
                         bind.emptyContainer.root.setUI("v", false)
                         setUmeSoles(list)
                     }
                 }
-                is NetworkRetrofit.Error -> {
+                is Network.Error -> {
                     bind.emptyContainer.textView.text = rsl.message
                 }
             }
@@ -72,14 +72,14 @@ class DMiniDetalle : DialogFragment() {
 
         viewmodel.cobpendiente.observe(viewLifecycleOwner) { rsl ->
             when (rsl) {
-                is NetworkRetrofit.Success -> {
+                is Network.Success -> {
                     val list = rsl.data?.jobl
                     if (!list.isNullOrEmpty()) {
                         bind.emptyContainer.root.setUI("v", false)
                         setCoberturaPendiente(list)
                     }
                 }
-                is NetworkRetrofit.Error -> {
+                is Network.Error -> {
                     bind.emptyContainer.textView.text = rsl.message
                 }
             }
@@ -87,14 +87,14 @@ class DMiniDetalle : DialogFragment() {
 
         viewmodel.pedigen.observe(viewLifecycleOwner) { rsl ->
             when (rsl) {
-                is NetworkRetrofit.Success -> {
+                is Network.Success -> {
                     val list = rsl.data?.jobl
                     if (!list.isNullOrEmpty()) {
                         bind.emptyContainer.root.setUI("v", false)
                         setPedidosRealizados(list)
                     }
                 }
-                is NetworkRetrofit.Error -> {
+                is Network.Error -> {
                     bind.emptyContainer.textView.text = rsl.message
                 }
             }
