@@ -42,4 +42,5 @@ class DProgress: DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         bind.txtDialog.text = mensaje
     }
+
 }

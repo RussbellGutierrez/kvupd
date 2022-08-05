@@ -152,8 +152,9 @@ fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
             dismiss()
             T()
         }
-        if (titulo == "advertencia")
+        if (titulo == "advertencia") {
             negativeButton(null, "Cancelar")
+        }
     }
 }
 

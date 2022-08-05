@@ -152,4 +152,5 @@ interface AppDAO {
 
     @Query(DEL_INCIDENCIA)
     suspend fun deleteIncidencia()
+
 }

@@ -115,4 +115,5 @@ class ConfigWork @WorkerInject constructor(
         val manager = NotificationManagerCompat.from(applicationContext)
         manager.notify(CONFIG_NOTIF, builder.build())
     }
+
 }

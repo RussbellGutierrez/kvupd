@@ -87,4 +87,5 @@ class UserWork @WorkerInject constructor(
         json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
+
 }

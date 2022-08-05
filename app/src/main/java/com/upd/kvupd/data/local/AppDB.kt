@@ -17,6 +17,7 @@ import com.upd.kvupd.data.model.*
  *No es necesario en caso se use la opcion de migracion destructiva
 sirve para migrar tablas room
 se debe agregar una ruta para el archivo schema en build.gradle*/
+
 abstract class AppDB : RoomDatabase() {
     abstract fun getDao(): AppDAO
     abstract fun getQDao(): QueryDAO

@@ -637,4 +637,5 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             launchFetchs()
         }
     }
+
 }

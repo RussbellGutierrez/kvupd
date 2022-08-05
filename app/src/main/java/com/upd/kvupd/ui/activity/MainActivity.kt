@@ -121,4 +121,5 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
     interface OnMainListener {
         fun changeGPSstate(gps: Boolean)
     }
+
 }

@@ -200,4 +200,5 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
             }
         }
     }
+
 }

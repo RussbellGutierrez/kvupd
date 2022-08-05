@@ -64,4 +64,5 @@ class FotoPWork @WorkerInject constructor(
         p.put("foto", foto)
         return p.toReqBody()
     }
+
 }

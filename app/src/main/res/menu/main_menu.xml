@@ -31,5 +31,4 @@
         android:title="Cerrar aplicacion"
         android:icon="@drawable/apagar"
         app:showAsAction="collapseActionView"/>
-
 </menu>

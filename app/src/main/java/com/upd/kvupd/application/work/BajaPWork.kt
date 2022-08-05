@@ -58,4 +58,5 @@ class BajaPWork @WorkerInject constructor(
         p.put("empresa", CONF.empresa)
         return p.toReqBody()
     }
+
 }

@@ -216,4 +216,5 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
             viewmodel.fetchBajaVendedor(p.toReqBody())
         }
     }
+
 }

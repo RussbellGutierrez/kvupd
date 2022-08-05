@@ -402,4 +402,5 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     interface OnServiceListener {
         fun onClosingActivity(notRegister: Boolean = false)
     }
+
 }

@@ -125,4 +125,5 @@ object QueryConstant {
             "FROM TEncuesta e " +
             "INNER JOIN TEncuestaSeleccionado s on e.id=s.encuesta " +
             "ORDER BY e.pregunta ASC "
+
 }

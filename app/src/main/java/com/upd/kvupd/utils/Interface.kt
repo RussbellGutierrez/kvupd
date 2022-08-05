@@ -6,7 +6,6 @@ import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.ui.adapter.*
 
 object Interface {
-
     lateinit var clienteListener: ClienteAdapter.OnClienteListener
     lateinit var umesListener: UmesAdapter.OnUmesListener
     lateinit var solesListener: SolesAdapter.OnSolesListener

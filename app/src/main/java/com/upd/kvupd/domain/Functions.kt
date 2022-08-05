@@ -49,4 +49,5 @@ interface Functions {
     fun workerperBajaEstado()
     fun workerperRespuesta()
     fun workerperFoto()
+
 }

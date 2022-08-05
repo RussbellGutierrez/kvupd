@@ -142,4 +142,5 @@ interface Repository {
     suspend fun setWebBajaEstados(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebRespuestas(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>>
+
 }

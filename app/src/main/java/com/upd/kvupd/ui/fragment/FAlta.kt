@@ -71,7 +71,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         bind.fabAlta.setOnClickListener {
             showDialog("Advertencia", "¿Desea agregar un alta?") {
                 if (isPOSLOCinitialized() &&
-                        POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
+                    POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
                     viewmodel.addingAlta(POS_LOC)
                 } else {
                     snack("Procesando coordenadas, intente nuevamente")
@@ -107,4 +107,5 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
             adapter.mDiffer.submitList(list)
         }
     }
+
 }

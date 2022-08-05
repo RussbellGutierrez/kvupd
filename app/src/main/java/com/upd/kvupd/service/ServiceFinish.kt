@@ -373,4 +373,5 @@ class ServiceFinish : LifecycleService() {
             repository.deleteIncidencia()
         }
     }
+
 }

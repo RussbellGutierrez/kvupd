@@ -215,4 +215,5 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
             }
         }
     }
+
 }

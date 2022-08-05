@@ -53,13 +53,13 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.workmanager-init"
             tools:node="remove"
             tools:replace="android:authorities"/>
-        
+
         <activity
             android:name="com.upd.kvupd.ui.activity.MainActivity"
             android:exported="true"
@@ -91,7 +91,7 @@
             android:enabled="true"
             tools:targetApi="n"
             android:foregroundServiceType="dataSync"/>
-        
+
         <receiver
             android:name="com.upd.kvupd.application.Receiver"
             android:exported="false">
@@ -106,7 +106,6 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-        
     </application>
 
 </manifest>

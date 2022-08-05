@@ -119,4 +119,5 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
             toast("No se encontro coordenadas")
         }
     }
+
 }

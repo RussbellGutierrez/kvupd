@@ -341,4 +341,5 @@ class DMiniDetalle : DialogFragment() {
             bind.lnrMini.addView(minbind.root)
         }
     }
+
 }

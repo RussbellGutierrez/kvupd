@@ -102,4 +102,5 @@ class BDLogin : BottomSheetDialogFragment() {
         bind.pgrbCargando.setUI("v", launch)
         bind.btnLogin.setUI("e", !launch)
     }
+
 }

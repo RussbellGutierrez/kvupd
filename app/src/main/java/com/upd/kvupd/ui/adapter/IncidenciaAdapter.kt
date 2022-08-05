@@ -71,4 +71,5 @@ class IncidenciaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHol
             bind.txtObs.text = item.observacion
         }
     }
+
 }

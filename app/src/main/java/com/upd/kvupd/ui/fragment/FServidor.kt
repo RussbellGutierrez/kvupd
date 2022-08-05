@@ -567,4 +567,5 @@ class FServidor : Fragment() {
         }
         setTextUI(tmn.size,6)
     }
+
 }

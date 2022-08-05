@@ -50,4 +50,5 @@ object AdapterModule {
 
     @Provides
     fun providerIncidenciaAdapter() = IncidenciaAdapter()
+
 }

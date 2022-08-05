@@ -21,4 +21,5 @@ abstract class BaseApiResponse {
 
     private fun <T> error(errorMessage: String): NetworkRetrofit<T> =
         NetworkRetrofit.Error("Error Api: $errorMessage")
+
 }

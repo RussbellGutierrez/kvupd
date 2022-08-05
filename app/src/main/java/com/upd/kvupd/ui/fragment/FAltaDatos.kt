@@ -373,4 +373,5 @@ class FAltaDatos : Fragment() {
         "ZI" -> 25
         else -> 999
     }
+
 }

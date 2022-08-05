@@ -253,4 +253,5 @@ class HelperNotification @Inject constructor(
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(ENCUESTA_NOTIF, notif.build())
     }
+
 }

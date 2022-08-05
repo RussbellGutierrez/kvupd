@@ -194,4 +194,5 @@ class FAjuste : Fragment() {
         bind.edtImei.setText(imei)
         bind.chkImei.isChecked = true
     }
+
 }

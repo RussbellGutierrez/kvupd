@@ -232,4 +232,5 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             snack("No se encontraron rutas")
         }
     }
+
 }

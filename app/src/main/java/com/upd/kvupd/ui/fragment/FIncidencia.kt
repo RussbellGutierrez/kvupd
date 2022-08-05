@@ -66,4 +66,5 @@ class FIncidencia : Fragment() {
             adapter.mDiffer.submitList(list)
         }
     }
+
 }

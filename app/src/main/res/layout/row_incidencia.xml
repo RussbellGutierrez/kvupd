@@ -69,7 +69,6 @@
                 android:layout_weight="0.9"
                 android:textColor="@color/black"
                 tools:text="Observacion"/>
-
         </LinearLayout>
 
     </LinearLayout>

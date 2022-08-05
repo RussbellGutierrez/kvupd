@@ -194,4 +194,5 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
             2 -> viewmodel.fetchSolesGenerico(p.toReqBody())
         }
     }
+
 }

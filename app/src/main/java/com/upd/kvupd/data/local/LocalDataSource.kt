@@ -325,4 +325,5 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
     suspend fun getServerFoto(estado: String): List<TRespuesta> {
         return qdao.fotoServer(estado)
     }
+
 }

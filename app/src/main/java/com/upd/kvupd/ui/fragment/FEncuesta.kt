@@ -348,7 +348,7 @@ class FEncuesta : Fragment() {
 
                 override fun onResourceCleared(placeholder: Drawable?) {}
             })*/
-            //.into(GlideFileTarget(this,abspath,bind.imgFoto,400,500))
+        //.into(GlideFileTarget(this,abspath,bind.imgFoto,400,500))
     }
 
     private fun dispatchTakePictureIntent() {
@@ -389,4 +389,5 @@ class FEncuesta : Fragment() {
         viewmodel.savingRespuestas(list)
         returnFragment()
     }
+
 }
