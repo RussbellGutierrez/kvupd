@@ -458,6 +458,6 @@
     <fragment
         android:id="@+id/FIncidencia"
         android:name="com.upd.kvupd.ui.fragment.FIncidencia"
-        android:label="FIncidencia"
+        android:label="Incidencia"
         tools:layout="@layout/fragment_f_incidencia" />
 </navigation>

@@ -315,18 +315,11 @@ class FEncuesta : Fragment() {
         val bitmap = BitmapFactory.decodeFile(abspath)
         bind.txtRuta.setUI("v", true)
         bind.txtRuta.text = abspath
-        //show on ImageView
         Glide
             .with(requireContext())
             .load(bitmap)
-            .override(400, 500)
-            .centerCrop()
-            .into(bind.imgFoto)
-        //save on smartphone
-        /*Glide
-            .with(requireContext())
-            .load(bitmap)
-            .centerCrop()
+            .override(500, 600)
+            .fitCenter()
             .into(object : CustomViewTarget<ImageView, Drawable>(bind.imgFoto) {
                 override fun onLoadFailed(errorDrawable: Drawable?) {}
 
@@ -337,18 +330,17 @@ class FEncuesta : Fragment() {
                     try {
                         bind.imgFoto.setImageDrawable(resource)
                         val out = FileOutputStream(abspath)
-                        resource.toBitmap().compress(Bitmap.CompressFormat.JPEG, 70, out)
+                        resource.toBitmap().compress(Bitmap.CompressFormat.JPEG, 80, out)
                         out.flush()
                         out.close()
-                        toast("Photo saved!")
+                        snack("Foto almacenada")
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
                 }
 
                 override fun onResourceCleared(placeholder: Drawable?) {}
-            })*/
-        //.into(GlideFileTarget(this,abspath,bind.imgFoto,400,500))
+            })
     }
 
     private fun dispatchTakePictureIntent() {
