@@ -272,10 +272,11 @@ class FServidor : Fragment() {
                     y.forEach { j ->
                         foto = j
                         val baos = ByteArrayOutputStream()
+                        Log.w(_tag,"Ruta foto ${j.rutafoto}")
                         val bm = BitmapFactory.decodeFile(j.rutafoto)
                         bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
                         val byteArray = baos.toByteArray()
-                        val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                        val pic = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
                         val p = JSONObject()
                         p.put("empresa", CONF.empresa)
@@ -283,7 +284,7 @@ class FServidor : Fragment() {
                         p.put("cliente", j.cliente)
                         p.put("encuesta", j.encuesta)
                         p.put("sucursal", CONF.sucursal)
-                        p.put("foto", foto)
+                        p.put("foto", pic)
                         Log.d(_tag,"Fot: $p")
                         viewmodel.webFoto(p.toReqBody())
                     }
@@ -377,6 +378,7 @@ class FServidor : Fragment() {
                     is NetworkRetrofit.Success -> {
                         respuesta.estado = "Enviado"
                         viewmodel.updRespuesta(respuesta)
+                        Log.d(_tag,"Respuesta enviada $respuesta")
                     }
                     is NetworkRetrofit.Error -> Log.e(_tag,"Respuesta-> ${y.message} $respuesta")
                 }
@@ -389,7 +391,8 @@ class FServidor : Fragment() {
                 when(y) {
                     is NetworkRetrofit.Success -> {
                         foto.estado = "Enviado"
-                        viewmodel.updFoto(respuesta)
+                        viewmodel.updFoto(foto)
+                        Log.d(_tag,"Foto enviada $foto")
                     }
                     is NetworkRetrofit.Error -> Log.e(_tag,"Foto-> ${y.message} $foto")
                 }

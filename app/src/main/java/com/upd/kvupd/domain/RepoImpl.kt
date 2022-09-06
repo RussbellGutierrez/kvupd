@@ -21,7 +21,7 @@ class RepoImpl @Inject constructor(
     private val webDataSource: WebDataSource,
     private val localDataSource: LocalDataSource
 ) : BaseApiResponse(), Repository {
-    //Room
+
     override fun getFlowConfig(): Flow<List<TConfiguracion>> {
         return localDataSource.getObsConfiguracion().distinctUntilChanged()
     }

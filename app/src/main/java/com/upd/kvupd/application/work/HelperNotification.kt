@@ -38,7 +38,7 @@ class HelperNotification @Inject constructor(
     private fun createPendingIntent(intent: Intent): PendingIntent {
         val stackBuilder = TaskStackBuilder.create(ctx)
         stackBuilder.addNextIntentWithParentStack(intent)
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
     fun setupNotif(): Notification {

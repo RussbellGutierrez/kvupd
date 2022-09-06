@@ -74,7 +74,8 @@ data class Respuesta(
     val encuesta: Int,
     val pregunta: Int,
     val respuesta: String,
-    val ruta: String
+    val ruta: String,
+    val foto: Int
 )
 
 data class RespuestaCliente(

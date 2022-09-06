@@ -7,13 +7,11 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.telephony.TelephonyManager
-import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.work.*
 import com.google.android.gms.maps.GoogleMap

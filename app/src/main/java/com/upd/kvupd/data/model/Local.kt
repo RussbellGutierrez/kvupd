@@ -213,6 +213,7 @@ data class TRespuesta(
     val pregunta: Int,
     val respuesta: String,
     val rutafoto: String,
+    val foto: Int,
     var estado: String
 )
 

@@ -26,7 +26,6 @@ object Constant {
 
     var IS_SUNDAY = false
     var IS_CONFIG_FAILED = false
-    var TAP_GPS_ONCE = false
 
     var IMEI = ""
     var PROCEDE = ""

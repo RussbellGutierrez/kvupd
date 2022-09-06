@@ -54,7 +54,7 @@ object QueryConstant {
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND respuesta != '' ORDER BY fecha ASC"
 
     const val GET_FOTO_SERVER = "SELECT * FROM TRespuesta " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND respuesta = '' ORDER BY fecha ASC"
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND foto = 1 ORDER BY fecha ASC"
 
     const val GET_RESPUESTA_CLIENTE = "" +
             "SELECT encuesta " +
