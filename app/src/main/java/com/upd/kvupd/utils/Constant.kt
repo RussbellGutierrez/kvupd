@@ -143,5 +143,4 @@ object Constant {
     //const val VOUCHER = "empleado/movil/recibo/foto"
     //const val DATOVOUCHER = "empleado/movil/recibo/nuevo"
     //const val COMPRAS = "empleado/movil/reporte/cliente/venta"
-
 }

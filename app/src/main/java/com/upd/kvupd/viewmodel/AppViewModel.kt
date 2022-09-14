@@ -814,5 +814,4 @@ class AppViewModel @ViewModelInject constructor(
             repository.deleteIncidencia()
         }
     }
-
 }

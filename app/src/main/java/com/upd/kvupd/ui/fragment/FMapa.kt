@@ -328,4 +328,5 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
+
 }

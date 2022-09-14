@@ -155,5 +155,4 @@ interface QueryDAO {
 
     @Query(GET_FOTO_SERVER)
     suspend fun fotoServer(estado: String): List<TRespuesta>
-
 }

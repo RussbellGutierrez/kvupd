@@ -640,5 +640,4 @@ class RepoImpl @Inject constructor(
             emit(safeApiCall { webDataSource.setServerFotos(body) })
         }.flowOn(Dispatchers.IO)
     }
-
 }

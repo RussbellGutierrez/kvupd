@@ -89,4 +89,5 @@ class InfoWindow(private val inflater: LayoutInflater) :
         bind.txtLongV.text = marker.position.longitude.toString()
         bind.txtLatiV.text = marker.position.latitude.toString()
     }
+
 }
