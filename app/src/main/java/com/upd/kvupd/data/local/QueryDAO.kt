@@ -54,7 +54,7 @@ interface QueryDAO {
     fun getLastLocation(): Flow<List<TSeguimiento>>
 
     @Query(GET_MARKERS)
-    fun getMarkers(): Flow<List<MarkerMap>>
+    fun getMarkers(observacion: String): Flow<List<MarkerMap>>
 
     @Query(GET_ALTAS)
     fun getAltas(): Flow<List<TAlta>>
@@ -105,13 +105,13 @@ interface QueryDAO {
     suspend fun getEncuesta(): List<TEncuesta>
 
     @Query(GET_DATA_CLIENTE)
-    suspend fun getDataCliente(cliente: String): List<DataCliente>
+    suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente>
 
     @Query(GET_BAJA_SPECIFIC)
     suspend fun getBajaCliente(cliente: String): TBaja?
 
     @Query(GET_DATA_ALTA)
-    suspend fun getDataAlta(alta: String): DataCliente
+    suspend fun getDataAlta(alta: String): DataAlta
 
     @Query(GET_ALTADATOS)
     suspend fun getAltaDatoSpecific(alta: String): TADatos?

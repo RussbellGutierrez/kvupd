@@ -30,6 +30,7 @@ import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.ui.dialog.DBuscar
+import com.upd.kvupd.ui.dialog.DFiltroObs
 import com.upd.kvupd.ui.dialog.DProgress
 import com.upd.kvupd.utils.Constant.DL_WIDTH
 import com.upd.kvupd.utils.Constant.D_HEIGHT
@@ -97,6 +98,11 @@ fun Fragment.search(list: ArrayList<String>) {
     )
     val dlg = DBuscar()
     dlg.arguments = bundle
+    dlg.show(parentFragmentManager, "dialog")
+}
+
+fun Fragment.filterObs() {
+    val dlg = DFiltroObs()
     dlg.show(parentFragmentManager, "dialog")
 }
 

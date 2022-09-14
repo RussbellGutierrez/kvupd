@@ -45,6 +45,18 @@
             app:tint="@color/primaryDarkColor"
             app:useCompatPadding="true" />
 
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_filtro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:chipBackgroundColor="@color/dodgerblue"
+            tools:text="TEXTO QUE INDICA EL FILTRO"/>
+
     </RelativeLayout>
 
 </RelativeLayout>

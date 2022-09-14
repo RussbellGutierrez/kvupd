@@ -12,7 +12,7 @@ interface Repository {
     fun getFlowSession(): Flow<TSesion>
     fun getFlowRowCliente(): Flow<List<RowCliente>>
     fun getFlowLocation(): Flow<List<TSeguimiento>>
-    fun getFlowMarker(): Flow<List<MarkerMap>>
+    fun getFlowMarker(observacion: String): Flow<List<MarkerMap>>
     fun getFlowAltas(): Flow<List<TAlta>>
     fun getFlowDistritos(): Flow<List<Combo>>
     fun getFlowNegocios(): Flow<List<Combo>>
@@ -30,8 +30,8 @@ interface Repository {
     suspend fun getRutas(): List<Ruta>
     suspend fun getListEncuestas(): List<Cabecera>
     suspend fun getPreguntas(): List<TEncuesta>
-    suspend fun getClienteDetail(cliente: String): List<DataCliente>
-    suspend fun getDataAlta(alta: String): DataCliente
+    suspend fun getClienteDetail(cliente: String, observacion: String): List<DataCliente>
+    suspend fun getDataAlta(alta: String): DataAlta
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
     suspend fun getBajaSuperSpecific(codigo: String, fecha: String): TBajaSuper
     suspend fun isClienteBaja(cliente: String): Boolean

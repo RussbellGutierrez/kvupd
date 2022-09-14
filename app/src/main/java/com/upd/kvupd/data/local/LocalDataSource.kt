@@ -22,8 +22,8 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getLastLocation()
     }
 
-    fun getMarkers(): Flow<List<MarkerMap>> {
-        return qdao.getMarkers()
+    fun getMarkers(observacion: String): Flow<List<MarkerMap>> {
+        return qdao.getMarkers(observacion)
     }
 
     fun getAltas(): Flow<List<TAlta>> {
@@ -90,11 +90,11 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getEncuesta()
     }
 
-    suspend fun getDataCliente(cliente: String): List<DataCliente> {
-        return qdao.getDataCliente(cliente)
+    suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente> {
+        return qdao.getDataCliente(cliente, observacion)
     }
 
-    suspend fun getDataAlta(alta: String): DataCliente {
+    suspend fun getDataAlta(alta: String): DataAlta {
         return qdao.getDataAlta(alta)
     }
 

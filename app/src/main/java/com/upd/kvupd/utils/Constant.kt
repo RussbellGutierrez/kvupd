@@ -2,11 +2,14 @@ package com.upd.kvupd.utils
 
 import android.location.Location
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.upd.kvupd.data.model.DataAlta
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TConfiguracion
 
 object Constant {
+
+    var FILTRO_OBS = 9
 
     const val M_PEDIDO = "Hizo pedido"
     const val M_CERRADO = "Puesto cerrado"
@@ -35,6 +38,7 @@ object Constant {
     lateinit var GPS_LOC: Location
     lateinit var CONF: TConfiguracion
     lateinit var IWAM: DataCliente
+    lateinit var IWDA: DataAlta
     lateinit var IWP: Pedimap
 
     fun isPOSLOCinitialized(): Boolean = ::POS_LOC.isInitialized

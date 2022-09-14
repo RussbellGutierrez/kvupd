@@ -38,8 +38,8 @@ class RepoImpl @Inject constructor(
         return localDataSource.getLastLocation().distinctUntilChanged()
     }
 
-    override fun getFlowMarker(): Flow<List<MarkerMap>> {
-        return localDataSource.getMarkers().distinctUntilChanged()
+    override fun getFlowMarker(observacion: String): Flow<List<MarkerMap>> {
+        return localDataSource.getMarkers(observacion).distinctUntilChanged()
     }
 
     override fun getFlowAltas(): Flow<List<TAlta>> {
@@ -106,11 +106,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getEncuesta()
     }
 
-    override suspend fun getClienteDetail(cliente: String): List<DataCliente> {
-        return localDataSource.getDataCliente(cliente)
+    override suspend fun getClienteDetail(cliente: String, observacion: String): List<DataCliente> {
+        return localDataSource.getDataCliente(cliente, observacion)
     }
 
-    override suspend fun getDataAlta(alta: String): DataCliente {
+    override suspend fun getDataAlta(alta: String): DataAlta {
         return localDataSource.getDataAlta(alta)
     }
 

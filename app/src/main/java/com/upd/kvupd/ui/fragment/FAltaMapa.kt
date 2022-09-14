@@ -24,7 +24,8 @@ import com.upd.kvupd.databinding.FragmentFAltaMapaBinding
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.GPS_LOC
-import com.upd.kvupd.utils.Constant.IWAM
+import com.upd.kvupd.utils.Constant.IWDA
+import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,6 +53,11 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         location = GPS_LOC
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PROCEDE = "MapaAlta"
     }
 
     override fun onCreateView(
@@ -88,7 +94,7 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
 
         viewmodel.altamark.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                IWAM = y
+                IWDA = y
                 movingAndShowing()
             }
         }

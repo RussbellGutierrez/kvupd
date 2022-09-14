@@ -29,6 +29,16 @@ data class DataCliente(
     @ColumnInfo(name = "domicli") val domicilio: String,
     @ColumnInfo(name = "ruta") val ruta: Int,
     @ColumnInfo(name = "negocio") val negocio: String,
+    @ColumnInfo(name = "telefono") val telefono: String,
+    @ColumnInfo(name = "observacion") val observacion: Int
+)
+
+data class DataAlta(
+    @ColumnInfo(name = "idcliente") val id: Int,
+    @ColumnInfo(name = "nomcli") val nombre: String,
+    @ColumnInfo(name = "domicli") val domicilio: String,
+    @ColumnInfo(name = "ruta") val ruta: Int,
+    @ColumnInfo(name = "negocio") val negocio: String,
     @ColumnInfo(name = "telefono") val telefono: String
 )
 

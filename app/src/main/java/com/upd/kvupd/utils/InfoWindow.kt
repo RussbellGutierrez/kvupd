@@ -6,6 +6,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.databinding.InfoWindowModelBinding
 import com.upd.kvupd.utils.Constant.IWAM
+import com.upd.kvupd.utils.Constant.IWDA
 import com.upd.kvupd.utils.Constant.IWP
 import com.upd.kvupd.utils.Constant.M_ALTA
 import com.upd.kvupd.utils.Constant.M_CERRADO
@@ -15,6 +16,7 @@ import com.upd.kvupd.utils.Constant.M_NOEXISTE
 import com.upd.kvupd.utils.Constant.M_OCUPADO
 import com.upd.kvupd.utils.Constant.M_PEDIDO
 import com.upd.kvupd.utils.Constant.M_PRODUCTO
+import com.upd.kvupd.utils.Constant.PROCEDE
 
 class InfoWindow(private val inflater: LayoutInflater) :
     InfoWindowAdapter {
@@ -36,13 +38,9 @@ class InfoWindow(private val inflater: LayoutInflater) :
     }
 
     private fun setData(marker: Marker) {
+        commonParams()
         bind.lnrCliente.setUI("v", true)
         bind.lnrVendedor.setUI("v", false)
-        val cliente = "${IWAM.id} - ${IWAM.nombre}"
-        bind.txtCliente.text = cliente.trim()
-        bind.txtDomicilio.text = IWAM.domicilio.trim()
-        bind.txtNegocio.text = IWAM.negocio.trim()
-        bind.txtTelefono.text = IWAM.telefono.trim()
         bind.txtLongitud.text = marker.position.longitude.toString()
         bind.txtLatitud.text = marker.position.latitude.toString()
         if (marker.title != "9") {
@@ -58,6 +56,25 @@ class InfoWindow(private val inflater: LayoutInflater) :
                 else -> M_ALTA
             }
             bind.txtMotivo.text = motivo
+        }
+    }
+
+    private fun commonParams() {
+        when (PROCEDE) {
+            "Mapa" -> {
+                val cliente = "${IWAM.id} - ${IWAM.nombre}"
+                bind.txtCliente.text = cliente.trim()
+                bind.txtDomicilio.text = IWAM.domicilio.trim()
+                bind.txtNegocio.text = IWAM.negocio.trim()
+                bind.txtTelefono.text = IWAM.telefono.trim()
+            }
+            "MapaAlta" -> {
+                val cliente = "${IWDA.id} - ${IWDA.nombre}"
+                bind.txtCliente.text = cliente.trim()
+                bind.txtDomicilio.text = IWDA.domicilio.trim()
+                bind.txtNegocio.text = IWDA.negocio.trim()
+                bind.txtTelefono.text = IWDA.telefono.trim()
+            }
         }
     }
 

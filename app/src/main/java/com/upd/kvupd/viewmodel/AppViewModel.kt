@@ -39,6 +39,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _filtro: MutableLiveData<Event<Int>> = MutableLiveData()
     val filtro: LiveData<Event<Int>> = _filtro
 
+    private val _filtromark: MutableLiveData<Event<Int>> = MutableLiveData()
+    val filtromark: LiveData<Event<Int>> = _filtromark
+
     private val _fecha: MutableLiveData<Event<String>> = MutableLiveData()
     val fecha: LiveData<Event<String>> = _fecha
 
@@ -54,8 +57,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _detail: MutableLiveData<Event<List<DataCliente>>> = MutableLiveData()
     val detail: LiveData<Event<List<DataCliente>>> = _detail
 
-    private val _altamark: MutableLiveData<Event<DataCliente>> = MutableLiveData()
-    val altamark: LiveData<Event<DataCliente>> = _altamark
+    private val _altamark: MutableLiveData<Event<DataAlta>> = MutableLiveData()
+    val altamark: LiveData<Event<DataAlta>> = _altamark
 
     private val _bajasuperspecif: MutableLiveData<Event<TBajaSuper>> = MutableLiveData()
     val bajasuperspecif: LiveData<Event<TBajaSuper>> = _bajasuperspecif
@@ -205,9 +208,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _respuesta: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val respuesta: LiveData<Event<Boolean>> = _respuesta
 
-    fun markerMap() {
+    fun markerMap(observacion: Int) {
         viewModelScope.launch {
-            repository.getFlowMarker().collect {
+            repository.getFlowMarker(observacion.toString()).collect {
                 _marker.value = Event(it)
             }
         }
@@ -468,6 +471,10 @@ class AppViewModel @ViewModelInject constructor(
         _filtro.value = Event(filtro)
     }
 
+    fun filterMarkerObs(filtro: Int) {
+        _filtromark.value = Event(filtro)
+    }
+
     fun setClienteSelect(cliente: String) {
         _climap.value = Event(cliente)
     }
@@ -476,9 +483,9 @@ class AppViewModel @ViewModelInject constructor(
         _vendedor.value = Event(list)
     }
 
-    fun getClientDet(cliente: String) {
+    fun getClientDet(cliente: String, observacion: Int) {
         viewModelScope.launch {
-            val result = repository.getClienteDetail(cliente)
+            val result = repository.getClienteDetail(cliente, observacion.toString())
             _detail.value = Event(result)
         }
     }

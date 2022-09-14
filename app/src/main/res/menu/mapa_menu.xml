@@ -13,4 +13,9 @@
         android:title="Busqueda por voz"
         android:icon="@drawable/microfono"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/filtro"
+        android:title="Filtro clientes"
+        android:icon="@drawable/filtro"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -29,6 +30,7 @@ import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFMapaBinding
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWAM
 import com.upd.kvupd.utils.Constant.PROCEDE
@@ -60,6 +62,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         location = GPS_LOC
+        FILTRO_OBS = 9
     }
 
     override fun onResume() {
@@ -77,6 +80,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
         }
@@ -113,6 +117,12 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 showMarker(y)
             }
         }
+        viewmodel.filtromark.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                enableChip()
+                viewmodel.markerMap(y)
+            }
+        }
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
@@ -125,8 +135,9 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.lista -> consume { viewmodel.getClientDet("0") }
+        R.id.lista -> consume { viewmodel.getClientDet("0",9) }
         R.id.voz -> consume { searchVoice() }
+        R.id.filtro -> consume { filterObs() }
         android.R.id.home -> consume {
             when (CONF.tipo) {
                 "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
@@ -148,14 +159,14 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 setOnInfoWindowLongClickListener(this@FMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
-            viewmodel.markerMap()
+            viewmodel.markerMap(9) //Observacion 9 se usa para obtener todos los marcadores
             moveCamera(location)
         }
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
         mclk = p0
-        viewmodel.getClientDet(mclk.snippet!!)
+        viewmodel.getClientDet(mclk.snippet!!,9)
         return true
     }
 
@@ -193,7 +204,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         if (cliente != null) {
             cliente.let {
                 moveCamera(it.position.toLocation())
-                viewmodel.getClientDet(it.snippet!!)
+                viewmodel.getClientDet(it.snippet!!,9)
                 mclk = it
             }
         } else {
@@ -225,11 +236,35 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         }
     }
 
+    private fun enableChip() {
+        var msg = ""
+        if (FILTRO_OBS == 9) {
+            bind.chipFiltro.setUI("v", false)
+        } else {
+            bind.chipFiltro.setUI("v", true)
+        }
+        when(FILTRO_OBS) {
+            1 -> msg = "Clientes puesto cerrado"
+            2 -> msg = "Clientes con producto"
+            3 -> msg = "Clientes sin dinero"
+            4 -> msg = "Encargados ausentes"
+            6 -> msg = "Clientess ocupados"
+        }
+        bind.chipFiltro.text = msg
+    }
+
     private fun searchList(list: List<DataCliente>) {
         val dt = arrayListOf<String>()
         list.forEach { i ->
             val cliente = "${i.id} - ${i.nombre}"
-            dt.add(cliente)
+            if (FILTRO_OBS != 9) {
+
+                if (FILTRO_OBS == i.observacion) {
+                    dt.add(cliente)
+                }
+            }else {
+                dt.add(cliente)
+            }
         }
         search(dt)
     }

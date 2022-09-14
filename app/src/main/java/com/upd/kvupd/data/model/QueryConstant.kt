@@ -97,12 +97,16 @@ object QueryConstant {
             "FROM TClientes c " +
             "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
+            "WHERE ((:observacion <> '9' AND v.observacion = :observacion) OR :observacion = '9') " +
             "ORDER BY c.idcliente ASC "
 
     const val GET_DATA_CLIENTE = "" +
-            "SELECT idcliente, nomcli, domicli, ruta, negocio, telefono " +
-            "FROM TClientes " +
-            "WHERE ((:cliente <> '0' AND idcliente = :cliente) OR :cliente = '0') "
+            "SELECT c.idcliente, c.nomcli, c.domicli, c.ruta, c.negocio, c.telefono,IFNULL(v.observacion,9) as observacion " +
+            "FROM TClientes c " +
+            "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
+            "WHERE ((:cliente <> '0' AND c.idcliente = :cliente) OR :cliente = '0') " +
+            "AND ((:observacion <> '9' AND v.observacion = :observacion) OR :observacion = '9') " +
+            "ORDER BY c.idcliente ASC "
 
     const val GET_DATA_ALTA = "" +
             "SELECT a.idaux as idcliente, IFNULL(d.razon,'') ||' '|| IFNULL(d.nombre||' '||d.appaterno||' '||d.apmaterno,'') as nomcli, " +
