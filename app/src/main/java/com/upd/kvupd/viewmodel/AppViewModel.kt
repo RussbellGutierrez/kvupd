@@ -544,6 +544,9 @@ class AppViewModel @ViewModelInject constructor(
         functions.executeService("setup", false)
     }
 
+    fun filterListCliente(list: List<DataCliente>) =
+        functions.filterListCliente(list)
+
     fun fecha(opt: Int) =
         Calendar.getInstance().time.dateToday(opt)
 

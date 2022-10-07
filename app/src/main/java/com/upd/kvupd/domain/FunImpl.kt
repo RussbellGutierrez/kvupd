@@ -32,6 +32,7 @@ import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.PERIODIC_WORK
 import com.upd.kvupd.utils.Constant.WP_ALTA
 import com.upd.kvupd.utils.Constant.WP_ALTADATO
@@ -182,6 +183,22 @@ class FunImpl @Inject constructor(
         val calendar = Calendar.getInstance()
         val day = calendar[Calendar.DAY_OF_WEEK]
         return day == Calendar.SUNDAY
+    }
+
+    override fun filterListCliente(list: List<DataCliente>): MutableList<String> {
+        val dt = mutableListOf<String>()
+        list.forEach { i ->
+            val cliente = "${i.id} - ${i.nombre}"
+            if (FILTRO_OBS != 9) {
+
+                if (FILTRO_OBS == i.observacion) {
+                    dt.add(cliente)
+                }
+            }else {
+                dt.add(cliente)
+            }
+        }
+        return dt
     }
 
     override fun mobileInternetState() {

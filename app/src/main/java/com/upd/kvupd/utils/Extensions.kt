@@ -92,7 +92,7 @@ fun Context.isGPSDisabled(): Boolean {
 fun Date.dateToday(formato: Int) =
     this.timeToText(formato)
 
-fun Fragment.search(list: ArrayList<String>) {
+fun Fragment.search(list: MutableList<String>) {
     val bundle = bundleOf(
         "lista" to list
     )
@@ -140,8 +140,9 @@ fun Fragment.progress(mensaje: String) {
     dlg.show(parentFragmentManager,"dialog")
 }
 
-fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
-    val icon = when (titulo.lowercase()) {
+fun Fragment.showDialog(titulo: String, mensaje: String, showNegativo: Boolean = false, T: () -> Unit?) {
+    var positive = "Ok"
+    val icon: Int = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia
         "correcto" -> R.drawable.correcto
         "error" -> R.drawable.error
@@ -150,39 +151,46 @@ fun Fragment.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
     this.parentFragmentManager.fragments.takeIf { it.isNotEmpty() }?.map {
         (it as? DialogFragment)?.dismiss()
     }
+    if (showNegativo) {
+        positive = "De acuerdo"
+    }
     MaterialDialog(this.requireContext()).show {
         icon(icon)
         title(null, titulo.uppercase())
         message(null, mensaje)
-        positiveButton(null, "Ok") {
+        positiveButton(null, positive) {
             dismiss()
             T()
         }
-        if (titulo == "advertencia") {
+        if (showNegativo) {
             negativeButton(null, "Cancelar")
         }
     }
 }
 
-fun Activity.showDialog(titulo: String, mensaje: String, T: () -> Unit?) {
-    val icon = when (titulo.lowercase()) {
+fun Activity.showDialog(titulo: String, mensaje: String, showNegativo: Boolean = false, T: () -> Unit?) {
+    var positive = "Ok"
+    val icon: Int = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia
         "correcto" -> R.drawable.correcto
         "error" -> R.drawable.error
         else -> R.drawable.informacion
     }
-
+    if (showNegativo) {
+        positive = "De acuerdo"
+    }
     MaterialDialog(this).show {
         icon(icon)
         title(null, titulo.uppercase())
         message(null, mensaje)
         cancelable(false)
-        positiveButton(null, "Ok") {
+        positiveButton(null, positive) {
             dismiss()
             T()
         }
-        if (titulo == "advertencia")
+        if (showNegativo) {
             negativeButton(null, "Cancelar")
+        }
     }
 }
 

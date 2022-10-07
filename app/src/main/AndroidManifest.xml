@@ -106,6 +106,7 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

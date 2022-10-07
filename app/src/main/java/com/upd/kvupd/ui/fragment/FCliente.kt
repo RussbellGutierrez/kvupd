@@ -147,7 +147,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
             val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
             bind.searchView.setQuery(codigo, true)
         } else {
-            snack("Error procesando codigo")
+            snack("Error procesando busqueda")
         }
     }
 

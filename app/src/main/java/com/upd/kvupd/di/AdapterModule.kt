@@ -18,9 +18,8 @@ object AdapterModule {
     @Provides
     fun prodiverClienteAdapter(
         @ApplicationContext ctx: Context,
-        functions: Functions,
         repository: Repository
-    ) = ClienteAdapter(ctx, functions, repository)
+    ) = ClienteAdapter(ctx, repository)
 
     @Provides
     fun prodiverUmeAdapter() = UmesAdapter()

@@ -29,7 +29,6 @@ import javax.inject.Inject
 
 class ClienteAdapter @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val functions: Functions,
     private val repository: Repository
 ) : RecyclerView.Adapter<BaseViewHolder<*>>() {
 

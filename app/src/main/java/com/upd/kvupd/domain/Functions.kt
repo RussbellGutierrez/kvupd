@@ -17,6 +17,7 @@ interface Functions {
     fun isConnected(): Boolean
     fun deleteFotos()
     fun isSunday(): Boolean
+    fun filterListCliente(list: List<DataCliente>): MutableList<String>
     fun mobileInternetState()
     fun enableBroadcastGPS()
     fun saveSystemActions(tipo: String, msg: String?): TIncidencia?

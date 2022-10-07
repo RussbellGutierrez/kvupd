@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -254,19 +253,8 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     private fun searchList(list: List<DataCliente>) {
-        val dt = arrayListOf<String>()
-        list.forEach { i ->
-            val cliente = "${i.id} - ${i.nombre}"
-            if (FILTRO_OBS != 9) {
-
-                if (FILTRO_OBS == i.observacion) {
-                    dt.add(cliente)
-                }
-            }else {
-                dt.add(cliente)
-            }
-        }
-        search(dt)
+        val nl = viewmodel.filterListCliente(list)
+        search(nl)
     }
 
     private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
