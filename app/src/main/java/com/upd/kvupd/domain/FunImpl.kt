@@ -12,6 +12,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.telephony.TelephonyManager
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.work.*
 import com.google.android.gms.maps.GoogleMap
@@ -33,6 +34,8 @@ import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.FILTRO_OBS
+import com.upd.kvupd.utils.Constant.LOOPING
+import com.upd.kvupd.utils.Constant.LOOP_CONFIG
 import com.upd.kvupd.utils.Constant.PERIODIC_WORK
 import com.upd.kvupd.utils.Constant.WP_ALTA
 import com.upd.kvupd.utils.Constant.WP_ALTADATO
@@ -60,7 +63,6 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
 
 class FunImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
@@ -107,7 +109,7 @@ class FunImpl @Inject constructor(
         return File(path).exists()
     }
 
-    override fun parseQRtoIMEI(add: Boolean): String {
+    override fun addIPtoQRIMEI() {
         val bitmap = getQR()
         val campo = StringBuilder()
         val qrRecognizer = BarcodeDetector.Builder(ctx)
@@ -117,6 +119,40 @@ class FunImpl @Inject constructor(
         val result = qrRecognizer.detect(frame)
         for (i in 0 until result.size()) {
             campo.append(result.valueAt(i).rawValue)
+        }
+        if (!campo.toString().contains("-")) {
+            val newQr = "191.98.177.57-$campo"
+            val bm = generateQR(newQr)
+            saveQR(bm)
+        }
+    }
+
+    override fun parseQRtoIP(): String {
+        val bitmap = getQR()
+        val campo = StringBuilder()
+        val qrRecognizer = BarcodeDetector.Builder(ctx)
+            .setBarcodeFormats(Barcode.QR_CODE)
+            .build()
+        val frame = Frame.Builder().setBitmap(bitmap).build()
+        val result = qrRecognizer.detect(frame)
+        for (i in 0 until result.size()) {
+            val ip = result.valueAt(i).rawValue.split("-")[0]
+            campo.append(ip)
+        }
+        return campo.toString()
+    }
+
+    override fun parseQRtoIMEI(add: Boolean): String {
+        val bitmap = getQR()
+        val campo = StringBuilder()
+        val qrRecognizer = BarcodeDetector.Builder(ctx)
+            .setBarcodeFormats(Barcode.QR_CODE)
+            .build()
+        val frame = Frame.Builder().setBitmap(bitmap).build()
+        val result = qrRecognizer.detect(frame)
+        for (i in 0 until result.size()) {
+            val imei = result.valueAt(i).rawValue.split("-")[1]
+            campo.append(imei)
         }
         return if (add) {
             "$campo-V"
@@ -194,7 +230,7 @@ class FunImpl @Inject constructor(
                 if (FILTRO_OBS == i.observacion) {
                     dt.add(cliente)
                 }
-            }else {
+            } else {
                 dt.add(cliente)
             }
         }
@@ -203,16 +239,17 @@ class FunImpl @Inject constructor(
 
     override fun mobileInternetState() {
         val connectivityManager = ctx.getSystemService(ConnectivityManager::class.java)
-        connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+        connectivityManager.registerDefaultNetworkCallback(object :
+            ConnectivityManager.NetworkCallback() {
 
-            override fun onLost(network : Network) {
-                val item = saveSystemActions("INTERNET","Servicio internet desconectado")
+            override fun onLost(network: Network) {
+                val item = saveSystemActions("INTERNET", "Servicio internet desconectado")
                 if (item != null) {
                     servworkListener?.savingSystemReport(item)
                 }
             }
 
-            override fun onCapabilitiesChanged(network : Network, nc : NetworkCapabilities) {
+            override fun onCapabilitiesChanged(network: Network, nc: NetworkCapabilities) {
                 val st = when {
                     nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
                     nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
@@ -239,7 +276,7 @@ class FunImpl @Inject constructor(
                     }
                     else -> "UNKNOW"
                 }
-                val item = saveSystemActions("INTERNET","Internet conectado $st")
+                val item = saveSystemActions("INTERNET", "Internet conectado $st")
                 if (item != null) {
                     servworkListener?.savingSystemReport(item)
                 }
@@ -253,7 +290,7 @@ class FunImpl @Inject constructor(
     }
 
     override fun saveSystemActions(tipo: String, msg: String?): TIncidencia? {
-        val obs = when(tipo) {
+        val obs = when (tipo) {
             "GPS" -> if (ctx.isGPSDisabled()) "Ubicacion GPS desactivada" else "Ubicacion GPS activada"
             "TIME" -> "Fecha y hora fueron modificados"
             "INTERNET" -> msg ?: "Nothing"
@@ -261,7 +298,7 @@ class FunImpl @Inject constructor(
         }
         val fecha = Calendar.getInstance().time.dateToday(4)
         if (isCONFinitialized()) {
-            return TIncidencia(tipo,CONF.codigo,obs,fecha)
+            return TIncidencia(tipo, CONF.codigo, obs, fecha)
         }
         return null
     }
@@ -358,6 +395,8 @@ class FunImpl @Inject constructor(
     }
 
     override fun launchWorkers() {
+        LOOPING = true
+        LOOP_CONFIG = 0
         workManager
             .beginWith(workerConfiguracion())
             .then(listOf(workerUser(), workerDistritos(), workerNegocios(), workerRutas()))
@@ -372,7 +411,7 @@ class FunImpl @Inject constructor(
     }
 
     override fun chooseCloseWorker(work: String) {
-        when(work) {
+        when (work) {
             "setup" -> workManager.cancelUniqueWork(W_SETUP)
             "finish" -> workManager.cancelUniqueWork(W_FINISH)
             "periodic" -> workManager.cancelAllWorkByTag(PERIODIC_WORK)

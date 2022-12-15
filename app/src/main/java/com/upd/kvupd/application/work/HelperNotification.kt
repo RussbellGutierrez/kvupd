@@ -70,6 +70,30 @@ class HelperNotification @Inject constructor(
         return builder.build()
     }
 
+    fun configNotifLaunch() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CONFIG_CHANNEL,
+                "Configuracion",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            channel.description = "Notificacion para configuracion"
+            val notificationManager =
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder = NotificationCompat.Builder(ctx, CONFIG_CHANNEL)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setContentTitle("Download")
+            .setContentText("Configuracion para el equipo")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setProgress(0, 0, true)
+            .setOngoing(true)
+        val manager = NotificationManagerCompat.from(ctx)
+        manager.notify(CONFIG_NOTIF, builder.build())
+    }
+
     fun configNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, CONFIG_CHANNEL)

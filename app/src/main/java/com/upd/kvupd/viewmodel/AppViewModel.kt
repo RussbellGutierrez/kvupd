@@ -27,6 +27,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _tag by lazy { AppViewModel::class.java.simpleName }
 
     //  MutableLiveData with Event trigger only once
+    private val _ipaux: MutableLiveData<Event<String>> = MutableLiveData()
+    val ipaux: LiveData<Event<String>> = _ipaux
+
     private val _sincro: MutableLiveData<Event<Int>> = MutableLiveData()
     val sincro: LiveData<Event<Int>> = _sincro
 
@@ -87,7 +90,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _pedidos: MutableLiveData<Event<NetworkRetrofit<JPedido>>> = MutableLiveData()
     val pedidos: LiveData<Event<NetworkRetrofit<JPedido>>> = _pedidos
 
-    private val _visicooler: MutableLiveData<Event<NetworkRetrofit<JVisicooler>>> = MutableLiveData()
+    private val _visicooler: MutableLiveData<Event<NetworkRetrofit<JVisicooler>>> =
+        MutableLiveData()
     val visicooler: LiveData<Event<NetworkRetrofit<JVisicooler>>> = _visicooler
 
     private val _visisuper: MutableLiveData<Event<NetworkRetrofit<JVisisuper>>> = MutableLiveData()
@@ -120,7 +124,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _pedimap: MutableLiveData<Event<NetworkRetrofit<JPedimap>>> = MutableLiveData()
     val pedimap: LiveData<Event<NetworkRetrofit<JPedimap>>> = _pedimap
 
-    private val _bajasuper: MutableLiveData<Event<NetworkRetrofit<JBajaSupervisor>>> = MutableLiveData()
+    private val _bajasuper: MutableLiveData<Event<NetworkRetrofit<JBajaSupervisor>>> =
+        MutableLiveData()
     val bajasuper: LiveData<Event<NetworkRetrofit<JBajaSupervisor>>> = _bajasuper
 
     private val _bajaven: MutableLiveData<Event<NetworkRetrofit<JBajaVendedor>>> = MutableLiveData()
@@ -318,7 +323,7 @@ class AppViewModel @ViewModelInject constructor(
                 if (!it.isNullOrEmpty()) {
                     repository.saveEncuesta(it)
                     if (CONF.tipo == "V") {
-                        val item = TEncuestaSeleccionado(1,it[0].id,it[0].foto)
+                        val item = TEncuestaSeleccionado(1, it[0].id, it[0].foto)
                         repository.saveSeleccionado(item)
                     }
                 }
@@ -506,6 +511,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun setupApp(T: () -> Unit) {
         if (functions.existQR()) {
+            functions.addIPtoQRIMEI()
             intoHours()
         } else {
             T()
@@ -517,6 +523,9 @@ class AppViewModel @ViewModelInject constructor(
         functions.saveQR(qr)
         return qr
     }
+
+    fun getIP() =
+        functions.parseQRtoIP()
 
     fun getIMEI(add: Boolean = false) =
         functions.parseQRtoIMEI(add)
@@ -698,11 +707,11 @@ class AppViewModel @ViewModelInject constructor(
                 _sincro.value = Event(90)
             } else {
                 val j = JSONObject()
-                j.put("empleado",conf.codigo)
-                j.put("empresa",conf.empresa)
+                j.put("empleado", conf.codigo)
+                j.put("empresa", conf.empresa)
 
                 val k = JSONObject()
-                k.put("empresa",conf.empresa)
+                k.put("empresa", conf.empresa)
 
                 if (conf.tipo == "V")
                     repository.getWebClientes(j.toReqBody()).collect {
@@ -760,6 +769,10 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
+    fun settingIPaux(ip: String) {
+        _ipaux.value = Event(ip)
+    }
+
     fun savingRespuestas(list: List<TRespuesta>) {
         viewModelScope.launch {
             repository.saveRespuesta(list)
@@ -772,13 +785,13 @@ class AppViewModel @ViewModelInject constructor(
             var respuesta = false
             if (repository.clienteRespondioActual(cliente)) {
                 respuesta = true
-            }else {
+            } else {
                 cabecera.forEach { i ->
                     if (i.seleccion == 1) {
                         val rsp = repository.clienteRespondioAntes(cliente)
                         if (rsp.isNullOrEmpty()) {
                             respuesta = false
-                        }else {
+                        } else {
                             rsp.split(",").forEach { j ->
                                 if (j.trim() == i.id.toString()) {
                                     respuesta = true

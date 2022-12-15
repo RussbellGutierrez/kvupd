@@ -2,6 +2,7 @@ package com.upd.kvupd.data.local
 
 import androidx.room.*
 import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.QueryConstant.DEL_AFOTO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ALTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_ALTADATOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_BAJA
@@ -87,6 +88,9 @@ interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIncidencia(rsp: TIncidencia)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAFoto(rsp: TAFoto)
+
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)
 
@@ -153,4 +157,6 @@ interface AppDAO {
     @Query(DEL_INCIDENCIA)
     suspend fun deleteIncidencia()
 
+    @Query(DEL_AFOTO)
+    suspend fun deleteAFoto()
 }

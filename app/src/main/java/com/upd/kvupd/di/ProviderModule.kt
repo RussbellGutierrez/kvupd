@@ -1,6 +1,7 @@
 package com.upd.kvupd.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.google.android.gms.location.LocationRequest
@@ -15,6 +16,7 @@ import com.upd.kvupd.utils.Constant.GPS_FAST_INTERVAL
 import com.upd.kvupd.utils.Constant.GPS_NORMAL_INTERVAL
 import com.upd.kvupd.utils.Constant.POSITION_F_INTERVAL
 import com.upd.kvupd.utils.Constant.POSITION_N_INTERVAL
+import com.upd.kvupd.utils.HostSelectionInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,11 +54,19 @@ object ProviderModule {
 
     @Singleton
     @Provides
-    fun providerHttpClient(): OkHttpClient {
+    fun providerHostSelectionInterceptor() =
+        HostSelectionInterceptor()
+
+    @Singleton
+    @Provides
+    fun providerHttpClient(
+        hostSelectionInterceptor: HostSelectionInterceptor
+    ): OkHttpClient {
         return OkHttpClient
             .Builder()
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
+            .addInterceptor(hostSelectionInterceptor)
             .build()
     }
 
@@ -67,8 +77,8 @@ object ProviderModule {
         moshiConverterFactory: MoshiConverterFactory
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
             .client(okHttpClient)
+            .baseUrl(BASE_URL)
             .addConverterFactory(moshiConverterFactory)
             .build()
     }
@@ -95,9 +105,10 @@ object ProviderModule {
     @LocationSettingsRequestGps
     @Singleton
     @Provides
-    fun providerLocationSettingsRequest(@LocationRequestGps locationRequest: LocationRequest) = LocationSettingsRequest.Builder().apply {
-        addLocationRequest(locationRequest)
-    }.build()
+    fun providerLocationSettingsRequest(@LocationRequestGps locationRequest: LocationRequest) =
+        LocationSettingsRequest.Builder().apply {
+            addLocationRequest(locationRequest)
+        }.build()
 
     @LocationRequestPosition
     @Singleton
@@ -113,7 +124,8 @@ object ProviderModule {
     @LocationSettingsRequestPosition
     @Singleton
     @Provides
-    fun providerLocationSettingsRequestP(@LocationRequestPosition locationRequest: LocationRequest) = LocationSettingsRequest.Builder().apply {
-        addLocationRequest(locationRequest)
-    }.build()
+    fun providerLocationSettingsRequestP(@LocationRequestPosition locationRequest: LocationRequest) =
+        LocationSettingsRequest.Builder().apply {
+            addLocationRequest(locationRequest)
+        }.build()
 }

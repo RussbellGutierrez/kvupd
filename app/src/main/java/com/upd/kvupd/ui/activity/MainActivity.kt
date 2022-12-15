@@ -2,15 +2,14 @@ package com.upd.kvupd.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.upd.kvupd.R
 import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
@@ -47,6 +46,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         setSupportActionBar(bind.toolbar)
         setupApp()
         serviceListener = this
+        Log.w("MainActivity", "Oncreate")
     }
 
     override fun onClosingActivity(notRegister: Boolean) {
@@ -61,15 +61,21 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
 
         runOnUiThread {
             if (notRegister) {
-                showDialog("error","Revise en la lista de dispositivos si está registrado su equipo celular") {
+                showDialog(
+                    "error",
+                    "Revise en la lista de dispositivos si está registrado su equipo celular"
+                ) {
                     finishAndRemoveTask()
                 }
             } else {
                 if (!IS_SUNDAY && IS_CONFIG_FAILED) {
-                    showDialog("error","Al parecer se elimino su registro, consulte con sistemas") {
+                    showDialog(
+                        "error",
+                        "Al parecer se elimino su registro, consulte con sistemas"
+                    ) {
                         finishAndRemoveTask()
                     }
-                }else {
+                } else {
                     toast("Cerrando KVentas")
                     finishAndRemoveTask()
                 }
@@ -87,7 +93,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode) {
+        when (requestCode) {
             REQ_CODE -> permission.reqBackPermission()
             REQ_BACK_CODE -> snack("GPS segundo plano")
         }

@@ -5,39 +5,52 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.upd.kvupd.R
 import com.upd.kvupd.data.model.*
 import com.upd.kvupd.databinding.FragmentFServidorBinding
+import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
-import com.upd.kvupd.utils.NetworkRetrofit
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.toReqBody
+import com.upd.kvupd.utils.Constant.IP_AUX
+import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.*
+import javax.inject.Inject
 import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class FServidor : Fragment() {
 
+    @Inject
+    lateinit var host: HostSelectionInterceptor
+
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFServidorBinding? = null
     private val bind get() = _bind!!
-    private var list1 = 0
-    private var list2 = 0
-    private var list3 = 0
-    private var list4 = 0
-    private var list5 = 0
-    private var list6 = 0
-    private var list7 = 0
-    private var list8 = 0
+    private var prevIP = false
+    private var listS = 0
+    private var listV = 0
+    private var listA = 0
+    private var listAD = 0
+    private var listB = 0
+    private var listBE = 0
+    private var listR = 0
+    private var listF = 0
+    private var mS = ""
+    private var mV = ""
+    private var mA = ""
+    private var mAD = ""
+    private var mB = ""
+    private var mBE = ""
+    private var mR = ""
+    private var mF = ""
     private lateinit var seguimiento: TSeguimiento
     private lateinit var visita: TVisita
     private lateinit var alta: TAlta
@@ -52,6 +65,11 @@ class FServidor : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -71,20 +89,46 @@ class FServidor : Fragment() {
         }
 
         if (CONF.seguimiento == 0) {
-            bind.cardSeguimiento.setUI("v",false)
-            bind.minicardSeguimiento.setUI("v",false)
+            bind.cardSeguimiento.setUI("v", false)
+            bind.minicardSeguimiento.setUI("v", false)
         }
 
+        restoreUI()
         viewmodel.fetchServerAll("Todo")
         getDataRoom()
         updateDataRoom()
+
+        viewmodel.ipaux.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { ip ->
+                prevIP = true
+                OPTURL = "aux"
+                IP_AUX = "http://$ip/api/"
+                host.setHostBaseUrl()
+
+                restoreUI()
+                viewmodel.fetchServerAll("Todo")
+                getDataRoom()
+                updateDataRoom()
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.servidor_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun getDataRoom() {
         if (CONF.seguimiento == 1) {
             viewmodel.servseguimiento.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { y ->
-                    setTextUI(y.size,0)
+                    setTextUI(y.size, 0)
+                    mS = ""
                     Timer().schedule(3000) {
                         y.forEach { j ->
                             seguimiento = j
@@ -99,7 +143,7 @@ class FServidor : Fragment() {
                             p.put("sucursal", CONF.sucursal)
                             p.put("esquema", CONF.esquema)
                             p.put("empresa", CONF.empresa)
-                            Log.d(_tag,"Seg: $p")
+                            Log.d(_tag, "Seg: $p")
                             viewmodel.webSeguimiento(p.toReqBody())
                         }
                     }
@@ -109,7 +153,8 @@ class FServidor : Fragment() {
 
         viewmodel.servvisita.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,1)
+                setTextUI(y.size, 1)
+                mV = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         visita = j
@@ -124,7 +169,7 @@ class FServidor : Fragment() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
-                        Log.d(_tag,"Vis: $p")
+                        Log.d(_tag, "Vis: $p")
                         viewmodel.webVisita(p.toReqBody())
                     }
                 }
@@ -133,7 +178,8 @@ class FServidor : Fragment() {
 
         viewmodel.servalta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,2)
+                setTextUI(y.size, 2)
+                mA = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         alta = j
@@ -147,7 +193,7 @@ class FServidor : Fragment() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
-                        Log.d(_tag,"Alt: $p")
+                        Log.d(_tag, "Alt: $p")
                         viewmodel.webAlta(p.toReqBody())
                     }
                 }
@@ -156,7 +202,8 @@ class FServidor : Fragment() {
 
         viewmodel.servaltadatos.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,3)
+                setTextUI(y.size, 3)
+                mAD = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         altadatos = j
@@ -189,7 +236,7 @@ class FServidor : Fragment() {
                                 "${j.via} ${j.direccion} MZ ${j.manzana} ${j.ubicacion}"
                             )
                         }
-                        Log.d(_tag,"AltD: $p")
+                        Log.d(_tag, "AltD: $p")
                         viewmodel.webAltaDatos(p.toReqBody())
                     }
                 }
@@ -198,7 +245,8 @@ class FServidor : Fragment() {
 
         viewmodel.servbaja.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,4)
+                setTextUI(y.size, 4)
+                mB = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         baja = j
@@ -213,7 +261,7 @@ class FServidor : Fragment() {
                         p.put("precision", j.precision)
                         p.put("anulado", j.anulado)
                         p.put("empresa", CONF.empresa)
-                        Log.d(_tag,"Baj: $p")
+                        Log.d(_tag, "Baj: $p")
                         viewmodel.webBaja(p.toReqBody())
                     }
                 }
@@ -222,7 +270,8 @@ class FServidor : Fragment() {
 
         viewmodel.servbajaestado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,5)
+                setTextUI(y.size, 5)
+                mBE = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         bajaestado = j
@@ -237,7 +286,7 @@ class FServidor : Fragment() {
                         p.put("ycoord", j.latitud)
                         p.put("confirmar", j.procede)
                         p.put("empresa", CONF.empresa)
-                        Log.d(_tag,"BajE: $p")
+                        Log.d(_tag, "BajE: $p")
                         viewmodel.webBajaEstado(p.toReqBody())
                     }
                 }
@@ -247,6 +296,7 @@ class FServidor : Fragment() {
         viewmodel.servrespuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 calcEncuestasTotal(y)
+                mR = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         respuesta = j
@@ -258,7 +308,7 @@ class FServidor : Fragment() {
                         p.put("pregunta", j.pregunta)
                         p.put("respuesta", j.respuesta)
                         p.put("fecha", j.fecha)
-                        Log.d(_tag,"Resp: $p")
+                        Log.d(_tag, "Resp: $p")
                         viewmodel.webRespuesta(p.toReqBody())
                     }
                 }
@@ -267,12 +317,13 @@ class FServidor : Fragment() {
 
         viewmodel.servfoto.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setTextUI(y.size,7)
+                setTextUI(y.size, 7)
+                mF = ""
                 Timer().schedule(3000) {
                     y.forEach { j ->
                         foto = j
                         val baos = ByteArrayOutputStream()
-                        Log.w(_tag,"Ruta foto ${j.rutafoto}")
+                        Log.w(_tag, "Ruta foto ${j.rutafoto}")
                         val bm = BitmapFactory.decodeFile(j.rutafoto)
                         bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
                         val byteArray = baos.toByteArray()
@@ -285,7 +336,7 @@ class FServidor : Fragment() {
                         p.put("encuesta", j.encuesta)
                         p.put("sucursal", CONF.sucursal)
                         p.put("foto", pic)
-                        Log.d(_tag,"Fot: $p")
+                        Log.d(_tag, "Fot: $p")
                         viewmodel.webFoto(p.toReqBody())
                     }
                 }
@@ -301,9 +352,12 @@ class FServidor : Fragment() {
                         seguimiento.estado = "Enviado"
                         viewmodel.updSeguimiento(seguimiento)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
+                    is NetworkRetrofit.Error -> {
+                        mS = y.message!!
+                        Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
+                    }
                 }
-                outputUI(0)
+                outputUI(0, mS)
             }
         }
 
@@ -314,9 +368,12 @@ class FServidor : Fragment() {
                         visita.estado = "Enviado"
                         viewmodel.updVisita(visita)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Visita-> ${y.message} $visita")
+                    is NetworkRetrofit.Error -> {
+                        mV = y.message!!
+                        Log.w(_tag, "Visita-> ${y.message} $visita")
+                    }
                 }
-                outputUI(1)
+                outputUI(1, mV)
             }
         }
 
@@ -327,9 +384,12 @@ class FServidor : Fragment() {
                         alta.estado = "Enviado"
                         viewmodel.updAlta(alta)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Alta-> ${y.message} $alta")
+                    is NetworkRetrofit.Error -> {
+                        mA = y.message!!
+                        Log.w(_tag, "Alta-> ${y.message} $alta")
+                    }
                 }
-                outputUI(2)
+                outputUI(2, mA)
             }
         }
 
@@ -340,9 +400,12 @@ class FServidor : Fragment() {
                         altadatos.estado = "Enviado"
                         viewmodel.updAltaDatos(altadatos)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
+                    is NetworkRetrofit.Error -> {
+                        mAD = y.message!!
+                        Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
+                    }
                 }
-                outputUI(3)
+                outputUI(3, mAD)
             }
         }
 
@@ -353,9 +416,12 @@ class FServidor : Fragment() {
                         baja.estado = "Enviado"
                         viewmodel.updBaja(baja)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "Baja-> ${y.message} $baja")
+                    is NetworkRetrofit.Error -> {
+                        mB = y.message!!
+                        Log.w(_tag, "Baja-> ${y.message} $baja")
+                    }
                 }
-                outputUI(4)
+                outputUI(4, mB)
             }
         }
 
@@ -366,47 +432,77 @@ class FServidor : Fragment() {
                         bajaestado.estado = "Enviado"
                         viewmodel.updBajaEstado(bajaestado)
                     }
-                    is NetworkRetrofit.Error -> Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
+                    is NetworkRetrofit.Error -> {
+                        mBE = y.message!!
+                        Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
+                    }
                 }
-                outputUI(5)
+                outputUI(5, mBE)
             }
         }
 
         viewmodel.resprespuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                when(y) {
+                when (y) {
                     is NetworkRetrofit.Success -> {
                         respuesta.estado = "Enviado"
                         viewmodel.updRespuesta(respuesta)
-                        Log.d(_tag,"Respuesta enviada $respuesta")
+                        Log.d(_tag, "Respuesta enviada $respuesta")
                     }
-                    is NetworkRetrofit.Error -> Log.e(_tag,"Respuesta-> ${y.message} $respuesta")
+                    is NetworkRetrofit.Error -> {
+                        mR = y.message!!
+                        Log.e(_tag, "Respuesta-> ${y.message} $respuesta")
+                    }
                 }
-                outputUI(6)
+                outputUI(6, mR)
             }
         }
 
         viewmodel.respfoto.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                when(y) {
+                when (y) {
                     is NetworkRetrofit.Success -> {
                         foto.estado = "Enviado"
                         viewmodel.updFoto(foto)
-                        Log.d(_tag,"Foto enviada $foto")
+                        Log.d(_tag, "Foto enviada $foto")
                     }
-                    is NetworkRetrofit.Error -> Log.e(_tag,"Foto-> ${y.message} $foto")
+                    is NetworkRetrofit.Error -> {
+                        mF = y.message!!
+                        Log.e(_tag, "Foto-> ${y.message} $foto")
+                    }
                 }
-                outputUI(7)
+                outputUI(7, mF)
             }
         }
+
+
+    }
+
+    private fun restoreUI() {
+        bind.progress1.setUI("v", true)
+        bind.txtComp1.setUI("v", false)
+        bind.progress2.setUI("v", true)
+        bind.txtComp2.setUI("v", false)
+        bind.progress3.setUI("v", true)
+        bind.txtComp3.setUI("v", false)
+        bind.progress4.setUI("v", true)
+        bind.txtComp4.setUI("v", false)
+        bind.progress5.setUI("v", true)
+        bind.txtComp5.setUI("v", false)
+        bind.progress6.setUI("v", true)
+        bind.txtComp6.setUI("v", false)
+        bind.progress7.setUI("v", true)
+        bind.txtComp7.setUI("v", false)
+        bind.progress8.setUI("v", true)
+        bind.txtComp8.setUI("v", false)
     }
 
     private fun setTextUI(size: Int, opt: Int) {
-        var texto = ""
+        val texto: String
         val mensaje = "SIN DATOS PARA ENVIAR"
-        when(opt) {
+        when (opt) {
             0 -> {
-                list1 = size
+                listS = size
                 texto = "Ubicaciones : $size"
                 bind.txtSeguimiento.text = texto
                 if (size == 0) {
@@ -416,7 +512,7 @@ class FServidor : Fragment() {
                 }
             }
             1 -> {
-                list2 = size
+                listV = size
                 texto = "Visitas : $size"
                 bind.txtVisita.text = texto
                 if (size == 0) {
@@ -426,7 +522,7 @@ class FServidor : Fragment() {
                 }
             }
             2 -> {
-                list3 = size
+                listA = size
                 texto = "Altas : $size"
                 bind.txtAlta.text = texto
                 if (size == 0) {
@@ -436,7 +532,7 @@ class FServidor : Fragment() {
                 }
             }
             3 -> {
-                list4 = size
+                listAD = size
                 texto = "Detalle altas : $size"
                 bind.txtAltadato.text = texto
                 if (size == 0) {
@@ -446,7 +542,7 @@ class FServidor : Fragment() {
                 }
             }
             4 -> {
-                list5 = size
+                listB = size
                 texto = "Bajas : $size"
                 bind.txtBaja.text = texto
                 if (size == 0) {
@@ -456,7 +552,7 @@ class FServidor : Fragment() {
                 }
             }
             5 -> {
-                list6 = size
+                listBE = size
                 texto = "Bajas confirmadas : $size"
                 bind.txtBajaestado.text = texto
                 if (size == 0) {
@@ -466,7 +562,7 @@ class FServidor : Fragment() {
                 }
             }
             6 -> {
-                list7 = size
+                listR = size
                 texto = "Encuestas resueltas : $size"
                 bind.txtRespuesta.text = texto
                 if (size == 0) {
@@ -476,7 +572,7 @@ class FServidor : Fragment() {
                 }
             }
             7 -> {
-                list8 = size
+                listF = size
                 texto = "Fotos encuesta : $size"
                 bind.txtFoto.text = texto
                 if (size == 0) {
@@ -488,71 +584,124 @@ class FServidor : Fragment() {
         }
     }
 
-    private fun outputUI(opt: Int) {
-        when(opt) {
+    private fun outputUI(opt: Int, msg: String) {
+        when (opt) {
             0 -> {
-                if (list1 == 1) {
+                if (listS == 1) {
                     bind.progress1.setUI("v", false)
                     bind.txtComp1.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp1.text = msg
+                    } else {
+                        bind.txtComp1.text = "COMPLETO"
+                    }
+                    listS--
                 } else {
-                    list1--
+                    listS--
                 }
             }
             1 -> {
-                if (list2 == 1) {
+                if (listV == 1) {
                     bind.progress2.setUI("v", false)
                     bind.txtComp2.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp2.text = msg
+                    } else {
+                        bind.txtComp2.text = "COMPLETO"
+                    }
+                    listV--
                 } else {
-                    list2--
+                    listV--
                 }
             }
             2 -> {
-                if (list3 == 1) {
+                if (listA == 1) {
                     bind.progress3.setUI("v", false)
                     bind.txtComp3.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp3.text = msg
+                    } else {
+                        bind.txtComp3.text = "COMPLETO"
+                    }
+                    listA--
                 } else {
-                    list3--
+                    listA--
                 }
             }
             3 -> {
-                if (list4 == 1) {
+                if (listAD == 1) {
                     bind.progress4.setUI("v", false)
                     bind.txtComp4.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp4.text = msg
+                    } else {
+                        bind.txtComp4.text = "COMPLETO"
+                    }
+                    listAD--
                 } else {
-                    list4--
+                    listAD--
                 }
             }
             4 -> {
-                if (list5 == 1) {
+                if (listB == 1) {
                     bind.progress5.setUI("v", false)
                     bind.txtComp5.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp5.text = msg
+                    } else {
+                        bind.txtComp5.text = "COMPLETO"
+                    }
+                    listB--
                 } else {
-                    list5--
+                    listB--
                 }
             }
             5 -> {
-                if (list6 == 1) {
+                if (listBE == 1) {
                     bind.progress6.setUI("v", false)
                     bind.txtComp6.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp6.text = msg
+                    } else {
+                        bind.txtComp6.text = "COMPLETO"
+                    }
+                    listBE--
                 } else {
-                    list6--
+                    listBE--
                 }
             }
             6 -> {
-                if (list7 == 1) {
+                if (listR == 1) {
                     bind.progress7.setUI("v", false)
                     bind.txtComp7.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp7.text = msg
+                    } else {
+                        bind.txtComp7.text = "COMPLETO"
+                    }
+                    listR--
                 } else {
-                    list7--
+                    listR--
                 }
             }
             7 -> {
-                if (list8 == 1) {
+                if (listF == 1) {
                     bind.progress8.setUI("v", false)
                     bind.txtComp8.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp8.text = msg
+                    } else {
+                        bind.txtComp8.text = "COMPLETO"
+                    }
+                    listF--
                 } else {
-                    list8--
+                    listF--
                 }
+            }
+        }
+        if (listS == 0 && listV == 0 && listA == 0 && listAD == 0 && listB == 0 && listBE == 0 && listR == 0 && listF == 0) {
+            if (prevIP) {
+                prevIP = false
             }
         }
     }
@@ -568,7 +717,7 @@ class FServidor : Fragment() {
                 tmn.add(g)
             }
         }
-        setTextUI(tmn.size,6)
+        setTextUI(tmn.size, 6)
     }
 
 }

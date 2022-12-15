@@ -1,13 +1,27 @@
 package com.upd.kvupd.ui.fragment
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomViewTarget
+import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.data.model.asSpinner
@@ -17,6 +31,9 @@ import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @AndroidEntryPoint
 class FAltaDatos : Fragment() {
@@ -25,6 +42,7 @@ class FAltaDatos : Fragment() {
     private var _bind: FragmentFAltaDatosBinding? = null
     private val bind get() = _bind!!
     private var tipo = ""
+    private var abspath = ""
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
     private val args: FAltaDatosArgs by navArgs()
@@ -65,15 +83,22 @@ class FAltaDatos : Fragment() {
             }
         }
 
+        //bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
+
         viewmodel.distritosObs().observe(viewLifecycleOwner) {
             distrito = it.asSpinner()
-            bind.spnDistrito.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distrito)
+            bind.spnDistrito.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                distrito
+            )
             setupFields()
         }
 
         viewmodel.negociosObs().observe(viewLifecycleOwner) {
             giro = it.asSpinner()
-            bind.spnGiro.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
+            bind.spnGiro.adapter =
+                ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
             setupFields()
         }
 
@@ -141,11 +166,11 @@ class FAltaDatos : Fragment() {
 
         if (::adStored.isInitialized) {
 
-            if ( distrito.isNotEmpty() && giro.isNotEmpty()) {
+            if (distrito.isNotEmpty() && giro.isNotEmpty()) {
 
                 hideprogress()
-                Log.w(_tag,"Distrito: ${distrito.size}")
-                Log.w(_tag,"Giro: ${giro.size}")
+                Log.w(_tag, "Distrito: ${distrito.size}")
+                Log.w(_tag, "Giro: ${giro.size}")
 
                 if (adStored.tipo == "PJ")
                     bind.rbJuridica.isChecked = true
@@ -155,11 +180,11 @@ class FAltaDatos : Fragment() {
                 val ald = distrito.indexOf(adStored.distrito)
                 val alg = giro.indexOf(adStored.giro)
 
-                Log.w(_tag,"Distrito: ${distrito.size}")
-                Log.w(_tag,"Giro: ${giro.size}")
+                Log.w(_tag, "Distrito: ${distrito.size}")
+                Log.w(_tag, "Giro: ${giro.size}")
 
-                Log.w(_tag,"Distrito pos: $ald")
-                Log.w(_tag,"Giro pos: $alg")
+                Log.w(_tag, "Distrito pos: $ald")
+                Log.w(_tag, "Giro pos: $alg")
 
                 bind.edtRazon.setText(adStored.razon)
                 bind.edtPaterno.setText(adStored.appaterno)
@@ -181,10 +206,77 @@ class FAltaDatos : Fragment() {
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
             }
-        }else {
+        } else {
             hideprogress()
         }
     }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(requireActivity().packageManager).also {
+                val photo: File? = try {
+                    createPhoto()
+                } catch (ex: IOException) {
+                    Log.e(_tag, "Error ->${ex.stackTrace} ->${ex.message}")
+                    null
+                }
+                photo?.also {
+                    val uriPhoto = FileProvider.getUriForFile(requireContext(), "com.upd.kvupd", it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriPhoto)
+                    resultLauncher.launch(takePictureIntent)
+                }
+            }
+        }
+    }
+
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                //thumbnailPhoto()
+            } else {
+                snack("Error procesando foto")
+            }
+        }
+
+    private fun createPhoto(): File {
+        val time = viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
+        val directory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile("Kvupd_DNI_${time}_", ".jpg", directory).apply {
+            abspath = absolutePath
+        }
+    }
+
+    /*private fun thumbnailPhoto() {
+        val bitmap = BitmapFactory.decodeFile(abspath)
+        bind.txtRuta.setUI("v", true)
+        bind.txtRuta.text = abspath
+        Glide
+            .with(requireContext())
+            .load(bitmap)
+            .override(500, 600)
+            .fitCenter()
+            .into(object : CustomViewTarget<ImageView, Drawable>(bind.imgFoto) {
+                override fun onLoadFailed(errorDrawable: Drawable?) {}
+
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable>?
+                ) {
+                    try {
+                        bind.imgFoto.setImageDrawable(resource)
+                        val out = FileOutputStream(abspath)
+                        resource.toBitmap().compress(Bitmap.CompressFormat.JPEG, 80, out)
+                        out.flush()
+                        out.close()
+                        snack("Foto almacenada")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onResourceCleared(placeholder: Drawable?) {}
+            })
+    }*/
 
     private fun saveAltaDatos() {
         val razon = bind.edtRazon.text.toString().trim().uppercase()
@@ -222,6 +314,10 @@ class FAltaDatos : Fragment() {
             numero == "" -> showDialog("Error", "Ingrese el numero de calle") {}
             ruta == "" -> showDialog("Error", "Ingrese la ruta") {}
             secuencia == "" -> showDialog("Error", "Ingrese la secuencia") {}
+            /*bind.txtRuta.text == "" -> showDialog(
+                "Error",
+                "Debe tomar una foto del documento del cliente"
+            ) {}*/
             else -> {
                 if (documento.checkDocumento(tipo)) {
                     val item = TADatos(
@@ -250,7 +346,7 @@ class FAltaDatos : Fragment() {
                         "Pendiente"
                     )
                     viewmodel.saveAltaDatos(item)
-                    when(ALTADATOS) {
+                    when (ALTADATOS) {
                         "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
                         "mapa" -> findNavController().navigate(
                             FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)

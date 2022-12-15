@@ -44,8 +44,7 @@ class BDObservacion : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _bind = BottomDialogObservacionBinding.inflate(inflater, container, false)
         return bind.root
@@ -61,14 +60,15 @@ class BDObservacion : BottomSheetDialogFragment() {
         bind.fabProducto.setOnClickListener { saveVisita(2) }
         bind.fabDinero.setOnClickListener { saveVisita(3) }
         bind.fabEncargado.setOnClickListener { saveVisita(4) }
+        bind.fabTiempo.setOnClickListener { saveVisita(5) }
         bind.fabOcupado.setOnClickListener { saveVisita(6) }
         bind.fabExiste.setOnClickListener { saveVisita(7) }
 
         viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (!y.isNullOrEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
-                    viewmodel.clienteRespondio(y,parg[0].trim())
-                }else {
+                    viewmodel.clienteRespondio(y, parg[0].trim())
+                } else {
                     dismiss()
                 }
             }
@@ -92,8 +92,7 @@ class BDObservacion : BottomSheetDialogFragment() {
     }
 
     private fun saveVisita(seleccion: Int) {
-        if (isPOSLOCinitialized() &&
-            (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
+        if (isPOSLOCinitialized() && (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
 
             obs = seleccion
             cliente = args.cliente.split("-")[0].trim().toInt()
@@ -120,12 +119,13 @@ class BDObservacion : BottomSheetDialogFragment() {
 
     private fun checkObs(obs: Int): String {
         var result = ""
-        when(obs) {
+        when (obs) {
             0 -> result = "Hizo pedido"
             1 -> result = "Puesto cerrado"
             2 -> result = "Tiene producto"
             3 -> result = "Sin dinero"
             4 -> result = "Sin encargado"
+            5 -> result = "Falta de tiempo"
             6 -> result = "Cliente ocupado"
             7 -> result = "No existe"
         }

@@ -3,6 +3,7 @@ package com.upd.kvupd.data.local
 import androidx.room.Dao
 import androidx.room.Query
 import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.QueryConstant.GET_AFOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTADATOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTADATO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTAS
@@ -155,4 +156,7 @@ interface QueryDAO {
 
     @Query(GET_FOTO_SERVER)
     suspend fun fotoServer(estado: String): List<TRespuesta>
+
+    @Query(GET_AFOTO_SERVER)
+    suspend fun altaFotoServer(estado: String): List<TAFoto>
 }

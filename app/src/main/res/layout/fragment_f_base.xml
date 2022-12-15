@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.FBase">
 
     <LinearLayout
@@ -54,6 +53,17 @@
                 android:textStyle="bold"
                 tools:text="Vendedor 999" />
 
+            <TextView
+                android:id="@+id/txt_ruta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textAlignment="textStart"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:visibility="gone"
+                tools:text="Numero de Rutas" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,8 +74,8 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="10dp"
                     android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="10dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -75,8 +85,8 @@
                         android:layout_height="wrap_content"
                         android:clickable="false"
                         app:backgroundTint="@color/white"
-                        app:fabSize="mini"
                         app:elevation="2dp"
+                        app:fabSize="mini"
                         app:srcCompat="@drawable/indicador"
                         app:tint="@color/lightcrimson" />
 
@@ -92,8 +102,8 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="10dp"
                     android:layout_marginHorizontal="15dp"
+                    android:layout_marginVertical="10dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
@@ -103,8 +113,8 @@
                         android:layout_height="wrap_content"
                         android:clickable="false"
                         app:backgroundTint="@color/white"
-                        app:fabSize="mini"
                         app:elevation="2dp"
+                        app:fabSize="mini"
                         app:srcCompat="@drawable/indicador"
                         app:tint="@color/lightcrimson" />
 
@@ -128,8 +138,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lnr_datos"
-        android:paddingVertical="10dp"
         android:paddingHorizontal="40dp"
+        android:paddingVertical="10dp"
         app:flexWrap="wrap"
         app:justifyContent="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -149,16 +159,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/radar"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="VENDEDOR"
                 android:textColor="@color/lightgray"
-                android:text="VENDEDOR"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -174,16 +184,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/clientes"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="CLIENTES"
                 android:textColor="@color/lightgray"
-                android:text="CLIENTES"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -199,16 +209,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/reportes"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="REPORTES"
                 android:textColor="@color/lightgray"
-                android:text="REPORTES"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -224,16 +234,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/altas"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="ALTAS"
                 android:textColor="@color/lightgray"
-                android:text="ALTAS"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -249,16 +259,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/bajas"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="BAJAS"
                 android:textColor="@color/lightgray"
-                android:text="BAJAS"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -274,16 +284,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/servidor"
-                app:useCompatPadding="true"
-                app:elevation="1dp"/>
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
 
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:text="SERVIDOR"
                 android:textColor="@color/lightgray"
-                android:text="SERVIDOR"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -294,15 +304,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/flx_buttons"
-        android:textStyle="bold"
-        android:gravity="center"
         android:layout_marginBottom="10dp"
-        tools:text="ver 1.2.3"
+        android:gravity="center"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/flx_buttons"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="ver 1.2.3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

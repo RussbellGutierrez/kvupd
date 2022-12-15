@@ -70,7 +70,7 @@ class UmesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
     ) : BaseViewHolder<Umes>(bind.root) {
 
         override fun bind(item: Umes) {
-            val titulo = "${item.marca.descripcion} - ${item.linea.descripcion}"
+            val titulo = item.marca.descripcion
             val cuota = "Cuota: ${item.cuota}"
             val avance = "Avance: ${item.avance}"
             val percent = percent(item.avance,item.cuota)
@@ -96,10 +96,10 @@ class UmesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
             bind.txtPorcentaje.text = porcentaje
             bind.imgCerrar.setOnClickListener { umesListener.onCloseItem(item) }
             bind.cardReporte.setOnClickListener { umesListener.onItemClick(item) }
-            bind.cardReporte.setOnLongClickListener {
+            /*bind.cardReporte.setOnLongClickListener {
                 umesListener.onItemPress(item)
                 return@setOnLongClickListener true
-            }
+            }*/
         }
     }
 

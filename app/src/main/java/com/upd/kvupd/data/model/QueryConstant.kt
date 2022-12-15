@@ -36,6 +36,7 @@ object QueryConstant {
     const val DEL_SELECCION = "DELETE FROM TEncuestaSeleccionado"
     const val DEL_RESPUESTA = "DELETE FROM TRespuesta"
     const val DEL_INCIDENCIA = "DELETE FROM TIncidencia"
+    const val DEL_AFOTO = "DELETE FROM TAFoto"
 
     const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
@@ -55,6 +56,9 @@ object QueryConstant {
 
     const val GET_FOTO_SERVER = "SELECT * FROM TRespuesta " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND foto = 1 ORDER BY fecha ASC"
+
+    const val GET_AFOTO_SERVER = "SELECT * FROM TAFoto " +
+            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
 
     const val GET_RESPUESTA_CLIENTE = "" +
             "SELECT encuesta " +

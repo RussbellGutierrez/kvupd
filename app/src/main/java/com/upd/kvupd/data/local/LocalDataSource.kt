@@ -207,6 +207,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertIncidencia(rsp)
     }
 
+    suspend fun saveAltaFoto(rsp: TAFoto) {
+        dao.insertAFoto(rsp)
+    }
+
     suspend fun updateLocationAlta(locationAlta: LocationAlta) {
         dao.updateLocationAlta(locationAlta)
     }
@@ -270,6 +274,7 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
     suspend fun deleteAlta() {
         dao.deleteAlta()
     }
+
     suspend fun deleteAltaDatos() {
         dao.deleteAltaDatos()
     }
@@ -292,6 +297,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteIncidencia() {
         dao.deleteIncidencia()
+    }
+
+    suspend fun deleteAltaFoto() {
+        dao.deleteAFoto()
     }
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
@@ -324,5 +333,9 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun getServerFoto(estado: String): List<TRespuesta> {
         return qdao.fotoServer(estado)
+    }
+
+    suspend fun getServerAltaFoto(estado: String): List<TAFoto> {
+        return qdao.altaFotoServer(estado)
     }
 }

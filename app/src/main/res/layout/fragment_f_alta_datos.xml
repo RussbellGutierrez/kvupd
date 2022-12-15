@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -12,22 +12,22 @@
         android:id="@+id/txt_titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="17sp"
         android:textColor="@color/purple_500"
-        tools:text="Cliente alta"/>
+        android:textSize="17sp"
+        tools:text="Cliente alta" />
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="3dp"/>
+        android:layout_marginVertical="3dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/lightgreen"
-        android:paddingVertical="3dp"
         android:paddingHorizontal="8dp"
-        android:text="Tipo de persona"/>
+        android:paddingVertical="3dp"
+        android:text="Tipo de persona"
+        android:textColor="@color/lightgreen" />
 
     <RadioGroup
         android:id="@+id/rb_grupo"
@@ -64,21 +64,21 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txt_razon"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                app:boxBackgroundColor="@null"
                 android:visibility="gone"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_razon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Razon social"
                     android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:maxLength="40"
-                    android:hint="Razon social" />
+                    android:maxLength="40" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,215 +92,215 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
                         android:layout_marginHorizontal="2dp"
-                        app:boxBackgroundColor="@null"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:layout_weight="0.5"
+                        app:boxBackgroundColor="@null">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_paterno"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:hint="Ap. Paterno"
                             android:imeOptions="actionNext"
                             android:inputType="text"
-                            android:maxLength="12"
-                            android:hint="Ap. Paterno"/>
+                            android:maxLength="12" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
                         android:layout_marginHorizontal="2dp"
-                        app:boxBackgroundColor="@null"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:layout_weight="0.5"
+                        app:boxBackgroundColor="@null">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edt_materno"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:hint="Ap. Materno"
                             android:imeOptions="actionNext"
                             android:inputType="text"
-                            android:maxLength="12"
-                            android:hint="Ap. Materno"/>
+                            android:maxLength="12" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_nombre"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="Nombres"
                         android:imeOptions="actionNext"
                         android:inputType="text"
-                        android:maxLength="16"
-                        android:hint="Nombres"/>
+                        android:maxLength="16" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                app:boxBackgroundColor="@null"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_documento"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:hint="DNI / RUC"
                     android:imeOptions="actionNext"
-                    android:maxLength="11"
-                    android:hint="DNI / RUC"/>
+                    android:inputType="number"
+                    android:maxLength="11" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.5"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_movil1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:hint="Movil 1"
                         android:imeOptions="actionNext"
-                        android:maxLength="9"
-                        android:hint="Movil 1"/>
+                        android:inputType="number"
+                        android:maxLength="9" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.5"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_movil2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:hint="Movil 2"
                         android:imeOptions="actionNext"
-                        android:maxLength="9"
-                        android:hint="Movil 2"/>
+                        android:inputType="number"
+                        android:maxLength="9" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                app:boxBackgroundColor="@null"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_correo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
+                    android:hint="correo@email.com"
                     android:imeOptions="actionNext"
-                    android:hint="correo@email.com"/>
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="2dp"
-                android:paddingVertical="4dp"
+                android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingVertical="4dp"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:textColor="@color/lightcrimson"
-                    android:text="El sitio es..."/>
+                    android:text="El sitio es..."
+                    android:textColor="@color/lightcrimson" />
 
                 <Spinner
                     android:id="@+id/spn_via"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
-                    android:entries="@array/vias"/>
+                    android:entries="@array/vias" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.3"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_manzana"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="Manzana"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
-                        android:hint="Manzana"/>
+                        android:inputType="text" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.7"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_direccion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="Direccion"
                         android:imeOptions="actionNext"
-                        android:inputType="text"
-                        android:hint="Direccion"/>
+                        android:inputType="text" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -309,34 +309,34 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
                 android:layout_marginVertical="3dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <Spinner
                     android:id="@+id/spn_numero"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    android:entries="@array/numeracion"/>
+                    android:layout_weight="0.5"
+                    android:entries="@array/numeracion" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.5"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_numero"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:hint="Numero"
                         android:imeOptions="actionNext"
-                        android:maxLines="1"
-                        android:hint="Numero"/>
+                        android:inputType="number"
+                        android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -345,141 +345,172 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="2dp"
-                android:paddingVertical="4dp"
+                android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingVertical="4dp"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:textColor="@color/lightcrimson"
-                    android:text="La zona es..."/>
+                    android:text="La zona es..."
+                    android:textColor="@color/lightcrimson" />
 
                 <Spinner
                     android:id="@+id/spn_zona"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
-                    android:entries="@array/zona"/>
+                    android:entries="@array/zona" />
 
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="2dp"
-                app:boxBackgroundColor="@null"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_zona"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Zona nombre"
                     android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:hint="Zona nombre"/>
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="2dp"
-                android:paddingVertical="4dp"
+                android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingVertical="4dp"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:textColor="@color/lightcrimson"
-                    android:text="El distrito es..."/>
+                    android:text="El distrito es..."
+                    android:textColor="@color/lightcrimson" />
 
                 <Spinner
                     android:id="@+id/spn_distrito"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"/>
+                    android:layout_weight="0.7" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="2dp"
-                android:paddingVertical="4dp"
+                android:layout_marginVertical="5dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingVertical="4dp"
+                android:weightSum="1">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:textColor="@color/lightcrimson"
-                    android:text="El giro es..."/>
+                    android:text="El giro es..."
+                    android:textColor="@color/lightcrimson" />
 
                 <Spinner
                     android:id="@+id/spn_giro"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"/>
+                    android:layout_weight="0.7" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.5"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_ruta"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:hint="Ruta"
                         android:imeOptions="actionNext"
-                        android:maxLines="1"
-                        android:hint="Ruta"/>
+                        android:inputType="number"
+                        android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
                     android:layout_marginHorizontal="2dp"
-                    app:boxBackgroundColor="@null"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_weight="0.5"
+                    app:boxBackgroundColor="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_secuencia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
+                        android:hint="Secuencia"
                         android:imeOptions="actionDone"
-                        android:maxLines="1"
-                        android:hint="Secuencia"/>
+                        android:inputType="number"
+                        android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
+
+            <!--LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="2dp"
+                android:layout_marginVertical="5dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Foto documento del cliente"
+                    android:textColor="@color/lightcrimson" />
+
+                <ImageView
+                    android:id="@+id/img_foto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/camara" />
+
+                <TextView
+                    android:id="@+id/txt_ruta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    tools:text="Ruta de la foto" />
+
+            </LinearLayout-->
 
         </LinearLayout>
 

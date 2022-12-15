@@ -305,6 +305,10 @@ class RepoImpl @Inject constructor(
         localDataSource.saveIncidencia(respuesta)
     }
 
+    override suspend fun saveAltaFoto(respuesta: TAFoto) {
+        localDataSource.saveAltaFoto(respuesta)
+    }
+
     override suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
         return localDataSource.getServerSeguimiento(estado)
     }
@@ -335,6 +339,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun getServerFoto(estado: String): List<TRespuesta> {
         return localDataSource.getServerFoto(estado)
+    }
+
+    override suspend fun getServerAltaFoto(estado: String): List<TAFoto> {
+        return localDataSource.getServerAltaFoto(estado)
     }
 
     override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
@@ -423,6 +431,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun deleteIncidencia() {
         localDataSource.deleteIncidencia()
+    }
+
+    override suspend fun deleteAFoto() {
+        localDataSource.deleteAltaFoto()
     }
 
     override suspend fun loginAdministrator(body: RequestBody): Flow<NetworkRetrofit<Login>> {
@@ -639,5 +651,9 @@ class RepoImpl @Inject constructor(
         return flow {
             emit(safeApiCall { webDataSource.setServerFotos(body) })
         }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
+        TODO("Not yet implemented")
     }
 }

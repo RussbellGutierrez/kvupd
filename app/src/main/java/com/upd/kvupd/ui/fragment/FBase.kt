@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.ui.activity.MainActivity
@@ -132,7 +134,7 @@ class FBase : Fragment(), MainActivity.OnMainListener {
                             "Advertencia",
                             "No tiene encuesta programada"
                         ) {}
-                    }else {
+                    } else {
                         showDialog(
                             "Correcto",
                             "Encuesta descargada correctamente"
@@ -156,6 +158,9 @@ class FBase : Fragment(), MainActivity.OnMainListener {
                     }
                 }
             }
+        }
+        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+            setRuta(result)
         }
     }
 
@@ -192,17 +197,37 @@ class FBase : Fragment(), MainActivity.OnMainListener {
     private fun setParams(config: TConfiguracion) {
         if (config.tipo != "S") {
             bind.lnrVendedor.setUI("v", false)
+            bind.txtRuta.setUI("v", true)
         }
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
         val version = "ver. ${BuildConfig.VERSION_NAME}"
         val usuario = getUsuario(config)
-        val gps = if (requireContext().isGPSDisabled()) Color.rgb(255, 51, 51) else Color.rgb(4, 106, 97)
-        val seguimiento = if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
+        val gps =
+            if (requireContext().isGPSDisabled()) Color.rgb(255, 51, 51) else Color.rgb(4, 106, 97)
+        val seguimiento =
+            if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
         bind.imgEmpresa.setImageResource(img)
         bind.txtUsuario.text = usuario
         bind.txtVersion.text = version
         bind.fabGps.imageTintList = ColorStateList.valueOf(gps)
         bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
+    }
+
+    private fun setRuta(l: List<RowCliente>) {
+        var mensaje = ""
+        val rutas = arrayListOf<String>()
+        l.forEach { i ->
+            rutas.add(i.ruta.toString())
+        }
+        val rd = rutas.distinct()
+        rd.forEach { i ->
+            if (mensaje == "") {
+                mensaje = "Ruta $i"
+            } else {
+                mensaje += " - Ruta $i"
+            }
+        }
+        bind.txtRuta.text = mensaje
     }
 
     private fun getUsuario(item: TConfiguracion): String {
@@ -232,7 +257,7 @@ class FBase : Fragment(), MainActivity.OnMainListener {
         }
     }
 
-    private fun checkingGPS(T:()->Unit) {
+    private fun checkingGPS(T: () -> Unit) {
         if (requireContext().isGPSDisabled()) {
             snack("Habilite el GPS primero")
         } else {

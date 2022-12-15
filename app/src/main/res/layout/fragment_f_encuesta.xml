@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingVertical="10dp"
     android:paddingHorizontal="25dp"
+    android:paddingVertical="10dp"
     tools:context=".ui.fragment.FEncuesta">
 
     <ScrollView
@@ -23,9 +23,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textSize="17sp"
                 android:textColor="@color/dodgerblue"
-                tools:text="NOMBRE DE ENCUESTA"/>
+                android:textSize="17sp"
+                tools:text="NOMBRE DE ENCUESTA" />
 
             <LinearLayout
                 android:id="@+id/lnr_pregunta"
@@ -46,20 +46,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="3dp"
-                        android:padding="3dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="3dp">
 
                         <TextView
                             android:id="@+id/txt_cliente"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/purple_500"
-                            tools:text="100 - NOMBRE CLIENTE"/>
+                            tools:text="100 - NOMBRE CLIENTE" />
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="3dp"/>
+                            android:layout_marginVertical="3dp" />
 
                         <TextView
                             android:id="@+id/txt_pregunta"
@@ -68,19 +68,19 @@
                             android:layout_marginVertical="5dp"
                             android:gravity="center"
                             android:textSize="15sp"
-                            tools:text="¿PREGUNTA RANDOM MODIFICABLE EN CUALQUIER MOMENTO?"/>
+                            tools:text="¿PREGUNTA RANDOM MODIFICABLE EN CUALQUIER MOMENTO?" />
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="3dp"/>
+                            android:layout_marginVertical="3dp" />
 
                         <RadioGroup
                             android:id="@+id/rb_unico"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginVertical="5dp"
-                            android:visibility="gone"/>
+                            android:visibility="gone" />
 
                         <LinearLayout
                             android:id="@+id/lnr_multiple"
@@ -88,24 +88,24 @@
                             android:layout_height="wrap_content"
                             android:layout_marginVertical="5dp"
                             android:orientation="vertical"
-                            android:visibility="gone"/>
+                            android:visibility="gone" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/txt_libre"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
                             android:visibility="gone"
-                            app:boxBackgroundColor="@null"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            app:boxBackgroundColor="@null">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_libre"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:hint="Respuesta"
                                 android:imeOptions="actionDone"
-                                android:inputType="text"
-                                android:hint="Respuesta" />
+                                android:inputType="text" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,56 +118,56 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="10dp"
+                    android:visibility="gone"
                     app:cardCornerRadius="5dp"
                     app:cardElevation="3dp"
-                    app:cardUseCompatPadding="true"
-                    android:visibility="gone">
+                    app:cardUseCompatPadding="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="3dp"
-                        android:padding="3dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="3dp">
 
                         <TextView
                             android:id="@+id/txt_foto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textColor="@color/purple_500"
-                            tools:text="100 - NOMBRE CLIENTE"/>
+                            tools:text="100 - NOMBRE CLIENTE" />
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="3dp"/>
+                            android:layout_marginVertical="3dp" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:textSize="15sp"
-                            android:text="Por favor tome una foto del puesto del cliente"/>
+                            android:text="Por favor tome una foto del puesto del cliente"
+                            android:textSize="15sp" />
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="3dp"/>
+                            android:layout_marginVertical="3dp" />
 
                         <ImageView
                             android:id="@+id/img_foto"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="10dp"
-                            app:srcCompat="@drawable/camara"/>
+                            app:srcCompat="@drawable/camara" />
 
                         <TextView
                             android:id="@+id/txt_ruta"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            tools:text="ruta/foto/guardada"
-                            android:visibility="gone"/>
+                            android:visibility="gone"
+                            tools:text="ruta/foto/guardada" />
 
                     </LinearLayout>
 
@@ -176,24 +176,24 @@
                 <com.google.android.flexbox.FlexboxLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:justifyContent="flex_end"
-                    app:flexWrap="wrap">
+                    app:flexWrap="wrap"
+                    app:justifyContent="flex_end">
 
                     <Button
                         android:id="@+id/btn_cancelar"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cancelar"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                        android:text="Cancelar" />
 
                     <Button
                         android:id="@+id/btn_siguiente"
+                        style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="Siguiente"
-                        android:visibility="gone"
-                        style="@style/Widget.MaterialComponents.Button"/>
+                        android:visibility="gone" />
 
                 </com.google.android.flexbox.FlexboxLayout>
 
@@ -214,49 +214,49 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
                     android:gravity="center"
-                    android:padding="3dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="3dp">
 
                     <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:src="@drawable/pulgar"
-                        app:tint="@color/green"/>
+                        app:tint="@color/green" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="¡Felicidades!"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/txt_mensaje"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="4dp"
-                        android:textSize="20sp"
                         android:gravity="center"
-                        tools:text="Completo la encuesta del cliente pepito"/>
+                        android:textSize="20sp"
+                        tools:text="Completo la encuesta del cliente pepito" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="Por favor guarde las respuestas para poder continuar"
-                        android:textSize="20sp"/>
+                        android:textSize="20sp" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="3dp"/>
+                        android:layout_marginVertical="3dp" />
 
                     <Button
                         android:id="@+id/btn_guardar"
+                        style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Guardar"
-                        style="@style/Widget.MaterialComponents.Button"/>
+                        android:text="Guardar" />
 
                 </LinearLayout>
 

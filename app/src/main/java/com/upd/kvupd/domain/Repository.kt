@@ -66,6 +66,7 @@ interface Repository {
     suspend fun saveSeleccionado(selec: TEncuestaSeleccionado)
     suspend fun saveRespuesta(respuesta: List<TRespuesta>)
     suspend fun saveIncidencia(respuesta: TIncidencia)
+    suspend fun saveAltaFoto(respuesta: TAFoto)
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento>
     suspend fun getServerVisita(estado: String): List<TVisita>
@@ -75,6 +76,7 @@ interface Repository {
     suspend fun getServerBajaestado(estado: String): List<TBEstado>
     suspend fun getServerRespuesta(estado: String): List<TRespuesta>
     suspend fun getServerFoto(estado: String): List<TRespuesta>
+    suspend fun getServerAltaFoto(estado: String): List<TAFoto>
 
     suspend fun updateLocationAlta(locationAlta: LocationAlta)
     suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
@@ -99,6 +101,7 @@ interface Repository {
     suspend fun deleteSeleccionado()
     suspend fun deleteRespuesta()
     suspend fun deleteIncidencia()
+    suspend fun deleteAFoto()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<NetworkRetrofit<Login>>
@@ -142,4 +145,5 @@ interface Repository {
     suspend fun setWebBajaEstados(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebRespuestas(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>>
+    suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JObj>>
 }

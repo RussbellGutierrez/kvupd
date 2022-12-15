@@ -2,12 +2,18 @@ package com.upd.kvupd.utils
 
 import android.location.Location
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.upd.kvupd.data.model.DataAlta
-import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.*
 
 object Constant {
+
+    lateinit var UME: Umes
+    var UMELISTA = listOf<Umes>()
+    var UMESIZE = 0
+    var UMECOUNT = 1
+    var UMEMARCA = ""
+    var UMEAVANCE = 0.0
+    var UMECUOTA = 0.0
+    /**MOMENTANEO*/
 
     var FILTRO_OBS = 9
 
@@ -27,10 +33,14 @@ object Constant {
     var MSG_RUTA = "Message"
     var MSG_ENCUESTA = "Message"
 
+    var LOOPING = false
+    var LOOP_CONFIG = 0
+
     var IS_SUNDAY = false
     var IS_CONFIG_FAILED = false
 
     var IMEI = ""
+    var IPA = ""
     var PROCEDE = ""
     var VISICOOLER_ID = 0
     lateinit var POS_LOC: Location
@@ -85,9 +95,15 @@ object Constant {
     const val DL_WIDTH = ConstraintLayout.LayoutParams.MATCH_PARENT
     const val D_WIDTH = ConstraintLayout.LayoutParams.WRAP_CONTENT
     const val D_HEIGHT = ConstraintLayout.LayoutParams.WRAP_CONTENT
-    const val BASE_URL = "http://200.110.40.58/api/"
-    const val SOCKET_ORIUNDA = "http://200.110.40.58:8080/oriunda/update"
-    const val SOCKET_TERRANORTE = "http://200.110.40.58:80/terranorte/update"
+
+    var OPTURL = "base"
+    var BASE_URL = "http://191.98.177.57/api/"//"http://191.98.177.57/api/"//"http://200.110.40.58/api/"
+    var IP_P = ""
+    var IP_S = ""
+    var IP_AUX = ""
+
+    const val SOCKET_ORIUNDA = "http://191.98.177.57:8080/oriunda/update"
+    const val SOCKET_TERRANORTE = "http://191.98.177.57:80/terranorte/update"
     const val DB_NAME = "KventasN"
     const val REQ_CODE = 101
     const val REQ_BACK_CODE = 102

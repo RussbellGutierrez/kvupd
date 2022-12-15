@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationManager
+import android.net.InetAddresses
 import android.text.Editable
 import android.util.Patterns
 import android.view.MenuItem
@@ -36,6 +37,7 @@ import com.upd.kvupd.utils.Constant.DL_WIDTH
 import com.upd.kvupd.utils.Constant.D_HEIGHT
 import com.upd.kvupd.utils.Constant.D_WIDTH
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.text.ParseException
@@ -44,9 +46,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun JSONObject.toReqBody(): RequestBody =
-    RequestBody.create(MediaType.parse("application/json"), this.toString())
+    RequestBody.create("application/json".toMediaTypeOrNull(), this.toString())
 
 fun Editable.validateImei() = this.toString().length == 15
+
+fun Editable.validateIP() = InetAddresses.isNumericAddress(this.toString())
 
 fun Fragment.toast(text: String, duration: Int = 0) {
     Toast.makeText(this.requireContext(), text, duration).show()

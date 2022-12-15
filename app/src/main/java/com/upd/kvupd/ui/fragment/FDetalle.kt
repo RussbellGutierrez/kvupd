@@ -1,6 +1,9 @@
 package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +13,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.data.model.Generico
+import com.upd.kvupd.data.model.ValueName
 import com.upd.kvupd.data.model.Visisuper
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
 import com.upd.kvupd.ui.adapter.GenericoAdapter
 import com.upd.kvupd.ui.adapter.VisisuperAdapter
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.UMELISTA
 import com.upd.kvupd.utils.Constant.VISICOOLER_ID
 import com.upd.kvupd.utils.Interface.generListener
 import com.upd.kvupd.utils.Interface.visisuListener
@@ -190,9 +195,29 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
         progress("Descargando informacion")
 
         when (CONF.empresa) {
-            1 -> viewmodel.fetchUmesGenerico(p.toReqBody())
+            1 -> detalleUME()//viewmodel.fetchUmesGenerico(p.toReqBody())
             2 -> viewmodel.fetchSolesGenerico(p.toReqBody())
         }
     }
 
+    private fun detalleUME() {
+        var codigo = 0
+        val lista = arrayListOf<Generico>()
+        args.ume?.let {
+            codigo = it.marca.codigo
+        }
+        UMELISTA.forEach { i ->
+            if (i.marca.codigo == codigo) {
+                val item =
+                    Generico(ValueName(i.linea.codigo, i.linea.descripcion), i.cuota, i.avance)
+                lista.add(item)
+            }
+        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            bind.emptyContainer.root.setUI("v", false)
+            bind.rcvDetalle.setUI("v", true)
+            generAdapter.mDiffer.submitList(lista)
+            showDialog("Correcto", "Datos descargados") {}
+        }, 3000)
+    }
 }

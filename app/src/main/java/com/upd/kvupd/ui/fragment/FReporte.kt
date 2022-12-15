@@ -15,8 +15,16 @@ import com.upd.kvupd.ui.adapter.SolesAdapter
 import com.upd.kvupd.ui.adapter.UmesAdapter
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Constant.SOCKET_ORIUNDA
-import com.upd.kvupd.utils.Constant.SOCKET_TERRANORTE
+import com.upd.kvupd.utils.Constant.IPA
+import com.upd.kvupd.utils.Constant.OPTURL
+import com.upd.kvupd.utils.Constant.UME
+import com.upd.kvupd.utils.Constant.UMEAVANCE
+import com.upd.kvupd.utils.Constant.UMECOUNT
+import com.upd.kvupd.utils.Constant.UMECUOTA
+import com.upd.kvupd.utils.Constant.UMELISTA
+import com.upd.kvupd.utils.Constant.UMEMARCA
+import com.upd.kvupd.utils.Constant.UMESIZE
+import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.solesListener
 import com.upd.kvupd.utils.Interface.umesListener
 import com.upd.kvupd.viewmodel.AppViewModel
@@ -26,6 +34,7 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesListener {
@@ -416,7 +425,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                     is NetworkRetrofit.Success -> {
                         bind.txtMensaje.setUI("v", false)
                         bind.rcvReporte.setUI("v", true)
-                        umesAdapter.mDiffer.submitList(y.data!!.jobl)
+                        proccessUME(y.data!!.jobl)
                     }
                     is NetworkRetrofit.Error -> {
                         bind.rcvReporte.setUI("v", false)
@@ -492,7 +501,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
     }
 
     override fun onItemPress(umes: Umes) {
-        if (CONF.tipo == "S") {
+        /*if (CONF.tipo == "S") {
             findNavController().navigate(
                 FReporteDirections.actionFReporteToDMiniDetalle(
                     null,
@@ -506,7 +515,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                     0
                 )
             )
-        }
+        }*/
     }
 
     override fun onCloseItem(umes: Umes) {
@@ -606,11 +615,69 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         }
     }
 
+    private fun proccessUME(list: List<Umes>) {
+
+        val nlist = arrayListOf<Umes>()
+        val size = list.size
+
+        list.forEach { i ->
+            if (UMEMARCA == "") {
+                UME = i
+                UMEMARCA = i.marca.descripcion
+                UMECUOTA = i.cuota
+                UMEAVANCE = i.avance
+            } else {
+                if (UMEMARCA != i.marca.descripcion) {
+                    UME.cuota = (UMECUOTA * 100.0).roundToInt() / 100.0
+                    UME.avance = (UMEAVANCE * 100.0).roundToInt() / 100.0
+                    nlist.add(UME)
+                    UME = i
+                    UMEMARCA = i.marca.descripcion
+                    UMECUOTA = i.cuota
+                    UMEAVANCE = i.avance
+                } else {
+                    UME = i
+                    UMECUOTA += i.cuota
+                    UMEAVANCE += i.avance
+                }
+            }
+            if (UMECOUNT == size) {
+                UME.cuota = (UMECUOTA * 100.0).roundToInt() / 100.0
+                UME.avance = (UMEAVANCE * 100.0).roundToInt() / 100.0
+                nlist.add(UME)
+                UMECOUNT = 1
+                UMEMARCA = ""
+                UMECUOTA = 0.0
+                UMEAVANCE = 0.0
+            } else {
+                UMECOUNT++
+            }
+        }
+
+        UMELISTA = list
+        umesAdapter.mDiffer.submitList(nlist)
+    }
+
     private fun executeUpdater() {
         val fecha = viewmodel.fecha(3)
+
+        val http = when (OPTURL) {
+            "ipp" -> if (isCONFinitialized()) {
+                "http://${CONF.ipp}"
+            } else {
+                "http://191.98.177.57"
+            }
+            "ips" -> if (isCONFinitialized()) {
+                "http://${CONF.ips}"
+            } else {
+                "http://191.98.177.57"
+            }
+            else -> "http://$IPA"
+        }
+
         val url = when (CONF.empresa) {
-            1 -> SOCKET_ORIUNDA
-            else -> SOCKET_TERRANORTE
+            1 -> "$http:8080/oriunda/update"
+            else -> "$http:80/terranorte/update"
         }
         val opcion = IO.Options()
         opcion.forceNew = false
@@ -637,5 +704,4 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             launchFetchs()
         }
     }
-
 }

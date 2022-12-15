@@ -26,6 +26,8 @@ import com.upd.kvupd.domain.ServiceWork
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IMEI
+import com.upd.kvupd.utils.Constant.IPA
+import com.upd.kvupd.utils.Constant.LOOPING
 import com.upd.kvupd.utils.Constant.SETUP_NOTIF
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Constant.W_DISTRITO
@@ -113,6 +115,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
 
         IMEI = functions.parseQRtoIMEI(true)
+        IPA = functions.parseQRtoIP()
         initObsWork()
         verifyHours()
     }
@@ -140,6 +143,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     }
 
     private fun initObsWork() {
+        helper.configNotifLaunch()
         configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { Event(it) }
         userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { Event(it) }
         distritoLiveData = workManager.getWorkInfosByTagLiveData(W_DISTRITO).map { Event(it) }
@@ -299,7 +303,11 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                                     helper.configNotif()
                                     when (j.state) {
                                         WorkInfo.State.SUCCEEDED -> priorityWorkers()
-                                        WorkInfo.State.FAILED -> configFailed()
+                                        WorkInfo.State.FAILED -> {
+                                            if (!LOOPING) {
+                                                configFailed()
+                                            }
+                                        }
                                         else -> {}
                                     }
                                 }
@@ -402,5 +410,4 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     interface OnServiceListener {
         fun onClosingActivity(notRegister: Boolean = false)
     }
-
 }

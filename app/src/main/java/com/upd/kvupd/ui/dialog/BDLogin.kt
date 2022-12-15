@@ -12,13 +12,21 @@ import com.upd.kvupd.R
 import com.upd.kvupd.databinding.BottomDialogLoginBinding
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.IP_AUX
+import com.upd.kvupd.utils.Constant.IP_P
+import com.upd.kvupd.utils.Constant.IP_S
+import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BDLogin : BottomSheetDialogFragment() {
+
+    @Inject
+    lateinit var host: HostSelectionInterceptor
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: BottomDialogLoginBinding? = null
@@ -62,9 +70,7 @@ class BDLogin : BottomSheetDialogFragment() {
                         }
                     }
                     is NetworkRetrofit.Error -> {
-                        controlUI(false)
-                        bind.txtMensaje.setUI("v", true)
-                        bind.txtMensaje.text = y.message
+                        conditionsError(y.message)
                     }
                 }
             }
@@ -84,14 +90,19 @@ class BDLogin : BottomSheetDialogFragment() {
     private fun login() {
         if (editEmpty()) {
             toast("Complete los campos")
-        }else {
+        } else {
             if (!configEmpty) {
-                val p = JSONObject()
-                p.put("usuario",bind.edtUser.text.toString())
-                p.put("clave",bind.edtPass.text.toString())
-                p.put("empresa",CONF.empresa)
-                controlUI(true)
-                viewmodel.fetchLoginAdmin(p.toReqBody())
+                val ip = bind.edtIp.text.toString().trim()
+                if (ip != "") {
+                    OPTURL = "aux"
+                    IP_AUX = "http://$ip/api/"
+                } else {
+                    OPTURL = "ipp"
+                    IP_P = "http://${CONF.ipp}/api/"
+                }
+
+                host.setHostBaseUrl()
+                callWebApi()
             }
         }
     }
@@ -103,4 +114,31 @@ class BDLogin : BottomSheetDialogFragment() {
         bind.btnLogin.setUI("e", !launch)
     }
 
+    private fun errorUI(msg: String?) {
+        controlUI(false)
+        bind.txtMensaje.setUI("v", true)
+        bind.txtMensaje.text = msg
+    }
+
+    private fun callWebApi() {
+        val p = JSONObject()
+        p.put("usuario", bind.edtUser.text.toString())
+        p.put("clave", bind.edtPass.text.toString())
+        p.put("empresa", CONF.empresa)
+        controlUI(true)
+        viewmodel.fetchLoginAdmin(p.toReqBody())
+    }
+
+    private fun conditionsError(msg: String?) {
+        when (OPTURL) {
+            "aux" -> errorUI(msg)
+            "ipp" -> {
+                OPTURL = "ips"
+                IP_S = "http://${CONF.ips}/api/"
+                host.setHostBaseUrl()
+                callWebApi()
+            }
+            "ips" -> errorUI(msg)
+        }
+    }
 }

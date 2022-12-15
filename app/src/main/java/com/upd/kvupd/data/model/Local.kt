@@ -11,11 +11,23 @@ data class TSesion(
     val sucursal: Int,
     val fecha: String,
     val hini: String,
-    val hfin: String
+    val hfin: String,
+    val ipp: String,
+    val ips: String
 )
 
 fun Config.asTSesion(): TSesion =
-    TSesion(this.codigo, this.empresa, this.esquema, this.sucursal, this.fecha, this.hini, this.hfin)
+    TSesion(
+        this.codigo,
+        this.empresa,
+        this.esquema,
+        this.sucursal,
+        this.fecha,
+        this.hini,
+        this.hfin,
+        this.ipp,
+        this.ips
+    )
 
 @Entity(primaryKeys = ["codigo"])
 data class TConfiguracion(
@@ -149,7 +161,7 @@ fun List<Combo>.asSpinner(): List<String> = this.map {
     "${it.codigo} - ${it.nombre}"
 }
 
-@Entity(primaryKeys = ["id","pregunta"])
+@Entity(primaryKeys = ["id", "pregunta"])
 data class TEncuesta(
     val id: Int,
     val nombre: String,
@@ -329,6 +341,15 @@ data class TADatos(
     val giro: String,
     val ruta: String,
     val secuencia: String,
+    var estado: String
+)
+
+@Entity(primaryKeys = ["idaux"])
+data class TAFoto(
+    val idaux: Int,
+    val empleado: Int,
+    val ruta: String,
+    val fecha: String,
     var estado: String
 )
 

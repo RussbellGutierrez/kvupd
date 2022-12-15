@@ -17,7 +17,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
@@ -34,8 +33,10 @@ import com.upd.kvupd.data.model.Respuesta
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.PROCEDE
+import com.upd.kvupd.utils.multiReplace
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -265,7 +266,7 @@ class FEncuesta : Fragment() {
                             previo = "${it.pregunta}|${bind.edtLibre.text}"
                         }
                         val rsp = bind.edtLibre.text.toString()
-                        val item = Respuesta(it.id, it.pregunta, rsp, "",0)
+                        val item = Respuesta(it.id, it.pregunta, rsp, "", 0)
                         respuesta.add(item)
                         posicion++
                         drawQuestion()
@@ -274,13 +275,13 @@ class FEncuesta : Fragment() {
                         if (it.condicional) {
                             previo = "${it.pregunta}|$radiocheck"
                         }
-                        val item = Respuesta(it.id, it.pregunta, radiocheck, "",0)
+                        val item = Respuesta(it.id, it.pregunta, radiocheck, "", 0)
                         respuesta.add(item)
                         posicion++
                         drawQuestion()
                     }
                     "M" -> {
-                        val item = Respuesta(it.id, it.pregunta, radiocheck, "",0)
+                        val item = Respuesta(it.id, it.pregunta, radiocheck, "", 0)
                         respuesta.add(item)
                         posicion++
                         drawQuestion()
@@ -294,7 +295,7 @@ class FEncuesta : Fragment() {
                 if (rt == "") {
                     snack("Debe tomar una foto para la encuesta")
                 } else {
-                    val item = Respuesta(encuesta, 0, "", rt,1)
+                    val item = Respuesta(encuesta, 0, "", rt, 1)
                     respuesta.add(item)
                     foto = false
                 }
@@ -375,7 +376,16 @@ class FEncuesta : Fragment() {
         val cliente = args.cliente.split("-")[0].trim().toInt()
         val fecha = viewmodel.fecha(4)
         respuesta.forEach {
-            val item = TRespuesta(cliente, fecha, it.encuesta, it.pregunta, it.respuesta, it.ruta, it.foto,"Pendiente")
+            val item = TRespuesta(
+                cliente,
+                fecha,
+                it.encuesta,
+                it.pregunta,
+                it.respuesta,
+                it.ruta,
+                it.foto,
+                "Pendiente"
+            )
             list.add(item)
         }
         viewmodel.savingRespuestas(list)

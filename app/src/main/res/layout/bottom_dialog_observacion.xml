@@ -158,6 +158,32 @@
                     android:orientation="vertical">
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fab_tiempo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/reloj_arena"
+                        app:backgroundTint="@color/white"
+                        app:tint="@color/primaryDarkColor"
+                        app:useCompatPadding="true"
+                        app:rippleColor="@color/lightgray"
+                        app:elevation="1dp"/>
+
+                    <TextView
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="FALTA TIEMPO"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/fab_encargado"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -245,8 +245,8 @@ data class JUmes(
 data class Umes(
     @Json(name = "marca") val marca: ValueName,
     @Json(name = "linea") val linea: ValueName,
-    @Json(name = "cuota") val cuota: Double,
-    @Json(name = "avance") val avance: Double
+    @Json(name = "cuota") var cuota: Double,
+    @Json(name = "avance") var avance: Double
 ) : Parcelable
 
 @JsonClass(generateAdapter = true)

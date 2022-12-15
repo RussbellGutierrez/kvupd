@@ -8,9 +8,16 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.domain.Repository
+import com.upd.kvupd.utils.Constant
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
+import com.upd.kvupd.utils.Constant.IPA
+import com.upd.kvupd.utils.Constant.IP_AUX
+import com.upd.kvupd.utils.Constant.IP_P
+import com.upd.kvupd.utils.Constant.IP_S
+import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.Constant.isCONFinitialized
+import com.upd.kvupd.utils.HostSelectionInterceptor
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +28,8 @@ import org.json.JSONObject
 class SeguimientoPWork @WorkerInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val repository: Repository
+    private val repository: Repository,
+    private val host: HostSelectionInterceptor
 ) : CoroutineWorker(appContext, workerParameters) {
     private val _tag by lazy { SeguimientoPWork::class.java.simpleName }
 
@@ -39,7 +47,10 @@ class SeguimientoPWork @WorkerInject constructor(
                                     repository.saveSeguimiento(i)
                                     Log.d(_tag,"Seguimiento enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag,"Seguimiento Error ${it.message}")
+                                is NetworkRetrofit.Error -> {
+                                    changeHostServer()
+                                    Log.e(_tag,"Seguimiento Error ${it.message}")
+                                }
                             }
                         }
                     }
@@ -63,4 +74,23 @@ class SeguimientoPWork @WorkerInject constructor(
         return p.toReqBody()
     }
 
+    private suspend fun changeHostServer() {
+        repository.getSesion().let { sesion ->
+            when (OPTURL) {
+                "aux" -> {
+                    OPTURL = "ipp"
+                    IP_P = "http://${sesion!!.ipp}/api/"
+                }
+                "ipp" -> {
+                    OPTURL = "ips"
+                    IP_S = "http://${sesion!!.ips}/api/"
+                }
+                "ips" -> {
+                    OPTURL = "aux"
+                    IP_AUX = "http://$IPA/api/"
+                }
+            }
+            host.setHostBaseUrl()
+        }
+    }
 }

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingVertical="20dp"
-    android:paddingHorizontal="40dp"
-    android:gravity="center"
     android:background="@drawable/bicolor_dialog"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="40dp"
+    android:paddingVertical="20dp"
     tools:context=".ui.dialog.BDLogin">
 
     <com.google.android.material.card.MaterialCardView
@@ -16,67 +16,93 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginVertical="10dp"
-        app:cardUseCompatPadding="true"
         app:cardCornerRadius="5dp"
-        app:cardElevation="3dp">
+        app:cardElevation="3dp"
+        app:cardUseCompatPadding="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="20dp"
             android:layout_margin="10dp"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp">
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:srcCompat="@drawable/login"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/login" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/lightcrimson"
-                android:text="Antes de ingresar a los ajustes, suba su información al servidor, porque se limpiara TODOS los datos"/>
+                android:text="Antes de ingresar a los ajustes, suba su información al servidor, porque se limpiara TODOS los datos"
+                android:textColor="@color/lightcrimson" />
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                app:boxBackgroundColor="@null"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_ip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:digits="0123456789."
+                    android:hint="IP emergencia"
+                    android:imeOptions="actionNext"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:textSize="11sp"
+                android:text="No es necesario ingresar IP, solo en caso de emergencia" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:boxBackgroundColor="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_user"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Usuario"
                     android:imeOptions="actionNext"
-                    android:inputType="text"
-                    android:hint="Usuario" />
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 app:boxBackgroundColor="@null"
-                app:passwordToggleEnabled="true"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="Contraseña"
                     android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:hint="Contraseña"/>
+                    android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,12 +111,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="10dp"
-                android:textColor="@color/lightcrimson"
-                android:gravity="center_vertical"
-                app:drawableLeftCompat="@drawable/error"
                 android:drawablePadding="5dp"
-                tools:text="Mensaje del servidor"
-                android:visibility="gone"/>
+                android:gravity="center_vertical"
+                android:textColor="@color/lightcrimson"
+                android:visibility="gone"
+                app:drawableLeftCompat="@drawable/error"
+                tools:text="Mensaje del servidor" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -101,18 +127,18 @@
 
                 <ProgressBar
                     android:id="@+id/pgrb_cargando"
+                    style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="50dp"
-                    android:visibility="gone"
-                    style="?android:attr/progressBarStyle"/>
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btn_login"
+                    style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ingresar"
-                    style="@style/Widget.MaterialComponents.Button"/>
+                    android:text="Ingresar" />
 
             </LinearLayout>
 
