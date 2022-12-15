@@ -39,6 +39,7 @@ import com.upd.kvupd.utils.Constant.D_WIDTH
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -46,7 +47,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 fun JSONObject.toReqBody(): RequestBody =
-    RequestBody.create("application/json".toMediaTypeOrNull(), this.toString())
+    this.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
 fun Editable.validateImei() = this.toString().length == 15
 
