@@ -6,13 +6,13 @@ import com.upd.kvupd.data.model.*
 
 object Constant {
 
-    lateinit var UME: Umes
+    /*lateinit var UME: Umes
     var UMELISTA = listOf<Umes>()
     var UMESIZE = 0
     var UMECOUNT = 1
     var UMEMARCA = ""
     var UMEAVANCE = 0.0
-    var UMECUOTA = 0.0
+    var UMECUOTA = 0.0*/
     /**MOMENTANEO*/
 
     var FILTRO_OBS = 9

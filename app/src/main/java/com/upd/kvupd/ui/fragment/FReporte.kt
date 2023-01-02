@@ -17,13 +17,6 @@ import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IPA
 import com.upd.kvupd.utils.Constant.OPTURL
-import com.upd.kvupd.utils.Constant.UME
-import com.upd.kvupd.utils.Constant.UMEAVANCE
-import com.upd.kvupd.utils.Constant.UMECOUNT
-import com.upd.kvupd.utils.Constant.UMECUOTA
-import com.upd.kvupd.utils.Constant.UMELISTA
-import com.upd.kvupd.utils.Constant.UMEMARCA
-import com.upd.kvupd.utils.Constant.UMESIZE
 import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.solesListener
 import com.upd.kvupd.utils.Interface.umesListener
@@ -34,7 +27,6 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
 import javax.inject.Inject
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesListener {
@@ -74,7 +66,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (CONF.empresa) {
+        bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
+        bind.rcvReporte.adapter = solesAdapter
+
+        if (CONF.empresa == 2) {
+            bind.lnrSoloOriunda.setUI("v", false)
+        }
+
+        /*when (CONF.empresa) {
             1 -> {
                 bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
                 bind.rcvReporte.adapter = umesAdapter
@@ -84,7 +83,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 bind.rcvReporte.adapter = solesAdapter
                 bind.lnrSoloOriunda.setUI("v", false)
             }
-        }
+        }*/
 
         launchFetchs()
 
@@ -423,14 +422,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is NetworkRetrofit.Success -> {
-                        bind.txtMensaje.setUI("v", false)
+                        /*bind.txtMensaje.setUI("v", false)
                         bind.rcvReporte.setUI("v", true)
-                        proccessUME(y.data!!.jobl)
+                        proccessUME(y.data!!.jobl)*/
                     }
                     is NetworkRetrofit.Error -> {
-                        bind.rcvReporte.setUI("v", false)
+                        /*bind.rcvReporte.setUI("v", false)
                         bind.txtMensaje.setUI("v", true)
-                        bind.txtMensaje.text = y.message
+                        bind.txtMensaje.text = y.message*/
                     }
                 }
             }
@@ -547,11 +546,12 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             }
         }
 
-        if (CONF.empresa == 1) {
+        viewmodel.fetchSoles(p.toReqBody())
+        /*if (CONF.empresa == 1) {
             viewmodel.fetchUmes(p.toReqBody())
         } else {
             viewmodel.fetchSoles(p.toReqBody())
-        }
+        }*/
     }
 
     private fun controlUI(ui: Int, status: Boolean) {
@@ -615,7 +615,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         }
     }
 
-    private fun proccessUME(list: List<Umes>) {
+    /*private fun proccessUME(list: List<Umes>) {
 
         val nlist = arrayListOf<Umes>()
         val size = list.size
@@ -656,7 +656,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
 
         UMELISTA = list
         umesAdapter.mDiffer.submitList(nlist)
-    }
+    }*/
 
     private fun executeUpdater() {
         val fecha = viewmodel.fecha(3)
