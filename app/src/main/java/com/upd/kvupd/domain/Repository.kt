@@ -11,7 +11,7 @@ interface Repository {
     fun getFlowConfig(): Flow<List<TConfiguracion>>
     fun getFlowSession(): Flow<TSesion>
     fun getFlowRowCliente(): Flow<List<RowCliente>>
-    fun getFlowLocation(): Flow<List<TSeguimiento>>
+    fun getFlowLocation(): Flow<List<TSeguimiento>?>
     fun getFlowMarker(observacion: String): Flow<List<MarkerMap>>
     fun getFlowAltas(): Flow<List<TAlta>>
     fun getFlowDistritos(): Flow<List<Combo>>
@@ -145,5 +145,5 @@ interface Repository {
     suspend fun setWebBajaEstados(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebRespuestas(body: RequestBody): Flow<NetworkRetrofit<JObj>>
     suspend fun setWebFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>>
-    suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JObj>>
+    suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>>
 }

@@ -10,13 +10,17 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -24,6 +28,7 @@ import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
 import com.upd.kvupd.data.model.asSpinner
 import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
 import com.upd.kvupd.utils.*
@@ -36,7 +41,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 @AndroidEntryPoint
-class FAltaDatos : Fragment() {
+class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFAltaDatosBinding? = null
@@ -54,10 +59,9 @@ class FAltaDatos : Fragment() {
         _bind = null
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    /**Agregar campos dnice,ruc,tdoc,imei, todos string**/
+    /**Cuando es persona juridica, dni y ruc son obligatorios**/
+    /**Cuando es persona natural, dni es obligatorio y ruc opcional**/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +73,8 @@ class FAltaDatos : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.rbGrupo.setOnCheckedChangeListener { _, id ->
             when (id) {
@@ -82,8 +88,8 @@ class FAltaDatos : Fragment() {
                 }
             }
         }
-
-        //bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
+        bind.spnDocumento.onItemSelectedListener = this
+        bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
 
         viewmodel.distritosObs().observe(viewLifecycleOwner) {
             distrito = it.asSpinner()
@@ -94,14 +100,12 @@ class FAltaDatos : Fragment() {
             )
             setupFields()
         }
-
         viewmodel.negociosObs().observe(viewLifecycleOwner) {
             giro = it.asSpinner()
             bind.spnGiro.adapter =
                 ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
             setupFields()
         }
-
         viewmodel.altadatos.observe(viewLifecycleOwner) {
             if (it != null) {
                 adStored = it
@@ -111,14 +115,19 @@ class FAltaDatos : Fragment() {
         checkAlta()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.altadatos_menu, menu)
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        processDocumento(position)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.altadatos_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.guardar -> consume { saveAltaDatos() }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     private fun cleanFields() {
@@ -126,7 +135,10 @@ class FAltaDatos : Fragment() {
         bind.edtPaterno.setText("")
         bind.edtMaterno.setText("")
         bind.edtNombre.setText("")
-        bind.edtDocumento.setText("")
+        //bind.edtDocumento.setText("")
+        bind.edtDnice.setText("")
+        bind.edtRuc.setText("")
+        bind.spnDocumento.setSelection(0)
         bind.edtMovil1.setText("")
         bind.edtMovil2.setText("")
         bind.edtCorreo.setText("")
@@ -162,6 +174,36 @@ class FAltaDatos : Fragment() {
         viewmodel.fetchAltaDatos(args.idaux.toString())
     }
 
+    private fun processDocumento(id: Int) {
+        when (id) {
+            0 -> {
+                bind.inlRuc.setUI("v", false)
+                bind.inlDnice.setUI("v", false)
+                bind.txtMensaje.setUI("v", false)
+                bind.edtRuc.setText("")
+                bind.edtDnice.setText("")
+            }
+            1 -> {
+                bind.inlRuc.setUI("v", true)
+                bind.inlDnice.setUI("v", true)
+                bind.txtMensaje.setUI("v", true)
+                bind.txtMensaje.text = "* EL RUC ES OBLIGATORIO"
+            }
+            else -> {
+                bind.inlDnice.setUI("v", true)
+                bind.txtMensaje.setUI("v", true)
+                when (tipo) {
+                    "PJ" -> bind.spnDocumento.setSelection(1)
+                    "PN" -> {
+                        bind.inlRuc.setUI("v", false)
+                        bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
+                        bind.edtRuc.setText("")
+                    }
+                }
+            }
+        }
+    }
+
     private fun setupFields() {
 
         if (::adStored.isInitialized) {
@@ -190,7 +232,11 @@ class FAltaDatos : Fragment() {
                 bind.edtPaterno.setText(adStored.appaterno)
                 bind.edtMaterno.setText(adStored.apmaterno)
                 bind.edtNombre.setText(adStored.nombre)
-                bind.edtDocumento.setText(adStored.documento)
+                bind.edtDnice.setText(adStored.dnice)
+                bind.edtRuc.setText(adStored.ruc)
+                bind.spnDocumento.setSelection(setDocumento(adStored.tipodocu))
+                processDocumento(setDocumento(adStored.tipodocu))
+                //bind.edtDocumento.setText(adStored.documento)
                 bind.edtMovil1.setText(adStored.movil1)
                 bind.edtMovil2.setText(adStored.movil2)
                 bind.edtCorreo.setText(adStored.correo)
@@ -205,6 +251,9 @@ class FAltaDatos : Fragment() {
                 bind.edtSecuencia.setText(adStored.secuencia)
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
+                if (adStored.dniruta != "") {
+                    thumbnailPhoto(adStored.dniruta, true)
+                }
             }
         } else {
             hideprogress()
@@ -232,7 +281,7 @@ class FAltaDatos : Fragment() {
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                //thumbnailPhoto()
+                thumbnailPhoto("", false)
             } else {
                 snack("Error procesando foto")
             }
@@ -246,8 +295,13 @@ class FAltaDatos : Fragment() {
         }
     }
 
-    /*private fun thumbnailPhoto() {
-        val bitmap = BitmapFactory.decodeFile(abspath)
+    private fun thumbnailPhoto(path: String, show: Boolean) {
+        val ruta: String = if (show) {
+            path
+        } else {
+            abspath
+        }
+        val bitmap = BitmapFactory.decodeFile(ruta)
         bind.txtRuta.setUI("v", true)
         bind.txtRuta.text = abspath
         Glide
@@ -268,7 +322,9 @@ class FAltaDatos : Fragment() {
                         resource.toBitmap().compress(Bitmap.CompressFormat.JPEG, 80, out)
                         out.flush()
                         out.close()
-                        snack("Foto almacenada")
+                        if (!show) {
+                            snack("Foto almacenada")
+                        }
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
@@ -276,14 +332,17 @@ class FAltaDatos : Fragment() {
 
                 override fun onResourceCleared(placeholder: Drawable?) {}
             })
-    }*/
+    }
 
     private fun saveAltaDatos() {
         val razon = bind.edtRazon.text.toString().trim().uppercase()
         val paterno = bind.edtPaterno.text.toString().trim().uppercase()
         val materno = bind.edtMaterno.text.toString().trim().uppercase()
         val nombre = bind.edtNombre.text.toString().trim().uppercase()
-        val documento = bind.edtDocumento.text.toString().trim().uppercase()
+        val dnice = bind.edtDnice.text.toString().trim().uppercase()
+        val ruc = bind.edtRuc.text.toString().trim().uppercase()
+        val tipodoc = getDocumento()
+        //val documento = bind.edtDocumento.text.toString().trim().uppercase()
         val movil1 = bind.edtMovil1.text.toString().trim()
         val movil2 = bind.edtMovil2.text.toString().trim()
         val correo = bind.edtCorreo.text.toString().trim()
@@ -300,64 +359,163 @@ class FAltaDatos : Fragment() {
         val secuencia = bind.edtSecuencia.text.toString().trim()
 
         when {
-            tipo == "PJ" && razon == "" -> showDialog("Error", "Ingrese una razon social") {}
+            tipo == "PJ" && razon == "" -> showDialog("Advertencia", "Ingrese una razon social") {}
             tipo == "PN" && (paterno == "" || materno == "" || nombre == "") -> showDialog(
-                "Error",
+                "Advertencia",
                 "Ingrese nombre y apellidos del cliente"
             ) {}
-            documento == "" -> showDialog("Error", "Ingrese documento de identificacion") {}
-            movil1 == "" && movil2 == "" -> showDialog("Error", "Ingrese un numero de celular") {}
+            tipo == "PJ" && ruc == "" -> showDialog(
+                "Advertencia",
+                "Debe ingresar el RUC de la empresa"
+            ) {}
+            /*tipo == "PJ" && ruc == "" && dnice == "" -> showDialog(
+                "Advertencia",
+                "Debe registrar RUC y DNI"
+            ) {}
+            tipo == "PN" && dnice == "" -> showDialog(
+                "Advertencia",
+                "Debe registrar un DNI o CARNET EXTRANJERIA"
+            ) {}*/
+            //documento == "" -> showDialog("Error", "Ingrese documento de identificacion") {}
+            movil1 == "" && movil2 == "" -> showDialog(
+                "Advertencia",
+                "Ingrese un numero de celular"
+            ) {}
             correo != "" && !correo.checkEmail() -> showDialog(
-                "Error",
+                "Advertencia",
                 "Ingrese un correo valido"
             ) {}
-            numero == "" -> showDialog("Error", "Ingrese el numero de calle") {}
-            ruta == "" -> showDialog("Error", "Ingrese la ruta") {}
-            secuencia == "" -> showDialog("Error", "Ingrese la secuencia") {}
+            tipodoc == "Ninguno" -> showDialog(
+                "Advertencia",
+                "Seleccione el documento a registrar"
+            ) {}
+            tipodoc == "RUC" && ruc == "" -> showDialog(
+                "Advertencia",
+                "Si eligio RUC, debe completar el campo"
+            ) {}
+            tipodoc == "DNI" && dnice == "" -> showDialog(
+                "Advertencia",
+                "Si eligio DNI, debe completar el campo"
+            ) {}
+            tipodoc == "CE" && dnice == "" -> showDialog(
+                "Advertencia",
+                "Si eligio CARNET EXTRANJERIA, debe completar el campo"
+            ) {}
+            numero == "" -> showDialog("Advertencia", "Ingrese el numero de calle") {}
+            ruta == "" -> showDialog("Advertencia", "Ingrese la ruta") {}
+            secuencia == "" -> showDialog("Advertencia", "Ingrese la secuencia") {}
+            numero.toInt() == 0 -> showDialog(
+                "Advertencia",
+                "Ingrese un numero valido para calle"
+            ) {}
+            ruta.toInt() == 0 -> showDialog("Advertencia", "Ingrese una ruta valida") {}
+            secuencia.toInt() == 0 -> showDialog("Advertencia", "Ingrese una secuencia valida") {}
             /*bind.txtRuta.text == "" -> showDialog(
-                "Error",
+                "Advertencia",
                 "Debe tomar una foto del documento del cliente"
             ) {}*/
+            ruc != "" && !ruc.checkDocumento(tipo) -> showDialog(
+                "Advertencia",
+                "-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
+            ) {}
+            dnice != "" && !dnice.checkDocumento(tipo) -> showDialog(
+                "Advertencia",
+                "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos"
+            ) {}
             else -> {
-                if (documento.checkDocumento(tipo)) {
-                    val item = TADatos(
-                        args.idaux,
-                        CONF.codigo,
-                        tipo,
-                        razon,
-                        nombre,
-                        paterno,
-                        materno,
-                        documento,
-                        movil1,
-                        movil2,
-                        correo,
-                        via,
-                        direccion,
-                        manzana,
-                        zona,
-                        zonanombre,
-                        ubicacion,
-                        numero,
-                        distrito,
-                        giro,
-                        ruta,
-                        secuencia,
-                        "Pendiente"
-                    )
-                    viewmodel.saveAltaDatos(item)
-                    when (ALTADATOS) {
-                        "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
-                        "mapa" -> findNavController().navigate(
-                            FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
+                val dnipath = bind.txtRuta.text.toString()
+                val item = TADatos(
+                    args.idaux,
+                    CONF.codigo,
+                    tipo,
+                    razon,
+                    nombre,
+                    paterno,
+                    materno,
+                    ruc,
+                    dnice,
+                    tipodoc,
+                    movil1,
+                    movil2,
+                    correo,
+                    via,
+                    direccion,
+                    manzana,
+                    zona,
+                    zonanombre,
+                    ubicacion,
+                    numero,
+                    distrito,
+                    giro,
+                    ruta,
+                    secuencia,
+                    dnipath,
+                    "Pendiente"
+                )
+                viewmodel.saveAltaDatos(item)
+                if (dnipath != "") {
+                    val dni =
+                        TAFoto(
+                            args.idaux,
+                            CONF.codigo,
+                            dnipath,
+                            viewmodel.fecha(6),
+                            "Pendiente"
                         )
+                    viewmodel.savingDNI(dni)
+                }
+                when (ALTADATOS) {
+                    "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
+                    "mapa" -> findNavController().navigate(
+                        FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
+                    )
+                }
+                /**CLEAN METHOD ONLY FILTER*/
+                /*if (dnice.checkDocumento(tipo)) {
+                    when (tipo) {
+                        "PJ" -> {
+                            if (ruc.checkDocumento(tipo)) {
+                                viewmodel.saveAltaDatos(item)
+                                when (ALTADATOS) {
+                                    "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
+                                    "mapa" -> findNavController().navigate(
+                                        FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
+                                    )
+                                }
+                            } else {
+                                showDialog(
+                                    "Advertencia",
+                                    "-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
+                                ) {}
+                            }
+                        }
+                        "PN" -> {
+                            viewmodel.saveAltaDatos(item)
+                            when (ALTADATOS) {
+                                "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
+                                "mapa" -> findNavController().navigate(
+                                    FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
+                                )
+                            }
+                        }
+                    }
+                    if (dnipath != "") {
+                        val dni =
+                            TAFoto(
+                                args.idaux,
+                                CONF.codigo,
+                                dnipath,
+                                viewmodel.fecha(6),
+                                "Pendiente"
+                            )
+                        viewmodel.savingDNI(dni)
                     }
                 } else {
                     showDialog(
-                        "Error",
-                        "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos\n-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
+                        "Advertencia",
+                        "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos"
                     ) {}
-                }
+                }*/
             }
         }
     }
@@ -369,6 +527,13 @@ class FAltaDatos : Fragment() {
         "DPTO" -> "DPTO"
         "PUESTO" -> "PTO"
         "LOTE" -> "LT"
+        else -> "Ninguno"
+    }
+
+    private fun getDocumento() = when (bind.spnDocumento.selectedItem.toString()) {
+        "RUC" -> "RUC"
+        "DNI" -> "DNI"
+        "CARNET" -> "CE"
         else -> "Ninguno"
     }
 
@@ -426,6 +591,13 @@ class FAltaDatos : Fragment() {
         else -> 999
     }
 
+    private fun setDocumento(texto: String) = when (texto) {
+        "RUC" -> 1
+        "DNI" -> 2
+        "CE" -> 3
+        else -> 0
+    }
+
     private fun setVia(texto: String) = when (texto) {
         "AV" -> 0
         "BLVR" -> 1
@@ -469,5 +641,4 @@ class FAltaDatos : Fragment() {
         "ZI" -> 25
         else -> 999
     }
-
 }

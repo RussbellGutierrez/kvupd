@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Generico
+import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.data.model.Visisuper
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
 import com.upd.kvupd.ui.adapter.GenericoAdapter
@@ -31,7 +35,7 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFDetalleBinding? = null
     private val bind get() = _bind!!
-    private val args: FDetalleArgs by navArgs()
+    private lateinit var data: Bundle
     private val _tag by lazy { FDetalle::class.java.simpleName }
 
     @Inject
@@ -47,9 +51,9 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         generListener = this
         visisuListener = this
+        data = arguments!!
     }
 
     override fun onCreateView(
@@ -62,6 +66,8 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.rcvDetalle.layoutManager = LinearLayoutManager(requireContext())
 
@@ -90,18 +96,14 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
                 when (y) {
                     is NetworkRetrofit.Success -> {
                         snack("Mostrando resultado")
+                        val bundle = bundleOf(
+                            "informe" to 4,
+                            "array" to y.data?.jobl?.toTypedArray(),
+                            "item" to null
+                        )
                         findNavController().navigate(
-                            FDetalleDirections.actionFDetalleToDMiniDetalle(
-                                null,
-                                null,
-                                null,
-                                null,
-                                y.data!!.jobl.toTypedArray(),
-                                null,
-                                null,
-                                null,
-                                0
-                            )
+                            R.id.action_FDetalle_to_DMiniDetalle,
+                            bundle
                         )
                     }
                     is NetworkRetrofit.Error -> snack("Error ${y.message}")
@@ -111,20 +113,17 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
     }
 
     override fun onItemClick(generico: Generico) {
-        if (CONF.tipo == "S")
-            findNavController().navigate(
-                FDetalleDirections.actionFDetalleToDMiniDetalle(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    generico,
-                    null,
-                    null,
-                    0
-                )
+        if (CONF.tipo == "S") {
+            val bundle = bundleOf(
+                "informe" to 7,
+                "array" to null,
+                "item" to generico
             )
+            findNavController().navigate(
+                R.id.action_FDetalle_to_DMiniDetalle,
+                bundle
+            )
+        }
     }
 
     override fun onCloseItem(generico: Generico) {
@@ -160,33 +159,38 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
     }
 
     private fun checkDetalle() {
-        if (args.visisuper.isNullOrEmpty()) {
+        val array: List<Visisuper>? =
+            data.getParcelableArray("visisuper")?.filterIsInstance<Visisuper>()
+        if (array.isNullOrEmpty()) {
             bind.rcvDetalle.adapter = generAdapter
             launchDownload()
         } else {
             bind.rcvDetalle.adapter = visiAdapter
             bind.txtTitulo.text = "Visicooler Vendedor"
-            visiAdapter.mDiffer.submitList(args.visisuper!!.toList())
+            visiAdapter.mDiffer.submitList(array.toList())
         }
     }
 
     private fun launchDownload() {
-        var linea = 0
-        var titulo = ""
-        args.ume?.let {
+        /*var linea = 0
+        var titulo = ""*/
+
+        val soles = data.getParcelable<Soles>("soles")!!
+
+        /*args.ume?.let {
             titulo = "UMES"
             linea = it.linea.codigo
         }
         args.soles?.let {
             titulo = "SOLES"
             linea = it.linea.codigo
-        }
-        bind.txtTitulo.text = titulo
+        }*/
+        bind.txtTitulo.text = "SOLES"
 
         val p = JSONObject()
         p.put("empleado", CONF.codigo)
         p.put("empresa", CONF.empresa)
-        p.put("linea", linea)
+        p.put("linea", soles.linea.codigo)
         progress("Descargando informacion")
 
         viewmodel.fetchSolesGenerico(p.toReqBody())

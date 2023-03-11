@@ -1,5 +1,6 @@
 package com.upd.kvupd.domain
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -12,7 +13,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
 import android.telephony.TelephonyManager
-import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.work.*
 import com.google.android.gms.maps.GoogleMap
@@ -39,6 +39,7 @@ import com.upd.kvupd.utils.Constant.LOOP_CONFIG
 import com.upd.kvupd.utils.Constant.PERIODIC_WORK
 import com.upd.kvupd.utils.Constant.WP_ALTA
 import com.upd.kvupd.utils.Constant.WP_ALTADATO
+import com.upd.kvupd.utils.Constant.WP_ALTAFOTO
 import com.upd.kvupd.utils.Constant.WP_BAJA
 import com.upd.kvupd.utils.Constant.WP_BAJAESTADO
 import com.upd.kvupd.utils.Constant.WP_FOTO
@@ -237,6 +238,7 @@ class FunImpl @Inject constructor(
         return dt
     }
 
+    @SuppressLint("MissingPermission")
     override fun mobileInternetState() {
         val connectivityManager = ctx.getSystemService(ConnectivityManager::class.java)
         connectivityManager.registerDefaultNetworkCallback(object :
@@ -620,4 +622,20 @@ class FunImpl @Inject constructor(
         )
     }
 
+    override fun workerperAltaFoto() {
+        val wp = PeriodicWorkRequestBuilder<AltaFotoPWork>(
+            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+            TimeUnit.MILLISECONDS,
+            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
+            TimeUnit.MILLISECONDS
+        )
+            .addTag(PERIODIC_WORK)
+            .setConstraints(constrainsWork())
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            WP_ALTAFOTO,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            wp
+        )
+    }
 }

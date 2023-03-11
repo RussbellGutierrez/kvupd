@@ -60,4 +60,10 @@
         <item>PUESTO</item>
         <item>LOTE</item>
     </string-array>
+    <string-array name="tipodocs">
+        <item>NINGUNO</item>
+        <item>RUC</item>
+        <item>DNI</item>
+        <item>CARNET</item>
+    </string-array>
 </resources>

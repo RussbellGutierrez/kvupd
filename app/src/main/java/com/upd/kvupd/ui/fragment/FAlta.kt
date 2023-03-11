@@ -2,10 +2,11 @@ package com.upd.kvupd.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FAlta : Fragment(), AltaAdapter.OnAltaListener {
+class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFAltaBinding? = null
@@ -44,7 +45,6 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         altaListener = this
     }
 
@@ -60,6 +60,8 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         super.onViewCreated(view, savedInstanceState)
         ALTADATOS = "lista"
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         bind.rcvAltas.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvAltas.adapter = adapter
 
@@ -71,7 +73,8 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         bind.fabAlta.setOnClickListener {
             showDialog("Advertencia", "¿Desea agregar un alta?") {
                 if (isPOSLOCinitialized() &&
-                    POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
+                    POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0
+                ) {
                     viewmodel.addingAlta(POS_LOC)
                 } else {
                     snack("Procesando coordenadas, intente nuevamente")
@@ -80,14 +83,13 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.alta_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.alta_menu,menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.manual -> consume { findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     override fun onItemClick(alta: TAlta) {

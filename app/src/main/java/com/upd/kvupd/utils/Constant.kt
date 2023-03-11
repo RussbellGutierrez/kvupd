@@ -6,15 +6,6 @@ import com.upd.kvupd.data.model.*
 
 object Constant {
 
-    /*lateinit var UME: Umes
-    var UMELISTA = listOf<Umes>()
-    var UMESIZE = 0
-    var UMECOUNT = 1
-    var UMEMARCA = ""
-    var UMEAVANCE = 0.0
-    var UMECUOTA = 0.0*/
-    /**MOMENTANEO*/
-
     var FILTRO_OBS = 9
 
     const val M_PEDIDO = "Hizo pedido"
@@ -72,6 +63,7 @@ object Constant {
     const val WP_BAJAESTADO = "VPBajaestado"
     const val WP_RESPUESTA = "VPRespuesta"
     const val WP_FOTO = "VPFoto"
+    const val WP_ALTAFOTO = "VPAltaFoto"
 
     const val SETUP_CHANNEL = "1"
     const val SETUP_NOTIF = 1
@@ -149,6 +141,7 @@ object Constant {
     const val API_VISITA = "empleado/movil/visita"
     const val API_ALTA = "empleado/movil/alta"
     const val API_ALTADETALLE = "empleado/movil/alta/detalle"
+    const val API_ALTAFOTO = "empleado/movil/alta/documento/foto"
     const val API_BAJA = "empleado/movil/baja"
     const val API_BAJACONFIR = "empleado/movil/baja/confirmar"
     const val API_RESPUESTA = "empleado/movil/encuesta/respuesta"

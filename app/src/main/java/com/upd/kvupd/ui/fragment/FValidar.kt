@@ -197,5 +197,4 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             snack("Ocurrio un problema con las coordenadas, intentelo nuevamente")
         }
     }
-
 }

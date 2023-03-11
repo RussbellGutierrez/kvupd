@@ -83,8 +83,10 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
         }
 
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
-            location.longitude = it[0].longitud
-            location.latitude = it[0].latitud
+            if (!it.isNullOrEmpty()) {
+                location.longitude = it[0].longitud
+                location.latitude = it[0].latitud
+            }
         }
 
         viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) {

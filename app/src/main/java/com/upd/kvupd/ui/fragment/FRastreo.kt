@@ -9,8 +9,10 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -34,7 +36,7 @@ import org.json.JSONObject
 import java.util.*
 
 @AndroidEntryPoint
-class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
+class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFRastreoBinding? = null
@@ -54,7 +56,6 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         location = GPS_LOC
     }
 
@@ -69,6 +70,8 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         if (!::sup.isInitialized) {
             sup = childFragmentManager.findFragmentById(bind.map.id) as SupportMapFragment
             sup.getMapAsync(this)
@@ -81,17 +84,19 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         launchDownload()
 
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
-            location.longitude = it[0].longitud
-            location.latitude = it[0].latitud
+            if (!it.isNullOrEmpty()) {
+                location.longitude = it[0].longitud
+                location.latitude = it[0].latitud
+            }
         }
 
         viewmodel.pedimap.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                when(y) {
+                when (y) {
                     is NetworkRetrofit.Success -> {
                         if (y.data?.jobl.isNullOrEmpty()) {
                             showDialog("Error", "No se obtuvieron vendedores") {}
-                        }else {
+                        } else {
                             showDialog("Correcto", "Se descargo vendedores") {}
                             map.clear()
                             pdmp = y.data!!.jobl
@@ -108,7 +113,17 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         bind.fabCentrar.setOnClickListener { centerMarkers() }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.rastreo_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.actualizar -> consume { launchDownload() }
+        R.id.voz -> consume { searchVoice() }
+        else -> false
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.rastreo_menu, menu)
     }
@@ -117,7 +132,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         R.id.actualizar -> consume { launchDownload() }
         R.id.voz -> consume { searchVoice() }
         else -> super.onOptionsItemSelected(item)
-    }
+    }*/
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
@@ -178,15 +193,17 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         }
     }
 
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            var codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-            codigo = codigo.replace("\\s".toRegex(), "")
-            showMarker(codigo)
-        } else {
-            snack("Error procesando codigo")
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                var codigo =
+                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
+                codigo = codigo.replace("\\s".toRegex(), "")
+                showMarker(codigo)
+            } else {
+                snack("Error procesando codigo")
+            }
         }
-    }
 
     private fun searchVoice() {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).also { intent ->

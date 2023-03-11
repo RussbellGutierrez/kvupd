@@ -3,13 +3,15 @@ package com.upd.kvupd.ui.fragment
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
-import com.upd.kvupd.data.model.Umes
 import com.upd.kvupd.databinding.FragmentFReporteBinding
 import com.upd.kvupd.ui.adapter.SolesAdapter
 import com.upd.kvupd.ui.adapter.UmesAdapter
@@ -29,7 +31,8 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesListener {
+class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesListener,
+    MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFReporteBinding? = null
@@ -50,7 +53,6 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         umesListener = this
         solesListener = this
     }
@@ -65,6 +67,8 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvReporte.adapter = solesAdapter
@@ -106,18 +110,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.txtRepo1Cap3.text = cap3
                         bind.cardRepo1.setOnClickListener {
                             if (CONF.tipo == "S") {
+                                val bundle = bundleOf(
+                                    "informe" to 0,
+                                    "array" to y.data?.jobl?.toTypedArray(),
+                                    "item" to null
+                                )
                                 findNavController().navigate(
-                                    FReporteDirections.actionFReporteToDMiniDetalle(
-                                        y.data?.jobl?.toTypedArray(),
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        0
-                                    )
+                                    R.id.action_FReporte_to_DMiniDetalle,
+                                    bundle
                                 )
                             }
                         }
@@ -149,18 +149,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.txtRepo2Cap3.text = cap3
                         bind.cardRepo2.setOnClickListener {
                             if (CONF.tipo == "S") {
+                                val bundle = bundleOf(
+                                    "informe" to 1,
+                                    "array" to y.data?.jobl?.toTypedArray(),
+                                    "item" to null
+                                )
                                 findNavController().navigate(
-                                    FReporteDirections.actionFReporteToDMiniDetalle(
-                                        null,
-                                        y.data?.jobl?.toTypedArray(),
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        0
-                                    )
+                                    R.id.action_FReporte_to_DMiniDetalle,
+                                    bundle
                                 )
                             }
                         }
@@ -191,18 +187,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.txtRepo3Cap2.text = cap2
                         bind.txtRepo3Cap3.text = cap3
                         bind.cardRepo3.setOnClickListener {
+                            val bundle = bundleOf(
+                                "informe" to 2,
+                                "array" to y.data?.jobl?.toTypedArray(),
+                                "item" to null
+                            )
                             findNavController().navigate(
-                                FReporteDirections.actionFReporteToDMiniDetalle(
-                                    null,
-                                    null,
-                                    y.data?.jobl?.toTypedArray(),
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    0
-                                )
+                                R.id.action_FReporte_to_DMiniDetalle,
+                                bundle
                             )
                         }
                     }
@@ -235,18 +227,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.txtRepo4Cap3.text = cap3
                         bind.cardRepo4.setOnClickListener {
                             if (CONF.tipo == "S") {
+                                val bundle = bundleOf(
+                                    "informe" to 3,
+                                    "array" to null,
+                                    "item" to null
+                                )
                                 findNavController().navigate(
-                                    FReporteDirections.actionFReporteToDMiniDetalle(
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        1
-                                    )
+                                    R.id.action_FReporte_to_DMiniDetalle,
+                                    bundle
                                 )
                             }
                         }
@@ -259,159 +247,117 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             }
         }
 
-        viewmodel.visicooler.observe(viewLifecycleOwner) {
-            Log.d(_tag, "launching visicooler")
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is NetworkRetrofit.Success -> {
-                        var venta = 0
-                        y.data?.jobl?.forEach { i ->
-                            if (i.avance > 0.0)
-                                venta++
-                        }
-                        val cap1 = "Total: ${y.data?.jobl?.size}"
-                        val cap2 = "Venta: $venta"
-                        val cap3 = "${percent(venta.toDouble(), y.data!!.jobl.size.toDouble())}%"
-                        controlUI(4, true)
-                        bind.txtRepo5Cap1.text = cap1
-                        bind.txtRepo5Cap2.text = cap2
-                        bind.txtRepo5Cap3.text = cap3
-                        bind.cardRepo5.setOnClickListener {
-                            findNavController().navigate(
-                                FReporteDirections.actionFReporteToDMiniDetalle(
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    y.data.jobl.toTypedArray(),
-                                    null,
-                                    null,
-                                    null,
-                                    0
+        if (CONF.tipo == "S") {
+            viewmodel.visisuper.observe(viewLifecycleOwner) {
+                it.getContentIfNotHandled()?.let { y ->
+                    when (y) {
+                        is NetworkRetrofit.Success -> {
+                            var venta = 0.0
+                            var total = 0.0
+                            y.data?.jobl?.forEach { i ->
+                                venta += i.avance
+                                total += i.cliente
+                            }
+                            val cap1 = "Total: $total"
+                            val cap2 = "Venta: $venta"
+                            val cap3 = "${percent(venta, total)}%"
+                            controlUI(4, true)
+                            bind.txtRepo5Cap1.text = cap1
+                            bind.txtRepo5Cap2.text = cap2
+                            bind.txtRepo5Cap3.text = cap3
+                            bind.cardRepo5.setOnClickListener {
+                                val bundle = bundleOf(
+                                    "visisuper" to y.data?.jobl?.toTypedArray(),
+                                    "soles" to null
                                 )
-                            )
+                                findNavController().navigate(
+                                    R.id.action_FReporte_to_FDetalle,
+                                    bundle
+                                )
+                            }
+                        }
+                        is NetworkRetrofit.Error -> {
+                            controlUI(4, false)
+                            bind.txtMsg5.text = y.message
                         }
                     }
-                    is NetworkRetrofit.Error -> {
-                        controlUI(4, false)
-                        Log.d(_tag, "Er ${y.message}")
-                        bind.txtMsg5.text = y.message
+                }
+            }
+        } else {
+            viewmodel.visicooler.observe(viewLifecycleOwner) {
+                Log.d(_tag, "launching visicooler")
+                it.getContentIfNotHandled()?.let { y ->
+                    when (y) {
+                        is NetworkRetrofit.Success -> {
+                            var venta = 0
+                            var size = 0
+                            y.data?.jobl?.forEach { i ->
+                                size++
+                                if (i.avance > 0.0)
+                                    venta++
+                            }
+                            val cap1 = "Total: ${y.data?.jobl?.size}"
+                            val cap2 = "Venta: $venta"
+                            val cap3 = "${percent(venta.toDouble(), size.toDouble())}%"
+                            controlUI(4, true)
+                            bind.txtRepo5Cap1.text = cap1
+                            bind.txtRepo5Cap2.text = cap2
+                            bind.txtRepo5Cap3.text = cap3
+                            bind.cardRepo5.setOnClickListener {
+                                val bundle = bundleOf(
+                                    "informe" to 4,
+                                    "array" to y.data?.jobl?.toTypedArray(),
+                                    "item" to null
+                                )
+                                findNavController().navigate(
+                                    R.id.action_FReporte_to_DMiniDetalle,
+                                    bundle
+                                )
+                            }
+                        }
+                        is NetworkRetrofit.Error -> {
+                            controlUI(4, false)
+                            Log.e(_tag, "Er ${y.message}")
+                            bind.txtMsg5.text = y.message
+                        }
                     }
                 }
             }
         }
 
-        viewmodel.visisuper.observe(viewLifecycleOwner) {
+        viewmodel.cambios.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is NetworkRetrofit.Success -> {
-                        var venta = 0.0
-                        var total = 0.0
+                        var size = 0
+                        var cambios = 0
+                        var soles = 0.0
                         y.data?.jobl?.forEach { i ->
-                            venta += i.avance
-                            total += i.cliente
+                            size++
+                            cambios += i.cambios
+                            soles += i.monto
                         }
-                        val cap1 = "Total: $total"
-                        val cap2 = "Venta: $venta"
-                        val cap3 = "${percent(venta, total)}%"
+                        val cap1 = "Clientes: $size"
+                        val cap2 = "Cambios: $cambios"
+                        val cap3 = "Soles: ${String.format("%.2f", soles)}"
                         controlUI(5, true)
-                        bind.txtRepo5Cap1.text = cap1
-                        bind.txtRepo5Cap2.text = cap2
-                        bind.txtRepo5Cap3.text = cap3
-                        bind.cardRepo5.setOnClickListener {
+                        bind.txtRepo6Cap1.text = cap1
+                        bind.txtRepo6Cap2.text = cap2
+                        bind.txtRepo6Cap3.text = cap3
+                        bind.cardRepo6.setOnClickListener {
+                            val bundle = bundleOf(
+                                "informe" to 5,
+                                "array" to y.data?.jobl?.toTypedArray(),
+                                "item" to null
+                            )
                             findNavController().navigate(
-                                FReporteDirections.actionFReporteToFDetalle(
-                                    null,
-                                    null,
-                                    y.data?.jobl?.toTypedArray()
-                                )
+                                R.id.action_FReporte_to_DMiniDetalle,
+                                bundle
                             )
                         }
                     }
                     is NetworkRetrofit.Error -> {
                         controlUI(5, false)
-                        bind.txtMsg5.text = y.message
-                    }
-                }
-            }
-        }
-
-        viewmodel.cambiocli.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is NetworkRetrofit.Success -> {
-                        var cambios = 0
-                        var soles = 0.0
-                        y.data?.jobl?.forEach { i ->
-                            cambios += i.cambios
-                            soles += i.monto
-                        }
-                        val cap1 = "Clientes: ${y.data!!.jobl.size}"
-                        val cap2 = "Cambios: $cambios"
-                        val cap3 = "Soles: ${String.format("%.2f", soles)}"
-                        controlUI(6, true)
-                        bind.txtRepo6Cap1.text = cap1
-                        bind.txtRepo6Cap2.text = cap2
-                        bind.txtRepo6Cap3.text = cap3
-                        bind.cardRepo6.setOnClickListener {
-                            findNavController().navigate(
-                                FReporteDirections.actionFReporteToDMiniDetalle(
-                                    null,
-                                    null,
-                                    null,
-                                    y.data.jobl.toTypedArray(),
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    0
-                                )
-                            )
-                        }
-                    }
-                    is NetworkRetrofit.Error -> {
-                        controlUI(6, false)
-                        bind.txtMsg6.text = y.message
-                    }
-                }
-            }
-        }
-
-        viewmodel.cambioemp.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is NetworkRetrofit.Success -> {
-                        var cambios = 0
-                        var soles = 0.0
-                        y.data?.jobl?.forEach { i ->
-                            cambios += i.cambios
-                            soles += i.monto
-                        }
-                        val cap1 = "Clientes: ${y.data!!.jobl.size}"
-                        val cap2 = "Cambios: $cambios"
-                        val cap3 = "Soles: ${String.format("%.2f", soles)}"
-                        controlUI(7, true)
-                        bind.txtRepo6Cap1.text = cap1
-                        bind.txtRepo6Cap2.text = cap2
-                        bind.txtRepo6Cap3.text = cap3
-                        bind.cardRepo6.setOnClickListener {
-                            findNavController().navigate(
-                                FReporteDirections.actionFReporteToDMiniDetalle(
-                                    null,
-                                    null,
-                                    null,
-                                    y.data.jobl.toTypedArray(),
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    0
-                                )
-                            )
-                        }
-                    }
-                    is NetworkRetrofit.Error -> {
-                        controlUI(7, false)
                         bind.txtMsg6.text = y.message
                     }
                 }
@@ -435,13 +381,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             }
         }
 
-        viewmodel.soles.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
+        viewmodel.soles.observe(viewLifecycleOwner) { j ->
+            j.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is NetworkRetrofit.Success -> {
                         bind.txtMensaje.setUI("v", false)
                         bind.rcvReporte.setUI("v", true)
-                        solesAdapter.mDiffer.submitList(y.data!!.jobl)
+                        val sorted = y.data!!.jobl.sortedBy { it.linea.codigo }
+                        solesAdapter.mDiffer.submitList(sorted)
                     }
                     is NetworkRetrofit.Error -> {
                         bind.rcvReporte.setUI("v", false)
@@ -453,7 +400,16 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.reporte_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.actualizar -> consume { executeUpdater() }
+        else -> false
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.reporte_menu, menu)
     }
@@ -461,17 +417,35 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.actualizar -> consume { executeUpdater() }
         else -> super.onOptionsItemSelected(item)
-    }
+    }*/
 
     override fun onItemClick(soles: Soles) {
-        findNavController().navigate(
-            FReporteDirections.actionFReporteToFDetalle(null, soles, null)
+        val bundle = bundleOf(
+            "visisuper" to null,
+            "soles" to soles
         )
+
+        findNavController().navigate(
+            R.id.action_FReporte_to_FDetalle,
+            bundle
+        )
+        /*findNavController().navigate(
+            FReporteDirections.actionFReporteToFDetalle(null, soles, null)
+        )*/
     }
 
     override fun onItemPress(soles: Soles) {
         if (CONF.tipo == "S") {
+            val bundle = bundleOf(
+                "informe" to 6,
+                "array" to null,
+                "item" to soles
+            )
             findNavController().navigate(
+                R.id.action_FReporte_to_DMiniDetalle,
+                bundle
+            )
+            /*findNavController().navigate(
                 FReporteDirections.actionFReporteToDMiniDetalle(
                     null,
                     null,
@@ -483,7 +457,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                     soles,
                     0
                 )
-            )
+            )*/
         }
     }
 
@@ -493,14 +467,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         solesAdapter.mDiffer.submitList(list)
     }
 
-    override fun onItemClick(umes: Umes) {
+    /*override fun onItemClick(umes: Umes) {
         findNavController().navigate(
             FReporteDirections.actionFReporteToFDetalle(umes, null, null)
         )
     }
 
     override fun onItemPress(umes: Umes) {
-        /*if (CONF.tipo == "S") {
+        if (CONF.tipo == "S") {
             findNavController().navigate(
                 FReporteDirections.actionFReporteToDMiniDetalle(
                     null,
@@ -514,14 +488,14 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                     0
                 )
             )
-        }*/
+        }
     }
 
     override fun onCloseItem(umes: Umes) {
         val list = umesAdapter.mDiffer.currentList.toMutableList()
         list.remove(umes)
         umesAdapter.mDiffer.submitList(list)
-    }
+    }*/
 
     private fun launchFetchs() {
         val p = JSONObject()
@@ -532,17 +506,13 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         viewmodel.fetchCobertura(p.toReqBody())
         viewmodel.fetchCartera(p.toReqBody())
         viewmodel.fetchPedidos(p.toReqBody())
+        viewmodel.fetchCambios(p.toReqBody())
 
-        when (CONF.tipo) {
-            "V" -> {
-                viewmodel.fetchCambiosCliente(p.toReqBody())
-                if (CONF.empresa == 1)
-                    viewmodel.fetchVisicooler(p.toReqBody())
-            }
-            "S" -> {
-                viewmodel.fetchCambiosEmpleado(p.toReqBody())
-                if (CONF.empresa == 1)
-                    viewmodel.fetchVisisuper(p.toReqBody())
+        if (CONF.empresa == 1) {
+            if (CONF.tipo == "S") {
+                viewmodel.fetchVisisuper(p.toReqBody())
+            } else {
+                viewmodel.fetchVisicooler(p.toReqBody())
             }
         }
 
@@ -592,20 +562,6 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                     bind.txtMsg5.setUI("v", true)
             }
             5 -> {
-                bind.progress5.setUI("v", false)
-                if (status)
-                    bind.lnrRepo5.setUI("v", true)
-                else
-                    bind.txtMsg5.setUI("v", true)
-            }
-            6 -> {
-                bind.progress6.setUI("v", false)
-                if (status)
-                    bind.lnrRepo6.setUI("v", true)
-                else
-                    bind.txtMsg6.setUI("v", true)
-            }
-            7 -> {
                 bind.progress6.setUI("v", false)
                 if (status)
                     bind.lnrRepo6.setUI("v", true)

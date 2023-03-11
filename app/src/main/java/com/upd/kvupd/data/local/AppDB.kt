@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.upd.kvupd.data.model.*
 
 @Database(
-    version = 6,
+    version = 7,
     entities = [TSesion::class, TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class,
         TNegocio::class, TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class,
         TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class,

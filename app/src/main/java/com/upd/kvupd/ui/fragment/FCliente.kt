@@ -7,8 +7,10 @@ import android.speech.RecognizerIntent
 import android.view.*
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -30,7 +32,8 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener {
+class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener,
+    MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFClienteBinding? = null
@@ -49,7 +52,6 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         clienteListener = this
     }
 
@@ -68,6 +70,8 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvClientes.adapter = adapter
@@ -98,16 +102,15 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.cliente_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.cliente_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { DCliente().show(parentFragmentManager, "dialog") }
         R.id.mapa -> consume { findNavController().navigate(R.id.action_FCliente_to_FMapa) }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     override fun onQueryTextSubmit(p0: String) = false
@@ -131,25 +134,27 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
     override fun onClienteClick(cliente: RowCliente) {
         viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
-            navigateToDialog(0,cliente)
+            navigateToDialog(0, cliente)
         }
     }
 
     override fun onPressCliente(cliente: RowCliente) {
         viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
-            navigateToDialog(1,cliente)
+            navigateToDialog(1, cliente)
         }
     }
 
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-            bind.searchView.setQuery(codigo, true)
-        } else {
-            snack("Error procesando busqueda")
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val codigo =
+                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
+                bind.searchView.setQuery(codigo, true)
+            } else {
+                snack("Error procesando busqueda")
+            }
         }
-    }
 
     private fun searchVoice() {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).also { intent ->
@@ -159,7 +164,10 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
                     RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                 )
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione el codigo o nombre del cliente")
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_PROMPT,
+                    "Mencione el codigo o nombre del cliente"
+                )
                 resultLauncher.launch(intent)
             }
         }
@@ -188,9 +196,9 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
     private fun navigateToDialog(dialog: Int, cliente: RowCliente) {
         if (clienteBaja) {
             snack("Cliente con baja, revise lista de bajas")
-        }else {
+        } else {
             val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
-            when(dialog) {
+            when (dialog) {
                 0 -> findNavController().navigate(
                     FClienteDirections.actionFClienteToBDObservacion(cli)
                 )

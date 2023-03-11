@@ -97,11 +97,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _visisuper: MutableLiveData<Event<NetworkRetrofit<JVisisuper>>> = MutableLiveData()
     val visisuper: LiveData<Event<NetworkRetrofit<JVisisuper>>> = _visisuper
 
-    private val _cambiocli: MutableLiveData<Event<NetworkRetrofit<JCambio>>> = MutableLiveData()
-    val cambiocli: LiveData<Event<NetworkRetrofit<JCambio>>> = _cambiocli
-
-    private val _cambioemp: MutableLiveData<Event<NetworkRetrofit<JCambio>>> = MutableLiveData()
-    val cambioemp: LiveData<Event<NetworkRetrofit<JCambio>>> = _cambioemp
+    private val _cambios: MutableLiveData<Event<NetworkRetrofit<JCambio>>> = MutableLiveData()
+    val cambios: LiveData<Event<NetworkRetrofit<JCambio>>> = _cambios
 
     private val _umes: MutableLiveData<Event<NetworkRetrofit<JUmes>>> = MutableLiveData()
     val umes: LiveData<Event<NetworkRetrofit<JUmes>>> = _umes
@@ -112,14 +109,14 @@ class AppViewModel @ViewModelInject constructor(
     private val _generico: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
     val generico: LiveData<Event<NetworkRetrofit<JGenerico>>> = _generico
 
-    private val _detalle: MutableLiveData<NetworkRetrofit<JGenerico>> = MutableLiveData()
-    val detalle: LiveData<NetworkRetrofit<JGenerico>> = _detalle
+    private val _detalle: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
+    val detalle: LiveData<Event<NetworkRetrofit<JGenerico>>> = _detalle
 
-    private val _cobpendiente: MutableLiveData<NetworkRetrofit<JCoberturados>> = MutableLiveData()
-    val cobpendiente: LiveData<NetworkRetrofit<JCoberturados>> = _cobpendiente
+    private val _cobpendiente: MutableLiveData<Event<NetworkRetrofit<JCoberturados>>> = MutableLiveData()
+    val cobpendiente: LiveData<Event<NetworkRetrofit<JCoberturados>>> = _cobpendiente
 
-    private val _pedigen: MutableLiveData<NetworkRetrofit<JPediGen>> = MutableLiveData()
-    val pedigen: LiveData<NetworkRetrofit<JPediGen>> = _pedigen
+    private val _pedigen: MutableLiveData<Event<NetworkRetrofit<JPediGen>>> = MutableLiveData()
+    val pedigen: LiveData<Event<NetworkRetrofit<JPediGen>>> = _pedigen
 
     private val _pedimap: MutableLiveData<Event<NetworkRetrofit<JPedimap>>> = MutableLiveData()
     val pedimap: LiveData<Event<NetworkRetrofit<JPedimap>>> = _pedimap
@@ -183,6 +180,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _servfoto: MutableLiveData<Event<List<TRespuesta>>> = MutableLiveData()
     val servfoto: LiveData<Event<List<TRespuesta>>> = _servfoto
 
+    private val _servdni: MutableLiveData<Event<List<TAFoto>>> = MutableLiveData()
+    val servdni: LiveData<Event<List<TAFoto>>> = _servdni
+
     private val _respseguimiento: MutableLiveData<Event<NetworkRetrofit<JObj>>> = MutableLiveData()
     val respseguimiento: LiveData<Event<NetworkRetrofit<JObj>>> = _respseguimiento
 
@@ -206,6 +206,9 @@ class AppViewModel @ViewModelInject constructor(
 
     private val _respfoto: MutableLiveData<Event<NetworkRetrofit<JFoto>>> = MutableLiveData()
     val respfoto: LiveData<Event<NetworkRetrofit<JFoto>>> = _respfoto
+
+    private val _respdni: MutableLiveData<Event<NetworkRetrofit<JFoto>>> = MutableLiveData()
+    val respdni: LiveData<Event<NetworkRetrofit<JFoto>>> = _respdni
 
     private val _cabecera: MutableLiveData<Event<List<Cabecera>>> = MutableLiveData()
     val cabecera: LiveData<Event<List<Cabecera>>> = _cabecera
@@ -246,6 +249,9 @@ class AppViewModel @ViewModelInject constructor(
             }
             repository.getServerFoto(estado).let {
                 _servfoto.value = Event(it)
+            }
+            repository.getServerAltaFoto(estado).let {
+                _servdni.value = Event(it)
             }
         }
     }
@@ -295,6 +301,12 @@ class AppViewModel @ViewModelInject constructor(
     fun webFoto(body: RequestBody) = viewModelScope.launch {
         repository.setWebFotos(body).collect {
             _respfoto.value = Event(it)
+        }
+    }
+
+    fun webDNI(body: RequestBody) = viewModelScope.launch {
+        repository.setWebFotos(body).collect {
+            _respdni.value = Event(it)
         }
     }
 
@@ -357,6 +369,7 @@ class AppViewModel @ViewModelInject constructor(
     }
 
     fun fetchVisicooler(body: RequestBody) = viewModelScope.launch {
+
         repository.getWebVisicooler(body).collect {
             _visicooler.value = Event(it)
         }
@@ -368,17 +381,23 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    fun fetchCambiosCliente(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCambiosCli(body).collect {
-            _cambiocli.value = Event(it)
+    fun fetchCambios(body: RequestBody) = viewModelScope.launch {
+        if (CONF.tipo == "S") {
+            repository.getWebCambiosEmp(body).collect {
+                _cambios.value = Event(it)
+            }
+        } else {
+            repository.getWebCambiosCli(body).collect {
+                _cambios.value = Event(it)
+            }
         }
     }
 
-    fun fetchCambiosEmpleado(body: RequestBody) = viewModelScope.launch {
+    /*fun fetchCambiosEmpleado(body: RequestBody) = viewModelScope.launch {
         repository.getWebCambiosEmp(body).collect {
             _cambioemp.value = Event(it)
         }
-    }
+    }*/
 
     fun fetchUmes(body: RequestBody) = viewModelScope.launch {
         repository.getWebUmes(body).collect {
@@ -404,27 +423,27 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
-    fun fetchUmeDetalle(body: RequestBody) = viewModelScope.launch {
+    /*fun fetchUmeDetalle(body: RequestBody) = viewModelScope.launch {
         repository.getWebUmesDetalle(body).collect {
-            _detalle.value = it
+            _detalle.value = Event(it)
         }
-    }
+    }*/
 
     fun fetchSolesDetalle(body: RequestBody) = viewModelScope.launch {
         repository.getWebSolesDetalle(body).collect {
-            _detalle.value = it
+            _detalle.value = Event(it)
         }
     }
 
     fun fetchCoberturaPendiente(body: RequestBody) = viewModelScope.launch {
         repository.getWebCoberturaPendiente(body).collect {
-            _cobpendiente.value = it
+            _cobpendiente.value = Event(it)
         }
     }
 
     fun fetchPediGen(body: RequestBody) = viewModelScope.launch {
         repository.getWebPedidosRealizados(body).collect {
-            _pedigen.value = it
+            _pedigen.value = Event(it)
         }
     }
 
@@ -665,6 +684,12 @@ class AppViewModel @ViewModelInject constructor(
     fun updFoto(it: TRespuesta) {
         viewModelScope.launch {
             repository.saveFoto(it)
+        }
+    }
+
+    fun savingDNI(it: TAFoto) {
+        viewModelScope.launch {
+            repository.saveAltaFoto(it)
         }
     }
 

@@ -3,6 +3,7 @@ package com.upd.kvupd.data.remote
 import com.upd.kvupd.data.model.*
 import com.upd.kvupd.utils.Constant.API_ALTA
 import com.upd.kvupd.utils.Constant.API_ALTADETALLE
+import com.upd.kvupd.utils.Constant.API_ALTAFOTO
 import com.upd.kvupd.utils.Constant.API_BAJA
 import com.upd.kvupd.utils.Constant.API_BAJACONFIR
 import com.upd.kvupd.utils.Constant.API_BAJAESTLIS
@@ -154,4 +155,7 @@ interface ApiClient {
 
     @POST(API_FOTO)
     suspend fun setApiFoto(@Body body: RequestBody): Response<JFoto>//@param empresa, empleado, cliente, encuesta, sucursal, foto
+
+    @POST(API_ALTAFOTO)
+    suspend fun setApiAltaFoto(@Body body: RequestBody): Response<JFoto>//@param fecha, id, empleado, empresa, foto
 }

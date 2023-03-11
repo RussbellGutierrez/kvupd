@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.*
@@ -26,7 +28,7 @@ import javax.inject.Inject
 import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
-class FServidor : Fragment() {
+class FServidor : Fragment(), MenuProvider {
 
     @Inject
     lateinit var host: HostSelectionInterceptor
@@ -43,6 +45,7 @@ class FServidor : Fragment() {
     private var listBE = 0
     private var listR = 0
     private var listF = 0
+    private var listDNI = 0
     private var mS = ""
     private var mV = ""
     private var mA = ""
@@ -51,6 +54,7 @@ class FServidor : Fragment() {
     private var mBE = ""
     private var mR = ""
     private var mF = ""
+    private var mDNI = ""
     private lateinit var seguimiento: TSeguimiento
     private lateinit var visita: TVisita
     private lateinit var alta: TAlta
@@ -59,17 +63,13 @@ class FServidor : Fragment() {
     private lateinit var bajaestado: TBEstado
     private lateinit var respuesta: TRespuesta
     private lateinit var foto: TRespuesta
+    private lateinit var dni: TAFoto
 
     private val _tag by lazy { FServidor::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -82,6 +82,8 @@ class FServidor : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         if (CONF.tipo == "V") {
             bind.cardBajaestado.setUI("v", false)
@@ -113,7 +115,16 @@ class FServidor : Fragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.servidor_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
+        else -> false
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.servidor_menu, menu)
     }
@@ -121,7 +132,7 @@ class FServidor : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
         else -> super.onOptionsItemSelected(item)
-    }
+    }*/
 
     private fun getDataRoom() {
         if (CONF.seguimiento == 1) {
@@ -215,7 +226,10 @@ class FServidor : Fragment() {
                         p.put("nombre", j.nombre)
                         p.put("razon", j.razon)
                         p.put("tipo", j.tipo)
-                        p.put("tipodoc", j.documento)
+                        p.put("dnice", j.dnice)
+                        p.put("ruc", j.ruc)
+                        p.put("tdoc", j.tipodocu)
+                        //p.put("tipodoc", j.documento)
                         p.put("giro", j.giro.split("-")[0].trim())
                         p.put("movil1", j.movil1)
                         p.put("movil2", j.movil2)
@@ -224,6 +238,7 @@ class FServidor : Fragment() {
                         p.put("altura", j.numero)
                         p.put("distrito", j.distrito.split("-")[0].trim())
                         p.put("ruta", j.ruta)
+                        p.put("imei", IMEI)
                         p.put("secuencia", j.secuencia)
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
@@ -342,13 +357,40 @@ class FServidor : Fragment() {
                 }
             }
         }
+
+        viewmodel.servdni.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                setTextUI(y.size, 8)
+                mDNI = ""
+                Timer().schedule(3000) {
+                    y.forEach { j ->
+                        dni = j
+                        val baos = ByteArrayOutputStream()
+                        Log.w(_tag, "Ruta dni ${j.ruta}")
+                        val bm = BitmapFactory.decodeFile(j.ruta)
+                        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+                        val byteArray = baos.toByteArray()
+                        val pic = Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+                        val p = JSONObject()
+                        p.put("fecha", j.fecha)
+                        p.put("id", j.idaux)
+                        p.put("empleado", j.empleado)
+                        p.put("empresa", CONF.empresa)
+                        p.put("foto", pic)
+                        Log.d(_tag, "DNI: $p")
+                        viewmodel.webDNI(p.toReqBody())
+                    }
+                }
+            }
+        }
     }
 
     private fun updateDataRoom() {
         viewmodel.respseguimiento.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::seguimiento.isInitialized) {
                         seguimiento.estado = "Enviado"
                         viewmodel.updSeguimiento(seguimiento)
                     }
@@ -364,7 +406,7 @@ class FServidor : Fragment() {
         viewmodel.respvisita.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::visita.isInitialized) {
                         visita.estado = "Enviado"
                         viewmodel.updVisita(visita)
                     }
@@ -380,7 +422,7 @@ class FServidor : Fragment() {
         viewmodel.respalta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::alta.isInitialized) {
                         alta.estado = "Enviado"
                         viewmodel.updAlta(alta)
                     }
@@ -396,7 +438,7 @@ class FServidor : Fragment() {
         viewmodel.respaltadatos.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::altadatos.isInitialized) {
                         altadatos.estado = "Enviado"
                         viewmodel.updAltaDatos(altadatos)
                     }
@@ -412,7 +454,7 @@ class FServidor : Fragment() {
         viewmodel.respbaja.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::baja.isInitialized) {
                         baja.estado = "Enviado"
                         viewmodel.updBaja(baja)
                     }
@@ -428,7 +470,7 @@ class FServidor : Fragment() {
         viewmodel.respbajaestado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::bajaestado.isInitialized) {
                         bajaestado.estado = "Enviado"
                         viewmodel.updBajaEstado(bajaestado)
                     }
@@ -444,7 +486,7 @@ class FServidor : Fragment() {
         viewmodel.resprespuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::respuesta.isInitialized) {
                         respuesta.estado = "Enviado"
                         viewmodel.updRespuesta(respuesta)
                         Log.d(_tag, "Respuesta enviada $respuesta")
@@ -461,7 +503,7 @@ class FServidor : Fragment() {
         viewmodel.respfoto.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> {
+                    is NetworkRetrofit.Success -> if (::foto.isInitialized) {
                         foto.estado = "Enviado"
                         viewmodel.updFoto(foto)
                         Log.d(_tag, "Foto enviada $foto")
@@ -475,7 +517,22 @@ class FServidor : Fragment() {
             }
         }
 
-
+        viewmodel.respdni.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is NetworkRetrofit.Success -> if (::dni.isInitialized) {
+                        dni.estado = "Enviado"
+                        viewmodel.savingDNI(dni)
+                        Log.d(_tag, "DNI enviado $dni")
+                    }
+                    is NetworkRetrofit.Error -> {
+                        mDNI = y.message!!
+                        Log.e(_tag, "DNI-> ${y.message} $dni")
+                    }
+                }
+                outputUI(8, mDNI)
+            }
+        }
     }
 
     private fun restoreUI() {
@@ -495,6 +552,8 @@ class FServidor : Fragment() {
         bind.txtComp7.setUI("v", false)
         bind.progress8.setUI("v", true)
         bind.txtComp8.setUI("v", false)
+        bind.progress9.setUI("v", true)
+        bind.txtComp9.setUI("v", false)
     }
 
     private fun setTextUI(size: Int, opt: Int) {
@@ -579,6 +638,16 @@ class FServidor : Fragment() {
                     bind.progress8.setUI("v", false)
                     bind.txtComp8.setUI("v", true)
                     bind.txtComp8.text = mensaje
+                }
+            }
+            8 -> {
+                listDNI = size
+                texto = "DNI tomados : $size"
+                bind.txtDni.text = texto
+                if (size == 0) {
+                    bind.progress9.setUI("v", false)
+                    bind.txtComp9.setUI("v", true)
+                    bind.txtComp9.text = mensaje
                 }
             }
         }
@@ -698,8 +767,22 @@ class FServidor : Fragment() {
                     listF--
                 }
             }
+            8 -> {
+                if (listDNI == 1) {
+                    bind.progress9.setUI("v", false)
+                    bind.txtComp9.setUI("v", true)
+                    if (msg != "") {
+                        bind.txtComp9.text = msg
+                    } else {
+                        bind.txtComp9.text = "COMPLETO"
+                    }
+                    listDNI--
+                } else {
+                    listDNI--
+                }
+            }
         }
-        if (listS == 0 && listV == 0 && listA == 0 && listAD == 0 && listB == 0 && listBE == 0 && listR == 0 && listF == 0) {
+        if (listS == 0 && listV == 0 && listA == 0 && listAD == 0 && listB == 0 && listBE == 0 && listR == 0 && listF == 0 && listDNI == 0) {
             if (prevIP) {
                 prevIP = false
             }
@@ -719,5 +802,4 @@ class FServidor : Fragment() {
         }
         setTextUI(tmn.size, 6)
     }
-
 }

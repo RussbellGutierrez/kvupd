@@ -2,8 +2,10 @@ package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
@@ -20,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FBaja : Fragment(), BajaAdapter.OnBajaListener {
+class FBaja : Fragment(), BajaAdapter.OnBajaListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFBajaBinding? = null
@@ -36,7 +38,6 @@ class FBaja : Fragment(), BajaAdapter.OnBajaListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         bajaListener = this
     }
 
@@ -51,6 +52,8 @@ class FBaja : Fragment(), BajaAdapter.OnBajaListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         bind.rcvBajas.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvBajas.adapter = adapter
 
@@ -59,20 +62,22 @@ class FBaja : Fragment(), BajaAdapter.OnBajaListener {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.baja_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.baja_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when(item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem) = when(menuItem.itemId) {
         R.id.lista -> consume { findNavController().navigate(R.id.action_FBaja_to_FBajaDatos) }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     override fun onPressBaja(baja: TBaja) {
         val cliente = "${baja.cliente} - ${baja.nombre}"
-        showDialog("Advertencia", "Baja del cliente:\n $cliente \n Si anula la baja, tendra que esperar hasta mañana para generarla nuevamente") {
-            val item = MiniUpdBaja(baja.cliente,1,"Pendiente")
+        showDialog(
+            "Advertencia",
+            "Baja del cliente:\n $cliente \n Si anula la baja, tendra que esperar hasta mañana para generarla nuevamente"
+        ) {
+            val item = MiniUpdBaja(baja.cliente, 1, "Pendiente")
             viewmodel.updateBaja(item)
         }
     }

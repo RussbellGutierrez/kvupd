@@ -1,15 +1,18 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.IPA
 import com.upd.kvupd.utils.Constant.IP_AUX
 import com.upd.kvupd.utils.Constant.IP_P
@@ -22,73 +25,53 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
-class AltaDatoPWork @WorkerInject constructor(
+class AltaFotoPWork @WorkerInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository,
     private val host: HostSelectionInterceptor
 ) : CoroutineWorker(appContext, workerParameters) {
-    private val _tag by lazy { AltaDatoPWork::class.java.simpleName }
+    private val _tag by lazy { AltaFotoPWork::class.java.simpleName }
 
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
-            val item = repository.getServerAltadatos("Pendiente")
+            /*val item = repository.getServerAltaFoto("Pendiente")
             if (!item.isNullOrEmpty()) {
                 item.forEach { i ->
                     val p = requestBody(i)
-                    repository.setWebAltaDatos(p).collect {
+                    repository.setWebAltaFotos(p).collect {
                         when (it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveAltaDatos(i)
-                                Log.d(_tag, "Altadato enviado $i")
+                                repository.saveAltaFoto(i)
+                                Log.d(_tag, "Foto enviado $i")
                             }
                             is NetworkRetrofit.Error -> {
                                 changeHostServer()
-                                Log.e(_tag, "Altadato Error ${it.message}")
+                                Log.e(_tag, "AltaFoto Error -> ${it.message}")
                             }
                         }
                     }
                 }
-            }
+            }*/
             return@withContext Result.success()
         }
 
-    private fun requestBody(j: TADatos): RequestBody {
-        val p = JSONObject()
-        p.put("empleado", j.empleado)
-        p.put("id", j.idaux)
-        p.put("appaterno", j.appaterno)
-        p.put("apmaterno", j.apmaterno)
-        p.put("nombre", j.nombre)
-        p.put("razon", j.razon)
-        p.put("tipo", j.tipo)
-        p.put("dnice", j.dnice)
-        p.put("ruc", j.ruc)
-        p.put("tdoc", j.tipodocu)
-        //p.put("tipodoc", j.documento)
-        p.put("giro", j.giro.split("-")[0].trim())
-        p.put("movil1", j.movil1)
-        p.put("movil2", j.movil2)
-        p.put("email", j.correo)
-        p.put("urbanizacion", "${j.zona} ${j.zonanombre}")
-        p.put("altura", j.numero)
-        p.put("distrito", j.distrito.split("-")[0].trim())
-        p.put("ruta", j.ruta)
-        p.put("imei", IMEI)
-        p.put("secuencia", j.secuencia)
-        p.put("sucursal", CONF.sucursal)
-        p.put("esquema", CONF.esquema)
-        p.put("empresa", CONF.empresa)
+    private fun requestBody(j: TAFoto): RequestBody {
+        val baos = ByteArrayOutputStream()
+        val bm = BitmapFactory.decodeFile(j.ruta)
+        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+        val byteArray = baos.toByteArray()
+        val foto = Base64.encodeToString(byteArray, Base64.DEFAULT)
 
-        when (j.manzana) {
-            "" -> p.put("calle", "${j.via} ${j.direccion} ${j.ubicacion}")
-            else -> p.put(
-                "calle",
-                "${j.via} ${j.direccion} MZ ${j.manzana} ${j.ubicacion}"
-            )
-        }
+        val p = JSONObject()
+        p.put("fecha",j.fecha)
+        p.put("id",j.idaux)
+        p.put("empleado", j.empleado)
+        p.put("empresa", CONF.empresa)
+        p.put("foto", foto)
         return p.toReqBody()
     }
 

@@ -7,13 +7,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import com.upd.kvupd.databinding.FragmentFAjusteBinding
 import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.*
@@ -26,7 +25,7 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FAjuste : Fragment() {
+class FAjuste : Fragment(), MenuProvider {
 
     @Inject
     lateinit var host: HostSelectionInterceptor
@@ -43,11 +42,6 @@ class FAjuste : Fragment() {
         _bind = null
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,6 +52,8 @@ class FAjuste : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         cleaningData()
 
@@ -147,14 +143,16 @@ class FAjuste : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) = Unit
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         android.R.id.home -> consume {
             showDialog(
                 "Advertencia",
                 "Cerraremos kventas para aplicar los cambios"
             ) { requireActivity().finishAndRemoveTask() }
         }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     private fun cleaningData() {
@@ -241,5 +239,4 @@ class FAjuste : Fragment() {
         bind.edtImei.setText(imei)
         bind.chkImei.isChecked = true
     }
-
 }

@@ -52,7 +52,7 @@ interface QueryDAO {
     fun getRowClientes(): Flow<List<RowCliente>>
 
     @Query(GET_LAST_LOCATION)
-    fun getLastLocation(): Flow<List<TSeguimiento>>
+    fun getLastLocation(): Flow<List<TSeguimiento>?>
 
     @Query(GET_MARKERS)
     fun getMarkers(observacion: String): Flow<List<MarkerMap>>

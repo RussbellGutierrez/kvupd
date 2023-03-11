@@ -29,7 +29,8 @@
             app:elevation="1dp"
             app:rippleColor="@color/lightgray"
             app:tint="@color/primaryDarkColor"
-            app:useCompatPadding="true" />
+            app:useCompatPadding="true"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_ubicacion"
@@ -43,7 +44,8 @@
             app:elevation="1dp"
             app:rippleColor="@color/lightgray"
             app:tint="@color/primaryDarkColor"
-            app:useCompatPadding="true" />
+            app:useCompatPadding="true"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_filtro"

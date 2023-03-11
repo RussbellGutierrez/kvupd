@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationManager
-import android.net.InetAddresses
 import android.text.Editable
 import android.util.Patterns
 import android.view.MenuItem
@@ -36,7 +35,7 @@ import com.upd.kvupd.ui.dialog.DProgress
 import com.upd.kvupd.utils.Constant.DL_WIDTH
 import com.upd.kvupd.utils.Constant.D_HEIGHT
 import com.upd.kvupd.utils.Constant.D_WIDTH
-import okhttp3.MediaType
+import com.upd.kvupd.utils.Constant.IP_FILTER
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -51,7 +50,7 @@ fun JSONObject.toReqBody(): RequestBody =
 
 fun Editable.validateImei() = this.toString().length == 15
 
-fun Editable.validateIP() = InetAddresses.isNumericAddress(this.toString())
+fun Editable.validateIP() = this.toString().matches(IP_FILTER.toRegex())
 
 fun Fragment.toast(text: String, duration: Int = 0) {
     Toast.makeText(this.requireContext(), text, duration).show()
@@ -122,8 +121,8 @@ fun percent(dividendo: Double, divisor: Double): String {
     return result
 }
 
-fun castDate(day: Int,month: Int,year: Int): String {
-    val m = month+1
+fun castDate(day: Int, month: Int, year: Int): String {
+    val m = month + 1
     val d = if (day.toString().length == 2) day.toString() else "0$day"
     val mr = if (m.toString().length == 2) m.toString() else "0$m"
     return "$year/$mr/$d"
@@ -142,10 +141,15 @@ fun Fragment.progress(mensaje: String) {
     val dlg = DProgress()
     dlg.arguments = bundle
     dlg.isCancelable = false
-    dlg.show(parentFragmentManager,"dialog")
+    dlg.show(parentFragmentManager, "dialog")
 }
 
-fun Fragment.showDialog(titulo: String, mensaje: String, showNegativo: Boolean = false, T: () -> Unit?) {
+fun Fragment.showDialog(
+    titulo: String,
+    mensaje: String,
+    showNegativo: Boolean = false,
+    T: () -> Unit?
+) {
     var positive = "Ok"
     val icon: Int = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia
@@ -173,7 +177,12 @@ fun Fragment.showDialog(titulo: String, mensaje: String, showNegativo: Boolean =
     }
 }
 
-fun Activity.showDialog(titulo: String, mensaje: String, showNegativo: Boolean = false, T: () -> Unit?) {
+fun Activity.showDialog(
+    titulo: String,
+    mensaje: String,
+    showNegativo: Boolean = false,
+    T: () -> Unit?
+) {
     var positive = "Ok"
     val icon: Int = when (titulo.lowercase()) {
         "advertencia" -> R.drawable.advertencia
@@ -207,22 +216,24 @@ inline fun consume(f: () -> Unit): Boolean {
 fun String.checkEmail(): Boolean =
     this.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
-fun String.checkDocumento(tipo: String): Boolean{
+fun String.checkDocumento(tipo: String): Boolean {
     var resultado = false
     val documento = this.length
     val dni = documento == 8
     val extr = documento == 9
     val ruc = documento == 11
-    when(tipo) {
+    when (tipo) {
         "PJ" -> if (ruc) {
-            if (this.startsWith("20")){
+            if (this.startsWith("20")) {
                 resultado = true
             }
+        } else if (dni || extr) {
+            resultado = true
         }
         "PN" -> if (dni || extr) {
             resultado = true
-        }else if (ruc) {
-            if (this.startsWith("10") || this.startsWith("15")){
+        } else if (ruc) {
+            if (this.startsWith("10") || this.startsWith("15")) {
                 resultado = true
             }
         }
@@ -230,7 +241,7 @@ fun String.checkDocumento(tipo: String): Boolean{
     return resultado
 }
 
-fun String.daysBetween(today: String): String{
+fun String.daysBetween(today: String): String {
     val inicio = this.split(" ")[0].textToTime(6)
     val fin = today.textToTime(5)
     val diferencia = fin!!.time - inicio!!.time
@@ -298,7 +309,7 @@ fun LatLng.toLocation(): Location {
 fun String.multiReplace(old: List<String>, new: String): String {
     var replaced = this
     old.forEach {
-        replaced = replaced.replace(it,new)
+        replaced = replaced.replace(it, new)
     }
     return replaced
 }
@@ -372,7 +383,7 @@ fun View.setUI(ui: String, toggle: Boolean) {
 }
 
 fun MenuItem.setUI(ui: String, toggle: Boolean) {
-    when(ui) {
+    when (ui) {
         "v" -> isVisible = toggle
         "e" -> isEnabled = toggle
     }

@@ -99,7 +99,7 @@ object QueryConstant {
             "SELECT c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
             "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido " +
             "FROM TClientes c " +
-            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
+            "LEFT JOIN TEstado e on c.idcliente=e.idcliente AND c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
             "WHERE ((:observacion <> '9' AND v.observacion = :observacion) OR :observacion = '9') " +
             "ORDER BY c.idcliente ASC "

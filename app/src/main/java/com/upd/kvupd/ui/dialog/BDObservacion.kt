@@ -131,5 +131,4 @@ class BDObservacion : BottomSheetDialogFragment() {
         }
         return result
     }
-
 }

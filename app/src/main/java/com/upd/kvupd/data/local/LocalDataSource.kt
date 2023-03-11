@@ -18,7 +18,7 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getRowClientes()
     }
 
-    fun getLastLocation(): Flow<List<TSeguimiento>> {
+    fun getLastLocation(): Flow<List<TSeguimiento>?> {
         return qdao.getLastLocation()
     }
 

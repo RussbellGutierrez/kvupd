@@ -94,8 +94,8 @@ class UmesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
             bind.txtCuota.text = cuota
             bind.txtAvance.text = avance
             bind.txtPorcentaje.text = porcentaje
-            bind.imgCerrar.setOnClickListener { umesListener.onCloseItem(item) }
-            bind.cardReporte.setOnClickListener { umesListener.onItemClick(item) }
+            //bind.imgCerrar.setOnClickListener { umesListener.onCloseItem(item) }
+            //bind.cardReporte.setOnClickListener { umesListener.onItemClick(item) }
             /*bind.cardReporte.setOnLongClickListener {
                 umesListener.onItemPress(item)
                 return@setOnLongClickListener true
@@ -104,8 +104,8 @@ class UmesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
     }
 
     interface OnUmesListener {
-        fun onItemClick(umes: Umes)
-        fun onItemPress(umes: Umes)
-        fun onCloseItem(umes: Umes)
+        //fun onItemClick(umes: Umes)
+        //fun onItemPress(umes: Umes)
+        //fun onCloseItem(umes: Umes)
     }
 }

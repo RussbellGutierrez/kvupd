@@ -391,5 +391,4 @@ class FEncuesta : Fragment() {
         viewmodel.savingRespuestas(list)
         returnFragment()
     }
-
 }

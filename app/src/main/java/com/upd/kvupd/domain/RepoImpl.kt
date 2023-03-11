@@ -34,7 +34,7 @@ class RepoImpl @Inject constructor(
         return localDataSource.getRowClientes().distinctUntilChanged()
     }
 
-    override fun getFlowLocation(): Flow<List<TSeguimiento>> {
+    override fun getFlowLocation(): Flow<List<TSeguimiento>?> {
         return localDataSource.getLastLocation().distinctUntilChanged()
     }
 
@@ -653,7 +653,9 @@ class RepoImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JObj>> {
-        TODO("Not yet implemented")
+    override suspend fun setWebAltaFotos(body: RequestBody): Flow<NetworkRetrofit<JFoto>> {
+        return flow {
+            emit(safeApiCall { webDataSource.setServerAltaFotos(body) })
+        }.flowOn(Dispatchers.IO)
     }
 }

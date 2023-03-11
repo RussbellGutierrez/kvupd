@@ -28,16 +28,17 @@
             android:id="@+id/fab_centrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/centrar"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/centrar"
             app:backgroundTint="@color/white"
             app:elevation="3dp"
             app:fabSize="mini"
             app:rippleColor="@color/lightgray"
             app:tint="@color/primaryDarkColor"
-            app:useCompatPadding="true" />
+            app:useCompatPadding="true"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </RelativeLayout>
 

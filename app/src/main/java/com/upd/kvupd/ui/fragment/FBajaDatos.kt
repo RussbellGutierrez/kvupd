@@ -3,8 +3,10 @@ package com.upd.kvupd.ui.fragment
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +27,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
-    BajaSupervisorAdapter.OnBajaSuperListener {
+    BajaSupervisorAdapter.OnBajaSuperListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFBajaDatosBinding? = null
@@ -48,7 +50,6 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bajaSuperListener = this
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -61,6 +62,8 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.rcvBajas.layoutManager = LinearLayoutManager(requireContext())
 
@@ -110,17 +113,16 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.bajadatos_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.bajadatos_menu, menu)
         if (CONF.tipo == "V")
             menu.findItem(R.id.filtro).setUI("v", false)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.descargar -> consume { launchApi() }
         R.id.filtro -> consume { DFiltro().show(parentFragmentManager, "dialog") }
-        else -> super.onOptionsItemSelected(item)
+        else -> false
     }
 
     override fun onQueryTextSubmit(p0: String) = false
@@ -149,7 +151,7 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     }
 
     private fun changeFilter(dia: Int) {
-        when(dia) {
+        when (dia) {
             0 -> {
                 filter = row
                 snack("Filtrar todos los dias")

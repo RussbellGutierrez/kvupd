@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -32,7 +34,8 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener {
+class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener,
+    MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFVendedorBinding? = null
@@ -51,7 +54,6 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         clienteListener = this
     }
 
@@ -71,13 +73,15 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvClientes.adapter = adapter
 
         bind.searchView.setOnQueryTextListener(this)
 
         viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            Log.d(_tag,"Row cliente observer")
+            Log.d(_tag, "Row cliente observer")
             row = it
             setupList(it)
         }
@@ -101,7 +105,19 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.vendedor_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.voz -> consume { searchVoice() }
+        R.id.descargar -> consume { DVendedor().show(parentFragmentManager, "dialog") }
+        R.id.encuesta -> consume { DListaEncuesta().show(parentFragmentManager, "dialog") }
+        R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
+        else -> false
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.vendedor_menu, menu)
     }
@@ -112,7 +128,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         R.id.encuesta -> consume { DListaEncuesta().show(parentFragmentManager, "dialog") }
         R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
         else -> super.onOptionsItemSelected(item)
-    }
+    }*/
 
     override fun onQueryTextSubmit(p0: String) = false
 

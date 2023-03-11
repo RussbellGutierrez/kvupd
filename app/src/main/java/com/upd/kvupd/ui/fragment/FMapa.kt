@@ -10,8 +10,10 @@ import android.speech.RecognizerIntent
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,11 +37,12 @@ import com.upd.kvupd.utils.Constant.IWAM
 import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 @AndroidEntryPoint
 class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
-    OnInfoWindowClickListener, OnInfoWindowLongClickListener {
+    OnInfoWindowClickListener, OnInfoWindowLongClickListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFMapaBinding? = null
@@ -59,7 +62,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         location = GPS_LOC
         FILTRO_OBS = 9
     }
@@ -80,6 +82,8 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
         }
@@ -88,8 +92,10 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             sup.getMapAsync(this)
         }
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
-            location.longitude = it[0].longitud
-            location.latitude = it[0].latitud
+            if (!it.isNullOrEmpty()) {
+                location.longitude = it[0].longitud
+                location.latitude = it[0].latitud
+            }
         }
         viewmodel.marker.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -125,25 +131,24 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
-        backButton()
+        //backButton()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.mapa_menu, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.mapa_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.lista -> consume { viewmodel.getClientDet("0",9) }
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.lista -> consume { viewmodel.getClientDet("0", 9) }
         R.id.voz -> consume { searchVoice() }
         R.id.filtro -> consume { filterObs() }
-        android.R.id.home -> consume {
+        /*android.R.id.home -> consume {
             when (CONF.tipo) {
                 "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
                 "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
             }
-        }
-        else -> super.onOptionsItemSelected(item)
+        }*/
+        else -> false
     }
 
     @SuppressLint("MissingPermission")
@@ -165,7 +170,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onMarkerClick(p0: Marker): Boolean {
         mclk = p0
-        viewmodel.getClientDet(mclk.snippet!!,9)
+        viewmodel.getClientDet(mclk.snippet!!, 9)
         return true
     }
 
@@ -179,7 +184,17 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
-        when {
+        if (::markers.isInitialized) {
+            if (markers.isNotEmpty()) {
+                markers.forEach { i -> builder.include(i.position) }
+                builder.include(LatLng(location.latitude, location.longitude))
+                val bounds = builder.build()
+                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+            }
+        } else {
+            snack("Sin marcadores para ubicar")
+        }
+        /*when {
             markers.isNotEmpty() -> {
                 markers.forEach { i -> builder.include(i.position) }
                 builder.include(LatLng(location.latitude, location.longitude))
@@ -187,7 +202,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
             }
             markers.isEmpty() -> snack("Sin marcadores para ubicar")
-        }
+        }*/
     }
 
     private fun moveCamera(location: Location) {
@@ -203,7 +218,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         if (cliente != null) {
             cliente.let {
                 moveCamera(it.position.toLocation())
-                viewmodel.getClientDet(it.snippet!!,9)
+                viewmodel.getClientDet(it.snippet!!, 9)
                 mclk = it
             }
         } else {
@@ -242,7 +257,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         } else {
             bind.chipFiltro.setUI("v", true)
         }
-        when(FILTRO_OBS) {
+        when (FILTRO_OBS) {
             1 -> msg = "Clientes puesto cerrado"
             2 -> msg = "Clientes con producto"
             3 -> msg = "Clientes sin dinero"
@@ -303,7 +318,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         }
     }
 
-    private fun backButton() {
+    /*private fun backButton() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -315,6 +330,5 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
+    }*/
 }

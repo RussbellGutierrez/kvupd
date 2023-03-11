@@ -317,6 +317,7 @@ data class TAlta(
     val datos: Int
 )
 
+/***AGREGAR O ELIMINAR LA COLUMNA DOCUMENTO, AGREGAR COLUMNAS PARA SEPARAR DNI Y RUC*/
 @Entity(primaryKeys = ["idaux"])
 data class TADatos(
     val idaux: Int,
@@ -326,7 +327,9 @@ data class TADatos(
     val nombre: String,
     val appaterno: String,
     val apmaterno: String,
-    val documento: String,
+    val ruc: String,
+    val dnice: String,
+    val tipodocu: String,
     val movil1: String,
     val movil2: String,
     val correo: String,
@@ -341,6 +344,7 @@ data class TADatos(
     val giro: String,
     val ruta: String,
     val secuencia: String,
+    val dniruta: String,
     var estado: String
 )
 
