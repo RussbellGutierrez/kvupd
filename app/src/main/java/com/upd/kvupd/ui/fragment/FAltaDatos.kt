@@ -76,19 +76,22 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
+        bind.spnDocumento.onItemSelectedListener = this
         bind.rbGrupo.setOnCheckedChangeListener { _, id ->
             when (id) {
                 bind.rbJuridica.id -> {
                     tipo = "PJ"
+                    setDataSpinner(tipo)
                     showFields(0)
                 }
                 bind.rbNatural.id -> {
                     tipo = "PN"
+                    setDataSpinner(tipo)
                     showFields(1)
                 }
             }
         }
-        bind.spnDocumento.onItemSelectedListener = this
+
         bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
 
         viewmodel.distritosObs().observe(viewLifecycleOwner) {
@@ -128,6 +131,21 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.guardar -> consume { saveAltaDatos() }
         else -> false
+    }
+
+    private fun setDataSpinner(tipo: String) {
+        var array = 0
+        when (tipo) {
+            "PJ" -> array = R.array.docsjuridico
+            "PN" -> array = R.array.docsnatural
+        }
+        val adapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            array,
+            android.R.layout.simple_spinner_item
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        bind.spnDocumento.adapter = adapter
     }
 
     private fun cleanFields() {
@@ -192,14 +210,17 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             else -> {
                 bind.inlDnice.setUI("v", true)
                 bind.txtMensaje.setUI("v", true)
-                when (tipo) {
+                bind.inlRuc.setUI("v", false)
+                bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
+                bind.edtRuc.setText("")
+                /*when (tipo) {
                     "PJ" -> bind.spnDocumento.setSelection(1)
                     "PN" -> {
                         bind.inlRuc.setUI("v", false)
                         bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
                         bind.edtRuc.setText("")
                     }
-                }
+                }*/
             }
         }
     }
@@ -214,10 +235,13 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
 
-                if (adStored.tipo == "PJ")
+                if (adStored.tipo == "PJ") {
                     bind.rbJuridica.isChecked = true
-                else
+                    setDataSpinner("PJ")
+                }else{
                     bind.rbNatural.isChecked = true
+                    setDataSpinner("PN")
+                }
 
                 val ald = distrito.indexOf(adStored.distrito)
                 val alg = giro.indexOf(adStored.giro)

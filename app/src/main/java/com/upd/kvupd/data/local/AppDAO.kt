@@ -49,7 +49,7 @@ interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEnc(enc: List<TEncuesta>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSeguimiento(seg: TSeguimiento)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

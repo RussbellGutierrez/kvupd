@@ -22,7 +22,7 @@
 
     <item
         android:id="@+id/incidencia"
-        android:title="Reporte sistema"
+        android:title="Estado del sistema"
         android:icon="@drawable/otros"
         app:showAsAction="collapseActionView"/>
 

@@ -71,7 +71,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
         }
 
         bind.fabAlta.setOnClickListener {
-            showDialog("Advertencia", "¿Desea agregar un alta?") {
+            showDialog("Advertencia", "¿Desea agregar un alta?",true) {
                 if (isPOSLOCinitialized() &&
                     POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0
                 ) {

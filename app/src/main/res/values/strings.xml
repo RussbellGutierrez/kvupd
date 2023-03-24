@@ -60,10 +60,14 @@
         <item>PUESTO</item>
         <item>LOTE</item>
     </string-array>
-    <string-array name="tipodocs">
+    <string-array name="docsnatural">
         <item>NINGUNO</item>
         <item>RUC</item>
         <item>DNI</item>
         <item>CARNET</item>
+    </string-array>
+    <string-array name="docsjuridico">
+        <item>NINGUNO</item>
+        <item>RUC</item>
     </string-array>
 </resources>
