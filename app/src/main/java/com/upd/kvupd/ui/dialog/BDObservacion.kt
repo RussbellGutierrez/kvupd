@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.dialog
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.databinding.BottomDialogObservacionBinding
 import com.upd.kvupd.service.ServicePosicion
@@ -26,6 +28,8 @@ class BDObservacion : BottomSheetDialogFragment() {
     private var _bind: BottomDialogObservacionBinding? = null
     private val bind get() = _bind!!
     private var cliente = 0
+    private var nombre = ""
+    private var ruta = 0
     private var obs = 0
     private val args: BDObservacionArgs by navArgs()
     private val _tag by lazy { BDObservacion::class.java.simpleName }
@@ -33,8 +37,10 @@ class BDObservacion : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC.longitude = 0.0
-        POS_LOC.latitude = 0.0
+        if (isPOSLOCinitialized()) {
+            POS_LOC.longitude = 0.0
+            POS_LOC.latitude = 0.0
+        }
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -50,11 +56,16 @@ class BDObservacion : BottomSheetDialogFragment() {
         return bind.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val parg = args.cliente.split("-")
-        bind.txtCliente.text = nameCliente(parg)
+        args.cliente?.let {
+            cliente = it.id
+            nombre = it.nombre
+            ruta = it.ruta
+            bind.txtCliente.text = "$cliente - $nombre"
+        }
         bind.fabPedido.setOnClickListener { saveVisita(0) }
         bind.fabPuesto.setOnClickListener { saveVisita(1) }
         bind.fabProducto.setOnClickListener { saveVisita(2) }
@@ -66,8 +77,8 @@ class BDObservacion : BottomSheetDialogFragment() {
 
         viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                if (!y.isNullOrEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
-                    viewmodel.clienteRespondio(y, parg[0].trim())
+                if (y.isNotEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
+                    viewmodel.clienteRespondio(y, cliente.toString())
                 } else {
                     dismiss()
                 }
@@ -78,25 +89,17 @@ class BDObservacion : BottomSheetDialogFragment() {
                 dismiss()
                 if (!y) {
                     findNavController().navigate(
-                        BDObservacionDirections.actionBDObservacionToFEncuesta(nameCliente(parg))
+                        BDObservacionDirections.actionBDObservacionToFEncuesta(args.cliente)
                     )
                 }
             }
         }
     }
 
-    private fun nameCliente(list: List<String>): String {
-        val p0 = list[0].trim()
-        val p1 = list[1].trim()
-        return "$p0 - $p1"
-    }
-
     private fun saveVisita(seleccion: Int) {
-        if (isPOSLOCinitialized() && (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
 
+        if (isPOSLOCinitialized() && (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
             obs = seleccion
-            cliente = args.cliente.split("-")[0].trim().toInt()
-            val ruta = args.cliente.split("-")[2].trim().toInt()
             val fecha = viewmodel.fecha(4)
 
             val item = TVisita(

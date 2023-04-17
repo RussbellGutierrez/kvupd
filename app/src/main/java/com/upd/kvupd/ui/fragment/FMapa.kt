@@ -8,7 +8,6 @@ import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.*
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -16,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.*
@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFMapaBinding
 import com.upd.kvupd.utils.*
@@ -37,7 +38,6 @@ import com.upd.kvupd.utils.Constant.IWAM
 import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import java.util.*
 
 @AndroidEntryPoint
@@ -46,7 +46,9 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFMapaBinding? = null
+    private val arg: FMapaArgs by navArgs()
     private val bind get() = _bind!!
+    private var pointer = true
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
     private lateinit var location: Location
@@ -103,6 +105,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                     map.clear()
                     markers = viewmodel.setMarker(map, y)
                     drawRoutes()
+                    pointCliente()
                 }
             }
         }
@@ -131,7 +134,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
-        //backButton()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -142,12 +144,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         R.id.lista -> consume { viewmodel.getClientDet("0", 9) }
         R.id.voz -> consume { searchVoice() }
         R.id.filtro -> consume { filterObs() }
-        /*android.R.id.home -> consume {
-            when (CONF.tipo) {
-                "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
-                "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
-            }
-        }*/
         else -> false
     }
 
@@ -194,15 +190,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         } else {
             snack("Sin marcadores para ubicar")
         }
-        /*when {
-            markers.isNotEmpty() -> {
-                markers.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(location.latitude, location.longitude))
-                val bounds = builder.build()
-                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
-            }
-            markers.isEmpty() -> snack("Sin marcadores para ubicar")
-        }*/
     }
 
     private fun moveCamera(location: Location) {
@@ -273,16 +260,16 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     private fun navigateToDialog(dialog: Int, cliente: DataCliente) {
-        val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+        val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
         when (dialog) {
             0 -> when (CONF.tipo) {
                 "V" -> findNavController().navigate(
-                    FMapaDirections.actionFMapaToBDObservacion(cli)
+                    FMapaDirections.actionFMapaToBDObservacion(item)
                 )
                 "S" -> viewmodel.checkingEncuesta {
                     if (it) {
                         findNavController().navigate(
-                            FMapaDirections.actionFMapaToBDObservacion(cli)
+                            FMapaDirections.actionFMapaToBDObservacion(item)
                         )
                     } else {
                         snack("Regrese a la lista y elija una encuesta")
@@ -290,14 +277,14 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 }
             }
             1 -> findNavController().navigate(
-                FMapaDirections.actionFMapaToDBaja(cli)
+                FMapaDirections.actionFMapaToDClienteAux(item)
             )
         }
     }
 
     private fun drawRoutes() {
         val polygon = mutableListOf<LatLng>()
-        if (::rutas.isInitialized && !rutas.isNullOrEmpty()) {
+        if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
                 val coordenadas = i.corte.split(",")
                 coordenadas.forEach { j ->
@@ -318,17 +305,12 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         }
     }
 
-    /*private fun backButton() {
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    when (CONF.tipo) {
-                        "V" -> findNavController().navigate(R.id.action_FMapa_to_FCliente)
-                        "S" -> findNavController().navigate(R.id.action_FMapa_to_FVendedor)
-                    }
-                }
+    private fun pointCliente() {
+        arg.cliente?.let {
+            if (pointer) {
+                showMarker(it.id.toString())
             }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }*/
+        }
+        pointer = false
+    }
 }

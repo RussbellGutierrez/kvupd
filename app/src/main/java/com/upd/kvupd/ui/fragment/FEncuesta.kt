@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -52,6 +53,7 @@ class FEncuesta : Fragment() {
     private val bind get() = _bind!!
     private var preguntas = listOf<TEncuesta>()
     private var respuesta = mutableListOf<Respuesta>()
+    private var cliente = 0
     private var encuesta = 0
     private var posicion = 0
     private var total = 0
@@ -99,7 +101,7 @@ class FEncuesta : Fragment() {
 
         viewmodel.preguntas.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                if (!y.isNullOrEmpty()) {
+                if (y.isNotEmpty()) {
                     preguntas = y
                     encuesta = y[0].id
                     foto = preguntas.find { j -> j.foto } != null
@@ -118,12 +120,16 @@ class FEncuesta : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setup() {
-        val mensaje = "Completó la encuesta del cliente ${args.cliente}"
-        bind.txtCliente.text = args.cliente
-        bind.txtFoto.text = args.cliente
-        bind.txtMensaje.text = mensaje
-        viewmodel.getPreguntas()
+        args.cliente?.let {
+            cliente = it.id
+            val mensaje = "Completó la encuesta del cliente ${it.id} - ${it.nombre}"
+            bind.txtCliente.text = "${it.id} - ${it.nombre}"
+            bind.txtFoto.text = "${it.id} - ${it.nombre}"
+            bind.txtMensaje.text = mensaje
+            viewmodel.getPreguntas()
+        }
     }
 
     private fun drawQuestion() {
@@ -373,7 +379,6 @@ class FEncuesta : Fragment() {
 
     private fun saveRespuesta() {
         val list = mutableListOf<TRespuesta>()
-        val cliente = args.cliente.split("-")[0].trim().toInt()
         val fecha = viewmodel.fecha(4)
         respuesta.forEach {
             val item = TRespuesta(

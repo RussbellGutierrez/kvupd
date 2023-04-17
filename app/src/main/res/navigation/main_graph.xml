@@ -119,8 +119,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_FCliente_to_DBaja"
-            app:destination="@id/DBaja"
+            android:id="@+id/action_FCliente_to_DClienteAux"
+            app:destination="@id/DClienteAux"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -134,13 +134,6 @@
         <action
             android:id="@+id/action_FMapa_to_BDObservacion"
             app:destination="@id/BDObservacion"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
-        <action
-            android:id="@+id/action_FMapa_to_DBaja"
-            app:destination="@id/DBaja"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -161,6 +154,18 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/FBase" />
+        <action
+            android:id="@+id/action_FMapa_to_DClienteAux"
+            app:destination="@id/DClienteAux"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/FBase" />
+        <argument
+            android:name="cliente"
+            app:argType="com.upd.kvupd.data.model.HeadCliente"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/BDObservacion"
@@ -176,8 +181,8 @@
             app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="cliente"
-            android:defaultValue=''
-            app:argType="string" />
+            app:argType="com.upd.kvupd.data.model.HeadCliente"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/FEncuesta"
@@ -211,8 +216,8 @@
             app:popUpTo="@+id/FCliente" />
         <argument
             android:name="cliente"
-            android:defaultValue=''
-            app:argType="string" />
+            app:argType="com.upd.kvupd.data.model.HeadCliente"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/DBaja"
@@ -221,8 +226,8 @@
         tools:layout="@layout/dialog_baja">
         <argument
             android:name="cliente"
-            android:defaultValue=''
-            app:argType="string" />
+            app:argType="com.upd.kvupd.data.model.HeadCliente"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/FReporte"
@@ -261,7 +266,7 @@
         android:id="@+id/DMiniDetalle"
         android:name="com.upd.kvupd.ui.dialog.DMiniDetalle"
         android:label="Subdetalle"
-        tools:layout="@layout/dialog_mini_detalle"/>
+        tools:layout="@layout/dialog_mini_detalle" />
     <fragment
         android:id="@+id/FVendedor"
         android:name="com.upd.kvupd.ui.fragment.FVendedor"
@@ -423,4 +428,28 @@
         android:name="com.upd.kvupd.ui.dialog.BDEmergencia"
         android:label="Emergencia"
         tools:layout="@layout/bottom_dialog_emergencia" />
+    <dialog
+        android:id="@+id/DClienteAux"
+        android:name="com.upd.kvupd.ui.dialog.DClienteAux"
+        android:label="Auxiliar"
+        tools:layout="@layout/dialog_cliente_aux">
+        <action
+            android:id="@+id/action_DClienteAux_to_DBaja"
+            app:destination="@id/DBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_DClienteAux_to_FMapa"
+            app:destination="@id/FMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="cliente"
+            app:argType="com.upd.kvupd.data.model.HeadCliente"
+            app:nullable="true" />
+    </dialog>
 </navigation>

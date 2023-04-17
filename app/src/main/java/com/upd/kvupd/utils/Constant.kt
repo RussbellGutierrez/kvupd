@@ -80,8 +80,8 @@ object Constant {
     const val ENCUESTA_CHANNEL = "7"
     const val ENCUESTA_NOTIF = 7
 
-    const val GPS_NORMAL_INTERVAL = 300000L
-    const val GPS_FAST_INTERVAL = 120000L
+    const val GPS_NORMAL_INTERVAL = 138000L
+    const val GPS_FAST_INTERVAL = 60000L
     const val POSITION_N_INTERVAL = 60000L
     const val POSITION_F_INTERVAL = 30000L
     const val DL_WIDTH = ConstraintLayout.LayoutParams.MATCH_PARENT
@@ -89,13 +89,11 @@ object Constant {
     const val D_HEIGHT = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
     var OPTURL = "base"
-    var BASE_URL = "http://191.98.177.57/api/"//"http://191.98.177.57/api/"//"http://200.110.40.58/api/"
+    var BASE_URL = "http://191.98.177.57/api/"
     var IP_P = ""
     var IP_S = ""
     var IP_AUX = ""
 
-    const val SOCKET_ORIUNDA = "http://191.98.177.57:8080/oriunda/update"
-    const val SOCKET_TERRANORTE = "http://191.98.177.57:80/terranorte/update"
     const val DB_NAME = "KventasN"
     const val REQ_CODE = 101
     const val REQ_BACK_CODE = 102

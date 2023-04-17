@@ -1,6 +1,8 @@
 package com.upd.kvupd.data.model
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
+import kotlinx.parcelize.Parcelize
 
 data class RowCliente(
     @ColumnInfo(name = "idcliente") val id: Int,
@@ -72,6 +74,13 @@ data class RowBaja(
     @ColumnInfo(name = "negocio") val negocio: String,
     @ColumnInfo(name = "procede") val procede: Int
 )
+
+@Parcelize
+data class HeadCliente(
+    @ColumnInfo(name = "id") val id: Int,
+    @ColumnInfo(name = "nombre") val nombre: String,
+    @ColumnInfo(name = "ruta") val ruta: Int,
+) : Parcelable
 
 data class Cabecera(
     @ColumnInfo(name = "id") val id: Int,

@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFClienteBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
@@ -123,7 +124,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
             )
                 search.add(i)
         }
-        if (search.isNullOrEmpty()) {
+        if (search.isEmpty()) {
             snack("No encontramos clientes")
         } else {
             adapter.mDiffer.submitList(search)
@@ -183,7 +184,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
     }
 
     private fun setupList(list: List<RowCliente>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvClientes.setUI("v", false)
         } else {
@@ -197,13 +198,13 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
         if (clienteBaja) {
             snack("Cliente con baja, revise lista de bajas")
         } else {
-            val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+            val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
             when (dialog) {
                 0 -> findNavController().navigate(
-                    FClienteDirections.actionFClienteToBDObservacion(cli)
+                    FClienteDirections.actionFClienteToBDObservacion(item)
                 )
                 1 -> findNavController().navigate(
-                    FClienteDirections.actionFClienteToDBaja(cli)
+                    FClienteDirections.actionFClienteToDClienteAux(item)
                 )
             }
         }

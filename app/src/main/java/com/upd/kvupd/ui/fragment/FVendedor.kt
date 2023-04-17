@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFVendedorBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
@@ -214,22 +215,21 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         if (clienteBaja) {
             snack("Cliente con baja, revise lista de bajas")
         } else {
-            val cli = "${cliente.id} - ${cliente.nombre} - ${cliente.ruta}"
+            val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
             when (dialog) {
                 0 -> viewmodel.checkingEncuesta {
                     if (it) {
                         findNavController().navigate(
-                            FVendedorDirections.actionFVendedorToBDObservacion(cli)
+                            FVendedorDirections.actionFVendedorToBDObservacion(item)
                         )
                     } else {
                         snack("Debe elegir una encuesta primero")
                     }
                 }
                 1 -> findNavController().navigate(
-                    FVendedorDirections.actionFVendedorToDBaja(cli)
+                    FVendedorDirections.actionFVendedorToDBaja(item)
                 )
             }
         }
     }
-
 }

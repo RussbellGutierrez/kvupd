@@ -814,7 +814,7 @@ class AppViewModel @ViewModelInject constructor(
                 cabecera.forEach { i ->
                     if (i.seleccion == 1) {
                         val rsp = repository.clienteRespondioAntes(cliente)
-                        if (rsp.isNullOrEmpty()) {
+                        if (rsp.isEmpty()) {
                             respuesta = false
                         } else {
                             rsp.split(",").forEach { j ->

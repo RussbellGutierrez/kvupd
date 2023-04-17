@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.dialog
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,6 +26,9 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     private var _bind: DialogBajaBinding? = null
     private val bind get() = _bind!!
     private val args: DBajaArgs by navArgs()
+    private var cliente = 0
+    private var nombre = ""
+    private var ruta = 0
     private val _tag by lazy { DBaja::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -49,11 +53,18 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
         return bind.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val parg = args.cliente.split("-")
-        bind.txtCliente.text = nameCliente(parg)
+        //val parg = args.cliente.split("-")
+        //bind.txtCliente.text = nameCliente(parg)
+        args.cliente?.let {
+            cliente = it.id
+            nombre = it.nombre
+            ruta = it.ruta
+            bind.txtCliente.text = "$cliente - $nombre"
+        }
         bind.spnMotivo.setSelection(0, false)
         bind.spnMotivo.onItemSelectedListener = this
         bind.btnAnular.setOnClickListener { checkFields() }
@@ -76,12 +87,6 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(p0: AdapterView<*>?) = Unit
 
-    private fun nameCliente(list: List<String>): String {
-        val p0 = list[0].trim()
-        val p1 = list[1].trim()
-        return "$p0 - $p1"
-    }
-
     private fun checkFields() {
         if (isPOSLOCinitialized() &&
             POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
@@ -91,9 +96,6 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
                 "CERRADO" -> 3
                 else -> 4
             }
-            val cliente = args.cliente.split("-")[0].trim().toInt()
-            val nombre = args.cliente.split("-")[1].trim()
-            val ruta = args.cliente.split("-")[2].trim().toInt()
             val comentario = bind.edtComentario.text.toString()
             val fecha = viewmodel.fecha(4)
             val item = TBaja(
@@ -108,7 +110,7 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
                 0,
                 "Pendiente"
             )
-            if (motivo < 1 && comentario.trim() == "") {
+            if (motivo == 1 && comentario.trim() == "") {
                 bind.txtMensaje.setUI("v", true)
                 bind.txtMensaje.text = "Ingrese el codigo duplicado en comentario"
             }else {
