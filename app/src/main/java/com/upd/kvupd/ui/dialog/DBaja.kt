@@ -34,9 +34,12 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC.longitude = 0.0
-        POS_LOC.latitude = 0.0
+        if (isPOSLOCinitialized()) {
+            POS_LOC.longitude = 0.0
+            POS_LOC.latitude = 0.0
+        }
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
+        dismissAllDialogs(parentFragmentManager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +60,6 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //val parg = args.cliente.split("-")
-        //bind.txtCliente.text = nameCliente(parg)
         args.cliente?.let {
             cliente = it.id
             nombre = it.nombre

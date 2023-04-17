@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -110,7 +111,11 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { DCliente().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume { findNavController().navigate(R.id.action_FCliente_to_FMapa) }
+        R.id.mapa -> consume {
+            findNavController().navigate(
+                FClienteDirections.actionFClienteToFMapa(null)
+            )
+        }
         else -> false
     }
 

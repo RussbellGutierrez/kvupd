@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -63,6 +64,19 @@ fun Context.toast(text: String, duration: Int = 0) {
 fun DialogFragment.setCreate() {
     this.dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
     this.parentFragmentManager
+}
+
+fun DialogFragment.dismissAllDialogs(manager: FragmentManager?) {
+    val fragments: List<Fragment> = manager?.fragments
+        ?: return
+    for (fragment in fragments) {
+        if (fragment is DialogFragment) {
+            fragment.dismissAllowingStateLoss()
+        }
+        val childFragmentManager: FragmentManager = fragment
+            .childFragmentManager
+        dismissAllDialogs(childFragmentManager)
+    }
 }
 
 fun DialogFragment.setResume(short: Boolean = true) {
