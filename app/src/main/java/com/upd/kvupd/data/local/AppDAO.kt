@@ -2,6 +2,7 @@ package com.upd.kvupd.data.local
 
 import androidx.room.*
 import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.QueryConstant.DEL_AAUX
 import com.upd.kvupd.data.model.QueryConstant.DEL_AFOTO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ALTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_ALTADATOS
@@ -66,6 +67,9 @@ interface AppDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAltaDatos(da: TADatos)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAAux(aux: TAAux)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBajaSupervisor(baja: List<TBajaSuper>)
@@ -159,4 +163,7 @@ interface AppDAO {
 
     @Query(DEL_AFOTO)
     suspend fun deleteAFoto()
+
+    @Query(DEL_AAUX)
+    suspend fun deleteAAux()
 }

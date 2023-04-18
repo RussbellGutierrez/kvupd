@@ -109,8 +109,8 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
     suspend fun isClienteBaja(cliente: String): Boolean =
         qdao.getBajaCliente(cliente) != null
 
-    suspend fun getLastAlta(): TAlta? {
-        return qdao.getLastAlta()
+    suspend fun getLastAux(): Int? {
+        return qdao.getLastAux()
     }
 
     suspend fun getEncuestaSeleccion(): TEncuestaSeleccionado? {
@@ -177,6 +177,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun saveAltaDatos(da: TADatos) {
         dao.insertAltaDatos(da)
+    }
+
+    suspend fun saveAAux(aux: TAAux) {
+        dao.insertAAux(aux)
     }
 
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>) {
@@ -301,6 +305,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteAltaFoto() {
         dao.deleteAFoto()
+    }
+
+    suspend fun deleteAAux() {
+        dao.deleteAAux()
     }
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {

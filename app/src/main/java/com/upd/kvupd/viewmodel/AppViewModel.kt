@@ -853,6 +853,7 @@ class AppViewModel @ViewModelInject constructor(
             repository.deleteBajaEstado()
             functions.deleteFotos()
             repository.deleteIncidencia()
+            repository.deleteAAux()
         }
     }
 }

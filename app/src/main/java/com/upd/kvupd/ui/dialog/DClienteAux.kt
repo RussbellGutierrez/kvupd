@@ -1,13 +1,10 @@
 package com.upd.kvupd.ui.dialog
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu.OnDismissListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.upd.kvupd.databinding.DialogClienteAuxBinding
@@ -15,7 +12,6 @@ import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.utils.toast
-import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -71,17 +67,6 @@ class DClienteAux : DialogFragment() {
             findNavController().navigate(
                 DClienteAuxDirections.actionDClienteAuxToDBaja(arg.cliente)
             )
-            /*this.onDismiss(object : DialogInterface {
-                override fun cancel() = Unit
-
-                override fun dismiss() {
-
-                }
-            })*/
         }
     }
-
-    /*override fun onDismiss(menu: PopupMenu?) {
-        viewmodel.dismisserDAux(arg.cliente!!)
-    }*/
 }

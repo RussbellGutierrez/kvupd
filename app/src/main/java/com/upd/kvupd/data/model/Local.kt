@@ -438,3 +438,8 @@ data class TIncidencia(
     var observacion: String,
     var fecha: String
 )
+
+@Entity(primaryKeys = ["idaux"])
+data class TAAux(
+    val idaux: Int
+)

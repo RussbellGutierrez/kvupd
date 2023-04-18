@@ -35,8 +35,9 @@ interface Repository {
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
     suspend fun getBajaSuperSpecific(codigo: String, fecha: String): TBajaSuper
     suspend fun isClienteBaja(cliente: String): Boolean
-    suspend fun getLastAlta(): TAlta?
+    suspend fun getLastAux(): Int?
     suspend fun processAlta(fecha: String, location: Location)
+    suspend fun processAAux(codigo: Int)
     suspend fun isDataToday(today: String): Boolean
     suspend fun getStarterTime(): Long
     suspend fun getFinishTime(): Long
@@ -59,6 +60,7 @@ interface Repository {
     suspend fun saveBaja(baja: TBaja)
     suspend fun saveAlta(alta: TAlta)
     suspend fun saveAltaDatos(da: TADatos)
+    suspend fun saveAAux(aux: TAAux)
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
     suspend fun saveBajaEstado(estado: TBEstado)
     suspend fun saveRespuestaOneByOne(respuesta: TRespuesta)
@@ -102,6 +104,7 @@ interface Repository {
     suspend fun deleteRespuesta()
     suspend fun deleteIncidencia()
     suspend fun deleteAFoto()
+    suspend fun deleteAAux()
 
     //  Retrofit Functions
     suspend fun loginAdministrator(body: RequestBody): Flow<NetworkRetrofit<Login>>

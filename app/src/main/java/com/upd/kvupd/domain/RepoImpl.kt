@@ -125,11 +125,25 @@ class RepoImpl @Inject constructor(
     override suspend fun isClienteBaja(cliente: String) =
         localDataSource.isClienteBaja(cliente)
 
-    override suspend fun getLastAlta() =
-        localDataSource.getLastAlta()
+    override suspend fun getLastAux() =
+        localDataSource.getLastAux()
 
     override suspend fun processAlta(fecha: String, location: Location) {
-        val alta = getLastAlta()
+        val aux = getLastAux()!! + 1
+        val last = TAAux(aux)
+        saveAAux(last)
+        val item = TAlta(
+            aux,
+            fecha,
+            CONF.codigo,
+            location.longitude,
+            location.latitude,
+            location.accuracy.toDouble(),
+            "Pendiente",
+            0
+        )
+        saveAlta(item)
+        /*val alta = getLastAlta()
         val last = if (alta != null) {
             alta.idaux + 1
         } else {
@@ -145,7 +159,14 @@ class RepoImpl @Inject constructor(
             "Pendiente",
             0
         )
-        saveAlta(item)
+        saveAlta(item)*/
+    }
+
+    override suspend fun processAAux(codigo: Int) {
+        val alta = getLastAux()
+        val last = alta ?: "${codigo}000".toInt()
+        val item = TAAux(last)
+        saveAAux(item)
     }
 
     override suspend fun isDataToday(today: String): Boolean {
@@ -275,6 +296,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun saveAltaDatos(da: TADatos) {
         localDataSource.saveAltaDatos(da)
+    }
+
+    override suspend fun saveAAux(aux: TAAux) {
+        localDataSource.saveAAux(aux)
     }
 
     override suspend fun saveBajaSuper(baja: List<BajaSupervisor>) {
@@ -435,6 +460,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun deleteAFoto() {
         localDataSource.deleteAltaFoto()
+    }
+
+    override suspend fun deleteAAux() {
+        localDataSource.deleteAAux()
     }
 
     override suspend fun loginAdministrator(body: RequestBody): Flow<NetworkRetrofit<Login>> {

@@ -38,8 +38,10 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC.longitude = 0.0
-        POS_LOC.latitude = 0.0
+        if (isPOSLOCinitialized()) {
+            POS_LOC.longitude = 0.0
+            POS_LOC.latitude = 0.0
+        }
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -100,7 +102,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
     }
 
     private fun setupList(list: List<TAlta>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvAltas.setUI("v", false)
         } else {
@@ -109,5 +111,4 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
             adapter.mDiffer.submitList(list)
         }
     }
-
 }

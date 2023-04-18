@@ -23,7 +23,7 @@ import com.upd.kvupd.data.model.QueryConstant.GET_EMPLEADOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.GET_FOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_INCIDENCIA
-import com.upd.kvupd.data.model.QueryConstant.GET_LAST_ALTA
+import com.upd.kvupd.data.model.QueryConstant.GET_LAST_AUX
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_LOCATION
 import com.upd.kvupd.data.model.QueryConstant.GET_MARKERS
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
@@ -117,8 +117,8 @@ interface QueryDAO {
     @Query(GET_ALTADATOS)
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
 
-    @Query(GET_LAST_ALTA)
-    suspend fun getLastAlta(): TAlta?
+    @Query(GET_LAST_AUX)
+    suspend fun getLastAux(): Int?
 
     @Query(GET_BAJA_SUPER)
     suspend fun getBajaSuper(codigo: String, fecha: String): TBajaSuper

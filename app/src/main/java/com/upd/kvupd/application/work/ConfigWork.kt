@@ -86,6 +86,7 @@ class ConfigWork @WorkerInject constructor(
                                     CONF = config[0].asTConfig()
                                     repository.saveConfiguracion(config)
                                     repository.saveSesion(config[0])
+                                    repository.processAAux(CONF.codigo)
                                     MSG_CONFIG = "Configuracion completa"
                                     rst = Result.success()
                                 }

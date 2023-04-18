@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "2697e04419d97503e336f92541e83fb0",
+    "identityHash": "22db2db77e0119c65914f73dcf33c9f8",
     "entities": [
       {
         "tableName": "TSesion",
@@ -1363,25 +1363,19 @@
         "foreignKeys": []
       },
       {
-        "tableName": "TDemo",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "TAAux",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "empleado",
-            "columnName": "empleado",
+            "fieldPath": "idaux",
+            "columnName": "idaux",
             "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "idaux"
           ],
           "autoGenerate": false
         },
@@ -1392,7 +1386,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2697e04419d97503e336f92541e83fb0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '22db2db77e0119c65914f73dcf33c9f8')"
     ]
   }
 }

@@ -37,6 +37,7 @@ object QueryConstant {
     const val DEL_RESPUESTA = "DELETE FROM TRespuesta"
     const val DEL_INCIDENCIA = "DELETE FROM TIncidencia"
     const val DEL_AFOTO = "DELETE FROM TAFoto"
+    const val DEL_AAUX = "DELETE FROM TAAux"
 
     const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
@@ -80,9 +81,9 @@ object QueryConstant {
             "GROUP BY c.idcliente " +
             "ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC "
 
-    const val GET_LAST_ALTA = "" +
+    const val GET_LAST_AUX = "" +
             "SELECT * " +
-            "FROM TAlta " +
+            "FROM TAAux " +
             "ORDER BY idaux DESC LIMIT 1"
 
     const val GET_LAST_LOCATION = "" +

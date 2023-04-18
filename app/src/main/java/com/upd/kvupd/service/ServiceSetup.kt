@@ -242,6 +242,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 repository.deleteBajaEstado()
                 functions.deleteFotos()
                 repository.deleteIncidencia()
+                repository.deleteAAux()
             }
             functions.launchWorkers()
         }

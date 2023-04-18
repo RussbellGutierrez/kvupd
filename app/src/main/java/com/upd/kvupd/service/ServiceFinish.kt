@@ -375,6 +375,7 @@ class ServiceFinish : LifecycleService() {
             repository.deleteBajaEstado()
             functions.deleteFotos()
             repository.deleteIncidencia()
+            repository.deleteAAux()
         }
     }
 

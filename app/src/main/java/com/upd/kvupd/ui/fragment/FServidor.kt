@@ -124,16 +124,6 @@ class FServidor : Fragment(), MenuProvider {
         else -> false
     }
 
-    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.servidor_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
-        else -> super.onOptionsItemSelected(item)
-    }*/
-
     private fun getDataRoom() {
         if (CONF.seguimiento == 1) {
             viewmodel.servseguimiento.observe(viewLifecycleOwner) {
