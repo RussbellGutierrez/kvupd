@@ -188,7 +188,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             functions.workerperBajaEstado()
             functions.workerperRespuesta()
             functions.workerperFoto()
-            functions.workerperAltaFoto()
+            //functions.workerperAltaFoto()
         }
     }
 
