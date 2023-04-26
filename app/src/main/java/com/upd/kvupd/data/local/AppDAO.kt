@@ -95,6 +95,9 @@ interface AppDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAFoto(rsp: TAFoto)
 
+    @Update(entity = TSeguimiento::class)
+    suspend fun updateSeguimiento(upd: TSeguimiento)
+
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)
 

@@ -257,7 +257,7 @@ fun String.checkDocumento(tipo: String): Boolean {
 
 fun String.daysBetween(today: String): String {
     val inicio = this.split(" ")[0].textToTime(6)
-    val fin = today.textToTime(5)
+    val fin = today.textToTime(6)
     val diferencia = fin!!.time - inicio!!.time
     val dias = TimeUnit.DAYS.convert(diferencia, TimeUnit.MILLISECONDS) + 1
     return dias.toString()

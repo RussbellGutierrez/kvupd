@@ -23,6 +23,7 @@ import com.upd.kvupd.di.LocationSettingsRequestGps
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.domain.ServiceWork
+import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IMEI
@@ -35,14 +36,14 @@ import com.upd.kvupd.utils.Constant.W_ENCUESTA
 import com.upd.kvupd.utils.Constant.W_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_USER
-import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.Interface.serviceListener
 import com.upd.kvupd.utils.Interface.servworkListener
-import com.upd.kvupd.utils.dateToday
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody
+import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
 
@@ -60,6 +61,9 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     @Inject
     lateinit var helper: HelperNotification
+
+    @Inject
+    lateinit var host: HostSelectionInterceptor
 
     @LocationRequestGps
     @Inject
@@ -180,7 +184,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun periodicWorkers() {
         if (user && distrito && negocio && ruta && encuesta) {
             Log.d(_tag, "Launch periodic workers")
-            functions.workerperSeguimiento()
+            //functions.workerperSeguimiento()
             functions.workerperVisita()
             functions.workerperAlta()
             functions.workerperAltaEstado()
@@ -202,7 +206,45 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     private fun verifyHours() {
         CoroutineScope(Dispatchers.IO).launch {
-            val sesion = repository.getSesion() != null
+            val sesion = repository.getSesion()
+            val config = repository.getConfig()
+
+            if (sesion == null && config == null) {
+                Log.e(_tag, "No config and sesion")
+                functions.launchWorkers()
+            } else {
+                Log.d(_tag, "Get some config or sesion")
+                if (repository.getIntoHours()) {
+                    checkingData()
+                } else {
+                    closeEntireApp()
+                }
+            }
+            /*repository.getConfig().let {
+                if (it != null) {
+                    Log.d(_tag, "Get Config")
+                    if (repository.getIntoHours("c")) {
+                        checkingData()
+                    } else {
+                        closeEntireApp()
+                    }
+                } else {
+                    repository.getSesion().let { y ->
+                        if (y != null) {
+                            Log.d(_tag, "Get Sesion")
+                            if (repository.getIntoHours("s")) {
+                                checkingData()
+                            } else {
+                                closeEntireApp()
+                            }
+                        } else {
+                            Log.e(_tag, "No sesion")
+                            functions.launchWorkers()
+                        }
+                    }
+                }
+            }*/
+            /*val sesion = repository.getSesion() != null
 
             if (sesion) {
                 Log.d(_tag, "Get Sesion")
@@ -214,13 +256,13 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             } else {
                 Log.e(_tag, "No sesion")
                 functions.launchWorkers()
-            }
+            }*/
         }
     }
 
     private fun checkingData() {
         CoroutineScope(Dispatchers.IO).launch {
-            val fecha = Calendar.getInstance().time.dateToday(5)
+            val fecha = Calendar.getInstance().time.dateToday(6)
             val today = repository.isDataToday(fecha)
             if (!today) {
                 repository.deleteConfig()
@@ -290,6 +332,82 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 "Pendiente"
             )
             repository.saveSeguimiento(item)
+            sendingLocation(item)
+        }
+    }
+
+    private fun sendingLocation(item: TSeguimiento) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val p = requestBody(item)
+            repository.setWebSeguimiento(p).collect {
+                when (it) {
+                    is NetworkRetrofit.Success -> {
+                        item.estado = "Enviado"
+                        repository.updateSeguimiento(item)
+                        Log.d(_tag, "Seguimiento enviado $item")
+                    }
+                    is NetworkRetrofit.Error -> {
+                        changeHostServer()
+                        Log.e(_tag, "Seguimiento Error ${it.message}")
+                    }
+                }
+            }
+            /*if (Constant.isCONFinitialized() && CONF.seguimiento == 1) {
+                val item = repository.getServerSeguimiento("Pendiente")
+                if (item.isNotEmpty()) {
+                    item.forEach { i ->
+                        val p = requestBody(i)
+                        repository.setWebSeguimiento(p).collect {
+                            when (it) {
+                                is NetworkRetrofit.Success -> {
+                                    i.estado = "Enviado"
+                                    repository.saveSeguimiento(i)
+                                    Log.d(_tag, "Seguimiento enviado $i")
+                                }
+                                is NetworkRetrofit.Error -> {
+                                    changeHostServer()
+                                    Log.e(_tag, "Seguimiento Error ${it.message}")
+                                }
+                            }
+                        }
+                    }
+                }
+            }*/
+        }
+    }
+
+    private fun requestBody(j: TSeguimiento): RequestBody {
+        val p = JSONObject()
+        p.put("fecha", j.fecha)
+        p.put("empleado", j.usuario)
+        p.put("longitud", j.longitud)
+        p.put("latitud", j.latitud)
+        p.put("precision", j.precision)
+        p.put("imei", IMEI)
+        p.put("bateria", j.bateria)
+        p.put("sucursal", CONF.sucursal)
+        p.put("esquema", CONF.esquema)
+        p.put("empresa", CONF.empresa)
+        return p.toReqBody()
+    }
+
+    private suspend fun changeHostServer() {
+        repository.getSesion().let { sesion ->
+            when (Constant.OPTURL) {
+                "aux" -> {
+                    Constant.OPTURL = "ipp"
+                    Constant.IP_P = "http://${sesion!!.ipp}/api/"
+                }
+                "ipp" -> {
+                    Constant.OPTURL = "ips"
+                    Constant.IP_S = "http://${sesion!!.ips}/api/"
+                }
+                "ips" -> {
+                    Constant.OPTURL = "aux"
+                    Constant.IP_AUX = "http://$IPA/api/"
+                }
+            }
+            host.setHostBaseUrl()
         }
     }
 
@@ -310,7 +428,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                                                 configFailed()
                                             }
                                         }
-                                        else -> {}
+                                        else -> Unit
                                     }
                                 }
                             }

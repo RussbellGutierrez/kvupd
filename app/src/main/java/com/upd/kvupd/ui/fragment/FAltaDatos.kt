@@ -51,12 +51,13 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
     private val args: FAltaDatosArgs by navArgs()
-    private lateinit var adStored: TADatos
+    private var adStored: TADatos? = null
     private val _tag by lazy { FAltaDatos::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
+        adStored = null
     }
 
     /**Agregar campos dnice,ruc,tdoc,imei, todos string**/
@@ -110,8 +111,10 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             setupFields()
         }
         viewmodel.altadatos.observe(viewLifecycleOwner) {
-            if (it != null) {
-                adStored = it
+            it.getContentIfNotHandled().let { y ->
+                if (y != null) {
+                    adStored = y
+                }
             }
         }
 
@@ -213,21 +216,12 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.inlRuc.setUI("v", false)
                 bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
                 bind.edtRuc.setText("")
-                /*when (tipo) {
-                    "PJ" -> bind.spnDocumento.setSelection(1)
-                    "PN" -> {
-                        bind.inlRuc.setUI("v", false)
-                        bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
-                        bind.edtRuc.setText("")
-                    }
-                }*/
             }
         }
     }
 
     private fun setupFields() {
-
-        if (::adStored.isInitialized) {
+        if (adStored != null) {
 
             if (distrito.isNotEmpty() && giro.isNotEmpty()) {
 
@@ -235,16 +229,16 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
 
-                if (adStored.tipo == "PJ") {
+                if (adStored?.tipo == "PJ") {
                     bind.rbJuridica.isChecked = true
                     setDataSpinner("PJ")
-                }else{
+                } else {
                     bind.rbNatural.isChecked = true
                     setDataSpinner("PN")
                 }
 
-                val ald = distrito.indexOf(adStored.distrito)
-                val alg = giro.indexOf(adStored.giro)
+                val ald = distrito.indexOf(adStored?.distrito)
+                val alg = giro.indexOf(adStored?.giro)
 
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
@@ -252,31 +246,31 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 Log.w(_tag, "Distrito pos: $ald")
                 Log.w(_tag, "Giro pos: $alg")
 
-                bind.edtRazon.setText(adStored.razon)
-                bind.edtPaterno.setText(adStored.appaterno)
-                bind.edtMaterno.setText(adStored.apmaterno)
-                bind.edtNombre.setText(adStored.nombre)
-                bind.edtDnice.setText(adStored.dnice)
-                bind.edtRuc.setText(adStored.ruc)
-                bind.spnDocumento.setSelection(setDocumento(adStored.tipodocu))
-                processDocumento(setDocumento(adStored.tipodocu))
+                bind.edtRazon.setText(adStored?.razon)
+                bind.edtPaterno.setText(adStored?.appaterno)
+                bind.edtMaterno.setText(adStored?.apmaterno)
+                bind.edtNombre.setText(adStored?.nombre)
+                bind.edtDnice.setText(adStored?.dnice)
+                bind.edtRuc.setText(adStored?.ruc)
+                bind.spnDocumento.setSelection(setDocumento(adStored!!.tipodocu))
+                processDocumento(setDocumento(adStored!!.tipodocu))
                 //bind.edtDocumento.setText(adStored.documento)
-                bind.edtMovil1.setText(adStored.movil1)
-                bind.edtMovil2.setText(adStored.movil2)
-                bind.edtCorreo.setText(adStored.correo)
-                bind.spnVia.setSelection(setVia(adStored.via))
-                bind.edtManzana.setText(adStored.manzana)
-                bind.edtDireccion.setText(adStored.direccion)
-                bind.spnNumero.setSelection(setUbicacion(adStored.ubicacion))
-                bind.edtNumero.setText(adStored.numero)
-                bind.spnZona.setSelection(setZona(adStored.zona))
-                bind.edtZona.setText(adStored.zonanombre)
-                bind.edtRuta.setText(adStored.ruta)
-                bind.edtSecuencia.setText(adStored.secuencia)
+                bind.edtMovil1.setText(adStored?.movil1)
+                bind.edtMovil2.setText(adStored?.movil2)
+                bind.edtCorreo.setText(adStored?.correo)
+                bind.spnVia.setSelection(setVia(adStored!!.via))
+                bind.edtManzana.setText(adStored?.manzana)
+                bind.edtDireccion.setText(adStored?.direccion)
+                bind.spnNumero.setSelection(setUbicacion(adStored!!.ubicacion))
+                bind.edtNumero.setText(adStored?.numero)
+                bind.spnZona.setSelection(setZona(adStored!!.zona))
+                bind.edtZona.setText(adStored?.zonanombre)
+                bind.edtRuta.setText(adStored?.ruta)
+                bind.edtSecuencia.setText(adStored?.secuencia)
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
-                if (adStored.dniruta != "") {
-                    thumbnailPhoto(adStored.dniruta, true)
+                if (adStored?.dniruta != "") {
+                    thumbnailPhoto(adStored!!.dniruta, true)
                 }
             }
         } else {

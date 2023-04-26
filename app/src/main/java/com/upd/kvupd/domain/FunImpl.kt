@@ -311,8 +311,7 @@ class FunImpl @Inject constructor(
             if ((i.longitud < 0 && i.latitud < 0) ||
                 (i.longitud > 0 && i.latitud > 0) ||
                 (i.longitud < 0 && i.latitud > 0) ||
-                (i.longitud > 0 && i.latitud < 0) ||
-                (i.longitud != 0.0 && i.latitud != 0.0)
+                (i.longitud > 0 && i.latitud < 0)
             ) {
                 when (i.observacion) {
                     0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))

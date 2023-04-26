@@ -37,14 +37,14 @@ class SeguimientoPWork @WorkerInject constructor(
         withContext(Dispatchers.IO) {
             if (isCONFinitialized() && CONF.seguimiento == 1) {
                 val item = repository.getServerSeguimiento("Pendiente")
-                if (!item.isNullOrEmpty()) {
+                if (item.isNotEmpty()) {
                     item.forEach { i ->
                         val p = requestBody(i)
                         repository.setWebSeguimiento(p).collect {
                             when(it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveSeguimiento(i)
+                                    repository.updateSeguimiento(i)
                                     Log.d(_tag,"Seguimiento enviado $i")
                                 }
                                 is NetworkRetrofit.Error -> {

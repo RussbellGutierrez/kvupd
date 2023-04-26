@@ -80,6 +80,7 @@ interface Repository {
     suspend fun getServerFoto(estado: String): List<TRespuesta>
     suspend fun getServerAltaFoto(estado: String): List<TAFoto>
 
+    suspend fun updateSeguimiento(coordenada: TSeguimiento)
     suspend fun updateLocationAlta(locationAlta: LocationAlta)
     suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
     suspend fun updateAltaDatos(upd: TADatos)

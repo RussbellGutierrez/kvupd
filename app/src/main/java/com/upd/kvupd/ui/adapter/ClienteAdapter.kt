@@ -86,7 +86,7 @@ class ClienteAdapter @Inject constructor(
 
         override fun bind(item: RowCliente) {
             CoroutineScope(Dispatchers.Main).launch {
-                val fecha = Calendar.getInstance().time.dateToday(5)
+                val fecha = Calendar.getInstance().time.dateToday(6)
                 val cliente = "${item.id} - ${item.nombre}"
                 val secuencia = "Sec ${item.secuencia}"
 

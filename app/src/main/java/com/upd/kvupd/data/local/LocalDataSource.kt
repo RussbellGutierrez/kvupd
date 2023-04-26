@@ -215,6 +215,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertAFoto(rsp)
     }
 
+    suspend fun updateSeguimiento(coordenada: TSeguimiento) {
+        dao.updateSeguimiento(coordenada)
+    }
+
     suspend fun updateLocationAlta(locationAlta: LocationAlta) {
         dao.updateLocationAlta(locationAlta)
     }

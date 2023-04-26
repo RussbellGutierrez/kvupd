@@ -96,9 +96,10 @@ object ProviderModule {
     @Provides
     fun providerLocationRequest(): LocationRequest {
         return LocationRequest.create().apply {
+            smallestDisplacement = 2.0f
             interval = GPS_NORMAL_INTERVAL
             fastestInterval = GPS_FAST_INTERVAL
-            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
 

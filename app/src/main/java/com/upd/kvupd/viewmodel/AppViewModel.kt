@@ -128,8 +128,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _bajaven: MutableLiveData<Event<NetworkRetrofit<JBajaVendedor>>> = MutableLiveData()
     val bajavend: LiveData<Event<NetworkRetrofit<JBajaVendedor>>> = _bajaven
 
-    private val _altadatos: MutableLiveData<TADatos> = MutableLiveData()
-    val altadatos: LiveData<TADatos> = _altadatos
+    private val _altadatos: MutableLiveData<Event<TADatos?>> = MutableLiveData()
+    val altadatos: LiveData<Event<TADatos?>> = _altadatos
 
     private val _preguntas: MutableLiveData<Event<List<TEncuesta>>> = MutableLiveData()
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
@@ -468,7 +468,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun fetchAltaDatos(alta: String) = viewModelScope.launch {
         repository.getAltaDatoSpecific(alta).let {
-            _altadatos.value = it
+            _altadatos.value = Event(it)
         }
     }
 
@@ -641,7 +641,7 @@ class AppViewModel @ViewModelInject constructor(
 
     fun updSeguimiento(it: TSeguimiento) {
         viewModelScope.launch {
-            repository.saveSeguimiento(it)
+            repository.updateSeguimiento(it)
         }
     }
 

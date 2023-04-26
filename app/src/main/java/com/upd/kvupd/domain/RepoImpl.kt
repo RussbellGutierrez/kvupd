@@ -208,7 +208,7 @@ class RepoImpl @Inject constructor(
             }
             l = if (getIntoHours()) {
                 calendar.timeInMillis - System.currentTimeMillis()
-            }else {
+            } else {
                 0
             }
         }
@@ -217,18 +217,51 @@ class RepoImpl @Inject constructor(
 
     override suspend fun getIntoHours(): Boolean {
         var result: Boolean
-        localDataSource.getSesion().let {
-            result = if (it != null) {
-
-                val d = Calendar.getInstance().time
-                val hora = d.dateToday(3).replace(":", "").toInt()
-                val inicio = it.hini.replace(":", "").toInt()
-                val fin = it.hfin.replace(":", "").toInt()
-                hora in inicio..fin
-            }else {
-                true
+        val d = Calendar.getInstance().time
+        val hora = d.dateToday(3).replace(":", "").toInt()
+        localDataSource.getConfig().let { c ->
+            if (c != null) {
+                val inicio = c.hini.replace(":", "").toInt()
+                val fin = c.hfin.replace(":", "").toInt()
+                result = hora in inicio..fin
+            }else{
+                localDataSource.getSesion().let { s ->
+                    result = if (s != null){
+                        val inicio = s.hini.replace(":", "").toInt()
+                        val fin = s.hfin.replace(":", "").toInt()
+                        hora in inicio..fin
+                    }else{
+                        true
+                    }
+                }
             }
         }
+        /*when (opt) {
+            "c" -> localDataSource.getConfig().let {
+                result = if (it != null) {
+
+                    val d = Calendar.getInstance().time
+                    val hora = d.dateToday(3).replace(":", "").toInt()
+                    val inicio = it.hini.replace(":", "").toInt()
+                    val fin = it.hfin.replace(":", "").toInt()
+                    hora in inicio..fin
+                } else {
+                    true
+                }
+            }
+            "s" -> localDataSource.getSesion().let {
+                result = if (it != null) {
+
+                    val d = Calendar.getInstance().time
+                    val hora = d.dateToday(3).replace(":", "").toInt()
+                    val inicio = it.hini.replace(":", "").toInt()
+                    val fin = it.hfin.replace(":", "").toInt()
+                    hora in inicio..fin
+                } else {
+                    true
+                }
+            }
+        }*/
         return result
     }
 
@@ -368,6 +401,10 @@ class RepoImpl @Inject constructor(
 
     override suspend fun getServerAltaFoto(estado: String): List<TAFoto> {
         return localDataSource.getServerAltaFoto(estado)
+    }
+
+    override suspend fun updateSeguimiento(coordenada: TSeguimiento) {
+        localDataSource.updateSeguimiento(coordenada)
     }
 
     override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
