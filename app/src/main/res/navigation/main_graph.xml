@@ -280,8 +280,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_FVendedor_to_DBaja"
-            app:destination="@id/DBaja"
+            android:id="@+id/action_FVendedor_to_DClienteAux"
+            app:destination="@id/DClienteAux"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"

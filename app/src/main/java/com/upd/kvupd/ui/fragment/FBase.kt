@@ -1,12 +1,15 @@
 package com.upd.kvupd.ui.fragment
 
-import android.content.ComponentName
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -175,6 +178,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         super.onResume()
         viewmodel.checking.observe(viewLifecycleOwner) {
             if (it) {
+                permBackground()
                 viewmodel.launchSetup()
             } else {
                 serviceListener?.onClosingActivity()
@@ -234,6 +238,18 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             }
         }
         bind.txtRuta.text = mensaje
+    }
+
+    @SuppressLint("BatteryLife")
+    private fun permBackground() {
+        val packageName = requireContext().packageName
+        val pm = requireContext().getSystemService(AppCompatActivity.POWER_SERVICE) as PowerManager
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            val intent = Intent()
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        }
     }
 
     private fun getUsuario(item: TConfiguracion): String {

@@ -114,22 +114,13 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { DVendedor().show(parentFragmentManager, "dialog") }
         R.id.encuesta -> consume { DListaEncuesta().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
+        R.id.mapa -> consume {
+            findNavController().navigate(
+                FVendedorDirections.actionFVendedorToFMapa(null)
+            )
+        }
         else -> false
     }
-
-    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.vendedor_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.voz -> consume { searchVoice() }
-        R.id.descargar -> consume { DVendedor().show(parentFragmentManager, "dialog") }
-        R.id.encuesta -> consume { DListaEncuesta().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume { findNavController().navigate(R.id.action_FVendedor_to_FMapa) }
-        else -> super.onOptionsItemSelected(item)
-    }*/
 
     override fun onQueryTextSubmit(p0: String) = false
 
@@ -141,7 +132,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
             )
                 search.add(i)
         }
-        if (search.isNullOrEmpty()) {
+        if (search.isEmpty()) {
             snack("No encontramos clientes")
         } else {
             adapter.mDiffer.submitList(search)
@@ -201,7 +192,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
     }
 
     private fun setupList(list: List<RowCliente>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvClientes.setUI("v", false)
         } else {
@@ -227,7 +218,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
                     }
                 }
                 1 -> findNavController().navigate(
-                    FVendedorDirections.actionFVendedorToDBaja(item)
+                    FVendedorDirections.actionFVendedorToDClienteAux(item)
                 )
             }
         }
