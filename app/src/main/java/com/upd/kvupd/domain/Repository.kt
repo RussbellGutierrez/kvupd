@@ -38,7 +38,7 @@ interface Repository {
     suspend fun getLastAux(): Int?
     suspend fun processAlta(fecha: String, location: Location)
     suspend fun processAAux(codigo: Int)
-    suspend fun isDataToday(today: String): Boolean
+    suspend fun isDataToday(): Int
     suspend fun getStarterTime(): Long
     suspend fun getFinishTime(): Long
     suspend fun getIntoHours(): Boolean

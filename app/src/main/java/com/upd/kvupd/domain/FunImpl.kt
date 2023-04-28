@@ -246,9 +246,7 @@ class FunImpl @Inject constructor(
 
             override fun onLost(network: Network) {
                 val item = saveSystemActions("INTERNET", "Servicio internet desconectado")
-                if (item != null) {
-                    servworkListener?.savingSystemReport(item)
-                }
+                servworkListener?.savingSystemReport(item)
             }
 
             override fun onCapabilitiesChanged(network: Network, nc: NetworkCapabilities) {
@@ -279,9 +277,7 @@ class FunImpl @Inject constructor(
                     else -> "UNKNOW"
                 }
                 val item = saveSystemActions("INTERNET", "Internet conectado $st")
-                if (item != null) {
-                    servworkListener?.savingSystemReport(item)
-                }
+                servworkListener?.savingSystemReport(item)
             }
         })
     }
@@ -291,18 +287,21 @@ class FunImpl @Inject constructor(
         ctx.registerReceiver(Receiver(), filter)
     }
 
-    override fun saveSystemActions(tipo: String, msg: String?): TIncidencia? {
+    override fun saveSystemActions(tipo: String, msg: String?): TIncidencia {
         val obs = when (tipo) {
             "GPS" -> if (ctx.isGPSDisabled()) "Ubicacion GPS desactivada" else "Ubicacion GPS activada"
             "TIME" -> "Fecha y hora fueron modificados"
             "INTERNET" -> msg ?: "Nothing"
-            else -> ""
+            "APP" -> msg ?: "App nothing"
+            else -> "Do something"
         }
         val fecha = Calendar.getInstance().time.dateToday(4)
-        if (isCONFinitialized()) {
-            return TIncidencia(tipo, CONF.codigo, obs, fecha)
+        val codigo = if (isCONFinitialized()) {
+            CONF.codigo
+        } else {
+            0
         }
-        return null
+        return TIncidencia(tipo, codigo, obs, fecha)
     }
 
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {
@@ -487,7 +486,7 @@ class FunImpl @Inject constructor(
             .build()
 
     override fun workerperSeguimiento() {
-        val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
+        /*val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
             PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
             TimeUnit.MILLISECONDS,
             PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
@@ -500,7 +499,7 @@ class FunImpl @Inject constructor(
             WP_SEGUIMIENTO,
             ExistingPeriodicWorkPolicy.REPLACE,
             wp
-        )
+        )*/
     }
 
     override fun workerperVisita() {

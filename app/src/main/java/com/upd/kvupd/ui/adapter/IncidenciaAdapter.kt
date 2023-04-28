@@ -64,6 +64,7 @@ class IncidenciaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHol
                 "GPS" -> "Ubicacion"
                 "TIME" -> "Fecha y hora"
                 "INTERNET" -> "Conexion"
+                "APP" -> "Aplicacion"
                 else -> ""
             }
             bind.txtTipo.text = tipo

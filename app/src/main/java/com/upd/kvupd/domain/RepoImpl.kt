@@ -8,6 +8,7 @@ import com.upd.kvupd.utils.BaseApiResponse
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
+import com.upd.kvupd.utils.textToTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -169,10 +170,17 @@ class RepoImpl @Inject constructor(
         saveAAux(item)
     }
 
-    override suspend fun isDataToday(today: String): Boolean {
-        var resp = false
-        localDataSource.getConfig()?.let { i ->
-            resp = i.fecha == today
+    override suspend fun isDataToday(): Int {
+        var resp = 1
+        val fecha = Calendar.getInstance().time.dateToday(8).textToTime(8)
+        localDataSource.getSesion().let { s ->
+            if (s != null) {
+                resp = fecha!!.compareTo(s.fecha.textToTime(8))
+            } else {
+                localDataSource.getConfig()?.let { c ->
+                    resp = fecha!!.compareTo(c.fecha.textToTime(8))
+                }
+            }
         }
         return resp
     }
@@ -182,8 +190,8 @@ class RepoImpl @Inject constructor(
         val config = localDataSource.getConfig()
         val sesion = localDataSource.getSesion()
         val hini = when {
-            sesion != null -> sesion.hini
             config != null -> config.hini
+            sesion != null -> sesion.hini
             else -> ""
         }
         val calendar = Calendar.getInstance().apply {
@@ -191,6 +199,7 @@ class RepoImpl @Inject constructor(
             set(Calendar.MINUTE, hini.split(":")[1].toInt())
             set(Calendar.SECOND, hini.split(":")[2].toInt())
         }
+
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
@@ -224,44 +233,18 @@ class RepoImpl @Inject constructor(
                 val inicio = c.hini.replace(":", "").toInt()
                 val fin = c.hfin.replace(":", "").toInt()
                 result = hora in inicio..fin
-            }else{
+            } else {
                 localDataSource.getSesion().let { s ->
-                    result = if (s != null){
+                    result = if (s != null) {
                         val inicio = s.hini.replace(":", "").toInt()
                         val fin = s.hfin.replace(":", "").toInt()
                         hora in inicio..fin
-                    }else{
+                    } else {
                         true
                     }
                 }
             }
         }
-        /*when (opt) {
-            "c" -> localDataSource.getConfig().let {
-                result = if (it != null) {
-
-                    val d = Calendar.getInstance().time
-                    val hora = d.dateToday(3).replace(":", "").toInt()
-                    val inicio = it.hini.replace(":", "").toInt()
-                    val fin = it.hfin.replace(":", "").toInt()
-                    hora in inicio..fin
-                } else {
-                    true
-                }
-            }
-            "s" -> localDataSource.getSesion().let {
-                result = if (it != null) {
-
-                    val d = Calendar.getInstance().time
-                    val hora = d.dateToday(3).replace(":", "").toInt()
-                    val inicio = it.hini.replace(":", "").toInt()
-                    val fin = it.hfin.replace(":", "").toInt()
-                    hora in inicio..fin
-                } else {
-                    true
-                }
-            }
-        }*/
         return result
     }
 

@@ -1,7 +1,10 @@
 package com.upd.kvupd.ui.fragment
 
+import android.content.ComponentName
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.MenuProvider
@@ -25,6 +28,7 @@ import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.*
 
 @AndroidEntryPoint
 class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
@@ -182,7 +186,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         menuInflater.inflate(R.menu.main_menu, menu)
     }
 
-    override fun onMenuItemSelected(menuItem: MenuItem)= when (menuItem.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.sincronizar -> consume { sinchroData() }
         R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_DLogin) }
         R.id.encuesta -> consume { launchEncuesta() }

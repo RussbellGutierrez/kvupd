@@ -31,17 +31,13 @@ class Receiver : BroadcastReceiver() {
             Intent.ACTION_TIME_CHANGED -> {
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = functions.saveSystemActions("TIME",null)
-                    if (item != null) {
-                        repository.saveIncidencia(item)
-                    }
+                    repository.saveIncidencia(item)
                 }
             }
             LocationManager.PROVIDERS_CHANGED_ACTION -> {
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = functions.saveSystemActions("GPS",null)
-                    if (item != null) {
-                        repository.saveIncidencia(item)
-                    }
+                    repository.saveIncidencia(item)
                 }
             }
         }

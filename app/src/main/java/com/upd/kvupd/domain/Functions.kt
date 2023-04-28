@@ -22,7 +22,7 @@ interface Functions {
     fun filterListCliente(list: List<DataCliente>): MutableList<String>
     fun mobileInternetState()
     fun enableBroadcastGPS()
-    fun saveSystemActions(tipo: String, msg: String?): TIncidencia?
+    fun saveSystemActions(tipo: String, msg: String?): TIncidencia
 
     fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap, list: List<Pedimap>): List<Marker>

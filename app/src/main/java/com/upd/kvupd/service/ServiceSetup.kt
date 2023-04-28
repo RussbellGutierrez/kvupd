@@ -36,6 +36,7 @@ import com.upd.kvupd.utils.Constant.W_ENCUESTA
 import com.upd.kvupd.utils.Constant.W_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_USER
+import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.serviceListener
 import com.upd.kvupd.utils.Interface.servworkListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -175,7 +176,8 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             helper.encuestaNotifLaunch()
 
             repository.getFinishTime().let {
-                Log.d(_tag, "Finish time $it")
+                val item = functions.saveSystemActions("APP", "Servicio finaliza $it")
+                repository.saveIncidencia(item)
                 functions.workerFinish(it)
             }
         }
@@ -210,8 +212,9 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             val config = repository.getConfig()
 
             if (sesion == null && config == null) {
-                Log.e(_tag, "No config and sesion")
-                functions.launchWorkers()
+                val item = functions.saveSystemActions("APP", "Sin registro configuracion previa")
+                repository.saveIncidencia(item)
+                functions.launchWorkers()//No data, launch work config and more
             } else {
                 Log.d(_tag, "Get some config or sesion")
                 if (repository.getIntoHours()) {
@@ -220,51 +223,15 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                     closeEntireApp()
                 }
             }
-            /*repository.getConfig().let {
-                if (it != null) {
-                    Log.d(_tag, "Get Config")
-                    if (repository.getIntoHours("c")) {
-                        checkingData()
-                    } else {
-                        closeEntireApp()
-                    }
-                } else {
-                    repository.getSesion().let { y ->
-                        if (y != null) {
-                            Log.d(_tag, "Get Sesion")
-                            if (repository.getIntoHours("s")) {
-                                checkingData()
-                            } else {
-                                closeEntireApp()
-                            }
-                        } else {
-                            Log.e(_tag, "No sesion")
-                            functions.launchWorkers()
-                        }
-                    }
-                }
-            }*/
-            /*val sesion = repository.getSesion() != null
-
-            if (sesion) {
-                Log.d(_tag, "Get Sesion")
-                if (repository.getIntoHours()) {
-                    checkingData()
-                } else {
-                    closeEntireApp()
-                }
-            } else {
-                Log.e(_tag, "No sesion")
-                functions.launchWorkers()
-            }*/
         }
     }
 
     private fun checkingData() {
         CoroutineScope(Dispatchers.IO).launch {
-            val fecha = Calendar.getInstance().time.dateToday(6)
-            val today = repository.isDataToday(fecha)
-            if (!today) {
+            val today = repository.isDataToday()
+            if (today == 0) {
+                //val item = functions.saveSystemActions("APP","Eliminando datos $fecha")
+                //repository.saveIncidencia(item)
                 repository.deleteConfig()
                 repository.deleteClientes()
                 repository.deleteEmpleados()
@@ -338,17 +305,19 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     private fun sendingLocation(item: TSeguimiento) {
         CoroutineScope(Dispatchers.IO).launch {
-            val p = requestBody(item)
-            repository.setWebSeguimiento(p).collect {
-                when (it) {
-                    is NetworkRetrofit.Success -> {
-                        item.estado = "Enviado"
-                        repository.updateSeguimiento(item)
-                        Log.d(_tag, "Seguimiento enviado $item")
-                    }
-                    is NetworkRetrofit.Error -> {
-                        changeHostServer()
-                        Log.e(_tag, "Seguimiento Error ${it.message}")
+            if (isCONFinitialized() && CONF.seguimiento == 1) {
+                val p = requestBody(item)
+                repository.setWebSeguimiento(p).collect {
+                    when (it) {
+                        is NetworkRetrofit.Success -> {
+                            item.estado = "Enviado"
+                            repository.updateSeguimiento(item)
+                            Log.d(_tag, "Seguimiento enviado $item")
+                        }
+                        is NetworkRetrofit.Error -> {
+                            changeHostServer()
+                            Log.e(_tag, "Seguimiento Error ${it.message}")
+                        }
                     }
                 }
             }

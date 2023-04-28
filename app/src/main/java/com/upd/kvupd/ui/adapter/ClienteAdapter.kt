@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.RowClienteBinding
-import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.BaseViewHolder
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Interface.clienteListener
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.textToTime
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -86,17 +86,18 @@ class ClienteAdapter @Inject constructor(
 
         override fun bind(item: RowCliente) {
             CoroutineScope(Dispatchers.Main).launch {
-                val fecha = Calendar.getInstance().time.dateToday(6)
+                val fecha = Calendar.getInstance().time.dateToday(5).textToTime(5)!!
                 val cliente = "${item.id} - ${item.nombre}"
                 val secuencia = "Sec ${item.secuencia}"
+                val fc = item.fecha.textToTime(5)
 
                 if (CONF.tipo == "V") {
                     bind.txtVendedor.setUI("v", false)
                     bind.dvdVendedor.setUI("v", false)
-                    if (fecha != item.fecha) {
-                        bind.txtFecha.setTextColor(ctx.getColor(R.color.gold))
-                    } else {
+                    if (fecha.compareTo(fc) == 0) {
                         bind.txtFecha.setTextColor(ctx.getColor(R.color.dodgerblue))
+                    } else {
+                        bind.txtFecha.setTextColor(ctx.getColor(R.color.gold))
                     }
                 }
 
