@@ -178,7 +178,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         super.onResume()
         viewmodel.checking.observe(viewLifecycleOwner) {
             if (it) {
-                permBackground()
+                //permBackground()
                 viewmodel.launchSetup()
             } else {
                 serviceListener?.onClosingActivity()

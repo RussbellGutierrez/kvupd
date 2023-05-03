@@ -229,9 +229,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun checkingData() {
         CoroutineScope(Dispatchers.IO).launch {
             val today = repository.isDataToday()
-            if (today == 0) {
-                //val item = functions.saveSystemActions("APP","Eliminando datos $fecha")
-                //repository.saveIncidencia(item)
+            if (today != 0) {
                 repository.deleteConfig()
                 repository.deleteClientes()
                 repository.deleteEmpleados()

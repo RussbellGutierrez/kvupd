@@ -172,13 +172,13 @@ class RepoImpl @Inject constructor(
 
     override suspend fun isDataToday(): Int {
         var resp = 1
-        val fecha = Calendar.getInstance().time.dateToday(8).textToTime(8)
+        val today = Calendar.getInstance().time.dateToday(8).textToTime(8)
         localDataSource.getSesion().let { s ->
             if (s != null) {
-                resp = fecha!!.compareTo(s.fecha.textToTime(8))
+                resp = today!!.compareTo(s.fecha.textToTime(8))
             } else {
                 localDataSource.getConfig()?.let { c ->
-                    resp = fecha!!.compareTo(c.fecha.textToTime(8))
+                    resp = today!!.compareTo(c.fecha.textToTime(8))
                 }
             }
         }
