@@ -178,7 +178,6 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         super.onResume()
         viewmodel.checking.observe(viewLifecycleOwner) {
             if (it) {
-                //permBackground()
                 viewmodel.launchSetup()
             } else {
                 serviceListener?.onClosingActivity()
@@ -238,18 +237,6 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             }
         }
         bind.txtRuta.text = mensaje
-    }
-
-    @SuppressLint("BatteryLife")
-    private fun permBackground() {
-        val packageName = requireContext().packageName
-        val pm = requireContext().getSystemService(AppCompatActivity.POWER_SERVICE) as PowerManager
-        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-            val intent = Intent()
-            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        }
     }
 
     private fun getUsuario(item: TConfiguracion): String {
