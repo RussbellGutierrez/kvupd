@@ -28,7 +28,11 @@ import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.IPA
+import com.upd.kvupd.utils.Constant.IP_AUX
+import com.upd.kvupd.utils.Constant.IP_P
+import com.upd.kvupd.utils.Constant.IP_S
 import com.upd.kvupd.utils.Constant.LOOPING
+import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.Constant.SETUP_NOTIF
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Constant.W_DISTRITO
@@ -319,27 +323,6 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                     }
                 }
             }
-            /*if (Constant.isCONFinitialized() && CONF.seguimiento == 1) {
-                val item = repository.getServerSeguimiento("Pendiente")
-                if (item.isNotEmpty()) {
-                    item.forEach { i ->
-                        val p = requestBody(i)
-                        repository.setWebSeguimiento(p).collect {
-                            when (it) {
-                                is NetworkRetrofit.Success -> {
-                                    i.estado = "Enviado"
-                                    repository.saveSeguimiento(i)
-                                    Log.d(_tag, "Seguimiento enviado $i")
-                                }
-                                is NetworkRetrofit.Error -> {
-                                    changeHostServer()
-                                    Log.e(_tag, "Seguimiento Error ${it.message}")
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
         }
     }
 
@@ -360,18 +343,18 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
     private suspend fun changeHostServer() {
         repository.getSesion().let { sesion ->
-            when (Constant.OPTURL) {
+            when (OPTURL) {
                 "aux" -> {
-                    Constant.OPTURL = "ipp"
-                    Constant.IP_P = "http://${sesion!!.ipp}/api/"
+                    OPTURL = "ipp"
+                    IP_P = "http://${sesion!!.ipp}/api/"
                 }
                 "ipp" -> {
-                    Constant.OPTURL = "ips"
-                    Constant.IP_S = "http://${sesion!!.ips}/api/"
+                    OPTURL = "ips"
+                    IP_S = "http://${sesion!!.ips}/api/"
                 }
                 "ips" -> {
-                    Constant.OPTURL = "aux"
-                    Constant.IP_AUX = "http://$IPA/api/"
+                    OPTURL = "aux"
+                    IP_AUX = "http://$IPA/api/"
                 }
             }
             host.setHostBaseUrl()

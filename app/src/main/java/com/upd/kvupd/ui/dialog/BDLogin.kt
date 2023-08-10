@@ -61,7 +61,7 @@ class BDLogin : BottomSheetDialogFragment() {
                         controlUI(false)
                         y.data?.let {
                             when (it.data.tipo.descripcion) {
-                                "ADMINISTRADOR" -> findNavController().navigate(R.id.action_DLogin_to_FAjuste)
+                                "ADMINISTRADOR" -> findNavController().navigate(R.id.action_BDLogin_to_FAjuste)
                                 else -> {
                                     controlUI(false)
                                     snack("Administradores solamente")

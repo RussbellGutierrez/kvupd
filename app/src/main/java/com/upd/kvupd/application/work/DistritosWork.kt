@@ -29,7 +29,7 @@ class DistritosWork @WorkerInject constructor(
             lateinit var rst: Result
             val dist = repository.getDistritos()
             val req = requestBody()
-            if (dist.isNullOrEmpty()) {
+            if (dist.isEmpty()) {
                 try {
                     repository.getWebDistritos(req).collect { response ->
                         val rsp = response.data?.jobl

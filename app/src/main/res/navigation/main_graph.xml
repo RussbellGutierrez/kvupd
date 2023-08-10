@@ -18,8 +18,8 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_FBase_to_DLogin"
-            app:destination="@id/DLogin"
+            android:id="@+id/action_FBase_to_BDLogin"
+            app:destination="@id/BDLogin"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -87,12 +87,12 @@
         android:label="Ajustes"
         tools:layout="@layout/fragment_f_ajuste" />
     <dialog
-        android:id="@+id/DLogin"
+        android:id="@+id/BDLogin"
         android:name="com.upd.kvupd.ui.dialog.BDLogin"
         android:label="Login"
         tools:layout="@layout/bottom_dialog_login">
         <action
-            android:id="@+id/action_DLogin_to_FAjuste"
+            android:id="@+id/action_BDLogin_to_FAjuste"
             app:destination="@id/FAjuste"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"

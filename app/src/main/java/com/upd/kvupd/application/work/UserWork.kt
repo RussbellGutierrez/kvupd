@@ -32,7 +32,7 @@ class UserWork @WorkerInject constructor(
             val emp = repository.getEmpleados()
             val req = requestBody()
             when (CONF.tipo) {
-                "V" -> if (cli.isNullOrEmpty()) {
+                "V" -> if (cli.isEmpty()) {
                     try {
                         repository.getWebClientes(req).collect { response ->
                             val rsp = response.data?.jobl
@@ -54,7 +54,7 @@ class UserWork @WorkerInject constructor(
                     MSG_USER = "Full"
                     rst = Result.success()
                 }
-                "S" -> if (emp.isNullOrEmpty()) {
+                "S" -> if (emp.isEmpty()) {
                     try {
                         repository.getWebEmpleados(req).collect { response ->
                             val rsp = response.data?.jobl

@@ -1,10 +1,7 @@
 package com.upd.kvupd.ui.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.PowerManager
-import android.provider.Settings
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -98,17 +95,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQ_CODE -> permission.reqBackPermission()
-            REQ_BACK_CODE -> {
-                snack("GPS segundo plano")
-                /*val packageName = packageName
-                val pm = getSystemService(POWER_SERVICE) as PowerManager
-                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                    intent.data = Uri.parse("package:$packageName")
-                    startActivity(intent)
-                }*/
-            }
+            REQ_BACK_CODE -> snack("GPS segundo plano")
         }
     }
 

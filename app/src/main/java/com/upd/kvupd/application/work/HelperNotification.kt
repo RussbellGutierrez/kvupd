@@ -4,7 +4,6 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.upd.kvupd.R
@@ -38,7 +37,10 @@ class HelperNotification @Inject constructor(
     private fun createPendingIntent(intent: Intent): PendingIntent {
         val stackBuilder = TaskStackBuilder.create(ctx)
         stackBuilder.addNextIntentWithParentStack(intent)
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        return stackBuilder.getPendingIntent(
+            0,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     fun setupNotif(): Notification {
@@ -103,6 +105,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_CONFIG)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(CONFIG_NOTIF, notif.build())
@@ -110,7 +116,11 @@ class HelperNotification @Inject constructor(
 
     fun userNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(USER_CHANNEL, "Usuarios", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                USER_CHANNEL,
+                "Usuarios",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             channel.description = "Notificacion para usuarios"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -122,7 +132,7 @@ class HelperNotification @Inject constructor(
             .setContentTitle("Download")
             .setContentText("Usuario programado")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setProgress(0,0,true)
+            .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
         manager.notify(USER_NOTIF, builder.build())
@@ -137,6 +147,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_USER)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(USER_NOTIF, notif.build())
@@ -144,7 +158,11 @@ class HelperNotification @Inject constructor(
 
     fun distritoNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(DISTRITO_CHANNEL, "Distritos", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                DISTRITO_CHANNEL,
+                "Distritos",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             channel.description = "Notificacion para distritos"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -156,10 +174,10 @@ class HelperNotification @Inject constructor(
             .setContentTitle("Download")
             .setContentText("Distritos programados")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setProgress(0,0,true)
+            .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
-        manager.notify(DISTRITO_NOTIF,builder.build())
+        manager.notify(DISTRITO_NOTIF, builder.build())
     }
 
     fun distritoNotif() {
@@ -171,6 +189,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_DISTRITO)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(DISTRITO_NOTIF, notif.build())
@@ -178,7 +200,11 @@ class HelperNotification @Inject constructor(
 
     fun negocioNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(NEGOCIO_CHANNEL, "Negocios", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                NEGOCIO_CHANNEL,
+                "Negocios",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             channel.description = "Notificacion para negocios"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -190,10 +216,10 @@ class HelperNotification @Inject constructor(
             .setContentTitle("Download")
             .setContentText("Negocios programados")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setProgress(0,0,true)
+            .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
-        manager.notify(NEGOCIO_NOTIF,builder.build())
+        manager.notify(NEGOCIO_NOTIF, builder.build())
     }
 
     fun negocioNotif() {
@@ -205,6 +231,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_NEGOCIO)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(NEGOCIO_NOTIF, notif.build())
@@ -212,7 +242,8 @@ class HelperNotification @Inject constructor(
 
     fun rutaNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(RUTA_CHANNEL, "Rutas", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel =
+                NotificationChannel(RUTA_CHANNEL, "Rutas", NotificationManager.IMPORTANCE_DEFAULT)
             channel.description = "Notificacion para rutas"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -224,10 +255,10 @@ class HelperNotification @Inject constructor(
             .setContentTitle("Download")
             .setContentText("Rutas programadas")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setProgress(0,0,true)
+            .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
-        manager.notify(RUTA_NOTIF,builder.build())
+        manager.notify(RUTA_NOTIF, builder.build())
     }
 
     fun rutaNotif() {
@@ -239,6 +270,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_RUTA)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(RUTA_NOTIF, notif.build())
@@ -246,7 +281,11 @@ class HelperNotification @Inject constructor(
 
     fun encuestaNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(ENCUESTA_CHANNEL, "Encuesta", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                ENCUESTA_CHANNEL,
+                "Encuesta",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             channel.description = "Notificacion para encuesta"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -258,10 +297,10 @@ class HelperNotification @Inject constructor(
             .setContentTitle("Download")
             .setContentText("Encuesta programada")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setProgress(0,0,true)
+            .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
-        manager.notify(ENCUESTA_NOTIF,builder.build())
+        manager.notify(ENCUESTA_NOTIF, builder.build())
     }
 
     fun encuestaNotif() {
@@ -273,6 +312,10 @@ class HelperNotification @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
             .setProgress(0, 0, false)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(MSG_ENCUESTA)
+            )
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_EVENT)
         manager.notify(ENCUESTA_NOTIF, notif.build())

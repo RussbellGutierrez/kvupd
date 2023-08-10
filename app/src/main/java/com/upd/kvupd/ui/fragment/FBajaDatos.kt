@@ -185,7 +185,7 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     }
 
     private fun setupSupervisor(list: List<RowBaja>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvBajas.setUI("v", false)
         } else {

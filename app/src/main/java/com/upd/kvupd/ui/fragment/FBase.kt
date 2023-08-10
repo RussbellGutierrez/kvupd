@@ -1,15 +1,9 @@
 package com.upd.kvupd.ui.fragment
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.os.PowerManager
-import android.provider.Settings
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -31,7 +25,6 @@ import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.util.*
 
 @AndroidEntryPoint
 class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
@@ -191,13 +184,14 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.sincronizar -> consume { sinchroData() }
-        R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_DLogin) }
+        R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_BDLogin) }
         R.id.encuesta -> consume { launchEncuesta() }
         R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
 
+    /**FUNCION QUE CAMBIA COLOR GPS NO FUNCIONA**/
     override fun changeGPSstate(gps: Boolean) {
         val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
         bind.fabGps.imageTintList = ColorStateList.valueOf(color)
