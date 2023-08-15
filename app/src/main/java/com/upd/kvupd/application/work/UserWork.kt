@@ -1,6 +1,7 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.work.WorkerInject
 import androidx.work.*
@@ -37,7 +38,7 @@ class UserWork @WorkerInject constructor(
                         repository.getWebClientes(req).collect { response ->
                             val rsp = response.data?.jobl
                             rst = if (rsp.isNullOrEmpty()) {
-                                MSG_USER = "Respuesta: ${response.message}"
+                                MSG_USER = response.message!!
                                 Result.success()
                             } else {
                                 repository.saveClientes(rsp)
@@ -87,5 +88,4 @@ class UserWork @WorkerInject constructor(
         json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }
-
 }

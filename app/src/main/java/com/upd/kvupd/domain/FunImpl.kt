@@ -486,7 +486,7 @@ class FunImpl @Inject constructor(
             .build()
 
     override fun workerperSeguimiento() {
-        /*val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
+        val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
             PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
             TimeUnit.MILLISECONDS,
             PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
@@ -499,7 +499,7 @@ class FunImpl @Inject constructor(
             WP_SEGUIMIENTO,
             ExistingPeriodicWorkPolicy.REPLACE,
             wp
-        )*/
+        )
     }
 
     override fun workerperVisita() {

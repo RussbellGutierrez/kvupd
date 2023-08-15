@@ -190,7 +190,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun periodicWorkers() {
         if (user && distrito && negocio && ruta && encuesta) {
             Log.d(_tag, "Launch periodic workers")
-            //functions.workerperSeguimiento()
+            functions.workerperSeguimiento()
             functions.workerperVisita()
             functions.workerperAlta()
             functions.workerperAltaEstado()
