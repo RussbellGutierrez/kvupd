@@ -254,6 +254,10 @@ fun Ruta.asTRutas(): TRutas =
         this.latitud
     )
 
+fun List<TRutas>.toSpinner(): List<String> = this.map {
+    "Ruta ${it.ruta}"
+}
+
 @Entity(primaryKeys = ["idcliente", "ruta"])
 data class TEstado(
     val idcliente: Int,

@@ -144,23 +144,6 @@ class RepoImpl @Inject constructor(
             0
         )
         saveAlta(item)
-        /*val alta = getLastAlta()
-        val last = if (alta != null) {
-            alta.idaux + 1
-        } else {
-            "${CONF.codigo}001".toInt()
-        }
-        val item = TAlta(
-            last,
-            fecha,
-            CONF.codigo,
-            location.longitude,
-            location.latitude,
-            location.accuracy.toDouble(),
-            "Pendiente",
-            0
-        )
-        saveAlta(item)*/
     }
 
     override suspend fun processAAux(codigo: Int) {

@@ -30,6 +30,7 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.data.model.TAFoto
 import com.upd.kvupd.data.model.asSpinner
+import com.upd.kvupd.data.model.toSpinner
 import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.ALTADATOS
@@ -50,6 +51,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private var abspath = ""
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
+    private var ruta = listOf<String>()
     private val args: FAltaDatosArgs by navArgs()
     private var adStored: TADatos? = null
     private val _tag by lazy { FAltaDatos::class.java.simpleName }
@@ -108,6 +110,15 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             giro = it.asSpinner()
             bind.spnGiro.adapter =
                 ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
+            setupFields()
+        }
+        viewmodel.rutasObs().observe(viewLifecycleOwner){
+            ruta = it.toSpinner()
+            bind.spnRuta.adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                ruta
+            )
             setupFields()
         }
         viewmodel.altadatos.observe(viewLifecycleOwner) {
@@ -170,7 +181,8 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         bind.edtNumero.setText("")
         bind.spnZona.setSelection(0)
         bind.edtZona.setText("")
-        bind.edtRuta.setText("")
+        //bind.edtRuta.setText("")
+        bind.spnRuta.setSelection(0)
         bind.edtSecuencia.setText("")
     }
 
@@ -223,11 +235,12 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private fun setupFields() {
         if (adStored != null) {
 
-            if (distrito.isNotEmpty() && giro.isNotEmpty()) {
+            if (distrito.isNotEmpty() && giro.isNotEmpty() && ruta.isNotEmpty()) {
 
                 hideprogress()
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
+                Log.w(_tag, "Ruta: ${ruta.size}")
 
                 if (adStored?.tipo == "PJ") {
                     bind.rbJuridica.isChecked = true
@@ -239,12 +252,15 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
                 val ald = distrito.indexOf(adStored?.distrito)
                 val alg = giro.indexOf(adStored?.giro)
+                val alr = ruta.indexOf(adStored?.ruta)
 
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
+                Log.w(_tag, "Ruta: ${ruta.size}")
 
                 Log.w(_tag, "Distrito pos: $ald")
                 Log.w(_tag, "Giro pos: $alg")
+                Log.w(_tag, "Ruta pos: $alr")
 
                 bind.edtRazon.setText(adStored?.razon)
                 bind.edtPaterno.setText(adStored?.appaterno)
@@ -265,8 +281,9 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.edtNumero.setText(adStored?.numero)
                 bind.spnZona.setSelection(setZona(adStored!!.zona))
                 bind.edtZona.setText(adStored?.zonanombre)
-                bind.edtRuta.setText(adStored?.ruta)
+                //bind.edtRuta.setText(adStored?.ruta)
                 bind.edtSecuencia.setText(adStored?.secuencia)
+                bind.spnRuta.setSelection(alr)
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
                 if (adStored?.dniruta != "") {
@@ -373,7 +390,8 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         val zonanombre = bind.edtZona.text.toString().trim().uppercase()
         val distrito = bind.spnDistrito.selectedItem.toString()
         val giro = bind.spnGiro.selectedItem.toString()
-        val ruta = bind.edtRuta.text.toString().trim()
+        //val ruta = bind.edtRuta.text.toString().trim()
+        val ruta = bind.spnRuta.selectedItem.toString().split(" ")[1]
         val secuencia = bind.edtSecuencia.text.toString().trim()
 
         when {
@@ -420,13 +438,13 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 "Si eligio CARNET EXTRANJERIA, debe completar el campo"
             ) {}
             numero == "" -> showDialog("Advertencia", "Ingrese el numero de calle") {}
-            ruta == "" -> showDialog("Advertencia", "Ingrese la ruta") {}
+            //ruta == "" -> showDialog("Advertencia", "Ingrese la ruta") {}
             secuencia == "" -> showDialog("Advertencia", "Ingrese la secuencia") {}
             numero.toInt() == 0 -> showDialog(
                 "Advertencia",
                 "Ingrese un numero valido para calle"
             ) {}
-            ruta.toInt() == 0 -> showDialog("Advertencia", "Ingrese una ruta valida") {}
+            //ruta.toInt() == 0 -> showDialog("Advertencia", "Ingrese una ruta valida") {}
             secuencia.toInt() == 0 -> showDialog("Advertencia", "Ingrese una secuencia valida") {}
             /*bind.txtRuta.text == "" -> showDialog(
                 "Advertencia",

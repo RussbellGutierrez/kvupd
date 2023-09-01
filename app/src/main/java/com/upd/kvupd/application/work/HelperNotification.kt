@@ -48,7 +48,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 SETUP_CHANNEL,
                 "ServiceSetup",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para service setup"
 
@@ -77,7 +77,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 CONFIG_CHANNEL,
                 "Configuracion",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para configuracion"
             val notificationManager =
@@ -89,7 +89,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Configuracion para el equipo")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -110,7 +110,7 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_CONFIG)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(CONFIG_NOTIF, notif.build())
     }
 
@@ -119,7 +119,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 USER_CHANNEL,
                 "Usuarios",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para usuarios"
             val notificationManager =
@@ -131,7 +131,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Usuario programado")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -152,7 +152,7 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_USER)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(USER_NOTIF, notif.build())
     }
 
@@ -161,7 +161,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 DISTRITO_CHANNEL,
                 "Distritos",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para distritos"
             val notificationManager =
@@ -173,7 +173,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Distritos programados")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -194,7 +194,7 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_DISTRITO)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(DISTRITO_NOTIF, notif.build())
     }
 
@@ -203,7 +203,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 NEGOCIO_CHANNEL,
                 "Negocios",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para negocios"
             val notificationManager =
@@ -215,7 +215,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Negocios programados")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -236,14 +236,17 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_NEGOCIO)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(NEGOCIO_NOTIF, notif.build())
     }
 
     fun rutaNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(RUTA_CHANNEL, "Rutas", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                RUTA_CHANNEL,
+                "Rutas",
+                NotificationManager.IMPORTANCE_HIGH
+            )
             channel.description = "Notificacion para rutas"
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -254,7 +257,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Rutas programadas")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -275,7 +278,7 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_RUTA)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(RUTA_NOTIF, notif.build())
     }
 
@@ -284,7 +287,7 @@ class HelperNotification @Inject constructor(
             val channel = NotificationChannel(
                 ENCUESTA_CHANNEL,
                 "Encuesta",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para encuesta"
             val notificationManager =
@@ -296,7 +299,7 @@ class HelperNotification @Inject constructor(
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("Download")
             .setContentText("Encuesta programada")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setProgress(0, 0, true)
             .setOngoing(true)
         val manager = NotificationManagerCompat.from(ctx)
@@ -317,7 +320,7 @@ class HelperNotification @Inject constructor(
                     .bigText(MSG_ENCUESTA)
             )
             .setOngoing(false)
-        notif.setCategory(Notification.CATEGORY_EVENT)
+        notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(ENCUESTA_NOTIF, notif.build())
     }
 
