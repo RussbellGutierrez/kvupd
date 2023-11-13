@@ -267,6 +267,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 "V" -> findNavController().navigate(
                     FMapaDirections.actionFMapaToBDObservacion(item)
                 )
+
                 "S" -> viewmodel.checkingEncuesta {
                     if (it) {
                         findNavController().navigate(
@@ -277,6 +278,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                     }
                 }
             }
+
             1 -> findNavController().navigate(
                 FMapaDirections.actionFMapaToDClienteAux(item)
             )
@@ -287,18 +289,20 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         val polygon = mutableListOf<LatLng>()
         if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
-                val coordenadas = i.corte.split(",")
-                coordenadas.forEach { j ->
-                    val item = j.trim().split(" ")
-                    polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                if (i.corte != "") {
+                    val coordenadas = i.corte.split(",")
+                    coordenadas.forEach { j ->
+                        val item = j.trim().split(" ")
+                        polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                    }
+                    map.addPolygon(
+                        PolygonOptions()
+                            .addAll(polygon)
+                            .strokeWidth(2f)
+                            .strokeColor(Color.parseColor("#D01215"))
+                            .fillColor(Color.argb(102, 118, 131, 219))
+                    )
                 }
-                map.addPolygon(
-                    PolygonOptions()
-                        .addAll(polygon)
-                        .strokeWidth(2f)
-                        .strokeColor(Color.parseColor("#D01215"))
-                        .fillColor(Color.argb(102, 118, 131, 219))
-                )
                 polygon.clear()
             }
         } else {
