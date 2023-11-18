@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
@@ -28,6 +29,7 @@ import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWP
 import com.upd.kvupd.viewmodel.AppViewModel
@@ -81,8 +83,6 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
             rutas = it
         }
 
-        launchDownload()
-
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
                 location.longitude = it[0].longitud
@@ -104,6 +104,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
                             drawRoutes()
                         }
                     }
+
                     is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
@@ -123,19 +124,9 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
         else -> false
     }
 
-    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.rastreo_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.actualizar -> consume { launchDownload() }
-        R.id.voz -> consume { searchVoice() }
-        else -> super.onOptionsItemSelected(item)
-    }*/
-
     @SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
+        Log.d(_tag, "Iniciando mapa")
         p0.also {
             map = it
             map.apply {
@@ -145,6 +136,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
             moveCamera(location)
+            launchDownload()
         }
     }
 
@@ -155,16 +147,14 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
 
     private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
-        if (::markers.isInitialized) {
-            when {
-                markers.isNotEmpty() -> {
-                    markers.forEach { i -> builder.include(i.position) }
-                    builder.include(LatLng(location.latitude, location.longitude))
-                    val bounds = builder.build()
-                    map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
-                }
-                markers.isEmpty() -> snack("Sin marcadores para ubicar")
-            }
+        if (::markers.isInitialized && markers.isNotEmpty()) {
+
+            markers.forEach { i -> builder.include(i.position) }
+            builder.include(LatLng(location.latitude, location.longitude))
+            val bounds = builder.build()
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+        }else{
+            snack("No se detectan marcadores")
         }
     }
 
@@ -221,29 +211,32 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
 
     private fun launchDownload() {
         val p = JSONObject()
-        p.put("empleado", Constant.CONF.codigo)
-        p.put("empresa", Constant.CONF.empresa)
+        p.put("empleado", CONF.codigo)
+        p.put("empresa", CONF.empresa)
+        p.put("esquema", CONF.esquema)
         progress("Descargando vendedores")
         viewmodel.fetchPedimap(p.toReqBody())
     }
 
     private fun drawRoutes() {
         val polygon = mutableListOf<LatLng>()
-        if (::rutas.isInitialized && !rutas.isNullOrEmpty()) {
+        if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
-                val coordenadas = i.corte.split(",")
-                coordenadas.forEach { j ->
-                    val item = j.trim().split(" ")
-                    polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                if (i.corte != "") {
+                    val coordenadas = i.corte.split(",")
+                    coordenadas.forEach { j ->
+                        val item = j.trim().split(" ")
+                        polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                    }
+                    map.addPolygon(
+                        PolygonOptions()
+                            .addAll(polygon)
+                            .strokeWidth(2f)
+                            .strokeColor(Color.parseColor("#D01215"))
+                            .fillColor(Color.argb(102, 118, 131, 219))
+                    )
+                    polygon.clear()
                 }
-                map.addPolygon(
-                    PolygonOptions()
-                        .addAll(polygon)
-                        .strokeWidth(2f)
-                        .strokeColor(Color.parseColor("#D01215"))
-                        .fillColor(Color.argb(102, 118, 131, 219))
-                )
-                polygon.clear()
             }
         } else {
             snack("No se encontraron rutas")
