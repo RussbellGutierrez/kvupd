@@ -82,7 +82,6 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
         bind.searchView.setOnQueryTextListener(this)
 
         viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            Log.d(_tag, "Row cliente observer")
             row = it
             setupList(it)
         }
@@ -100,7 +99,21 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
                         "Correcto",
                         "Clientes descargados correctamente"
                     ) {}
-                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+
+                    is NetworkRetrofit.Error -> showDialog("Error", "Clientes server ${y.message}") {}
+                }
+            }
+        }
+
+        viewmodel.rutas.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is NetworkRetrofit.Success -> showDialog(
+                        "Correcto",
+                        "Rutas descargadas correctamente"
+                    ) {}
+
+                    is NetworkRetrofit.Error -> showDialog("Error", "Rutas server ${y.message}") {}
                 }
             }
         }
@@ -119,6 +132,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
                 FVendedorDirections.actionFVendedorToFMapa(null)
             )
         }
+
         else -> false
     }
 
@@ -183,12 +197,20 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
     }
 
     private fun launchDownload(codigo: String, fecha: String) {
-        val json = JSONObject()
-        json.put("empleado", codigo)
-        json.put("fecha", fecha)
-        json.put("empresa", CONF.empresa)
-        progress("Descargando clientes")
-        viewmodel.fetchClientes(json.toReqBody())
+        progress("Descargando clientes y rutas")
+
+        viewmodel.cleanDataVendedor()
+
+        val clientes = JSONObject()
+        clientes.put("empleado", codigo)
+        clientes.put("fecha", fecha)
+        clientes.put("empresa", CONF.empresa)
+        viewmodel.fetchClientes(clientes.toReqBody())
+
+        val rutas = JSONObject()
+        rutas.put("empleado", codigo)
+        rutas.put("empresa", CONF.empresa)
+        viewmodel.fetchRutas(rutas.toReqBody())
     }
 
     private fun setupList(list: List<RowCliente>) {
@@ -217,6 +239,7 @@ class FVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnC
                         snack("Debe elegir una encuesta primero")
                     }
                 }
+
                 1 -> findNavController().navigate(
                     FVendedorDirections.actionFVendedorToDClienteAux(item)
                 )

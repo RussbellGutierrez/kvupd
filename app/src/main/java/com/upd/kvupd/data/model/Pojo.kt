@@ -18,6 +18,7 @@ data class RowCliente(
 )
 
 data class MarkerMap(
+    @ColumnInfo(name = "ventas") val venta: Int,
     @ColumnInfo(name = "idcliente") val id: Int,
     @ColumnInfo(name = "longitud") val longitud: Double,
     @ColumnInfo(name = "latitud") val latitud: Double,

@@ -34,7 +34,7 @@ class BajaEstadoPWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             val item = repository.getServerBajaestado("Pendiente")
-            if (!item.isNullOrEmpty()) {
+            if (item.isNotEmpty()) {
                 item.forEach { i ->
                     val p = requestBody(i)
                     repository.setWebBajaEstados(p).collect {

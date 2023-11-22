@@ -29,7 +29,7 @@ class RutasWork @WorkerInject constructor(
             lateinit var rst: Result
             val rut = repository.getRutas()
             val req = requestBody()
-            if (rut.isNullOrEmpty()) {
+            if (rut.isEmpty()) {
                 try {
                     repository.getWebRutas(req).collect { response ->
                         val rsp = response.data?.jobl
@@ -56,8 +56,13 @@ class RutasWork @WorkerInject constructor(
         }
 
     private fun requestBody(): RequestBody {
+        val emp = if (CONF.tipo == "S") {
+            0
+        } else {
+            CONF.codigo
+        }
         val json = JSONObject()
-        json.put("empleado", CONF.codigo)
+        json.put("empleado", emp)
         json.put("empresa", CONF.empresa)
         return json.toReqBody()
     }

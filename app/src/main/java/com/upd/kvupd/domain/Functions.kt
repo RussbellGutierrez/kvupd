@@ -16,6 +16,7 @@ interface Functions {
     fun parseQRtoIMEI(add: Boolean = false): String
     fun getQR(): Bitmap?
     fun appSO(): String
+    fun formatLongToHour(l: Long): String
     fun isConnected(): Boolean
     fun deleteFotos()
     fun isSunday(): Boolean
@@ -32,7 +33,8 @@ interface Functions {
     fun executeService(service: String, foreground: Boolean)
     fun constrainsWork(): Constraints
     fun launchWorkers()
-    fun sinchroWorkers()
+
+    //fun sinchroWorkers()
     fun chooseCloseWorker(work: String)
     fun workerSetup(long: Long)
     fun workerFinish(long: Long)

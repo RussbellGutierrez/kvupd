@@ -185,6 +185,17 @@ class FunImpl @Inject constructor(
         return "App: KVU Ver: ${BuildConfig.VERSION_NAME} $resultado"
     }
 
+    override fun formatLongToHour(l: Long): String {
+        var segundos = l / 1000
+        var minutos = segundos / 60
+        val horas = minutos / 60
+
+        segundos %= 60
+        minutos %= 60
+
+        return "${horas}h - ${minutos}m - ${segundos}s"
+    }
+
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     override fun isConnected(): Boolean {
         val resultado: Boolean
@@ -274,6 +285,7 @@ class FunImpl @Inject constructor(
                             else -> "MOBILE UNKNOW"
                         }
                     }
+
                     else -> "UNKNOW"
                 }
                 val item = saveSystemActions("INTERNET", "Internet conectado $st")
@@ -312,10 +324,14 @@ class FunImpl @Inject constructor(
                 (i.longitud < 0 && i.latitud > 0) ||
                 (i.longitud > 0 && i.latitud < 0)
             ) {
-                when (i.observacion) {
-                    0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
-                    in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
-                    9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
+                if (i.venta == 0) {
+                    m.add(map.addingMarker(i, R.drawable.pin_venta))
+                } else {
+                    when (i.observacion) {
+                        0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
+                        in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
+                        9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
+                    }
                 }
             }
         }
@@ -381,6 +397,7 @@ class FunImpl @Inject constructor(
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> ctx.startForegroundService(
                         intent
                     )
+
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> ctx.startService(intent)
                 }
             } else {
@@ -405,11 +422,11 @@ class FunImpl @Inject constructor(
             .enqueue()
     }
 
-    override fun sinchroWorkers() {
+    /*override fun sinchroWorkers() {
         workManager
             .beginWith(listOf(workerUser(), workerDistritos(), workerNegocios(), workerRutas()))
             .enqueue()
-    }
+    }*/
 
     override fun chooseCloseWorker(work: String) {
         when (work) {

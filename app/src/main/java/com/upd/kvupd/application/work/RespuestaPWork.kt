@@ -34,7 +34,7 @@ class RespuestaPWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             val item = repository.getServerRespuesta("Pendiente")
-            if (!item.isNullOrEmpty()) {
+            if (item.isNotEmpty()) {
                 item.forEach { i ->
                     val p = requestBody(i)
                     repository.setWebRespuestas(p).collect {

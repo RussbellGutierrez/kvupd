@@ -14,6 +14,7 @@ import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -75,6 +76,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _cliente: MutableLiveData<Event<NetworkRetrofit<JCliente>>> = MutableLiveData()
     val cliente: LiveData<Event<NetworkRetrofit<JCliente>>> = _cliente
 
+    private val _rutas: MutableLiveData<Event<NetworkRetrofit<JRuta>>> = MutableLiveData()
+    val rutas: LiveData<Event<NetworkRetrofit<JRuta>>> = _rutas
+
     private val _encuesta: MutableLiveData<Event<NetworkRetrofit<JEncuesta>>> = MutableLiveData()
     val encuesta: LiveData<Event<NetworkRetrofit<JEncuesta>>> = _encuesta
 
@@ -112,7 +116,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _detalle: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
     val detalle: LiveData<Event<NetworkRetrofit<JGenerico>>> = _detalle
 
-    private val _cobpendiente: MutableLiveData<Event<NetworkRetrofit<JCoberturados>>> = MutableLiveData()
+    private val _cobpendiente: MutableLiveData<Event<NetworkRetrofit<JCoberturados>>> =
+        MutableLiveData()
     val cobpendiente: LiveData<Event<NetworkRetrofit<JCoberturados>>> = _cobpendiente
 
     private val _pedigen: MutableLiveData<Event<NetworkRetrofit<JPediGen>>> = MutableLiveData()
@@ -326,6 +331,13 @@ class AppViewModel @ViewModelInject constructor(
         repository.getWebClientes(body).collect { values ->
             values.data?.jobl?.let { repository.saveClientes(it) }
             _cliente.value = Event(values)
+        }
+    }
+
+    fun fetchRutas(body: RequestBody) = viewModelScope.launch {
+        repository.getWebRutas(body).collect() { values ->
+            values.data?.jobl?.let { repository.saveRutas(it) }
+            _rutas.value = Event(values)
         }
     }
 
@@ -854,6 +866,13 @@ class AppViewModel @ViewModelInject constructor(
             functions.deleteFotos()
             repository.deleteIncidencia()
             repository.deleteAAux()
+        }
+    }
+
+    fun cleanDataVendedor() {
+        viewModelScope.launch {
+            repository.deleteClientes()
+            repository.deleteRutas()
         }
     }
 }

@@ -30,7 +30,7 @@ class EncuestaWork @WorkerInject constructor(
             lateinit var rst: Result
             val enc = repository.getListEncuestas()
             val req = requestBody()
-            if (enc.isNullOrEmpty()) {
+            if (enc.isEmpty()) {
                 try {
                     repository.getWebEncuesta(req).collect { response ->
                         val rsp = response.data?.jobl

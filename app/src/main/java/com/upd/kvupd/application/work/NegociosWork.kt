@@ -29,7 +29,7 @@ class NegociosWork @WorkerInject constructor(
             lateinit var rst: Result
             val neg = repository.getNegocios()
             val req = requestBody()
-            if (neg.isNullOrEmpty()) {
+            if (neg.isEmpty()) {
                 try {
                     repository.getWebNegocios(req).collect { response ->
                         val rsp = response.data?.jobl

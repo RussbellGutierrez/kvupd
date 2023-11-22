@@ -49,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -135,7 +136,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         return START_STICKY
     }
 
-    override fun onSinchronizeData() {
+    /*override fun onSinchronizeData() {
         helper.userNotifLaunch()
         helper.distritoNotifLaunch()
         helper.negocioNotifLaunch()
@@ -149,7 +150,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             repository.deleteIncidencia()
             functions.sinchroWorkers()
         }
-    }
+    }*/
 
     private fun initObsWork() {
         helper.configNotifLaunch()
@@ -180,7 +181,8 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
             helper.encuestaNotifLaunch()
 
             repository.getFinishTime().let {
-                val item = functions.saveSystemActions("APP", "Servicio finaliza $it")
+                val horas = functions.formatLongToHour(it)
+                val item = functions.saveSystemActions("APP", "Servicio finaliza $horas")
                 repository.saveIncidencia(item)
                 functions.workerFinish(it)
             }
@@ -316,6 +318,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             repository.updateSeguimiento(item)
                             Log.d(_tag, "Seguimiento enviado $item")
                         }
+
                         is NetworkRetrofit.Error -> {
                             changeHostServer()
                             Log.e(_tag, "Seguimiento Error ${it.message}")
@@ -348,10 +351,12 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                     OPTURL = "ipp"
                     IP_P = "http://${sesion!!.ipp}/api/"
                 }
+
                 "ipp" -> {
                     OPTURL = "ips"
                     IP_S = "http://${sesion!!.ips}/api/"
                 }
+
                 "ips" -> {
                     OPTURL = "aux"
                     IP_AUX = "http://$IPA/api/"
@@ -361,7 +366,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
-    /***EVITAR USAR POSICIONES FIJAS (FIXED POSITIONS), PUEDE GENERAR PROBLEMAS EN EL CODIGO***/
+    /***EVITAR USAR POSICIONES FIJAS (FIXED POSITIONS) DENTRO DE lOS ARRAYS, PUEDE GENERAR PROBLEMAS EN EL CODIGO***/
     override fun onFinishWork(work: String) {
         CoroutineScope(Dispatchers.Main).launch {
             when (work) {
@@ -378,6 +383,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                                                 configFailed()
                                             }
                                         }
+
                                         else -> Unit
                                     }
                                 }
@@ -385,6 +391,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         }
                     }
                 }
+
                 W_USER -> {
                     userLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
@@ -398,6 +405,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         }
                     }
                 }
+
                 W_DISTRITO -> {
                     distritoLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
@@ -411,6 +419,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         }
                     }
                 }
+
                 W_NEGOCIO -> {
                     negocioLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
@@ -424,6 +433,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         }
                     }
                 }
+
                 W_RUTA -> {
                     rutaLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->
@@ -437,6 +447,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         }
                     }
                 }
+
                 W_ENCUESTA -> {
                     encuestaLiveData.observe(this@ServiceSetup) {
                         it.getContentIfNotHandled()?.let { y ->

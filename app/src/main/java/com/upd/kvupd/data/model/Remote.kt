@@ -58,7 +58,8 @@ data class Cliente(
     @Json(name = "fecha") val fecha: String,
     @Json(name = "secuencia") val secuencia: Int,
     @Json(name = "numcuit") val numcuit: String,
-    @Json(name = "encuestas") val encuestas: String
+    @Json(name = "encuestas") val encuestas: String,
+    @Json(name = "venta") val ventas: Int
 )
 
 @JsonClass(generateAdapter = true)

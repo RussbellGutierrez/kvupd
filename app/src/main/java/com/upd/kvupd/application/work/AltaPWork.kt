@@ -34,7 +34,7 @@ class AltaPWork @WorkerInject constructor(
     override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
             val item = repository.getServerAlta("Pendiente")
-            if (!item.isNullOrEmpty()) {
+            if (item.isNotEmpty()) {
                 item.forEach { i ->
                     val p = requestBody(i)
                     repository.setWebAlta(p).collect {
