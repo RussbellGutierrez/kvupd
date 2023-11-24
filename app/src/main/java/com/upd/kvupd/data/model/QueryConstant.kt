@@ -134,4 +134,11 @@ object QueryConstant {
             "FROM TEncuesta e " +
             "INNER JOIN TEncuestaSeleccionado s on e.id=s.encuesta " +
             "ORDER BY e.pregunta ASC "
+
+    //Tener cuidado con las consultas donde se usan operadores adicionales (LIKE '%dato_consulta%', GLOB '*dato_consulta*')
+    const val GET_CONSULTA = "" +
+            "SELECT * " +
+            "FROM TClientes " +
+            "WHERE ((:numero <> '0' AND (idcliente = :numero OR numcuit = :numero)) OR :numero = '0') " +
+            "AND ((:nombre <> 'NOT' AND nomcli GLOB :nombre) OR :nombre = 'NOT') "
 }

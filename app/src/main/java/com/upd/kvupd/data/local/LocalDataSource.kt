@@ -90,6 +90,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getEncuesta()
     }
 
+    suspend fun getConsulta(numero: String, nombre: String): List<TClientes> {
+        return qdao.getConsulta(numero, nombre)
+    }
+
     suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente> {
         return qdao.getDataCliente(cliente, observacion)
     }

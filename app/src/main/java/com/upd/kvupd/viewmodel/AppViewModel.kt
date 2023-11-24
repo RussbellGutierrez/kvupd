@@ -3,10 +3,54 @@ package com.upd.kvupd.viewmodel
 import android.graphics.Bitmap
 import android.location.Location
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.DataAlta
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.JBajaSupervisor
+import com.upd.kvupd.data.model.JBajaVendedor
+import com.upd.kvupd.data.model.JCambio
+import com.upd.kvupd.data.model.JCliente
+import com.upd.kvupd.data.model.JCobCart
+import com.upd.kvupd.data.model.JCoberturados
+import com.upd.kvupd.data.model.JEncuesta
+import com.upd.kvupd.data.model.JFoto
+import com.upd.kvupd.data.model.JGenerico
+import com.upd.kvupd.data.model.JObj
+import com.upd.kvupd.data.model.JPediGen
+import com.upd.kvupd.data.model.JPedido
+import com.upd.kvupd.data.model.JPedimap
+import com.upd.kvupd.data.model.JRuta
+import com.upd.kvupd.data.model.JSoles
+import com.upd.kvupd.data.model.JUmes
+import com.upd.kvupd.data.model.JVisicooler
+import com.upd.kvupd.data.model.JVisisuper
+import com.upd.kvupd.data.model.JVolumen
+import com.upd.kvupd.data.model.LocationAlta
+import com.upd.kvupd.data.model.Login
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.MiniUpdAlta
+import com.upd.kvupd.data.model.MiniUpdBaja
+import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TClientes
+import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TEncuestaSeleccionado
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TVisita
+import com.upd.kvupd.data.model.asTEstado
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
@@ -14,11 +58,10 @@ import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
-import java.util.*
+import java.util.Calendar
 
 class AppViewModel @ViewModelInject constructor(
     private val repository: Repository,
@@ -138,6 +181,9 @@ class AppViewModel @ViewModelInject constructor(
 
     private val _preguntas: MutableLiveData<Event<List<TEncuesta>>> = MutableLiveData()
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
+
+    private val _consultado: MutableLiveData<Event<List<TClientes>>> = MutableLiveData()
+    val consultado: LiveData<Event<List<TClientes>>> = _consultado
 
     fun configObserver() = repository.getFlowConfig().asLiveData()
 
@@ -405,17 +451,23 @@ class AppViewModel @ViewModelInject constructor(
         }
     }
 
+    fun getClienteConsultado(numero: String, nombre: String) = viewModelScope.launch {
+        repository.getConsultaCliente(numero, nombre).let {
+            _consultado.value = Event(it)
+        }
+    }
+
     /*fun fetchCambiosEmpleado(body: RequestBody) = viewModelScope.launch {
         repository.getWebCambiosEmp(body).collect {
             _cambioemp.value = Event(it)
         }
     }*/
 
-    fun fetchUmes(body: RequestBody) = viewModelScope.launch {
+    /*fun fetchUmes(body: RequestBody) = viewModelScope.launch {
         repository.getWebUmes(body).collect {
             _umes.value = Event(it)
         }
-    }
+    }*/
 
     fun fetchSoles(body: RequestBody) = viewModelScope.launch {
         repository.getWebSoles(body).collect {
@@ -576,6 +628,9 @@ class AppViewModel @ViewModelInject constructor(
     fun bajaMarker(map: GoogleMap, baja: TBajaSuper) =
         functions.bajaMarker(map, baja)
 
+    fun consultaMarker(map: GoogleMap, item: TClientes) =
+        functions.consultaMarker(map, item)
+
     fun launchPosition() {
         functions.executeService("position", false)
     }
@@ -722,9 +777,9 @@ class AppViewModel @ViewModelInject constructor(
                     val dist = repository.getDistritos()
                     val neg = repository.getNegocios()
 
-                    val userb = !user.isNullOrEmpty()
-                    val distb = !dist.isNullOrEmpty()
-                    val negb = !neg.isNullOrEmpty()
+                    val userb = user.isNotEmpty()
+                    val distb = dist.isNotEmpty()
+                    val negb = neg.isNotEmpty()
 
                     _inicio.value = Event(userb && distb && negb)
                 } else {

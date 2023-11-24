@@ -107,6 +107,10 @@ class RepoImpl @Inject constructor(
         return localDataSource.getEncuesta()
     }
 
+    override suspend fun getConsultaCliente(numero: String, nombre: String): List<TClientes> {
+        return localDataSource.getConsulta(numero, nombre)
+    }
+
     override suspend fun getClienteDetail(cliente: String, observacion: String): List<DataCliente> {
         return localDataSource.getDataCliente(cliente, observacion)
     }

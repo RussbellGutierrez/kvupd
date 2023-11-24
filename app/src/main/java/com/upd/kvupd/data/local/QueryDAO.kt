@@ -16,6 +16,7 @@ import com.upd.kvupd.data.model.QueryConstant.GET_BAJA_SUPER
 import com.upd.kvupd.data.model.QueryConstant.GET_CABE_ENCUESTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIG
+import com.upd.kvupd.data.model.QueryConstant.GET_CONSULTA
 import com.upd.kvupd.data.model.QueryConstant.GET_DATA_ALTA
 import com.upd.kvupd.data.model.QueryConstant.GET_DATA_CLIENTE
 import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
@@ -104,6 +105,9 @@ interface QueryDAO {
 
     @Query(GET_ENCUESTA)
     suspend fun getEncuesta(): List<TEncuesta>
+
+    @Query(GET_CONSULTA)
+    suspend fun getConsulta(numero: String, nombre: String): List<TClientes>
 
     @Query(GET_DATA_CLIENTE)
     suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente>

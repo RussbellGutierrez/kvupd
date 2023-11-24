@@ -356,6 +356,18 @@ class FunImpl @Inject constructor(
         return m
     }
 
+    override fun consultaMarker(map: GoogleMap, item: TClientes): List<Marker> {
+        val m = mutableListOf<Marker>()
+        if ((item.longitud < 0 && item.latitud < 0) ||
+            (item.longitud > 0 && item.latitud > 0) ||
+            (item.longitud < 0 && item.latitud > 0) ||
+            (item.longitud > 0 && item.latitud < 0)
+        ) {
+            m.add(map.markerConsulta(item, R.drawable.pin_chess))
+        }
+        return m
+    }
+
     override fun altaMarkers(map: GoogleMap, list: List<TAlta>): List<Marker> {
         val m = mutableListOf<Marker>()
         list.forEach { i ->
@@ -370,7 +382,7 @@ class FunImpl @Inject constructor(
         return m
     }
 
-    override fun bajaMarker(map: GoogleMap, baja: TBajaSuper): Marker {
+    override fun bajaMarker(map: GoogleMap, baja: TBajaSuper): List<Marker> {
         val m = mutableListOf<Marker>()
         val longitud = baja.longitud
         val latitud = baja.latitud
@@ -381,7 +393,7 @@ class FunImpl @Inject constructor(
         ) {
             m.add(map.markerBaja(baja, R.drawable.pin_bajas))
         }
-        return m[0]
+        return m
     }
 
     override fun executeService(service: String, foreground: Boolean) {

@@ -3,6 +3,7 @@ package com.upd.kvupd.ui.fragment
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -100,6 +101,12 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
                 viewmodel.dataDownloaded()
             }
         }
+        bind.fabConsulta.setOnClickListener {
+            checkingGPS {
+                opt = 7
+                viewmodel.dataDownloaded()
+            }
+        }
 
         viewmodel.inicio.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -113,10 +120,12 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
                                 findNavController().navigate(R.id.action_FBase_to_FVendedor)
                             }
                         }
+
                         3 -> findNavController().navigate(R.id.action_FBase_to_FReporte)
                         4 -> findNavController().navigate(R.id.action_FBase_to_FAlta)
                         5 -> findNavController().navigate(R.id.action_FBase_to_FBaja)
                         6 -> findNavController().navigate(R.id.action_FBase_to_FServidor)
+                        7 -> findNavController().navigate(R.id.action_FBase_to_FConsulta)
                     }
                 } else {
                     snack("Los datos no se han descargado")
@@ -143,6 +152,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
                             "Encuesta descargada correctamente"
                         ) {}
                     }
+
                     is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
@@ -155,6 +165,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
                         sincro = 0
                         snack("Sincronizacion completa")
                     }
+
                     90 -> {
                         sincro = 0
                         snack("Archivo de configuracion no encontrado")
@@ -201,6 +212,14 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         if (config.tipo != "S") {
             bind.lnrVendedor.setUI("v", false)
             bind.txtRuta.setUI("v", true)
+        }
+        if (config.esquema == 8) {
+            bind.lnrCliente.setUI("v", false)
+            bind.lnrConsulta.setUI("v", true)
+            bind.txtRuta.setUI("v", false)
+        } else {
+            bind.lnrCliente.setUI("v", true)
+            bind.lnrConsulta.setUI("v", false)
         }
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
         val version = "ver. ${BuildConfig.VERSION_NAME}"

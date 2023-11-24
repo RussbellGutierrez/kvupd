@@ -173,6 +173,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_cliente"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -192,6 +193,32 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="CLIENTES"
+                android:textColor="@color/lightgray"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lnr_consulta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_consulta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/buscar"
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="CONSULTA"
                 android:textColor="@color/lightgray"
                 android:textStyle="bold" />
 

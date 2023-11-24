@@ -40,6 +40,7 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     private val arg: FValidarArgs by navArgs()
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
+    private var laux = listOf<Marker>()
     private lateinit var bmk: Marker
     private lateinit var bs: TBajaSuper
     private var codVend = 0
@@ -99,8 +100,11 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             }
             moveCamera(GPS_LOC)
         }
-        bmk = viewmodel.bajaMarker(map, bs)
-        distanceBetween()
+        laux = viewmodel.bajaMarker(map, bs)
+        if (laux.isNotEmpty()) {
+            bmk = laux[0]
+            distanceBetween()
+        }
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
@@ -163,17 +167,20 @@ class FValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     }
 
     private fun distanceBetween() {
-        val builder = LatLngBounds.Builder()
-        val empleado = LatLng(GPS_LOC.latitude, GPS_LOC.longitude)
-        builder.include(bmk.position)
-        builder.include(empleado)
-        val bounds = builder.build()
-        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+        if (::bmk.isInitialized) {
+            val builder = LatLngBounds.Builder()
+            val empleado = LatLng(GPS_LOC.latitude, GPS_LOC.longitude)
+            builder.include(bmk.position)
+            builder.include(empleado)
+            val bounds = builder.build()
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+        }
     }
 
     private fun saveBajaValidar(procede: Int) {
         if (isPOSLOCinitialized() &&
-            POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
+            POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0
+        ) {
             val observacion = bind.edtComentario.text.toString().trim()
             val fechaconf = viewmodel.fecha(4)
             val item = TBEstado(

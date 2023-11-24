@@ -80,6 +80,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FBase_to_FConsulta"
+            app:destination="@id/FConsulta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -452,4 +459,9 @@
             app:argType="com.upd.kvupd.data.model.HeadCliente"
             app:nullable="true" />
     </dialog>
+    <fragment
+        android:id="@+id/FConsulta"
+        android:name="com.upd.kvupd.ui.fragment.FConsulta"
+        android:label="Consulta clientes"
+        tools:layout="@layout/fragment_f_consulta" />
 </navigation>

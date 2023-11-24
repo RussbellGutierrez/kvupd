@@ -30,6 +30,7 @@ import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TClientes
 import com.upd.kvupd.ui.dialog.DBuscar
 import com.upd.kvupd.ui.dialog.DFiltroObs
 import com.upd.kvupd.ui.dialog.DProgress
@@ -310,6 +311,16 @@ fun GoogleMap.markerAlta(item: TAlta, icon: Int): Marker {
         position(LatLng(item.latitud, item.longitud))
         icon(BitmapDescriptorFactory.fromResource(icon))
         draggable(true)
+    })!!
+}
+
+fun GoogleMap.markerConsulta(item: TClientes, icon: Int): Marker {
+    return this.addMarker(MarkerOptions().apply {
+        title(item.numcuit)
+        snippet("${item.idcliente} - ${item.nomcli}")
+        position(LatLng(item.latitud, item.longitud))
+        icon(BitmapDescriptorFactory.fromResource(icon))
+        draggable(false)
     })!!
 }
 

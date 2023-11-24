@@ -30,6 +30,7 @@ interface Repository {
     suspend fun getRutas(): List<Ruta>
     suspend fun getListEncuestas(): List<Cabecera>
     suspend fun getPreguntas(): List<TEncuesta>
+    suspend fun getConsultaCliente(numero: String, nombre: String): List<TClientes>
     suspend fun getClienteDetail(cliente: String, observacion: String): List<DataCliente>
     suspend fun getDataAlta(alta: String): DataAlta
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
