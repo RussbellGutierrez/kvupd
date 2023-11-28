@@ -107,7 +107,7 @@ class RepoImpl @Inject constructor(
         return localDataSource.getEncuesta()
     }
 
-    override suspend fun getConsultaCliente(numero: String, nombre: String): List<TClientes> {
+    override suspend fun getConsultaCliente(numero: String, nombre: String): List<TConsulta> {
         return localDataSource.getConsulta(numero, nombre)
     }
 
@@ -277,6 +277,10 @@ class RepoImpl @Inject constructor(
         localDataSource.saveEncuesta(encuesta)
     }
 
+    override suspend fun saveConsulta(consulta: List<Consulta>) {
+        localDataSource.saveConsulta(consulta)
+    }
+
     override suspend fun saveSeguimiento(seguimiento: TSeguimiento) {
         localDataSource.saveSeguimiento(seguimiento)
     }
@@ -421,6 +425,10 @@ class RepoImpl @Inject constructor(
         localDataSource.deleteEncuesta()
     }
 
+    override suspend fun deleteConsulta() {
+        localDataSource.deleteConsulta()
+    }
+
     override suspend fun deleteSeguimiento() {
         localDataSource.deleteSeguimiento()
     }
@@ -524,6 +532,12 @@ class RepoImpl @Inject constructor(
     override suspend fun getWebEncuesta(body: RequestBody): Flow<NetworkRetrofit<JEncuesta>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebEncuesta(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getWebConsulta(body: RequestBody): Flow<NetworkRetrofit<JConsulta>> {
+        return flow {
+            emit(safeApiCall { webDataSource.getWebConsulta(body) })
         }.flowOn(Dispatchers.IO)
     }
 

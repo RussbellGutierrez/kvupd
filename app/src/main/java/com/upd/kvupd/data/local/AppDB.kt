@@ -9,7 +9,7 @@ import com.upd.kvupd.data.model.*
     entities = [TSesion::class, TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class,
         TNegocio::class, TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class,
         TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class,
-        TEncuestaSeleccionado::class, TIncidencia::class, TAFoto::class, TAAux::class],
+        TEncuestaSeleccionado::class, TIncidencia::class, TAFoto::class, TAAux::class, TConsulta::class],
     exportSchema = true
 )
 

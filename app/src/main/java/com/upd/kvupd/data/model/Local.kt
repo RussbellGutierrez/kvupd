@@ -450,3 +450,46 @@ data class TIncidencia(
 data class TAAux(
     val idaux: Int
 )
+
+@Entity(primaryKeys = ["cliente", "documento"])
+data class TConsulta(
+    val cliente: Int,
+    val nombre: String,
+    val domicilio: String,
+    val longitud: Double,
+    val latitud: Double,
+    val telefono: String,
+    val negocio: String,
+    val canal: String,
+    val documento: String,
+    val ventas: Int
+)
+
+fun List<TConsulta>.asConsultaList(): List<Consulta> = this.map {
+    Consulta(
+        it.cliente,
+        it.nombre,
+        it.domicilio,
+        it.longitud,
+        it.latitud,
+        it.telefono,
+        it.negocio,
+        it.canal,
+        it.documento,
+        it.ventas
+    )
+}
+
+fun Consulta.asTConsulta(): TConsulta =
+    TConsulta(
+        this.cliente,
+        this.nombre,
+        this.domicilio,
+        this.longitud,
+        this.latitud,
+        this.telefono,
+        this.negocio,
+        this.canal,
+        this.documento,
+        this.ventas
+    )

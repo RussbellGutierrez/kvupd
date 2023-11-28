@@ -10,6 +10,7 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_BAJA
 import com.upd.kvupd.data.model.QueryConstant.DEL_BAJASUPER
 import com.upd.kvupd.data.model.QueryConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.DEL_CONFIG
+import com.upd.kvupd.data.model.QueryConstant.DEL_CONSULTA
 import com.upd.kvupd.data.model.QueryConstant.DEL_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_EMPLEADOS
 import com.upd.kvupd.data.model.QueryConstant.DEL_ENCUESTA
@@ -49,6 +50,9 @@ interface AppDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEnc(enc: List<TEncuesta>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCons(cons: List<TConsulta>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSeguimiento(seg: TSeguimiento)
@@ -130,6 +134,9 @@ interface AppDAO {
 
     @Query(DEL_ENCUESTA)
     suspend fun deleteEncuesta()
+
+    @Query(DEL_CONSULTA)
+    suspend fun deleteConsulta()
 
     @Query(DEL_SEGUIMIENTO)
     suspend fun deleteSeguimiento()

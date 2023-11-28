@@ -107,7 +107,7 @@ interface QueryDAO {
     suspend fun getEncuesta(): List<TEncuesta>
 
     @Query(GET_CONSULTA)
-    suspend fun getConsulta(numero: String, nombre: String): List<TClientes>
+    suspend fun getConsulta(numero: String, nombre: String): List<TConsulta>
 
     @Query(GET_DATA_CLIENTE)
     suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente>

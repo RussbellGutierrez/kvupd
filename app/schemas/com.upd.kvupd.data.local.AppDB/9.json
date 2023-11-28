@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 9,
-    "identityHash": "31c4d7bb702d9d3f218d93c8c9f2e061",
+    "identityHash": "dd40526c89ea781f95d08f55a00ff9ce",
     "entities": [
       {
         "tableName": "TSesion",
@@ -1387,12 +1387,87 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "TConsulta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `domicilio` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `canal` TEXT NOT NULL, `documento` TEXT NOT NULL, `ventas` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `documento`))",
+        "fields": [
+          {
+            "fieldPath": "cliente",
+            "columnName": "cliente",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "domicilio",
+            "columnName": "domicilio",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitud",
+            "columnName": "longitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitud",
+            "columnName": "latitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "telefono",
+            "columnName": "telefono",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "negocio",
+            "columnName": "negocio",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "canal",
+            "columnName": "canal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documento",
+            "columnName": "documento",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ventas",
+            "columnName": "ventas",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "cliente",
+            "documento"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '31c4d7bb702d9d3f218d93c8c9f2e061')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dd40526c89ea781f95d08f55a00ff9ce')"
     ]
   }
 }

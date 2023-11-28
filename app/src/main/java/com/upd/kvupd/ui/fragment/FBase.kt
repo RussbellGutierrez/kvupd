@@ -3,8 +3,12 @@ package com.upd.kvupd.ui.fragment
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,10 +22,17 @@ import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.ui.activity.MainActivity
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Interface.mainListener
 import com.upd.kvupd.utils.Interface.serviceListener
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.isGPSDisabled
+import com.upd.kvupd.utils.progress
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -139,9 +150,8 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         }
         viewmodel.encuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                val d = y.data?.jobl
                 when (y) {
-                    is NetworkRetrofit.Success -> if (d.isNullOrEmpty()) {
+                    is NetworkRetrofit.Success -> if (y.data?.jobl.isNullOrEmpty()) {
                         showDialog(
                             "Advertencia",
                             "No tiene encuesta programada"
@@ -214,11 +224,8 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             bind.txtRuta.setUI("v", true)
         }
         if (config.esquema == 8) {
-            bind.lnrCliente.setUI("v", false)
             bind.lnrConsulta.setUI("v", true)
-            bind.txtRuta.setUI("v", false)
         } else {
-            bind.lnrCliente.setUI("v", true)
             bind.lnrConsulta.setUI("v", false)
         }
         val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo

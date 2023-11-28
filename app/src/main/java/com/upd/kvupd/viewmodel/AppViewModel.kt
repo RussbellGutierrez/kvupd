@@ -19,6 +19,7 @@ import com.upd.kvupd.data.model.JCambio
 import com.upd.kvupd.data.model.JCliente
 import com.upd.kvupd.data.model.JCobCart
 import com.upd.kvupd.data.model.JCoberturados
+import com.upd.kvupd.data.model.JConsulta
 import com.upd.kvupd.data.model.JEncuesta
 import com.upd.kvupd.data.model.JFoto
 import com.upd.kvupd.data.model.JGenerico
@@ -45,6 +46,7 @@ import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.data.model.TClientes
+import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.data.model.TRespuesta
@@ -125,6 +127,9 @@ class AppViewModel @ViewModelInject constructor(
     private val _encuesta: MutableLiveData<Event<NetworkRetrofit<JEncuesta>>> = MutableLiveData()
     val encuesta: LiveData<Event<NetworkRetrofit<JEncuesta>>> = _encuesta
 
+    private val _consulta: MutableLiveData<Event<NetworkRetrofit<JConsulta>>> = MutableLiveData()
+    val consulta: LiveData<Event<NetworkRetrofit<JConsulta>>> = _consulta
+
     private val _preventa: MutableLiveData<Event<NetworkRetrofit<JVolumen>>> = MutableLiveData()
     val preventa: LiveData<Event<NetworkRetrofit<JVolumen>>> = _preventa
 
@@ -182,8 +187,8 @@ class AppViewModel @ViewModelInject constructor(
     private val _preguntas: MutableLiveData<Event<List<TEncuesta>>> = MutableLiveData()
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
 
-    private val _consultado: MutableLiveData<Event<List<TClientes>>> = MutableLiveData()
-    val consultado: LiveData<Event<List<TClientes>>> = _consultado
+    private val _consultado: MutableLiveData<Event<List<TConsulta>>> = MutableLiveData()
+    val consultado: LiveData<Event<List<TConsulta>>> = _consultado
 
     fun configObserver() = repository.getFlowConfig().asLiveData()
 
@@ -399,6 +404,13 @@ class AppViewModel @ViewModelInject constructor(
                 }
             }
             _encuesta.value = Event(values)
+        }
+    }
+
+    fun fetchConsulta(body: RequestBody) = viewModelScope.launch {
+        repository.getWebConsulta(body).collect { values ->
+            values.data?.jobl?.let { repository.saveConsulta(it) }
+            _consulta.value = Event(values)
         }
     }
 
@@ -628,7 +640,7 @@ class AppViewModel @ViewModelInject constructor(
     fun bajaMarker(map: GoogleMap, baja: TBajaSuper) =
         functions.bajaMarker(map, baja)
 
-    fun consultaMarker(map: GoogleMap, item: TClientes) =
+    fun consultaMarker(map: GoogleMap, item: TConsulta) =
         functions.consultaMarker(map, item)
 
     fun launchPosition() {

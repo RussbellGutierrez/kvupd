@@ -356,7 +356,7 @@ class FunImpl @Inject constructor(
         return m
     }
 
-    override fun consultaMarker(map: GoogleMap, item: TClientes): List<Marker> {
+    override fun consultaMarker(map: GoogleMap, item: TConsulta): List<Marker> {
         val m = mutableListOf<Marker>()
         if ((item.longitud < 0 && item.latitud < 0) ||
             (item.longitud > 0 && item.latitud > 0) ||

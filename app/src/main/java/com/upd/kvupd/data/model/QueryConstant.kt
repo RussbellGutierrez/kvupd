@@ -25,6 +25,7 @@ object QueryConstant {
     const val DEL_NEGOCIOS = "DELETE FROM TNegocio"
     const val DEL_RUTAS = "DELETE FROM TRutas"
     const val DEL_ENCUESTA = "DELETE FROM TEncuesta"
+    const val DEL_CONSULTA = "DELETE FROM TConsulta"
     const val DEL_SEGUIMIENTO = "DELETE FROM TSeguimiento"
     const val DEL_VISITA = "DELETE FROM TVisita"
     const val DEL_ESTADO = "DELETE FROM TEstado"
@@ -138,7 +139,7 @@ object QueryConstant {
     //Tener cuidado con las consultas donde se usan operadores adicionales (LIKE '%dato_consulta%', GLOB '*dato_consulta*')
     const val GET_CONSULTA = "" +
             "SELECT * " +
-            "FROM TClientes " +
-            "WHERE ((:numero <> '0' AND (idcliente = :numero OR numcuit = :numero)) OR :numero = '0') " +
-            "AND ((:nombre <> 'NOT' AND nomcli GLOB :nombre) OR :nombre = 'NOT') "
+            "FROM TConsulta " +
+            "WHERE ((:numero <> '0' AND (cliente = :numero OR documento = :numero)) OR :numero = '0') " +
+            "AND ((:nombre <> 'NOT' AND nombre GLOB :nombre) OR :nombre = 'NOT') "
 }

@@ -90,7 +90,7 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getEncuesta()
     }
 
-    suspend fun getConsulta(numero: String, nombre: String): List<TClientes> {
+    suspend fun getConsulta(numero: String, nombre: String): List<TConsulta> {
         return qdao.getConsulta(numero, nombre)
     }
 
@@ -157,6 +157,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun saveEncuesta(enc: List<Encuesta>) {
         dao.insertEnc(enc.map { it.asTEncuesta() })
+    }
+
+    suspend fun saveConsulta(cons: List<Consulta>) {
+        dao.insertCons(cons.map { it.asTConsulta() })
     }
 
     suspend fun saveSeguimiento(seg: TSeguimiento) {
@@ -265,6 +269,10 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
 
     suspend fun deleteEncuesta() {
         dao.deleteEncuesta()
+    }
+
+    suspend fun deleteConsulta() {
+        dao.deleteConsulta()
     }
 
     suspend fun deleteSeguimiento() {

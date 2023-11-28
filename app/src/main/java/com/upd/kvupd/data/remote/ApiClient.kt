@@ -14,6 +14,7 @@ import com.upd.kvupd.utils.Constant.API_CLIENTE
 import com.upd.kvupd.utils.Constant.API_COBERTURA
 import com.upd.kvupd.utils.Constant.API_COBPEN
 import com.upd.kvupd.utils.Constant.API_CONFIGURACION
+import com.upd.kvupd.utils.Constant.API_CONSULTA
 import com.upd.kvupd.utils.Constant.API_DISTRITO
 import com.upd.kvupd.utils.Constant.API_EMPCAMBIO
 import com.upd.kvupd.utils.Constant.API_EMPLEADO
@@ -73,6 +74,9 @@ interface ApiClient {
 
     @POST(API_ENCUESTA)
     suspend fun getApiEncuesta(@Body body: RequestBody): Response<JEncuesta>//@param empleado,empresa
+
+    @POST(API_CONSULTA)
+    suspend fun getApiConsulta(@Body body: RequestBody): Response<JConsulta>//@param fecha,empresa
 
     @POST(API_PREVENTA)
     suspend fun getApiPreventa(@Body body: RequestBody): Response<JVolumen>//@param empleado,empresa

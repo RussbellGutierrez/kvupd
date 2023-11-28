@@ -391,7 +391,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         val distrito = bind.spnDistrito.selectedItem.toString()
         val giro = bind.spnGiro.selectedItem.toString()
         //val ruta = bind.edtRuta.text.toString().trim()
-        val ruta = bind.spnRuta.selectedItem.toString().split(" ")[1]
+        val ruta = bind.spnRuta.selectedItem.toString()
         val secuencia = bind.edtSecuencia.text.toString().trim()
 
         when {

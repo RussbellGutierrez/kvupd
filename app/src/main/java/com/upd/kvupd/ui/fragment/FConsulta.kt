@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
@@ -19,22 +23,19 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.R
-import com.upd.kvupd.data.local.QueryDAO
-import com.upd.kvupd.data.model.TClientes
+import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.databinding.FragmentFConsultaBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.POS_LOC
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.json.JSONObject
 
 @AndroidEntryPoint
-class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
+class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFConsultaBinding? = null
@@ -73,14 +74,37 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             sup.getMapAsync(this)
         }
 
+        activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
         bind.fabCentrar.setOnClickListener { distanceBetween() }
         bind.btnConsulta.setOnClickListener { searchCliente() }
 
+        viewmodel.consulta.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is NetworkRetrofit.Success -> showDialog(
+                        "Correcto",
+                        "Clientes del dia descargados correctamente"
+                    ) {}
+
+                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+                }
+            }
+        }
         viewmodel.consultado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 setupUI(y)
             }
         }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.consulta_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.descargar -> consume { launchClientesDia() }
+        else -> false
     }
 
     @SuppressLint("MissingPermission")
@@ -121,6 +145,14 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         }
     }
 
+    private fun launchClientesDia() {
+        val p = JSONObject()
+        p.put("fecha", CONF.fecha)
+        p.put("empresa", CONF.empresa)
+        progress("Descargando clientes del día")
+        viewmodel.fetchConsulta(p.toReqBody())
+    }
+
     private fun searchCliente() {
         var numero = bind.edtDocumento.text.toString().trim()
         var nombre = bind.edtNombres.text.toString().uppercase().trim()
@@ -131,10 +163,10 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         if (numero.isEmpty()) {
             numero = "0"
         }
-        if (nombre.isEmpty()) {
-            nombre = "NOT"
+        nombre = if (nombre.isEmpty()) {
+            "NOT"
         } else {
-            nombre = "*$nombre*"
+            "*$nombre*"
         }
         if (numero == "0" && nombre == "NOT") {
             showDialog("Advertencia", "Debe completar uno de los 2 campos para la busqueda") {}
@@ -148,12 +180,12 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         viewmodel.getClienteConsultado(numero, nombre)
     }
 
-    private fun setupUI(item: List<TClientes>) {
+    private fun setupUI(item: List<TConsulta>) {
         if (item.isEmpty()) {
             showDialog("Error", "No se encontraron coincidencias") {}
         } else {
             if (item.size > 1) {
-                showDialog("Advertencia", "Se encontraron demasiadas coincidencias") {}
+                showDialog("Advertencia", "Necesita ingresar más datos para ser precisos en la busqueda") {}
             } else {
 
                 bind.cardConsulta.setUI("v", true)
@@ -161,13 +193,29 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
                 bind.edtDocumento.setText("")
 
                 item.forEach { i ->
-                    val documento = "DOC. ${i.numcuit}"
-                    val cliente = "${i.idcliente} - ${i.nomcli}"
-                    val ruta = "Ruta ${i.ruta}"
-                    val direccion = i.domicli
-                    val vendedor = "V - ${i.empleado}"
+                    var compra = ""
+                    val documento = "DOC. ${i.documento}"
+                    val cliente = "${i.cliente} - ${i.nombre}"
+                    if (i.ventas > 0) {
+                        compra = "CLIENTE REALIZA COMPRAS"
+                        bind.cardCompra.setCardBackgroundColor(
+                            resources.getColor(
+                                R.color.green,
+                                null
+                            )
+                        )
+                    } else {
+                        compra = "CLIENTE NO REALIZO COMPRAS"
+                        bind.cardCompra.setCardBackgroundColor(
+                            resources.getColor(
+                                R.color.lightcrimson,
+                                null
+                            )
+                        )
+                    }
+                    val direccion = i.domicilio
 
-                    when (i.negocio) {
+                    when (i.canal) {
                         "BRONCE" -> bind.imgCanal.setImageResource(R.drawable.bronce)
                         "PLATA" -> bind.imgCanal.setImageResource(R.drawable.plata)
                         "ORO" -> bind.imgCanal.setImageResource(R.drawable.oro)
@@ -178,16 +226,15 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
                         "MERCADOS" -> bind.imgCanal.setImageResource(R.drawable.tienda)
                         "BOTICAS" -> bind.imgCanal.setImageResource(R.drawable.pildora)
                         "OTROS" -> bind.imgCanal.setImageResource(R.drawable.casa)
-                        "BODEGA" -> bind.imgCanal.setImageResource(R.drawable.tienda)
                         else -> bind.imgCanal.setImageResource(R.drawable.restringido)
                     }
 
                     bind.txtDocumento.text = documento
                     bind.txtCliente.text = cliente
-                    bind.txtRuta.text = ruta
                     bind.txtDireccion.text = direccion
-                    bind.txtVendedor.text = vendedor
-                    bind.txtCanal.text = i.negocio
+                    bind.txtCompra.text = compra
+                    bind.txtCanal.text = i.canal
+                    bind.txtNegocio.text = i.negocio
 
                     val lm = viewmodel.consultaMarker(map, i)
                     if (lm.isNotEmpty()) {

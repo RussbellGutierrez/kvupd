@@ -30,7 +30,7 @@ interface Repository {
     suspend fun getRutas(): List<Ruta>
     suspend fun getListEncuestas(): List<Cabecera>
     suspend fun getPreguntas(): List<TEncuesta>
-    suspend fun getConsultaCliente(numero: String, nombre: String): List<TClientes>
+    suspend fun getConsultaCliente(numero: String, nombre: String): List<TConsulta>
     suspend fun getClienteDetail(cliente: String, observacion: String): List<DataCliente>
     suspend fun getDataAlta(alta: String): DataAlta
     suspend fun getAltaDatoSpecific(alta: String): TADatos?
@@ -55,6 +55,7 @@ interface Repository {
     suspend fun saveRutas(ruta: List<Ruta>)
     suspend fun saveNegocios(negocio: List<Combo>)
     suspend fun saveEncuesta(encuesta: List<Encuesta>)
+    suspend fun saveConsulta(consulta: List<Consulta>)
     suspend fun saveSeguimiento(seguimiento: TSeguimiento)
     suspend fun saveVisita(visita: TVisita)
     suspend fun saveEstado(estado: TEstado)
@@ -94,6 +95,7 @@ interface Repository {
     suspend fun deleteNegocios()
     suspend fun deleteRutas()
     suspend fun deleteEncuesta()
+    suspend fun deleteConsulta()
     suspend fun deleteSeguimiento()
     suspend fun deleteVisita()
     suspend fun deleteEstado()
@@ -118,6 +120,7 @@ interface Repository {
     suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JCombo>>
     suspend fun getWebRutas(body: RequestBody): Flow<NetworkRetrofit<JRuta>>
     suspend fun getWebEncuesta(body: RequestBody): Flow<NetworkRetrofit<JEncuesta>>
+    suspend fun getWebConsulta(body: RequestBody): Flow<NetworkRetrofit<JConsulta>>
 
     suspend fun getWebPreventa(body: RequestBody): Flow<NetworkRetrofit<JVolumen>>
     suspend fun getWebCobertura(body: RequestBody): Flow<NetworkRetrofit<JCobCart>>

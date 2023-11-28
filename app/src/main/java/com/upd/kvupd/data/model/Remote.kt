@@ -385,3 +385,22 @@ data class ClienteBaja(
     @Json(name = "LONGITUD") val longitud: Double,
     @Json(name = "LATITUD") val latitud: Double
 )
+
+@JsonClass(generateAdapter = true)
+data class JConsulta(
+    @Json(name = "data") val jobl: List<Consulta>
+)
+
+@JsonClass(generateAdapter = true)
+data class Consulta(
+    @Json(name = "idcliente") val cliente: Int,
+    @Json(name = "nomcli") val nombre: String,
+    @Json(name = "domicli") val domicilio: String,
+    @Json(name = "XCoord") val longitud: Double,
+    @Json(name = "YCoord") val latitud: Double,
+    @Json(name = "telefos") val telefono: String,
+    @Json(name = "tiponego") val negocio: String,
+    @Json(name = "canal") val canal: String,
+    @Json(name = "numcuit") val documento: String,
+    @Json(name = "venta") val ventas: Int
+)

@@ -112,6 +112,7 @@ object Constant {
     const val API_REGISTRO = "movil/nuevo"
     const val API_CONFIGURACION = "movil/configuracion"
     const val API_ENCUESTA = "empleado/movil/encuesta/lista"
+    const val API_CONSULTA = "empleado/movil/cliente/completo"
 
     const val API_PREVENTA = "empleado/movil/volumen/general"
     const val API_COBERTURA = "empleado/movil/cobertura/general"
