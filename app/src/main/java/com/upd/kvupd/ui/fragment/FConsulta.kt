@@ -229,6 +229,11 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
                         else -> bind.imgCanal.setImageResource(R.drawable.restringido)
                     }
 
+                    when (i.anulado) {
+                        0 -> bind.imgEstado.setImageResource(R.drawable.cliente_activo)
+                        1 -> bind.imgEstado.setImageResource(R.drawable.cliente_anulado)
+                    }
+
                     bind.txtDocumento.text = documento
                     bind.txtCliente.text = cliente
                     bind.txtDireccion.text = direccion

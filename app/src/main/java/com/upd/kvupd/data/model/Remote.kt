@@ -401,6 +401,7 @@ data class Consulta(
     @Json(name = "telefos") val telefono: String,
     @Json(name = "tiponego") val negocio: String,
     @Json(name = "canal") val canal: String,
+    @Json(name = "anulado") val anulado: Int,
     @Json(name = "numcuit") val documento: String,
     @Json(name = "venta") val ventas: Int
 )

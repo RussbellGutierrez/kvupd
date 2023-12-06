@@ -461,6 +461,7 @@ data class TConsulta(
     val telefono: String,
     val negocio: String,
     val canal: String,
+    val anulado: Int,
     val documento: String,
     val ventas: Int
 )
@@ -475,6 +476,7 @@ fun List<TConsulta>.asConsultaList(): List<Consulta> = this.map {
         it.telefono,
         it.negocio,
         it.canal,
+        it.anulado,
         it.documento,
         it.ventas
     )
@@ -490,6 +492,7 @@ fun Consulta.asTConsulta(): TConsulta =
         this.telefono,
         this.negocio,
         this.canal,
+        this.anulado,
         this.documento,
         this.ventas
     )
