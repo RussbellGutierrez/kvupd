@@ -356,14 +356,16 @@ class FunImpl @Inject constructor(
         return m
     }
 
-    override fun consultaMarker(map: GoogleMap, item: TConsulta): List<Marker> {
+    override fun consultaMarker(map: GoogleMap, list: List<TConsulta>): List<Marker> {
         val m = mutableListOf<Marker>()
-        if ((item.longitud < 0 && item.latitud < 0) ||
-            (item.longitud > 0 && item.latitud > 0) ||
-            (item.longitud < 0 && item.latitud > 0) ||
-            (item.longitud > 0 && item.latitud < 0)
-        ) {
-            m.add(map.markerConsulta(item, R.drawable.pin_chess))
+        list.forEach { i ->
+            if ((i.longitud < 0 && i.latitud < 0) ||
+                (i.longitud > 0 && i.latitud > 0) ||
+                (i.longitud < 0 && i.latitud > 0) ||
+                (i.longitud > 0 && i.latitud < 0)
+            ) {
+                m.add(map.markerConsulta(i, R.drawable.pin_chess))
+            }
         }
         return m
     }

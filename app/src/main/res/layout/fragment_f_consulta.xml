@@ -128,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="5dp"
         android:layout_marginTop="7dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/whiteSmoke"
         app:cardCornerRadius="3dp"
         app:cardElevation="3dp">

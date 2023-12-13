@@ -317,8 +317,8 @@ fun GoogleMap.markerAlta(item: TAlta, icon: Int): Marker {
 
 fun GoogleMap.markerConsulta(item: TConsulta, icon: Int): Marker {
     return this.addMarker(MarkerOptions().apply {
-        title(item.documento)
-        snippet("${item.cliente} - ${item.nombre}")
+        title(item.cliente.toString())
+        snippet(item.nombre)
         position(LatLng(item.latitud, item.longitud))
         icon(BitmapDescriptorFactory.fromResource(icon))
         draggable(false)

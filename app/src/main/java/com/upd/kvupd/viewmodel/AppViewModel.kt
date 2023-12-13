@@ -640,8 +640,8 @@ class AppViewModel @ViewModelInject constructor(
     fun bajaMarker(map: GoogleMap, baja: TBajaSuper) =
         functions.bajaMarker(map, baja)
 
-    fun consultaMarker(map: GoogleMap, item: TConsulta) =
-        functions.consultaMarker(map, item)
+    fun consultaMarker(map: GoogleMap, list: List<TConsulta>) =
+        functions.consultaMarker(map, list)
 
     fun launchPosition() {
         functions.executeService("position", false)

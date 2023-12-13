@@ -42,7 +42,8 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
     private val bind get() = _bind!!
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
-    private lateinit var cmk: Marker
+    private lateinit var markers: List<Marker>
+    private var lc = mutableListOf<TConsulta>()
     private val _tag by lazy { FConsulta::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -76,7 +77,7 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.fabCentrar.setOnClickListener { distanceBetween() }
+        bind.fabCentrar.setOnClickListener { centerMarkers() }
         bind.btnConsulta.setOnClickListener { searchCliente() }
 
         viewmodel.consulta.observe(viewLifecycleOwner) {
@@ -93,7 +94,17 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
         }
         viewmodel.consultado.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                setupUI(y)
+                if (y.isEmpty()) {
+                    showDialog("Advertencia", "No se encontraron coincidencias") {}
+                } else {
+                    if (::map.isInitialized) {
+                        map.clear()
+                        lc.clear()
+                        markers = viewmodel.consultaMarker(map, y)
+                        lc.addAll(y)
+                        centerMarkers()
+                    }
+                }
             }
         }
     }
@@ -123,6 +134,7 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
     override fun onMarkerClick(p0: Marker): Boolean {
         p0.showInfoWindow()
         moveCamera(p0.position.toLocation())
+        setupUI(p0.title)
         return true
     }
 
@@ -134,14 +146,17 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
         )
     }
 
-    private fun distanceBetween() {
-        if (::cmk.isInitialized) {
-            val builder = LatLngBounds.Builder()
-            val empleado = LatLng(GPS_LOC.latitude, GPS_LOC.longitude)
-            builder.include(cmk.position)
-            builder.include(empleado)
-            val bounds = builder.build()
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+    private fun centerMarkers() {
+        val builder = LatLngBounds.Builder()
+        if (::markers.isInitialized) {
+            if (markers.isNotEmpty()) {
+                markers.forEach { i -> builder.include(i.position) }
+                builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
+                val bounds = builder.build()
+                map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+            }
+        } else {
+            snack("Sin marcadores para ubicar")
         }
     }
 
@@ -180,19 +195,18 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
         viewmodel.getClienteConsultado(numero, nombre)
     }
 
-    private fun setupUI(item: List<TConsulta>) {
-        if (item.isEmpty()) {
-            showDialog("Error", "No se encontraron coincidencias") {}
+    private fun setupUI(codigo: String?) {
+        if (codigo.isNullOrEmpty()) {
+            showDialog("Error", "No se encuentra el codigo de cliente") {}
         } else {
-            if (item.size > 1) {
-                showDialog("Advertencia", "Necesita ingresar más datos para ser precisos en la busqueda") {}
-            } else {
+            lc.forEach { i ->
 
-                bind.cardConsulta.setUI("v", true)
-                bind.edtNombres.setText("")
-                bind.edtDocumento.setText("")
+                if (i.cliente == codigo.toInt()) {
 
-                item.forEach { i ->
+                    bind.cardConsulta.setUI("v", true)
+                    bind.edtNombres.setText("")
+                    bind.edtDocumento.setText("")
+
                     var compra = ""
                     val documento = "DOC. ${i.documento}"
                     val cliente = "${i.cliente} - ${i.nombre}"
@@ -240,12 +254,6 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
                     bind.txtCompra.text = compra
                     bind.txtCanal.text = i.canal
                     bind.txtNegocio.text = i.negocio
-
-                    val lm = viewmodel.consultaMarker(map, i)
-                    if (lm.isNotEmpty()) {
-                        cmk = lm[0]
-                        distanceBetween()
-                    }
                 }
             }
         }

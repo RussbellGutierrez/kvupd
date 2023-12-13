@@ -29,7 +29,7 @@ interface Functions {
     fun pedimapMarkers(map: GoogleMap, list: List<Pedimap>): List<Marker>
     fun altaMarkers(map: GoogleMap, list: List<TAlta>): List<Marker>
     fun bajaMarker(map: GoogleMap, baja: TBajaSuper): List<Marker>
-    fun consultaMarker(map:GoogleMap,item: TConsulta): List<Marker>
+    fun consultaMarker(map:GoogleMap,list: List<TConsulta>): List<Marker>
 
     fun executeService(service: String, foreground: Boolean)
     fun constrainsWork(): Constraints
