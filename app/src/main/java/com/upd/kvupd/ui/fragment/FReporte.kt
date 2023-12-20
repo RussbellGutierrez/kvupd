@@ -2,7 +2,12 @@ package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -14,14 +19,18 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFReporteBinding
 import com.upd.kvupd.ui.adapter.SolesAdapter
-import com.upd.kvupd.ui.adapter.UmesAdapter
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IPA
 import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.solesListener
-import com.upd.kvupd.utils.Interface.umesListener
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.percent
+import com.upd.kvupd.utils.progress
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.IO
@@ -31,7 +40,7 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesListener,
+class FReporte : Fragment(), SolesAdapter.OnSolesListener,
     MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
@@ -39,9 +48,6 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
     private val bind get() = _bind!!
     private lateinit var socket: Socket
     private val _tag by lazy { FReporte::class.java.simpleName }
-
-    @Inject
-    lateinit var umesAdapter: UmesAdapter
 
     @Inject
     lateinit var solesAdapter: SolesAdapter
@@ -53,7 +59,6 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        umesListener = this
         solesListener = this
     }
 
@@ -76,18 +81,6 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
         if (CONF.empresa == 2) {
             bind.lnrSoloOriunda.setUI("v", false)
         }
-
-        /*when (CONF.empresa) {
-            1 -> {
-                bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
-                bind.rcvReporte.adapter = umesAdapter
-            }
-            2 -> {
-                bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
-                bind.rcvReporte.adapter = solesAdapter
-                bind.lnrSoloOriunda.setUI("v", false)
-            }
-        }*/
 
         launchFetchs()
 
@@ -122,6 +115,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             }
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         controlUI(0, false)
                         bind.txtMsg1.text = y.message
@@ -148,19 +142,18 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.txtRepo2Cap2.text = cap2
                         bind.txtRepo2Cap3.text = cap3
                         bind.cardRepo2.setOnClickListener {
-                            if (CONF.tipo == "S") {
-                                val bundle = bundleOf(
-                                    "informe" to 1,
-                                    "array" to y.data?.jobl?.toTypedArray(),
-                                    "item" to null
-                                )
-                                findNavController().navigate(
-                                    R.id.action_FReporte_to_DMiniDetalle,
-                                    bundle
-                                )
-                            }
+                            val bundle = bundleOf(
+                                "informe" to 1,
+                                "array" to y.data?.jobl?.toTypedArray(),
+                                "item" to null
+                            )
+                            findNavController().navigate(
+                                R.id.action_FReporte_to_DMiniDetalle,
+                                bundle
+                            )
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         controlUI(1, false)
                         bind.txtMsg2.text = y.message
@@ -198,6 +191,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         controlUI(2, false)
                         bind.txtMsg3.text = y.message
@@ -239,6 +233,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             }
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         controlUI(3, false)
                         bind.txtMsg4.text = y.message
@@ -276,6 +271,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                                 )
                             }
                         }
+
                         is NetworkRetrofit.Error -> {
                             controlUI(4, false)
                             bind.txtMsg5.text = y.message
@@ -315,6 +311,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                                 )
                             }
                         }
+
                         is NetworkRetrofit.Error -> {
                             controlUI(4, false)
                             Log.e(_tag, "Er ${y.message}")
@@ -356,6 +353,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                             )
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         controlUI(5, false)
                         bind.txtMsg6.text = y.message
@@ -372,6 +370,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         bind.rcvReporte.setUI("v", true)
                         proccessUME(y.data!!.jobl)*/
                     }
+
                     is NetworkRetrofit.Error -> {
                         /*bind.rcvReporte.setUI("v", false)
                         bind.txtMensaje.setUI("v", true)
@@ -390,6 +389,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                         val sorted = y.data!!.jobl.sortedBy { it.linea.codigo }
                         solesAdapter.mDiffer.submitList(sorted)
                     }
+
                     is NetworkRetrofit.Error -> {
                         bind.rcvReporte.setUI("v", false)
                         bind.txtMensaje.setUI("v", true)
@@ -533,6 +533,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 else
                     bind.txtMsg1.setUI("v", true)
             }
+
             1 -> {
                 bind.progress2.setUI("v", false)
                 if (status)
@@ -540,6 +541,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 else
                     bind.txtMsg2.setUI("v", true)
             }
+
             2 -> {
                 bind.progress3.setUI("v", false)
                 if (status)
@@ -547,6 +549,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 else
                     bind.txtMsg3.setUI("v", true)
             }
+
             3 -> {
                 bind.progress4.setUI("v", false)
                 if (status)
@@ -554,6 +557,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 else
                     bind.txtMsg4.setUI("v", true)
             }
+
             4 -> {
                 bind.progress5.setUI("v", false)
                 if (status)
@@ -561,6 +565,7 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
                 else
                     bind.txtMsg5.setUI("v", true)
             }
+
             5 -> {
                 bind.progress6.setUI("v", false)
                 if (status)
@@ -623,11 +628,13 @@ class FReporte : Fragment(), UmesAdapter.OnUmesListener, SolesAdapter.OnSolesLis
             } else {
                 "http://191.98.177.57"
             }
+
             "ips" -> if (isCONFinitialized()) {
                 "http://${CONF.ips}"
             } else {
                 "http://191.98.177.57"
             }
+
             else -> "http://$IPA"
         }
 

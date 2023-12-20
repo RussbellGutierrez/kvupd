@@ -136,6 +136,7 @@ interface Repository {
     suspend fun getWebUmesGenerico(body: RequestBody): Flow<NetworkRetrofit<JGenerico>>
     suspend fun getWebSolesGenerico(body: RequestBody): Flow<NetworkRetrofit<JGenerico>>
     suspend fun getWebUmesDetalle(body: RequestBody): Flow<NetworkRetrofit<JGenerico>>
+    suspend fun getWebCoberturaDetalle(body: RequestBody): Flow<NetworkRetrofit<JDetCob>>
     suspend fun getWebSolesDetalle(body: RequestBody): Flow<NetworkRetrofit<JGenerico>>
     suspend fun getWebCoberturaPendiente(body: RequestBody): Flow<NetworkRetrofit<JCoberturados>>
     suspend fun getWebPedidosRealizados(body: RequestBody): Flow<NetworkRetrofit<JPediGen>>

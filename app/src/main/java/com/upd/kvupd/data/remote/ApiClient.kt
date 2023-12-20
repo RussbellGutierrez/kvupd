@@ -11,6 +11,7 @@ import com.upd.kvupd.utils.Constant.API_BAJALIS
 import com.upd.kvupd.utils.Constant.API_CARTERA
 import com.upd.kvupd.utils.Constant.API_CLICAMBIO
 import com.upd.kvupd.utils.Constant.API_CLIENTE
+import com.upd.kvupd.utils.Constant.API_COBDET
 import com.upd.kvupd.utils.Constant.API_COBERTURA
 import com.upd.kvupd.utils.Constant.API_COBPEN
 import com.upd.kvupd.utils.Constant.API_CONFIGURACION
@@ -116,6 +117,9 @@ interface ApiClient {
 
     @POST(API_UMESDET)
     suspend fun getApiUmesDetalle(@Body body: RequestBody): Response<JGenerico>//@param empleado,empresa,generico
+
+    @POST(API_COBDET)
+    suspend fun getApiCoberturaDetalle(@Body body: RequestBody): Response<JDetCob>//@param empleado, empresa
 
     @POST(API_PREVENTA)
     suspend fun getApiSolesDetalle(@Body body: RequestBody): Response<JGenerico>//@param empleado,empresa,linea

@@ -116,6 +116,7 @@ object Constant {
 
     const val API_PREVENTA = "empleado/movil/volumen/general"
     const val API_COBERTURA = "empleado/movil/cobertura/general"
+    const val API_COBDET = "empleado/movil/pepito"
     const val API_CARTERA = "empleado/movil/cobertura/efectividad"
     const val API_REPOGEN = "empleado/movil/preventa/reporte-general"
     const val API_VISIC = "empleado/movil/cliente/equipo-frio"

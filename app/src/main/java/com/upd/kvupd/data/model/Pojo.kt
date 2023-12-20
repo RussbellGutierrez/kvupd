@@ -105,3 +105,13 @@ data class RespuestaCliente(
 data class RespuestaHistorico(
     @ColumnInfo(name = "encuestas") val encuesta: String
 )
+
+data class OrderVenta(
+    val cliente: String,
+    val pedidos: List<Venta>
+)
+
+data class Venta(
+    val numero: Int,
+    val total: Double
+)

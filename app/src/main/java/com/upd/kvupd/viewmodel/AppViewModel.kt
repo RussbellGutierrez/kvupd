@@ -20,6 +20,7 @@ import com.upd.kvupd.data.model.JCliente
 import com.upd.kvupd.data.model.JCobCart
 import com.upd.kvupd.data.model.JCoberturados
 import com.upd.kvupd.data.model.JConsulta
+import com.upd.kvupd.data.model.JDetCob
 import com.upd.kvupd.data.model.JEncuesta
 import com.upd.kvupd.data.model.JFoto
 import com.upd.kvupd.data.model.JGenerico
@@ -160,6 +161,9 @@ class AppViewModel @ViewModelInject constructor(
 
     private val _generico: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
     val generico: LiveData<Event<NetworkRetrofit<JGenerico>>> = _generico
+
+    private val _detcob: MutableLiveData<Event<NetworkRetrofit<JDetCob>>> = MutableLiveData()
+    val detcob: LiveData<Event<NetworkRetrofit<JDetCob>>> = _detcob
 
     private val _detalle: MutableLiveData<Event<NetworkRetrofit<JGenerico>>> = MutableLiveData()
     val detalle: LiveData<Event<NetworkRetrofit<JGenerico>>> = _detalle
@@ -504,6 +508,12 @@ class AppViewModel @ViewModelInject constructor(
             _detalle.value = Event(it)
         }
     }*/
+
+    fun fetchDetCobertura(body: RequestBody) = viewModelScope.launch {
+        repository.getWebCoberturaDetalle(body).collect {
+            _detcob.value = Event(it)
+        }
+    }
 
     fun fetchSolesDetalle(body: RequestBody) = viewModelScope.launch {
         repository.getWebSolesDetalle(body).collect {

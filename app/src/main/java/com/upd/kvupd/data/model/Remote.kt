@@ -181,6 +181,20 @@ data class CobCart(
 ): Parcelable
 
 @JsonClass(generateAdapter = true)
+data class JDetCob(
+    @Json(name = "data") val jobl: List<DetCob>
+)
+
+@Parcelize
+@JsonClass(generateAdapter = true)
+data class DetCob(
+    @Json(name = "codigo") val codigo: Int,
+    @Json(name = "nombre") val nombre: String,
+    @Json(name = "pedido") val pedido: Int,
+    @Json(name = "importe") val importe: Double
+): Parcelable
+
+@JsonClass(generateAdapter = true)
 data class JPedido(
     @Json(name = "data") val jobl: List<Pedido>
 )

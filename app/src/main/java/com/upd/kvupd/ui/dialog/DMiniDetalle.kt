@@ -11,14 +11,31 @@ import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.Cambio
+import com.upd.kvupd.data.model.CobCart
+import com.upd.kvupd.data.model.Coberturados
+import com.upd.kvupd.data.model.DetCob
+import com.upd.kvupd.data.model.Generico
+import com.upd.kvupd.data.model.OrderVenta
+import com.upd.kvupd.data.model.PediGen
+import com.upd.kvupd.data.model.Soles
+import com.upd.kvupd.data.model.Venta
+import com.upd.kvupd.data.model.Visicooler
+import com.upd.kvupd.data.model.Volumen
 import com.upd.kvupd.databinding.DialogMiniDetalleBinding
+import com.upd.kvupd.databinding.RowCoberturaDetalleBinding
+import com.upd.kvupd.databinding.RowMiniCobdetBinding
 import com.upd.kvupd.databinding.RowMiniDetalleBinding
 import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.databinding.RowTarjetaClienteBinding
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.VISICOOLER_ID
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.percent
+import com.upd.kvupd.utils.setCreate
+import com.upd.kvupd.utils.setResume
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -36,7 +53,7 @@ class DMiniDetalle : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCreate()
-        data = arguments!!
+        data = requireArguments()
     }
 
     override fun onCreateView(
@@ -69,6 +86,7 @@ class DMiniDetalle : DialogFragment() {
                             setUmeSoles(list)
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         bind.emptyContainer.textView.text = y.message
                     }
@@ -86,6 +104,7 @@ class DMiniDetalle : DialogFragment() {
                             setCoberturaPendiente(list)
                         }
                     }
+
                     is NetworkRetrofit.Error -> {
                         bind.emptyContainer.textView.text = y.message
                     }
@@ -103,6 +122,25 @@ class DMiniDetalle : DialogFragment() {
                             setPedidosRealizados(list)
                         }
                     }
+
+                    is NetworkRetrofit.Error -> {
+                        bind.emptyContainer.textView.text = y.message
+                    }
+                }
+            }
+        }
+
+        viewmodel.detcob.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is NetworkRetrofit.Success -> {
+                        val list = y.data?.jobl
+                        bind.emptyContainer.root.setUI("v", list.isNullOrEmpty())
+                        if (!list.isNullOrEmpty()) {
+                            coberturaDetalle(list)
+                        }
+                    }
+
                     is NetworkRetrofit.Error -> {
                         bind.emptyContainer.textView.text = y.message
                     }
@@ -124,17 +162,24 @@ class DMiniDetalle : DialogFragment() {
                     preventa(array.toList())
                 }
             }
+
             1 -> {
-                val array: List<CobCart>? =
-                    data.getParcelableArray("array")?.filterIsInstance<CobCart>()
-                bind.lnrMini.removeAllViews()
-                bind.emptyContainer.root.setUI("v", array.isNullOrEmpty())
-                val titulo = "Informe Cobertura"
-                bind.txtTitulo.text = titulo
-                if (!array.isNullOrEmpty()) {
-                    cobertura(array.toList())
+                if (CONF.tipo == "S") {
+                    val array: List<CobCart>? =
+                        data.getParcelableArray("array")?.filterIsInstance<CobCart>()
+                    bind.lnrMini.removeAllViews()
+                    bind.emptyContainer.root.setUI("v", array.isNullOrEmpty())
+                    val titulo = "Informe Cobertura"
+                    bind.txtTitulo.text = titulo
+                    if (!array.isNullOrEmpty()) {
+                        cobertura(array.toList())
+                    }
+                } else {
+                    bind.txtTitulo.text = "Detalle cobertura"
+                    getCoberturaDetalle()
                 }
             }
+
             2 -> {
                 if (CONF.tipo == "S") {
                     val array: List<CobCart>? =
@@ -155,6 +200,7 @@ class DMiniDetalle : DialogFragment() {
                     viewmodel.fetchCoberturaPendiente(p.toReqBody())
                 }
             }
+
             3 -> {
                 val titulo = "Informe Pedidos"
                 bind.txtTitulo.text = titulo
@@ -163,6 +209,7 @@ class DMiniDetalle : DialogFragment() {
                 p.put("empresa", CONF.empresa)
                 viewmodel.fetchPediGen(p.toReqBody())
             }
+
             4 -> {
                 val array: List<Visicooler>? =
                     data.getParcelableArray("array")?.filterIsInstance<Visicooler>()
@@ -179,10 +226,11 @@ class DMiniDetalle : DialogFragment() {
                     visicooler(array.toList())
                 }
             }
+
             5 -> {
                 val array: List<Cambio>? =
                     data.getParcelableArray("array")?.filterIsInstance<Cambio>()
-                Log.d(_tag,"List $array")
+                Log.d(_tag, "List $array")
                 bind.lnrMini.removeAllViews()
                 bind.emptyContainer.root.setUI("v", array.isNullOrEmpty())
                 val titulo = "Informe Cambios"
@@ -191,11 +239,13 @@ class DMiniDetalle : DialogFragment() {
                     cambios(array.toList())
                 }
             }
+
             6 -> {
                 val soles = data.getParcelable<Soles>("item")!!
                 bind.txtTitulo.text = soles.linea.descripcion
                 launchDownload(soles.linea.codigo, 1)
             }
+
             7 -> {
                 val generico = data.getParcelable<Generico>("item")!!
                 bind.txtTitulo.text = generico.datos.descripcion
@@ -244,6 +294,48 @@ class DMiniDetalle : DialogFragment() {
         }
     }
 
+    private fun coberturaDetalle(list: List<DetCob>) {
+        var codigo = 0
+        var nombre = ""
+        val lv = mutableListOf<Venta>()
+        val lov = mutableListOf<OrderVenta>()
+        list.forEach { i ->
+            if (codigo == 0) {
+                codigo = i.codigo
+                nombre = i.nombre
+                lv.add(Venta(i.pedido,i.importe))
+            } else {
+                if (codigo == i.codigo) {
+                    lv.add(Venta(i.pedido,i.importe))
+                } else {
+                    val cliente = "$codigo - $nombre"
+                    lov.add(OrderVenta(cliente,lv.toList()))
+                    lv.clear()
+                    codigo = i.codigo
+                    nombre = i.nombre
+                    lv.add(Venta(i.pedido,i.importe))
+                }
+            }
+        }
+
+        val cliente = "$codigo - $nombre"
+        lov.add(OrderVenta(cliente,lv.toList()))
+        lv.clear()
+
+        lov.forEach { j ->
+            val padre = RowCoberturaDetalleBinding.inflate(layoutInflater,view as ViewGroup,false)
+            padre.txtCliente.text = j.cliente
+            j.pedidos.forEach { k ->
+                val hijo = RowMiniCobdetBinding.inflate(layoutInflater,view as ViewGroup, false)
+                hijo.txtPedido.text = "P. ${k.numero}"
+                hijo.txtTotal.text = "s/ ${k.total}"
+                padre.flxPedidos.addView(hijo.root)
+            }
+            bind.lnrMini.addView(padre.root)
+        }
+        lov.clear()
+    }
+
     private fun cambios(list: List<Cambio>) {
         list.forEach { i ->
             val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
@@ -286,6 +378,13 @@ class DMiniDetalle : DialogFragment() {
         }
     }
 
+    private fun getCoberturaDetalle() {
+        val p = JSONObject()
+        p.put("empleado", CONF.codigo)
+        p.put("empresa", CONF.empresa)
+        viewmodel.fetchDetCobertura(p.toReqBody())
+    }
+
     private fun launchDownload(codigo: Int, nivel: Int) {
         val p = JSONObject()
         p.put("empleado", CONF.codigo)
@@ -296,19 +395,6 @@ class DMiniDetalle : DialogFragment() {
             p.put("linea", codigo)
         }
         viewmodel.fetchSolesDetalle(p.toReqBody())
-        /*when (CONF.empresa) {
-            1 -> {
-                if (nivel < 2) p.put("linea", codigo) else p.put("generico", codigo)
-            }
-            2 -> {
-                if (nivel < 2) p.put("marca", codigo) else p.put("linea", codigo)
-            }
-        }*/
-
-        /*when (CONF.empresa) {
-            1 -> viewmodel.fetchUmeDetalle(p.toReqBody())
-            2 -> viewmodel.fetchSolesDetalle(p.toReqBody())
-        }*/
     }
 
     private fun setUmeSoles(list: List<Generico>?) {
@@ -335,6 +421,7 @@ class DMiniDetalle : DialogFragment() {
                     )
                     minbind.imgFlecha.setImageResource(R.drawable.f_arriba)
                 }
+
                 percent.toDouble() in 1.0..69.99 -> minbind.imgFlecha.setImageResource(R.drawable.f_bajo)
                 percent.toDouble() < 1 -> minbind.imgFlecha.setImageResource(R.drawable.f_neutral)
             }

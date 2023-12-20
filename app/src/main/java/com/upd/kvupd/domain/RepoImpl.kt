@@ -619,6 +619,12 @@ class RepoImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    override suspend fun getWebCoberturaDetalle(body: RequestBody): Flow<NetworkRetrofit<JDetCob>> {
+        return flow<NetworkRetrofit<JDetCob>> {
+            emit(safeApiCall { webDataSource.getWebCoberturaDetalle(body) })
+        }.flowOn(Dispatchers.IO)
+    }
+
     override suspend fun getWebSolesDetalle(body: RequestBody): Flow<NetworkRetrofit<JGenerico>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebSolesDetalle(body) })

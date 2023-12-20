@@ -99,6 +99,10 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
         return web.getApiUmesDetalle(body)
     }
 
+    suspend fun getWebCoberturaDetalle(body: RequestBody): Response<JDetCob> {
+        return web.getApiCoberturaDetalle(body)
+    }
+
     suspend fun getWebSolesDetalle(body: RequestBody): Response<JGenerico> {
         return web.getApiSolesDetalle(body)
     }
