@@ -65,10 +65,10 @@ interface ApiClient {
     suspend fun getApiEmpleados(@Body body: RequestBody): Response<JVendedores>//@param empleado,empresa
 
     @POST(API_DISTRITO)
-    suspend fun getApiDistritos(@Body body: RequestBody): Response<JCombo>//@param empresa
+    suspend fun getApiDistritos(@Body body: RequestBody): Response<JDistrito>//@param empresa
 
     @POST(API_NEGOCIO)
-    suspend fun getApiNegocios(@Body body: RequestBody): Response<JCombo>//@param empresa
+    suspend fun getApiNegocios(@Body body: RequestBody): Response<JNegocio>//@param empresa
 
     @POST(API_RUTA)
     suspend fun getApiRutas(@Body body: RequestBody): Response<JRuta>//@param empleado, empresa

@@ -9,7 +9,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
@@ -27,14 +32,22 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.data.model.TAFoto
 import com.upd.kvupd.data.model.asSpinner
 import com.upd.kvupd.data.model.toSpinner
 import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.checkDocumento
+import com.upd.kvupd.utils.checkEmail
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.hideprogress
+import com.upd.kvupd.utils.multiReplace
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -49,8 +62,10 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private val bind get() = _bind!!
     private var tipo = ""
     private var abspath = ""
+    private var negocios = listOf<Negocio>()
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
+    private var subgiro = listOf<String>()
     private var ruta = listOf<String>()
     private val args: FAltaDatosArgs by navArgs()
     private var adStored: TADatos? = null
@@ -80,6 +95,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         bind.spnDocumento.onItemSelectedListener = this
+        bind.spnGiro.onItemSelectedListener = this
         bind.rbGrupo.setOnCheckedChangeListener { _, id ->
             when (id) {
                 bind.rbJuridica.id -> {
@@ -87,6 +103,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     setDataSpinner(tipo)
                     showFields(0)
                 }
+
                 bind.rbNatural.id -> {
                     tipo = "PN"
                     setDataSpinner(tipo)
@@ -106,13 +123,15 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             )
             setupFields()
         }
-        viewmodel.negociosObs().observe(viewLifecycleOwner) {
-            giro = it.asSpinner()
+        viewmodel.negociosObs().observe(viewLifecycleOwner) { y ->
+            negocios = y
+            giro = y.distinctBy { it.giro }.asSpinner(0)
+            getAndSetSubGiros("2")
             bind.spnGiro.adapter =
                 ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, giro)
             setupFields()
         }
-        viewmodel.rutasObs().observe(viewLifecycleOwner){
+        viewmodel.rutasObs().observe(viewLifecycleOwner) {
             ruta = it.toSpinner()
             bind.spnRuta.adapter = ArrayAdapter(
                 requireContext(),
@@ -132,11 +151,17 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         checkAlta()
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        processDocumento(position)
+    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        when (parent.id) {
+            R.id.spn_documento -> processDocumento(position)
+            R.id.spn_giro -> {
+                val giro = parent.getItemAtPosition(position).toString().split(" - ")[0]
+                getAndSetSubGiros(giro)
+            }
+        }
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+    override fun onNothingSelected(parent: AdapterView<*>) = Unit
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.altadatos_menu, menu)
@@ -167,7 +192,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         bind.edtPaterno.setText("")
         bind.edtMaterno.setText("")
         bind.edtNombre.setText("")
-        //bind.edtDocumento.setText("")
         bind.edtDnice.setText("")
         bind.edtRuc.setText("")
         bind.spnDocumento.setSelection(0)
@@ -181,7 +205,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         bind.edtNumero.setText("")
         bind.spnZona.setSelection(0)
         bind.edtZona.setText("")
-        //bind.edtRuta.setText("")
+        bind.spnGiro.setSelection(0)
         bind.spnRuta.setSelection(0)
         bind.edtSecuencia.setText("")
     }
@@ -194,6 +218,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.txtRazon.setUI("v", true)
                 bind.lnrCliente.setUI("v", false)
             }
+
             1 -> {
                 bind.txtRazon.setUI("v", false)
                 bind.lnrCliente.setUI("v", true)
@@ -216,12 +241,14 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.edtRuc.setText("")
                 bind.edtDnice.setText("")
             }
+
             1 -> {
                 bind.inlRuc.setUI("v", true)
                 bind.inlDnice.setUI("v", true)
                 bind.txtMensaje.setUI("v", true)
                 bind.txtMensaje.text = "* EL RUC ES OBLIGATORIO"
             }
+
             else -> {
                 bind.inlDnice.setUI("v", true)
                 bind.txtMensaje.setUI("v", true)
@@ -235,7 +262,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private fun setupFields() {
         if (adStored != null) {
 
-            if (distrito.isNotEmpty() && giro.isNotEmpty() && ruta.isNotEmpty()) {
+            if (distrito.isNotEmpty() && giro.isNotEmpty() && subgiro.isNotEmpty() && ruta.isNotEmpty()) {
 
                 hideprogress()
                 Log.w(_tag, "Distrito: ${distrito.size}")
@@ -251,8 +278,15 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 }
 
                 val ald = distrito.indexOf(adStored?.distrito)
-                val alg = giro.indexOf(adStored?.giro)
                 val alr = ruta.indexOf(adStored?.ruta)
+
+                /*** @param adStored.giro pertenece a la tabla TADatos, es el subgiro que se envia al servidor ***/
+                val codigo = adStored!!.giro.split(" - ")[0]
+                val auxItem = negocios.find { it.codigo == codigo }!!
+                val auxGiro = "${auxItem.giro} - ${auxItem.descripcion}"
+                val alg = giro.indexOf(auxGiro)
+                getAndSetSubGiros(auxItem.giro)
+                val alsg = subgiro.indexOf(adStored?.giro)
 
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
@@ -286,6 +320,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.spnRuta.setSelection(alr)
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
+                bind.spnSubgiro.setSelection(alsg)
                 if (adStored?.dniruta != "") {
                     thumbnailPhoto(adStored!!.dniruta, true)
                 }
@@ -293,6 +328,16 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         } else {
             hideprogress()
         }
+    }
+
+    private fun getAndSetSubGiros(giro: String) {
+        subgiro = negocios.filter { it.giro == giro }.asSpinner(1)
+        bind.spnSubgiro.adapter =
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                subgiro
+            )
     }
 
     private fun dispatchTakePictureIntent() {
@@ -389,8 +434,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         val zona = getZona()
         val zonanombre = bind.edtZona.text.toString().trim().uppercase()
         val distrito = bind.spnDistrito.selectedItem.toString()
-        val giro = bind.spnGiro.selectedItem.toString()
-        //val ruta = bind.edtRuta.text.toString().trim()
+        val subgiro = bind.spnSubgiro.selectedItem.toString()
         val ruta = bind.spnRuta.selectedItem.toString()
         val secuencia = bind.edtSecuencia.text.toString().trim()
 
@@ -400,6 +444,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 "Advertencia",
                 "Ingrese nombre y apellidos del cliente"
             ) {}
+
             tipo == "PJ" && ruc == "" -> showDialog(
                 "Advertencia",
                 "Debe ingresar el RUC de la empresa"
@@ -417,47 +462,55 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 "Advertencia",
                 "Ingrese un numero de celular"
             ) {}
+
             correo != "" && !correo.checkEmail() -> showDialog(
                 "Advertencia",
                 "Ingrese un correo valido"
             ) {}
+
             tipodoc == "Ninguno" -> showDialog(
                 "Advertencia",
                 "Seleccione el documento a registrar"
             ) {}
+
             tipodoc == "RUC" && ruc == "" -> showDialog(
                 "Advertencia",
                 "Si eligio RUC, debe completar el campo"
             ) {}
+
             tipodoc == "DNI" && dnice == "" -> showDialog(
                 "Advertencia",
                 "Si eligio DNI, debe completar el campo"
             ) {}
+
             tipodoc == "CE" && dnice == "" -> showDialog(
                 "Advertencia",
                 "Si eligio CARNET EXTRANJERIA, debe completar el campo"
             ) {}
+
             numero == "" -> showDialog("Advertencia", "Ingrese el numero de calle") {}
-            //ruta == "" -> showDialog("Advertencia", "Ingrese la ruta") {}
             secuencia == "" -> showDialog("Advertencia", "Ingrese la secuencia") {}
             numero.toInt() == 0 -> showDialog(
                 "Advertencia",
                 "Ingrese un numero valido para calle"
             ) {}
-            //ruta.toInt() == 0 -> showDialog("Advertencia", "Ingrese una ruta valida") {}
+
             secuencia.toInt() == 0 -> showDialog("Advertencia", "Ingrese una secuencia valida") {}
             /*bind.txtRuta.text == "" -> showDialog(
                 "Advertencia",
                 "Debe tomar una foto del documento del cliente"
             ) {}*/
+            subgiro == "" -> showDialog("Advertencia", "Debe seleccionar un subgiro") {}
             ruc != "" && !ruc.checkDocumento(tipo) -> showDialog(
                 "Advertencia",
                 "-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
             ) {}
+
             dnice != "" && !dnice.checkDocumento(tipo) -> showDialog(
                 "Advertencia",
                 "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos"
             ) {}
+
             else -> {
                 val dnipath = bind.txtRuta.text.toString()
                 val item = TADatos(
@@ -482,7 +535,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     ubicacion,
                     numero,
                     distrito,
-                    giro,
+                    subgiro,
                     ruta,
                     secuencia,
                     dnipath,
@@ -506,52 +559,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                         FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
                     )
                 }
-                /**CLEAN METHOD ONLY FILTER*/
-                /*if (dnice.checkDocumento(tipo)) {
-                    when (tipo) {
-                        "PJ" -> {
-                            if (ruc.checkDocumento(tipo)) {
-                                viewmodel.saveAltaDatos(item)
-                                when (ALTADATOS) {
-                                    "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
-                                    "mapa" -> findNavController().navigate(
-                                        FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
-                                    )
-                                }
-                            } else {
-                                showDialog(
-                                    "Advertencia",
-                                    "-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
-                                ) {}
-                            }
-                        }
-                        "PN" -> {
-                            viewmodel.saveAltaDatos(item)
-                            when (ALTADATOS) {
-                                "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
-                                "mapa" -> findNavController().navigate(
-                                    FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
-                                )
-                            }
-                        }
-                    }
-                    if (dnipath != "") {
-                        val dni =
-                            TAFoto(
-                                args.idaux,
-                                CONF.codigo,
-                                dnipath,
-                                viewmodel.fecha(6),
-                                "Pendiente"
-                            )
-                        viewmodel.savingDNI(dni)
-                    }
-                } else {
-                    showDialog(
-                        "Advertencia",
-                        "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos"
-                    ) {}
-                }*/
             }
         }
     }

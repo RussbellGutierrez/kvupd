@@ -140,28 +140,38 @@ data class TDistrito(
     val nombre: String
 )
 
-fun List<TDistrito>.asDistritoList(): List<Combo> = this.map {
-    Combo(it.codigo, it.nombre)
+fun List<TDistrito>.asDistritoList(): List<Distrito> = this.map {
+    Distrito(it.codigo, it.nombre)
 }
 
-fun Combo.asTDistrito(): TDistrito =
+fun Distrito.asTDistrito(): TDistrito =
     TDistrito(this.codigo, this.nombre)
 
 @Entity(primaryKeys = ["codigo"])
 data class TNegocio(
     val codigo: String,
-    val nombre: String
+    val nombre: String,
+    val giro: String,
+    val descripcion: String
 )
 
-fun List<TNegocio>.asNegocioList(): List<Combo> = this.map {
-    Combo(it.codigo, it.nombre)
+fun List<TNegocio>.asNegocioList(): List<Negocio> = this.map {
+    Negocio(it.codigo, it.nombre, it.giro, it.descripcion)
 }
 
-fun Combo.asTNegocio(): TNegocio =
-    TNegocio(this.codigo, this.nombre)
+fun Negocio.asTNegocio(): TNegocio =
+    TNegocio(this.codigo, this.nombre, this.giro, this.descripcion)
 
-fun List<Combo>.asSpinner(): List<String> = this.map {
+fun List<Distrito>.asSpinner(): List<String> = this.map {
     "${it.codigo} - ${it.nombre}"
+}
+
+fun List<Negocio>.asSpinner(opt: Int): List<String> = this.map {
+    if (opt == 0) {
+        "${it.giro} - ${it.descripcion}"
+    } else {
+        "${it.codigo} - ${it.nombre.replace(Regex("[0-9-]"), "")}"
+    }
 }
 
 @Entity(primaryKeys = ["id", "pregunta"])
@@ -237,7 +247,8 @@ data class TRutas(
     val ruta: Int,
     val corte: String,
     val longitud: Double,
-    val latitud: Double
+    val latitud: Double,
+    val visita: Int
 )
 
 fun List<TRutas>.asRutaList(): List<Ruta> = this.map {
@@ -245,7 +256,8 @@ fun List<TRutas>.asRutaList(): List<Ruta> = this.map {
         it.ruta,
         it.corte,
         it.longitud,
-        it.latitud
+        it.latitud,
+        it.visita
     )
 }
 
@@ -254,11 +266,21 @@ fun Ruta.asTRutas(): TRutas =
         this.ruta,
         this.coords,
         this.longitud,
-        this.latitud
+        this.latitud,
+        this.visita
     )
 
 fun List<TRutas>.toSpinner(): List<String> = this.map {
-    "Ruta ${it.ruta}"
+    val dia = when (it.visita) {
+        2 -> "LU"
+        3 -> "MA"
+        4 -> "MI"
+        5 -> "JU"
+        6 -> "VI"
+        7 -> "SA"
+        else -> "DO"
+    }
+    "Ruta $dia ${it.ruta}"
 }
 
 @Entity(primaryKeys = ["idcliente", "ruta"])

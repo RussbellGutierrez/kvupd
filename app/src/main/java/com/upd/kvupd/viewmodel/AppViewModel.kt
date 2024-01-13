@@ -869,7 +869,7 @@ class AppViewModel @ViewModelInject constructor(
             val lista = repository.getListEncuestas()
             val seleccionado = repository.getSeleccionado() != null
             when {
-                lista.isNullOrEmpty() -> T(true)
+                lista.isEmpty() -> T(true)
                 seleccionado -> T(true)
                 else -> T(false)
             }

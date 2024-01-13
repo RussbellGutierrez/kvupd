@@ -225,7 +225,7 @@ class ServiceFinish : LifecycleService() {
                         p.put("urbanizacion", "${i.zona} ${i.zonanombre}")
                         p.put("altura", i.numero)
                         p.put("distrito", i.distrito.split("-")[0].trim())
-                        p.put("ruta", i.ruta)
+                        p.put("ruta", i.ruta.split(" ")[2].trim())
                         p.put("imei", IMEI)
                         p.put("secuencia", i.secuencia)
                         p.put("sucursal", CONF.sucursal)

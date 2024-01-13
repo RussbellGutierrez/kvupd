@@ -14,8 +14,8 @@ interface Repository {
     fun getFlowLocation(): Flow<List<TSeguimiento>?>
     fun getFlowMarker(observacion: String): Flow<List<MarkerMap>>
     fun getFlowAltas(): Flow<List<TAlta>>
-    fun getFlowDistritos(): Flow<List<Combo>>
-    fun getFlowNegocios(): Flow<List<Combo>>
+    fun getFlowDistritos(): Flow<List<Distrito>>
+    fun getFlowNegocios(): Flow<List<Negocio>>
     fun getFlowBajas(): Flow<List<TBaja>>
     fun getFlowRowBaja(): Flow<List<RowBaja>>
     fun getFlowRutas(): Flow<List<TRutas>>
@@ -25,8 +25,8 @@ interface Repository {
     suspend fun getConfig(): TConfiguracion?
     suspend fun getClientes(): List<Cliente>
     suspend fun getEmpleados(): List<Vendedor>
-    suspend fun getDistritos(): List<Combo>
-    suspend fun getNegocios(): List<Combo>
+    suspend fun getDistritos(): List<Distrito>
+    suspend fun getNegocios(): List<Negocio>
     suspend fun getRutas(): List<Ruta>
     suspend fun getListEncuestas(): List<Cabecera>
     suspend fun getPreguntas(): List<TEncuesta>
@@ -51,9 +51,9 @@ interface Repository {
     suspend fun saveConfiguracion(config: List<Config>)
     suspend fun saveClientes(cliente: List<Cliente>)
     suspend fun saveEmpleados(empleado: List<Vendedor>)
-    suspend fun saveDistritos(distrito: List<Combo>)
+    suspend fun saveDistritos(distrito: List<Distrito>)
     suspend fun saveRutas(ruta: List<Ruta>)
-    suspend fun saveNegocios(negocio: List<Combo>)
+    suspend fun saveNegocios(negocio: List<Negocio>)
     suspend fun saveEncuesta(encuesta: List<Encuesta>)
     suspend fun saveConsulta(consulta: List<Consulta>)
     suspend fun saveSeguimiento(seguimiento: TSeguimiento)
@@ -116,8 +116,8 @@ interface Repository {
     suspend fun getWebConfiguracion(body: RequestBody): Flow<NetworkRetrofit<JConfig>>
     suspend fun getWebClientes(body: RequestBody): Flow<NetworkRetrofit<JCliente>>
     suspend fun getWebEmpleados(body: RequestBody): Flow<NetworkRetrofit<JVendedores>>
-    suspend fun getWebDistritos(body: RequestBody): Flow<NetworkRetrofit<JCombo>>
-    suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JCombo>>
+    suspend fun getWebDistritos(body: RequestBody): Flow<NetworkRetrofit<JDistrito>>
+    suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JNegocio>>
     suspend fun getWebRutas(body: RequestBody): Flow<NetworkRetrofit<JRuta>>
     suspend fun getWebEncuesta(body: RequestBody): Flow<NetworkRetrofit<JEncuesta>>
     suspend fun getWebConsulta(body: RequestBody): Flow<NetworkRetrofit<JConsulta>>

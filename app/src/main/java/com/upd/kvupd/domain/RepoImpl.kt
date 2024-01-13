@@ -47,11 +47,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getAltas().distinctUntilChanged()
     }
 
-    override fun getFlowDistritos(): Flow<List<Combo>> {
+    override fun getFlowDistritos(): Flow<List<Distrito>> {
         return localDataSource.getObsDistritos().distinctUntilChanged()
     }
 
-    override fun getFlowNegocios(): Flow<List<Combo>> {
+    override fun getFlowNegocios(): Flow<List<Negocio>> {
         return localDataSource.getObsNegocios().distinctUntilChanged()
     }
 
@@ -87,11 +87,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getEmpleados()
     }
 
-    override suspend fun getDistritos(): List<Combo> {
+    override suspend fun getDistritos(): List<Distrito> {
         return localDataSource.getDistritos()
     }
 
-    override suspend fun getNegocios(): List<Combo> {
+    override suspend fun getNegocios(): List<Negocio> {
         return localDataSource.getNegocios()
     }
 
@@ -261,11 +261,11 @@ class RepoImpl @Inject constructor(
         localDataSource.saveEmpleados(empleado)
     }
 
-    override suspend fun saveDistritos(distrito: List<Combo>) {
+    override suspend fun saveDistritos(distrito: List<Distrito>) {
         localDataSource.saveDistrito(distrito)
     }
 
-    override suspend fun saveNegocios(negocio: List<Combo>) {
+    override suspend fun saveNegocios(negocio: List<Negocio>) {
         localDataSource.saveNegocio(negocio)
     }
 
@@ -511,13 +511,13 @@ class RepoImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebDistritos(body: RequestBody): Flow<NetworkRetrofit<JCombo>> {
+    override suspend fun getWebDistritos(body: RequestBody): Flow<NetworkRetrofit<JDistrito>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebDistritos(body) })
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JCombo>> {
+    override suspend fun getWebNegocios(body: RequestBody): Flow<NetworkRetrofit<JNegocio>> {
         return flow {
             emit(safeApiCall { webDataSource.getWebNegocios(body) })
         }.flowOn(Dispatchers.IO)

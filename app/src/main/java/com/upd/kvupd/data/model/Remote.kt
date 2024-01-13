@@ -74,15 +74,28 @@ data class Vendedor(
     @Json(name = "type") val cargo: String
 )
 
-@JsonClass(generateAdapter = true)  //    Modelado que sirve para distrito y negocio
-data class JCombo(
-    @Json(name = "data") val jobl: List<Combo>
+@JsonClass(generateAdapter = true)
+data class JDistrito(
+    @Json(name = "data") val jobl: List<Distrito>
 )
 
 @JsonClass(generateAdapter = true)
-data class Combo(
+data class Distrito(
     @Json(name = "codigo") val codigo: String,
     @Json(name = "nombre") val nombre: String
+)
+
+@JsonClass(generateAdapter = true)
+data class JNegocio(
+    @Json(name = "data") val jobl: List<Negocio>
+)
+
+@JsonClass(generateAdapter = true)
+data class Negocio(
+    @Json(name = "codigo") val codigo: String,
+    @Json(name = "nombre") val nombre: String,
+    @Json(name = "giro") val giro: String,
+    @Json(name = "descrip") val descripcion: String
 )
 
 @JsonClass(generateAdapter = true)
@@ -144,7 +157,8 @@ data class Ruta(
     @Json(name = "ruta") val ruta: Int,
     @Json(name = "coords") val coords: String,
     @Json(name = "XCoord") val longitud: Double,
-    @Json(name = "YCoord") val latitud: Double
+    @Json(name = "YCoord") val latitud: Double,
+    @Json(name = "diasvis") val visita: Int
 )
 
 @Parcelize

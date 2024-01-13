@@ -27,11 +27,11 @@ class WebDataSource @Inject constructor(private val web: ApiClient) {
         return web.getApiEmpleados(body)
     }
 
-    suspend fun getWebDistritos(body: RequestBody): Response<JCombo> {
+    suspend fun getWebDistritos(body: RequestBody): Response<JDistrito> {
         return web.getApiDistritos(body)
     }
 
-    suspend fun getWebNegocios(body: RequestBody): Response<JCombo> {
+    suspend fun getWebNegocios(body: RequestBody): Response<JNegocio> {
         return web.getApiNegocios(body)
     }
 

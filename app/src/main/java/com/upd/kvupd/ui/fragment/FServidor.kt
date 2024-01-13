@@ -227,7 +227,7 @@ class FServidor : Fragment(), MenuProvider {
                         p.put("urbanizacion", "${j.zona} ${j.zonanombre}")
                         p.put("altura", j.numero)
                         p.put("distrito", j.distrito.split("-")[0].trim())
-                        p.put("ruta", j.ruta.split(" ")[1].trim())
+                        p.put("ruta", j.ruta.split(" ")[2].trim())
                         p.put("imei", IMEI)
                         p.put("secuencia", j.secuencia)
                         p.put("sucursal", CONF.sucursal)

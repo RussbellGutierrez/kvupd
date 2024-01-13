@@ -30,11 +30,11 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getAltas()
     }
 
-    fun getObsDistritos(): Flow<List<Combo>> {
+    fun getObsDistritos(): Flow<List<Distrito>> {
         return qdao.getObsDistritos()
     }
 
-    fun getObsNegocios(): Flow<List<Combo>> {
+    fun getObsNegocios(): Flow<List<Negocio>> {
         return qdao.getObsNegocios()
     }
 
@@ -70,11 +70,11 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getEmpleados().asEmpleadoList()
     }
 
-    suspend fun getDistritos(): List<Combo> {
+    suspend fun getDistritos(): List<Distrito> {
         return qdao.getDistrito().asDistritoList()
     }
 
-    suspend fun getNegocios(): List<Combo> {
+    suspend fun getNegocios(): List<Negocio> {
         return qdao.getNegocio().asNegocioList()
     }
 
@@ -143,11 +143,11 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertEmp(emp.map { it.asTEmpleado() })
     }
 
-    suspend fun saveDistrito(dis: List<Combo>) {
+    suspend fun saveDistrito(dis: List<Distrito>) {
         dao.insertDist(dis.map { it.asTDistrito() })
     }
 
-    suspend fun saveNegocio(neg: List<Combo>) {
+    suspend fun saveNegocio(neg: List<Negocio>) {
         dao.insertNeg(neg.map { it.asTNegocio() })
     }
 

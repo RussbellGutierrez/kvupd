@@ -62,10 +62,10 @@ interface QueryDAO {
     fun getAltas(): Flow<List<TAlta>>
 
     @Query(GET_NEGOCIOS)
-    fun getObsNegocios(): Flow<List<Combo>>
+    fun getObsNegocios(): Flow<List<Negocio>>
 
     @Query(GET_DISTRITOS)
-    fun getObsDistritos(): Flow<List<Combo>>
+    fun getObsDistritos(): Flow<List<Distrito>>
 
     @Query(GET_BAJA)
     fun getBajas(): Flow<List<TBaja>>
