@@ -158,7 +158,7 @@ data class Ruta(
     @Json(name = "coords") val coords: String,
     @Json(name = "XCoord") val longitud: Double,
     @Json(name = "YCoord") val latitud: Double,
-    @Json(name = "diasvis") val visita: Int
+    @Json(name = "diasvis") val visita: String
 )
 
 @Parcelize

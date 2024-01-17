@@ -248,7 +248,7 @@ data class TRutas(
     val corte: String,
     val longitud: Double,
     val latitud: Double,
-    val visita: Int
+    val visita: String
 )
 
 fun List<TRutas>.asRutaList(): List<Ruta> = this.map {
@@ -272,13 +272,14 @@ fun Ruta.asTRutas(): TRutas =
 
 fun List<TRutas>.toSpinner(): List<String> = this.map {
     val dia = when (it.visita) {
-        2 -> "LU"
-        3 -> "MA"
-        4 -> "MI"
-        5 -> "JU"
-        6 -> "VI"
-        7 -> "SA"
-        else -> "DO"
+        "1" -> "DO"
+        "2" -> "LU"
+        "3" -> "MA"
+        "4" -> "MI"
+        "5" -> "JU"
+        "6" -> "VI"
+        "7" -> "SA"
+        else -> "DF"
     }
     "Ruta $dia ${it.ruta}"
 }
