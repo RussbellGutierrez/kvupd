@@ -1,6 +1,56 @@
 package com.upd.kvupd.data.local
 
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.BajaSupervisor
+import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.Cliente
+import com.upd.kvupd.data.model.Config
+import com.upd.kvupd.data.model.Consulta
+import com.upd.kvupd.data.model.DataAlta
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.Distrito
+import com.upd.kvupd.data.model.Encuesta
+import com.upd.kvupd.data.model.LocationAlta
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.MiniUpdAlta
+import com.upd.kvupd.data.model.MiniUpdBaja
+import com.upd.kvupd.data.model.Negocio
+import com.upd.kvupd.data.model.RowBaja
+import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.data.model.Ruta
+import com.upd.kvupd.data.model.TAAux
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TEncuestaSeleccionado
+import com.upd.kvupd.data.model.TEstado
+import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TRutas
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TSesion
+import com.upd.kvupd.data.model.TVisita
+import com.upd.kvupd.data.model.Vendedor
+import com.upd.kvupd.data.model.asClienteList
+import com.upd.kvupd.data.model.asDistritoList
+import com.upd.kvupd.data.model.asEmpleadoList
+import com.upd.kvupd.data.model.asNegocioList
+import com.upd.kvupd.data.model.asRutaList
+import com.upd.kvupd.data.model.asTBajaSuper
+import com.upd.kvupd.data.model.asTCliente
+import com.upd.kvupd.data.model.asTConfig
+import com.upd.kvupd.data.model.asTConsulta
+import com.upd.kvupd.data.model.asTDistrito
+import com.upd.kvupd.data.model.asTEmpleado
+import com.upd.kvupd.data.model.asTEncuesta
+import com.upd.kvupd.data.model.asTNegocio
+import com.upd.kvupd.data.model.asTRutas
+import com.upd.kvupd.data.model.asTSesion
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -307,8 +357,8 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.deleteEstadoBaja()
     }
 
-    suspend fun deleteSeleccionado() {
-        dao.deleteSeleccionado()
+    suspend fun deleteEncuestaSeleccionado() {
+        dao.deleteEncuestaSeleccionado()
     }
 
     suspend fun deleteRespuesta() {

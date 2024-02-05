@@ -21,12 +21,13 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
-import com.upd.kvupd.ui.activity.MainActivity
+import com.upd.kvupd.domain.OnGpsState
 import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.mainListener
-import com.upd.kvupd.utils.Interface.serviceListener
+import com.upd.kvupd.utils.Interface.closeListener
+import com.upd.kvupd.utils.Interface.gpsListener
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.hideprogress
 import com.upd.kvupd.utils.isGPSDisabled
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
@@ -39,7 +40,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
+class FBase : Fragment(), OnGpsState, MenuProvider {
 
     private val viewmodel by activityViewModels<AppViewModel>()
     private var _bind: FragmentFBaseBinding? = null
@@ -51,12 +52,12 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        mainListener = null
+        gpsListener = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainListener = this
+        gpsListener = this
     }
 
     override fun onCreateView(
@@ -168,17 +169,18 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             }
         }
         viewmodel.sincro.observe(viewLifecycleOwner) {
+            hideprogress()
             it.getContentIfNotHandled()?.let { y ->
                 sincro += y
                 when (sincro) {
                     4 -> {
                         sincro = 0
-                        snack("Sincronizacion completa")
+                        showDialog("Correcto", "Sincronizacion completa") {}
                     }
 
                     90 -> {
                         sincro = 0
-                        snack("Archivo de configuracion no encontrado")
+                        showDialog("Error", "Archivo de configuracion no encontrado") {}
                     }
                 }
             }
@@ -194,7 +196,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             if (it) {
                 viewmodel.launchSetup()
             } else {
-                serviceListener?.onClosingActivity()
+                closeListener?.closingActivity()
             }
         }
     }
@@ -208,11 +210,11 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
         R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_BDLogin) }
         R.id.encuesta -> consume { launchEncuesta() }
         R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
+        R.id.total -> consume { reSincAllData() }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
 
-    /**FUNCION QUE CAMBIA COLOR GPS NO FUNCIONA**/
     override fun changeGPSstate(gps: Boolean) {
         val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
         bind.fabGps.imageTintList = ColorStateList.valueOf(color)
@@ -280,6 +282,7 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
 
     private fun sinchroData() {
         if (viewmodel.internetAvailable()) {
+            progress("Sincronizando datos")
             viewmodel.fetchSinchro()
         } else {
             snack("No tenemos señal de internet")
@@ -291,6 +294,20 @@ class FBase : Fragment(), MainActivity.OnMainListener, MenuProvider {
             snack("Habilite el GPS primero")
         } else {
             T()
+        }
+    }
+
+    private fun reSincAllData() {
+        showDialog(
+            "Advertencia",
+            "Esta opcion va a eliminar todos los datos de kventas, solo se debe usar en caso sea necesario. ¿Desea continuar?",
+            true
+        ) {
+            viewmodel.cleanSomeTables()
+            showDialog(
+                "Correcto",
+                "Vamos a cerrar la aplicacion, vuelva a ejecutarlo por favor"
+            ) { closeListener?.closingActivity() }
         }
     }
 

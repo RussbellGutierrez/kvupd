@@ -2,23 +2,26 @@ package com.upd.kvupd.application.work
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
-import androidx.work.*
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_USER
 import com.upd.kvupd.utils.Constant.W_USER
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
 
-class UserWork @WorkerInject constructor(
+@HiltWorker
+class UserWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository,
@@ -32,6 +35,7 @@ class UserWork @WorkerInject constructor(
             val cli = repository.getClientes()
             val emp = repository.getEmpleados()
             val req = requestBody()
+            Log.d(_tag,"Value $CONF")
             when (CONF.tipo) {
                 "V" -> if (cli.isEmpty()) {
                     try {
@@ -42,7 +46,7 @@ class UserWork @WorkerInject constructor(
                                 Result.success()
                             } else {
                                 repository.saveClientes(rsp)
-                                MSG_USER = "Clientes descargados"
+                                MSG_USER = "* Clientes descargados"
                                 Result.success()
                             }
                         }
@@ -52,10 +56,10 @@ class UserWork @WorkerInject constructor(
                         rst = Result.retry()
                     }
                 } else {
-                    MSG_USER = "Full"
+                    MSG_USER = "* Full"
                     rst = Result.success()
                 }
-                "S" -> if (emp.isEmpty()) {
+                else -> if (emp.isEmpty()) {
                     try {
                         repository.getWebEmpleados(req).collect { response ->
                             val rsp = response.data?.jobl
@@ -64,7 +68,7 @@ class UserWork @WorkerInject constructor(
                                 Result.success()
                             } else {
                                 repository.saveEmpleados(rsp)
-                                MSG_USER = "Vendedores descargados"
+                                MSG_USER = "* Vendedores descargados"
                                 Result.success()
                             }
                         }
@@ -74,11 +78,11 @@ class UserWork @WorkerInject constructor(
                         rst = Result.retry()
                     }
                 } else {
-                    MSG_USER = "Full"
+                    MSG_USER = "* Full"
                     rst = Result.success()
                 }
             }
-            servworkListener?.onFinishWork(W_USER)
+            interListener?.onFinishWork(W_USER)
             return@withContext rst
         }
 

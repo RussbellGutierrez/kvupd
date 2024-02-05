@@ -1,7 +1,68 @@
 package com.upd.kvupd.domain
 
 import android.location.Location
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.BajaSupervisor
+import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.Cliente
+import com.upd.kvupd.data.model.Config
+import com.upd.kvupd.data.model.Consulta
+import com.upd.kvupd.data.model.DataAlta
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.Distrito
+import com.upd.kvupd.data.model.Encuesta
+import com.upd.kvupd.data.model.JBajaSupervisor
+import com.upd.kvupd.data.model.JBajaVendedor
+import com.upd.kvupd.data.model.JCambio
+import com.upd.kvupd.data.model.JCliente
+import com.upd.kvupd.data.model.JCobCart
+import com.upd.kvupd.data.model.JCoberturados
+import com.upd.kvupd.data.model.JConfig
+import com.upd.kvupd.data.model.JConsulta
+import com.upd.kvupd.data.model.JDetCob
+import com.upd.kvupd.data.model.JDistrito
+import com.upd.kvupd.data.model.JEncuesta
+import com.upd.kvupd.data.model.JFoto
+import com.upd.kvupd.data.model.JGenerico
+import com.upd.kvupd.data.model.JNegocio
+import com.upd.kvupd.data.model.JObj
+import com.upd.kvupd.data.model.JPediGen
+import com.upd.kvupd.data.model.JPedido
+import com.upd.kvupd.data.model.JPedimap
+import com.upd.kvupd.data.model.JRuta
+import com.upd.kvupd.data.model.JSoles
+import com.upd.kvupd.data.model.JUmes
+import com.upd.kvupd.data.model.JVendedores
+import com.upd.kvupd.data.model.JVisicooler
+import com.upd.kvupd.data.model.JVisisuper
+import com.upd.kvupd.data.model.JVolumen
+import com.upd.kvupd.data.model.LocationAlta
+import com.upd.kvupd.data.model.Login
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.MiniUpdAlta
+import com.upd.kvupd.data.model.MiniUpdBaja
+import com.upd.kvupd.data.model.Negocio
+import com.upd.kvupd.data.model.RowBaja
+import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.data.model.Ruta
+import com.upd.kvupd.data.model.TAAux
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TEncuestaSeleccionado
+import com.upd.kvupd.data.model.TEstado
+import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TRutas
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TSesion
+import com.upd.kvupd.data.model.TVisita
+import com.upd.kvupd.data.model.Vendedor
 import com.upd.kvupd.utils.NetworkRetrofit
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
@@ -104,7 +165,7 @@ interface Repository {
     suspend fun deleteAltaDatos()
     suspend fun deleteBajaSuper()
     suspend fun deleteBajaEstado()
-    suspend fun deleteSeleccionado()
+    suspend fun deleteEncuestaSeleccionado()
     suspend fun deleteRespuesta()
     suspend fun deleteIncidencia()
     suspend fun deleteAFoto()

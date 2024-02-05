@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.databinding.BottomDialogObservacionBinding
 import com.upd.kvupd.service.ServicePosicion
@@ -37,10 +36,10 @@ class BDObservacion : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        if (isPOSLOCinitialized()) {
+        /*if (isPOSLOCinitialized()) {
             POS_LOC.longitude = 0.0
             POS_LOC.latitude = 0.0
-        }
+        }*/
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 

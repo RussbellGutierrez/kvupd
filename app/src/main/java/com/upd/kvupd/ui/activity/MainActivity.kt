@@ -11,21 +11,26 @@ import androidx.navigation.ui.NavigationUI
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.upd.kvupd.databinding.ActivityMainBinding
+import com.upd.kvupd.domain.OnClosingApp
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
 import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
 import com.upd.kvupd.utils.Constant.REQ_CODE
-import com.upd.kvupd.utils.Interface.serviceListener
+import com.upd.kvupd.utils.Interface.closeListener
+import com.upd.kvupd.utils.Permission
+import com.upd.kvupd.utils.isServiceRunning
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
+class MainActivity : AppCompatActivity(), OnClosingApp {
 
     private val viewModel by viewModels<AppViewModel>()
     private lateinit var bind: ActivityMainBinding
@@ -36,7 +41,7 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceListener = null
+        closeListener = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,11 +50,11 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         setContentView(bind.root)
         setSupportActionBar(bind.toolbar)
         setupApp()
-        serviceListener = this
+        closeListener = this
         Log.w("MainActivity", "Oncreate")
     }
 
-    override fun onClosingActivity(notRegister: Boolean) {
+    override fun closingActivity(notRegister: Boolean) {
         if (isServiceRunning(ServiceSetup::class.java))
             stopService(Intent(this, ServiceSetup::class.java))
 
@@ -123,9 +128,4 @@ class MainActivity : AppCompatActivity(), ServiceSetup.OnServiceListener {
         }
         return true
     }
-
-    interface OnMainListener {
-        fun changeGPSstate(gps: Boolean)
-    }
-
 }

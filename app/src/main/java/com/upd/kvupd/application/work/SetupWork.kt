@@ -2,13 +2,15 @@ package com.upd.kvupd.application.work
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.Functions
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 
-class SetupWork @WorkerInject constructor(
+@HiltWorker
+class SetupWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val functions: Functions

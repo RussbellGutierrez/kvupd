@@ -3,8 +3,7 @@ package com.upd.kvupd.application.work
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.asTConfig
@@ -24,17 +23,20 @@ import com.upd.kvupd.utils.Constant.MSG_CONFIG
 import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.HostSelectionInterceptor
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
-import java.util.*
+import java.util.Calendar
 
-class ConfigWork @WorkerInject constructor(
+@HiltWorker
+class ConfigWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository,
@@ -87,7 +89,7 @@ class ConfigWork @WorkerInject constructor(
                                     repository.saveConfiguracion(config)
                                     repository.saveSesion(config[0])
                                     repository.processAAux(CONF.codigo)
-                                    MSG_CONFIG = "Configuracion completa"
+                                    MSG_CONFIG = "* Configuracion completa"
                                     rst = Result.success()
                                 }
                             }
@@ -97,12 +99,12 @@ class ConfigWork @WorkerInject constructor(
                         MSG_CONFIG = e.message()
                     }
                 } else {
-                    MSG_CONFIG = "Full"
+                    MSG_CONFIG = "* Full"
                     CONF = conf
                     rst = Result.success()
                 }
             }
-            servworkListener?.onFinishWork(W_CONFIG)
+            interListener?.onFinishWork(W_CONFIG)
             return@withContext rst
         }
 

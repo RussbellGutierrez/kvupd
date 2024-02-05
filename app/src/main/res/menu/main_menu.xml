@@ -27,6 +27,12 @@
         app:showAsAction="collapseActionView"/>
 
     <item
+        android:id="@+id/total"
+        android:title="Re-sincronizacion"
+        android:icon="@drawable/advertencia"
+        app:showAsAction="collapseActionView"/>
+
+    <item
         android:id="@+id/apagar"
         android:title="Cerrar aplicacion"
         android:icon="@drawable/apagar"

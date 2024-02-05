@@ -1,12 +1,11 @@
 package com.upd.kvupd.service
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
-import android.os.BatteryManager
 import android.os.Build
-import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
@@ -14,18 +13,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationServices
 import com.upd.kvupd.application.work.HelperNotification
 import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.data.model.TSeguimiento
-import com.upd.kvupd.di.LocationRequestGps
-import com.upd.kvupd.di.LocationSettingsRequestGps
 import com.upd.kvupd.domain.Functions
+import com.upd.kvupd.domain.LocationClient
+import com.upd.kvupd.domain.OnInterSetup
 import com.upd.kvupd.domain.Repository
-import com.upd.kvupd.domain.ServiceWork
-import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.CaptureLocation
+import com.upd.kvupd.utils.Constant
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.GPS_FAST_INTERVAL
 import com.upd.kvupd.utils.Constant.GPS_LOC
+import com.upd.kvupd.utils.Constant.GPS_METERS
+import com.upd.kvupd.utils.Constant.GPS_NORMAL_INTERVAL
 import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.IPA
 import com.upd.kvupd.utils.Constant.IP_AUX
@@ -41,20 +43,29 @@ import com.upd.kvupd.utils.Constant.W_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_USER
 import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Interface.serviceListener
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Event
+import com.upd.kvupd.utils.HostSelectionInterceptor
+import com.upd.kvupd.utils.Interface.closeListener
+import com.upd.kvupd.utils.Interface.interListener
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.dateToday
+import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
+class ServiceSetup : LifecycleService(), OnInterSetup {
 
     @Inject
     lateinit var workManager: WorkManager
@@ -66,24 +77,18 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     lateinit var repository: Repository
 
     @Inject
-    lateinit var helper: HelperNotification
+    lateinit var helperNotification: HelperNotification
 
     @Inject
     lateinit var host: HostSelectionInterceptor
-
-    @LocationRequestGps
-    @Inject
-    lateinit var locationRequest: LocationRequest
-
-    @LocationSettingsRequestGps
-    @Inject
-    lateinit var locationSettingsRequest: LocationSettingsRequest
 
     private var user = false
     private var distrito = false
     private var negocio = false
     private var ruta = false
     private var encuesta = false
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private lateinit var locationClient: LocationClient
     private lateinit var configLiveData: LiveData<Event<List<WorkInfo>>>
     private lateinit var userLiveData: LiveData<Event<List<WorkInfo>>>
     private lateinit var distritoLiveData: LiveData<Event<List<WorkInfo>>>
@@ -91,23 +96,12 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private lateinit var rutaLiveData: LiveData<Event<List<WorkInfo>>>
     private lateinit var encuestaLiveData: LiveData<Event<List<WorkInfo>>>
     private val _tag by lazy { ServiceSetup::class.java.simpleName }
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val callback = object : LocationCallback() {
-        override fun onLocationResult(p0: LocationResult) {
-            super.onLocationResult(p0)
-            onLocationChanged(p0.lastLocation)
-        }
-    }
-    private var batteryStatus: Intent? = null
 
     override fun onDestroy() {
-        Log.d(_tag, "Service setup destroyed")
-        if (::fusedLocationProviderClient.isInitialized) {
-            fusedLocationProviderClient.removeLocationUpdates(callback)
-        }
-        batteryStatus = null
-        servworkListener = null
         super.onDestroy()
+        Log.d(_tag, "Service setup destroyed")
+        interListener = null
+        serviceScope.cancel()
     }
 
     override fun onCreate() {
@@ -115,14 +109,14 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         Log.d(_tag, "Service setup launch")
         functions.chooseCloseWorker("setup")
         functions.enableBroadcastGPS()
+        functions.enableBatteryChange()
         functions.mobileInternetState()
 
-        servworkListener = this
-        serviceNotification()
-
-        batteryStatus = IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
-            this.registerReceiver(null, ifilter)
-        }
+        interListener = this
+        locationClient = CaptureLocation(
+            applicationContext,
+            LocationServices.getFusedLocationProviderClient(applicationContext)
+        )
 
         IMEI = functions.parseQRtoIMEI(true)
         IPA = functions.parseQRtoIP()
@@ -133,27 +127,13 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.d(_tag, "Service startcommand")
+        serviceNotification()
+        launchLocation()
         return START_STICKY
     }
 
-    /*override fun onSinchronizeData() {
-        helper.userNotifLaunch()
-        helper.distritoNotifLaunch()
-        helper.negocioNotifLaunch()
-        helper.rutaNotifLaunch()
-        CoroutineScope(Dispatchers.Main).launch {
-            repository.deleteClientes()
-            repository.deleteEmpleados()
-            repository.deleteDistritos()
-            repository.deleteNegocios()
-            repository.deleteRutas()
-            repository.deleteIncidencia()
-            functions.sinchroWorkers()
-        }
-    }*/
-
     private fun initObsWork() {
-        helper.configNotifLaunch()
+        helperNotification.configNotifLaunch()
         configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { Event(it) }
         userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { Event(it) }
         distritoLiveData = workManager.getWorkInfosByTagLiveData(W_DISTRITO).map { Event(it) }
@@ -162,28 +142,60 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         encuestaLiveData = workManager.getWorkInfosByTagLiveData(W_ENCUESTA).map { Event(it) }
     }
 
+    @SuppressLint("MissingPermission")
     private fun serviceNotification() {
-        val not = helper.setupNotif()
+        val not = helperNotification.setupNotif()
+        not.flags = Notification.FLAG_ONGOING_EVENT
         when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> startForeground(SETUP_NOTIF, not)
+            Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU -> startForeground(
+                SETUP_NOTIF,
+                not,
+                FOREGROUND_SERVICE_TYPE_LOCATION
+            )
+
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> startForeground(
+                SETUP_NOTIF,
+                not
+            )
+
             Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> NotificationManagerCompat.from(this)
                 .notify(SETUP_NOTIF, not)
         }
     }
 
+    private fun launchLocation() {
+        locationClient
+            .getLocationUpdates(GPS_NORMAL_INTERVAL, GPS_FAST_INTERVAL, GPS_METERS)
+            .catch { e -> e.printStackTrace() }
+            .onEach { location ->
+                Log.d(
+                    _tag,
+                    "GPS Location ${location.longitude} / ${location.latitude} / ${location.accuracy}"
+                )
+                GPS_LOC = location
+                if (location.accuracy <= 50f) {
+                    Log.d(_tag, "Saving location")
+                    saveLocation(location)
+                }
+            }
+            .launchIn(serviceScope)
+    }
+
     private fun priorityWorkers() {
         CoroutineScope(Dispatchers.IO).launch {
-            startLocation()
-            helper.userNotifLaunch()
-            helper.distritoNotifLaunch()
-            helper.negocioNotifLaunch()
-            helper.rutaNotifLaunch()
-            helper.encuestaNotifLaunch()
+            helperNotification.userNotifLaunch()
+            helperNotification.distritoNotifLaunch()
+            helperNotification.negocioNotifLaunch()
+            helperNotification.rutaNotifLaunch()
+            helperNotification.encuestaNotifLaunch()
 
             repository.getFinishTime().let {
                 val horas = functions.formatLongToHour(it)
                 val item = functions.saveSystemActions("APP", "Servicio finaliza $horas")
-                repository.saveIncidencia(item)
+                if (item != null) {
+                    repository.saveIncidencia(item)
+                }
                 functions.workerFinish(it)
             }
         }
@@ -192,7 +204,6 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
     private fun periodicWorkers() {
         if (user && distrito && negocio && ruta && encuesta) {
             Log.d(_tag, "Launch periodic workers")
-            functions.workerperSeguimiento()
             functions.workerperVisita()
             functions.workerperAlta()
             functions.workerperAltaEstado()
@@ -204,14 +215,6 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
-    override fun onLocationChanged(p0: Location) {
-        Log.d(_tag, "Location ${p0.longitude} / ${p0.latitude} / ${p0.accuracy}")
-        GPS_LOC = p0
-        if (p0.accuracy <= 50f) {
-            saveLocation(p0)
-        }
-    }
-
     private fun verifyHours() {
         CoroutineScope(Dispatchers.IO).launch {
             val sesion = repository.getSesion()
@@ -219,7 +222,9 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
 
             if (sesion == null && config == null) {
                 val item = functions.saveSystemActions("APP", "Sin registro configuracion previa")
-                repository.saveIncidencia(item)
+                if (item != null) {
+                    repository.saveIncidencia(item)
+                }
                 functions.launchWorkers()//No data, launch work config and more
             } else {
                 Log.d(_tag, "Get some config or sesion")
@@ -243,7 +248,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 repository.deleteNegocios()
                 repository.deleteRutas()
                 repository.deleteEncuesta()
-                repository.deleteSeleccionado()
+                repository.deleteEncuestaSeleccionado()
                 repository.deleteRespuesta()
                 repository.deleteEstado()
                 repository.deleteSeguimiento()
@@ -265,45 +270,22 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         functions.executeService("finish", false)
     }
 
-    @SuppressLint("MissingPermission")
-    private fun startLocation() {
-        val settingClient = LocationServices.getSettingsClient(this)
-        settingClient.checkLocationSettings(locationSettingsRequest)
-        if (!::fusedLocationProviderClient.isInitialized) {
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        }
-
-        try {
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                callback,
-                Looper.getMainLooper()
-            )
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
-    }
-
     private fun saveLocation(location: Location) {
         CoroutineScope(Dispatchers.IO).launch {
-            val porcentaje = batteryStatus?.let { intent ->
-                val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                level * 100 / scale.toFloat()
-            } ?: 0.0
-
-            val fecha = Calendar.getInstance().time.dateToday(4)
-            val item = TSeguimiento(
-                fecha,
-                CONF.codigo,
-                location.longitude,
-                location.latitude,
-                location.accuracy.toDouble(),
-                porcentaje.toDouble(),
-                "Pendiente"
-            )
-            repository.saveSeguimiento(item)
-            sendingLocation(item)
+            if (isCONFinitialized()) {
+                val fecha = Calendar.getInstance().time.dateToday(4)
+                val item = TSeguimiento(
+                    fecha,
+                    CONF.codigo,
+                    location.longitude,
+                    location.latitude,
+                    location.accuracy.toDouble(),
+                    Constant.BATTERY_PCT.toDouble(),
+                    "Pendiente"
+                )
+                repository.saveSeguimiento(item)
+                sendingLocation(item)
+            }
         }
     }
 
@@ -375,7 +357,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                         it.getContentIfNotHandled()?.let { y ->
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
-                                    helper.configNotif()
+                                    helperNotification.configNotif()
                                     when (j.state) {
                                         WorkInfo.State.SUCCEEDED -> priorityWorkers()
                                         WorkInfo.State.FAILED -> {
@@ -398,7 +380,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     user = true
-                                    helper.userNotif()
+                                    helperNotification.userNotif()
                                     periodicWorkers()
                                 }
                             }
@@ -412,7 +394,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     distrito = true
-                                    helper.distritoNotif()
+                                    helperNotification.distritoNotif()
                                     periodicWorkers()
                                 }
                             }
@@ -426,7 +408,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     negocio = true
-                                    helper.negocioNotif()
+                                    helperNotification.negocioNotif()
                                     periodicWorkers()
                                 }
                             }
@@ -440,7 +422,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     ruta = true
-                                    helper.rutaNotif()
+                                    helperNotification.rutaNotif()
                                     periodicWorkers()
                                 }
                             }
@@ -454,7 +436,7 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                             y.lastOrNull()?.let { j ->
                                 if (j.state.isFinished) {
                                     encuesta = true
-                                    helper.encuestaNotif()
+                                    helperNotification.encuestaNotif()
                                     periodicWorkers()
                                 }
                             }
@@ -471,6 +453,14 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
         }
     }
 
+    override fun showNotificationSystem() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+            val notification = helperNotification.setupNotif()
+            notification.flags = Notification.FLAG_ONGOING_EVENT
+            startForeground(SETUP_NOTIF, notification, FOREGROUND_SERVICE_TYPE_LOCATION)
+        }
+    }
+
     private fun configFailed() {
         CoroutineScope(Dispatchers.Main).launch {
             val sesion = repository.getSesion()
@@ -479,16 +469,8 @@ class ServiceSetup : LifecycleService(), LocationListener, ServiceWork {
                 functions.executeService("finish", false)
             } else {
                 Log.e(_tag, "Never download data")
-                if (serviceListener != null) {
-                    serviceListener?.onClosingActivity(true)
-                } else {
-                    stopSelf()
-                }
+                closeListener?.closingActivity(true) ?: stopSelf()
             }
         }
-    }
-
-    interface OnServiceListener {
-        fun onClosingActivity(notRegister: Boolean = false)
     }
 }

@@ -26,10 +26,17 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.databinding.FragmentFConsultaBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.GPS_LOC
-import com.upd.kvupd.utils.Constant.POS_LOC
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.progress
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toLocation
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -49,8 +56,8 @@ class FConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuPro
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        POS_LOC.longitude = 0.0
-        POS_LOC.latitude = 0.0
+        /*POS_LOC.longitude = 0.0
+        POS_LOC.latitude = 0.0*/
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 

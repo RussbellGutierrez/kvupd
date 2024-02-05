@@ -2,7 +2,12 @@ package com.upd.kvupd.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,11 +20,15 @@ import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.databinding.FragmentFAltaBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.ui.adapter.AltaAdapter
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.POS_LOC
 import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.utils.Interface.altaListener
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.progress
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -38,10 +47,6 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        if (isPOSLOCinitialized()) {
-            POS_LOC.longitude = 0.0
-            POS_LOC.latitude = 0.0
-        }
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
     }
 
@@ -73,7 +78,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
         }
 
         bind.fabAlta.setOnClickListener {
-            showDialog("Advertencia", "¿Desea agregar un alta?",true) {
+            showDialog("Advertencia", "¿Desea agregar un alta?", true) {
                 if (isPOSLOCinitialized() &&
                     POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0
                 ) {
@@ -86,7 +91,7 @@ class FAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.alta_menu,menu)
+        menuInflater.inflate(R.menu.alta_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {

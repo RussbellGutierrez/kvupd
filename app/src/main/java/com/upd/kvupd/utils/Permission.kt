@@ -13,6 +13,12 @@ import javax.inject.Inject
 
 class Permission @Inject constructor(private val act: Activity) {
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val perDataSync = Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private val perPostNotification = Manifest.permission.POST_NOTIFICATIONS
+
     @RequiresApi(Build.VERSION_CODES.Q)
     private val perBackgroundLocation = Manifest.permission.ACCESS_BACKGROUND_LOCATION
     private val perAccessFineLocation = Manifest.permission.ACCESS_FINE_LOCATION
@@ -23,7 +29,7 @@ class Permission @Inject constructor(private val act: Activity) {
     private val perWrite = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
     fun reqPerm() {
-        act.requestPermissions(listPermission(),REQ_CODE)
+        act.requestPermissions(listPermission(), REQ_CODE)
     }
 
     private fun listPermission(): Array<String> {
@@ -32,16 +38,29 @@ class Permission @Inject constructor(private val act: Activity) {
         lp.add(perPhone)
         lp.add(perRead)
         lp.add(perWrite)
+
+        //NOTA: A partir de la version Q, el access_background_location debe llamarse luego
+        //de llamar los demas permisos, sino se anularan y no mostrara nada
         when {
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.Q -> {
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                lp.add(perAccessFineLocation)
+                lp.add(perAccessCoarseLocation)
+                lp.add(perPostNotification)
+                lp.add(perDataSync)
+            }
+
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU -> {
+                lp.add(perAccessFineLocation)
+                lp.add(perAccessCoarseLocation)
+                lp.add(perPostNotification)
+            }
+
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
                 lp.add(perAccessFineLocation)
                 lp.add(perAccessCoarseLocation)
             }
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> {
-                lp.add(perAccessFineLocation)
-                lp.add(perAccessCoarseLocation)
-                lp.add(perBackgroundLocation)
-            }
+
             Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> {
                 lp.add(perAccessFineLocation)
                 lp.add(perAccessCoarseLocation)
@@ -55,8 +74,9 @@ class Permission @Inject constructor(private val act: Activity) {
 
             if (!checkSinglePermission(perBackgroundLocation)) {
 
-                if ( checkSinglePermission(perAccessFineLocation) &&
-                    checkSinglePermission(perAccessCoarseLocation)) {
+                if (checkSinglePermission(perAccessFineLocation) &&
+                    checkSinglePermission(perAccessCoarseLocation)
+                ) {
 
                     val backPermList = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 
@@ -79,7 +99,7 @@ class Permission @Inject constructor(private val act: Activity) {
         }
     }
 
-    private fun checkSinglePermission(permission: String) : Boolean {
+    private fun checkSinglePermission(permission: String): Boolean {
         return checkSelfPermission(act, permission) == PERMISSION_GRANTED
     }
 }

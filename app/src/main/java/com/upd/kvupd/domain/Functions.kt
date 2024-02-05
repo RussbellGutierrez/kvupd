@@ -5,7 +5,13 @@ import androidx.work.Constraints
 import androidx.work.OneTimeWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TIncidencia
 
 interface Functions {
     fun generateQR(value: String): Bitmap
@@ -23,7 +29,10 @@ interface Functions {
     fun filterListCliente(list: List<DataCliente>): MutableList<String>
     fun mobileInternetState()
     fun enableBroadcastGPS()
-    fun saveSystemActions(tipo: String, msg: String?): TIncidencia
+    fun checkGPSEnabled()
+    fun enableBatteryChange()
+    fun saveSystemActions(tipo: String, msg: String?): TIncidencia?
+    fun callingNotifAgain()
 
     fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap, list: List<Pedimap>): List<Marker>
@@ -47,7 +56,6 @@ interface Functions {
     fun workerRutas(): OneTimeWorkRequest
     fun workerEncuestas(): OneTimeWorkRequest
 
-    fun workerperSeguimiento()
     fun workerperVisita()
     fun workerperAlta()
     fun workerperAltaEstado()

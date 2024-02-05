@@ -1,23 +1,25 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_NEGOCIO
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
 
-class NegociosWork @WorkerInject constructor(
+@HiltWorker
+class NegociosWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository
@@ -38,7 +40,7 @@ class NegociosWork @WorkerInject constructor(
                             Result.success()
                         } else {
                             repository.saveNegocios(rsp)
-                            MSG_NEGOCIO = "Negocios descargados"
+                            MSG_NEGOCIO = "* Negocios descargados"
                             Result.success()
                         }
                     }
@@ -48,10 +50,10 @@ class NegociosWork @WorkerInject constructor(
                     rst = Result.retry()
                 }
             } else {
-                MSG_NEGOCIO = "Full"
+                MSG_NEGOCIO = "* Full"
                 rst = Result.success()
             }
-            servworkListener?.onFinishWork(W_NEGOCIO)
+            interListener?.onFinishWork(W_NEGOCIO)
             return@withContext rst
         }
 

@@ -14,7 +14,15 @@ import android.os.Build
 import android.os.Environment
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresPermission
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.vision.Frame
@@ -26,12 +34,32 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
 import com.upd.kvupd.application.Receiver
-import com.upd.kvupd.application.work.*
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.application.work.AltaDatoPWork
+import com.upd.kvupd.application.work.AltaFotoPWork
+import com.upd.kvupd.application.work.AltaPWork
+import com.upd.kvupd.application.work.BajaEstadoPWork
+import com.upd.kvupd.application.work.BajaPWork
+import com.upd.kvupd.application.work.ConfigWork
+import com.upd.kvupd.application.work.DistritosWork
+import com.upd.kvupd.application.work.EncuestaWork
+import com.upd.kvupd.application.work.FinishWork
+import com.upd.kvupd.application.work.FotoPWork
+import com.upd.kvupd.application.work.NegociosWork
+import com.upd.kvupd.application.work.RespuestaPWork
+import com.upd.kvupd.application.work.RutasWork
+import com.upd.kvupd.application.work.SetupWork
+import com.upd.kvupd.application.work.UserWork
+import com.upd.kvupd.application.work.VisitaPWork
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.LOOPING
@@ -44,7 +72,6 @@ import com.upd.kvupd.utils.Constant.WP_BAJA
 import com.upd.kvupd.utils.Constant.WP_BAJAESTADO
 import com.upd.kvupd.utils.Constant.WP_FOTO
 import com.upd.kvupd.utils.Constant.WP_RESPUESTA
-import com.upd.kvupd.utils.Constant.WP_SEGUIMIENTO
 import com.upd.kvupd.utils.Constant.WP_VISITA
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Constant.W_DISTRITO
@@ -55,13 +82,22 @@ import com.upd.kvupd.utils.Constant.W_RUTA
 import com.upd.kvupd.utils.Constant.W_SETUP
 import com.upd.kvupd.utils.Constant.W_USER
 import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.gpsListener
+import com.upd.kvupd.utils.Interface.interListener
+import com.upd.kvupd.utils.addingMarker
+import com.upd.kvupd.utils.dateToday
+import com.upd.kvupd.utils.isGPSDisabled
+import com.upd.kvupd.utils.isServiceRunning
+import com.upd.kvupd.utils.markerAlta
+import com.upd.kvupd.utils.markerBaja
+import com.upd.kvupd.utils.markerConsulta
+import com.upd.kvupd.utils.markerPedimap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -257,7 +293,9 @@ class FunImpl @Inject constructor(
 
             override fun onLost(network: Network) {
                 val item = saveSystemActions("INTERNET", "Servicio internet desconectado")
-                servworkListener?.savingSystemReport(item)
+                if (item != null) {
+                    interListener?.savingSystemReport(item)
+                }
             }
 
             override fun onCapabilitiesChanged(network: Network, nc: NetworkCapabilities) {
@@ -289,7 +327,9 @@ class FunImpl @Inject constructor(
                     else -> "UNKNOW"
                 }
                 val item = saveSystemActions("INTERNET", "Internet conectado $st")
-                servworkListener?.savingSystemReport(item)
+                if (item != null) {
+                    interListener?.savingSystemReport(item)
+                }
             }
         })
     }
@@ -299,21 +339,32 @@ class FunImpl @Inject constructor(
         ctx.registerReceiver(Receiver(), filter)
     }
 
-    override fun saveSystemActions(tipo: String, msg: String?): TIncidencia {
+    override fun checkGPSEnabled() {
+        gpsListener?.changeGPSstate(ctx.isGPSDisabled())
+    }
+
+    override fun enableBatteryChange() {
+        val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        ctx.registerReceiver(Receiver(), filter)
+    }
+
+    override fun saveSystemActions(tipo: String, msg: String?): TIncidencia? {
         val obs = when (tipo) {
             "GPS" -> if (ctx.isGPSDisabled()) "Ubicacion GPS desactivada" else "Ubicacion GPS activada"
             "TIME" -> "Fecha y hora fueron modificados"
             "INTERNET" -> msg ?: "Nothing"
             "APP" -> msg ?: "App nothing"
-            else -> "Do something"
+            else -> ""
         }
         val fecha = Calendar.getInstance().time.dateToday(4)
-        val codigo = if (isCONFinitialized()) {
-            CONF.codigo
-        } else {
-            0
+        if (isCONFinitialized()) {
+            return TIncidencia(tipo, CONF.codigo, obs, fecha)
         }
-        return TIncidencia(tipo, codigo, obs, fecha)
+        return null
+    }
+
+    override fun callingNotifAgain() {
+        interListener?.showNotificationSystem()
     }
 
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {
@@ -408,7 +459,7 @@ class FunImpl @Inject constructor(
         if (!ctx.isServiceRunning(cs)) {
             if (foreground) {
                 when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> ctx.startForegroundService(
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> ctx.startService(
                         intent
                     )
 
@@ -435,12 +486,6 @@ class FunImpl @Inject constructor(
             .then(workerEncuestas())
             .enqueue()
     }
-
-    /*override fun sinchroWorkers() {
-        workManager
-            .beginWith(listOf(workerUser(), workerDistritos(), workerNegocios(), workerRutas()))
-            .enqueue()
-    }*/
 
     override fun chooseCloseWorker(work: String) {
         when (work) {
@@ -515,23 +560,6 @@ class FunImpl @Inject constructor(
             .addTag(W_ENCUESTA)
             .setConstraints(constrainsWork())
             .build()
-
-    override fun workerperSeguimiento() {
-        val wp = PeriodicWorkRequestBuilder<SeguimientoPWork>(
-            PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
-            TimeUnit.MILLISECONDS,
-            PeriodicWorkRequest.MIN_PERIODIC_FLEX_MILLIS,
-            TimeUnit.MILLISECONDS
-        )
-            .addTag(PERIODIC_WORK)
-            .setConstraints(constrainsWork())
-            .build()
-        workManager.enqueueUniquePeriodicWork(
-            WP_SEGUIMIENTO,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            wp
-        )
-    }
 
     override fun workerperVisita() {
         val wp = PeriodicWorkRequestBuilder<VisitaPWork>(

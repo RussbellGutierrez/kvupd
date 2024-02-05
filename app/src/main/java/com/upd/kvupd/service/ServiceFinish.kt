@@ -6,13 +6,19 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.LifecycleService
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Interface.serviceListener
+import com.upd.kvupd.utils.Interface.closeListener
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.isServiceRunning
 import com.upd.kvupd.utils.toReqBody
@@ -22,7 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.schedule
 
@@ -108,9 +114,7 @@ class ServiceFinish : LifecycleService() {
             Timer().schedule(10000) {
                 Log.w(_tag, "Cleaning and closing app")
                 deleteTables()
-                if (serviceListener != null) {
-                    serviceListener?.onClosingActivity()
-                } else {
+                closeListener?.closingActivity() ?: run {
                     if (isServiceRunning(ServiceSetup::class.java))
                         stopService(Intent(this@ServiceFinish, ServiceSetup::class.java))
 
@@ -147,6 +151,7 @@ class ServiceFinish : LifecycleService() {
                                         repository.saveSeguimiento(i)
                                         Log.d(_tag, "Seguimiento enviado $i")
                                     }
+
                                     is NetworkRetrofit.Error -> Log.e(
                                         _tag, "Seguimiento Error ${it.message}"
                                     )
@@ -155,6 +160,7 @@ class ServiceFinish : LifecycleService() {
                         }
                     }
                 }
+
                 1 -> {
                     pvi?.forEach { i ->
                         val p = JSONObject()
@@ -175,11 +181,16 @@ class ServiceFinish : LifecycleService() {
                                     repository.saveVisita(i)
                                     Log.d(_tag, "Visita enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Visita Error ${it.message}")
+
+                                is NetworkRetrofit.Error -> Log.e(
+                                    _tag,
+                                    "Visita Error ${it.message}"
+                                )
                             }
                         }
                     }
                 }
+
                 2 -> {
                     pal?.forEach { i ->
                         val p = JSONObject()
@@ -199,11 +210,13 @@ class ServiceFinish : LifecycleService() {
                                     repository.saveAlta(i)
                                     Log.d(_tag, "Alta enviado $i")
                                 }
+
                                 is NetworkRetrofit.Error -> Log.e(_tag, "Alta Error ${it.message}")
                             }
                         }
                     }
                 }
+
                 3 -> {
                     pad?.forEach { i ->
                         val p = JSONObject()
@@ -246,11 +259,16 @@ class ServiceFinish : LifecycleService() {
                                     repository.saveAltaDatos(i)
                                     Log.d(_tag, "Altadato enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Altadato Error ${it.message}")
+
+                                is NetworkRetrofit.Error -> Log.e(
+                                    _tag,
+                                    "Altadato Error ${it.message}"
+                                )
                             }
                         }
                     }
                 }
+
                 4 -> {
                     pba?.forEach { i ->
                         val p = JSONObject()
@@ -271,11 +289,13 @@ class ServiceFinish : LifecycleService() {
                                     repository.saveBaja(i)
                                     Log.d(_tag, "Baja enviado $i")
                                 }
+
                                 is NetworkRetrofit.Error -> Log.e(_tag, "Baja Error ${it.message}")
                             }
                         }
                     }
                 }
+
                 5 -> {
                     pbe?.forEach { i ->
                         val p = JSONObject()
@@ -296,11 +316,16 @@ class ServiceFinish : LifecycleService() {
                                     repository.saveBajaEstado(i)
                                     Log.d(_tag, "Bajaestado enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Bajaestado Error ${it.message}")
+
+                                is NetworkRetrofit.Error -> Log.e(
+                                    _tag,
+                                    "Bajaestado Error ${it.message}"
+                                )
                             }
                         }
                     }
                 }
+
                 6 -> {
                     pre?.forEach { i ->
                         val p = JSONObject()
@@ -316,13 +341,18 @@ class ServiceFinish : LifecycleService() {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.saveRespuestaOneByOne(i)
-                                    Log.d(_tag,"Respuesta enviado $i")
+                                    Log.d(_tag, "Respuesta enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag,"Respuesta Error ${it.message}")
+
+                                is NetworkRetrofit.Error -> Log.e(
+                                    _tag,
+                                    "Respuesta Error ${it.message}"
+                                )
                             }
                         }
                     }
                 }
+
                 7 -> {
                     pfo?.forEach { i ->
                         val baos = ByteArrayOutputStream()
@@ -339,13 +369,14 @@ class ServiceFinish : LifecycleService() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("foto", foto)
                         repository.setWebFotos(p.toReqBody()).collect {
-                            when(it) {
+                            when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.saveFoto(i)
-                                    Log.d(_tag,"Foto enviado $i")
+                                    Log.d(_tag, "Foto enviado $i")
                                 }
-                                is NetworkRetrofit.Error -> Log.e(_tag,"Foto Error ${it.message}")
+
+                                is NetworkRetrofit.Error -> Log.e(_tag, "Foto Error ${it.message}")
                             }
                         }
                     }
@@ -363,7 +394,7 @@ class ServiceFinish : LifecycleService() {
             repository.deleteNegocios()
             repository.deleteRutas()
             repository.deleteEncuesta()
-            repository.deleteSeleccionado()
+            repository.deleteEncuestaSeleccionado()
             repository.deleteRespuesta()
             repository.deleteEstado()
             repository.deleteSeguimiento()

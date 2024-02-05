@@ -190,23 +190,6 @@ data class TEncuesta(
     val necesaria: Boolean
 )
 
-fun List<TEncuesta>.asEncuestaList(): List<Encuesta> = this.map {
-    Encuesta(
-        it.id,
-        it.nombre,
-        it.foto,
-        it.pregunta,
-        it.descripcion,
-        it.tipo,
-        it.respuesta,
-        it.formato,
-        it.condicional,
-        it.previa,
-        it.eleccion,
-        it.necesaria
-    )
-}
-
 fun Encuesta.asTEncuesta(): TEncuesta =
     TEncuesta(
         this.id,

@@ -1,9 +1,11 @@
 package com.upd.kvupd.utils
 
+import android.Manifest
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
@@ -14,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -30,7 +33,6 @@ import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBajaSuper
-import com.upd.kvupd.data.model.TClientes
 import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.ui.dialog.DBuscar
 import com.upd.kvupd.ui.dialog.DFiltroObs
@@ -45,7 +47,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 fun JSONObject.toReqBody(): RequestBody =
@@ -61,6 +64,17 @@ fun Fragment.toast(text: String, duration: Int = 0) {
 
 fun Context.toast(text: String, duration: Int = 0) {
     Toast.makeText(this, text, duration).show()
+}
+
+fun Context.hasLocationPermission(): Boolean {
+    return ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
 }
 
 fun DialogFragment.setCreate() {
@@ -246,6 +260,7 @@ fun String.checkDocumento(tipo: String): Boolean {
         } else if (dni || extr) {
             resultado = true
         }
+
         "PN" -> if (dni || extr) {
             resultado = true
         } else if (ruc) {

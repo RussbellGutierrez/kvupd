@@ -135,7 +135,7 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
             )
                 search.add(i)
         }
-        if (search.isNullOrEmpty()) {
+        if (search.isEmpty()) {
             snack("No se encontro baja")
         } else {
             supervisor.mDiffer.submitList(search)
@@ -196,7 +196,7 @@ class FBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     }
 
     private fun setupVendedor(list: List<BajaVendedor>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvBajas.setUI("v", false)
         } else {

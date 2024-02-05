@@ -2,7 +2,10 @@ package com.upd.kvupd.utils
 
 import android.location.Location
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.DataAlta
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TConfiguracion
 
 object Constant {
 
@@ -33,6 +36,7 @@ object Constant {
     var IMEI = ""
     var IPA = ""
     var PROCEDE = ""
+    var BATTERY_PCT = 0.0f
     var VISICOOLER_ID = 0
     lateinit var POS_LOC: Location
     lateinit var ALTADATOS: String
@@ -42,6 +46,7 @@ object Constant {
     lateinit var IWDA: DataAlta
     lateinit var IWP: Pedimap
 
+    fun isGPSLOCinitialized(): Boolean = ::GPS_LOC.isInitialized
     fun isPOSLOCinitialized(): Boolean = ::POS_LOC.isInitialized
     fun isCONFinitialized(): Boolean = ::CONF.isInitialized
 
@@ -55,7 +60,6 @@ object Constant {
     const val W_RUTA = "VRuta"
     const val W_ENCUESTA = "VEncuesta"
 
-    const val WP_SEGUIMIENTO = "VPSeguimiento"
     const val WP_VISITA = "VPVisita"
     const val WP_ALTA = "VPAlta"
     const val WP_ALTADATO = "VPAltadato"
@@ -80,10 +84,16 @@ object Constant {
     const val ENCUESTA_CHANNEL = "7"
     const val ENCUESTA_NOTIF = 7
 
+    const val DISMISS_NAME = "999"
+    const val DISMISS_ID = 999
+    const val ACTION_NOTIFICATION_DISMISSED = "com.upd.kvupd.ACTION_NOTIFICATION_DISMISSED"
+
     const val GPS_NORMAL_INTERVAL = 138000L
     const val GPS_FAST_INTERVAL = 60000L
+    const val GPS_METERS = 2.0f
     const val POSITION_N_INTERVAL = 60000L
     const val POSITION_F_INTERVAL = 30000L
+    const val POSITION_METERS = 0f
     const val DL_WIDTH = ConstraintLayout.LayoutParams.MATCH_PARENT
     const val D_WIDTH = ConstraintLayout.LayoutParams.WRAP_CONTENT
     const val D_HEIGHT = ConstraintLayout.LayoutParams.WRAP_CONTENT

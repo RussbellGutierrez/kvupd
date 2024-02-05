@@ -1,7 +1,13 @@
 package com.upd.kvupd.data.local
 
-import androidx.room.*
-import com.upd.kvupd.data.model.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import com.upd.kvupd.data.model.LocationAlta
+import com.upd.kvupd.data.model.MiniUpdAlta
+import com.upd.kvupd.data.model.MiniUpdBaja
 import com.upd.kvupd.data.model.QueryConstant.DEL_AAUX
 import com.upd.kvupd.data.model.QueryConstant.DEL_AFOTO
 import com.upd.kvupd.data.model.QueryConstant.DEL_ALTA
@@ -23,6 +29,28 @@ import com.upd.kvupd.data.model.QueryConstant.DEL_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.DEL_SEGUIMIENTO
 import com.upd.kvupd.data.model.QueryConstant.DEL_SELECCION
 import com.upd.kvupd.data.model.QueryConstant.DEL_VISITA
+import com.upd.kvupd.data.model.TAAux
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TClientes
+import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TDistrito
+import com.upd.kvupd.data.model.TEmpleados
+import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TEncuestaSeleccionado
+import com.upd.kvupd.data.model.TEstado
+import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TNegocio
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TRutas
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TSesion
+import com.upd.kvupd.data.model.TVisita
 
 @Dao
 interface AppDAO {
@@ -163,7 +191,7 @@ interface AppDAO {
     suspend fun deleteEstadoBaja()
 
     @Query(DEL_SELECCION)
-    suspend fun deleteSeleccionado()
+    suspend fun deleteEncuestaSeleccionado()
 
     @Query(DEL_RESPUESTA)
     suspend fun deleteRespuesta()

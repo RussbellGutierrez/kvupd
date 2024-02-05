@@ -7,8 +7,12 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -19,7 +23,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.*
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -31,15 +37,23 @@ import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFMapaBinding
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWAM
 import com.upd.kvupd.utils.Constant.PROCEDE
+import com.upd.kvupd.utils.Constant.isGPSLOCinitialized
+import com.upd.kvupd.utils.InfoWindow
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.filterObs
+import com.upd.kvupd.utils.search
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 
 @AndroidEntryPoint
 class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
@@ -52,8 +66,8 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     private var pointer = true
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
-    private lateinit var location: Location
-    private lateinit var markers: List<Marker>
+    private lateinit var lastLocation: Location
+    private lateinit var markerList: List<Marker>
     private lateinit var rutas: List<TRutas>
     private lateinit var mclk: Marker
     private val _tag by lazy { FMapa::class.java.simpleName }
@@ -65,7 +79,6 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        location = GPS_LOC
         FILTRO_OBS = 9
     }
 
@@ -96,15 +109,14 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         }
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
-                location.longitude = it[0].longitud
-                location.latitude = it[0].latitud
+                lastLocation = LatLng(it[0].latitud, it[0].longitud).toLocation()
             }
         }
         viewmodel.marker.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (::map.isInitialized) {
                     map.clear()
-                    markers = viewmodel.setMarker(map, y)
+                    markerList = viewmodel.setMarker(map, y)
                     drawRoutes()
                     pointCliente()
                 }
@@ -116,7 +128,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                     searchList(y)
                 } else {
                     IWAM = y[0]
-                    moveCamera(mclk.position.toLocation())
+                    clientCamera(mclk.position.toLocation())
                     mclk.showInfoWindow()
                 }
             }
@@ -133,7 +145,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
             }
         }
 
-        bind.fabUbicacion.setOnClickListener { moveCamera(location) }
+        bind.fabUbicacion.setOnClickListener { moveCamera() }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
     }
 
@@ -160,8 +172,10 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
                 setOnInfoWindowLongClickListener(this@FMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
-            viewmodel.markerMap(9) //Observacion 9 se usa para obtener todos los marcadores
-            moveCamera(location)
+            map.setOnMapLoadedCallback {
+                viewmodel.markerMap(9) //Observacion 9 se usa para obtener todos los marcadores
+                moveCamera()
+            }
         }
     }
 
@@ -181,31 +195,50 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
-        if (::markers.isInitialized) {
-            if (markers.isNotEmpty()) {
-                markers.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(location.latitude, location.longitude))
+        if (::markerList.isInitialized) {
+            if (markerList.isNotEmpty()) {
+                markerList.forEach { i -> builder.include(i.position) }
+                builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
                 val bounds = builder.build()
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+            } else {
+                snack("Sin marcadores para ubicar")
             }
         } else {
             snack("Sin marcadores para ubicar")
         }
     }
 
-    private fun moveCamera(location: Location) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude, location.longitude), 15f
+    private fun moveCamera() {
+        val location = if (isGPSLOCinitialized()) {
+            GPS_LOC
+        } else {
+            lastLocation
+        }
+        if (::map.isInitialized) {
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude, location.longitude), 15f
+                )
             )
-        )
+        }
+    }
+
+    private fun clientCamera(location: Location) {
+        if (::map.isInitialized) {
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude, location.longitude), 17f
+                )
+            )
+        }
     }
 
     private fun showMarker(search: String) {
-        val cliente = markers.find { it.snippet == search }
+        val cliente = markerList.find { it.snippet == search }
         if (cliente != null) {
             cliente.let {
-                moveCamera(it.position.toLocation())
+                clientCamera(it.position.toLocation())
                 viewmodel.getClientDet(it.snippet!!, 9)
                 mclk = it
             }

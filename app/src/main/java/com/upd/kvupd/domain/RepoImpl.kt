@@ -2,7 +2,68 @@ package com.upd.kvupd.domain
 
 import android.location.Location
 import com.upd.kvupd.data.local.LocalDataSource
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.BajaSupervisor
+import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.Cliente
+import com.upd.kvupd.data.model.Config
+import com.upd.kvupd.data.model.Consulta
+import com.upd.kvupd.data.model.DataAlta
+import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.Distrito
+import com.upd.kvupd.data.model.Encuesta
+import com.upd.kvupd.data.model.JBajaSupervisor
+import com.upd.kvupd.data.model.JBajaVendedor
+import com.upd.kvupd.data.model.JCambio
+import com.upd.kvupd.data.model.JCliente
+import com.upd.kvupd.data.model.JCobCart
+import com.upd.kvupd.data.model.JCoberturados
+import com.upd.kvupd.data.model.JConfig
+import com.upd.kvupd.data.model.JConsulta
+import com.upd.kvupd.data.model.JDetCob
+import com.upd.kvupd.data.model.JDistrito
+import com.upd.kvupd.data.model.JEncuesta
+import com.upd.kvupd.data.model.JFoto
+import com.upd.kvupd.data.model.JGenerico
+import com.upd.kvupd.data.model.JNegocio
+import com.upd.kvupd.data.model.JObj
+import com.upd.kvupd.data.model.JPediGen
+import com.upd.kvupd.data.model.JPedido
+import com.upd.kvupd.data.model.JPedimap
+import com.upd.kvupd.data.model.JRuta
+import com.upd.kvupd.data.model.JSoles
+import com.upd.kvupd.data.model.JUmes
+import com.upd.kvupd.data.model.JVendedores
+import com.upd.kvupd.data.model.JVisicooler
+import com.upd.kvupd.data.model.JVisisuper
+import com.upd.kvupd.data.model.JVolumen
+import com.upd.kvupd.data.model.LocationAlta
+import com.upd.kvupd.data.model.Login
+import com.upd.kvupd.data.model.MarkerMap
+import com.upd.kvupd.data.model.MiniUpdAlta
+import com.upd.kvupd.data.model.MiniUpdBaja
+import com.upd.kvupd.data.model.Negocio
+import com.upd.kvupd.data.model.RowBaja
+import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.data.model.Ruta
+import com.upd.kvupd.data.model.TAAux
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TEncuesta
+import com.upd.kvupd.data.model.TEncuestaSeleccionado
+import com.upd.kvupd.data.model.TEstado
+import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TRutas
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TSesion
+import com.upd.kvupd.data.model.TVisita
+import com.upd.kvupd.data.model.Vendedor
 import com.upd.kvupd.data.remote.WebDataSource
 import com.upd.kvupd.utils.BaseApiResponse
 import com.upd.kvupd.utils.Constant.CONF
@@ -15,7 +76,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import okhttp3.RequestBody
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 class RepoImpl @Inject constructor(
@@ -173,7 +235,7 @@ class RepoImpl @Inject constructor(
     }
 
     override suspend fun getStarterTime(): Long {
-        val l: Long
+        var l = 0L
         val config = localDataSource.getConfig()
         val sesion = localDataSource.getSesion()
         val hini = when {
@@ -181,16 +243,37 @@ class RepoImpl @Inject constructor(
             sesion != null -> sesion.hini
             else -> ""
         }
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hini.split(":")[0].toInt())
-            set(Calendar.MINUTE, hini.split(":")[1].toInt())
-            set(Calendar.SECOND, hini.split(":")[2].toInt())
+        val fecSys = Date().dateToday(8)
+        val fecha = when {
+            config != null -> config.fecha
+            sesion != null -> sesion.fecha
+            else -> ""
         }
 
-        if (calendar.before(Calendar.getInstance())) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        if (fecha != "" && hini != "") {
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, hini.split(":")[0].toInt())
+                set(Calendar.MINUTE, hini.split(":")[1].toInt())
+                set(Calendar.SECOND, hini.split(":")[2].toInt())
+            }
+            if (fecha == fecSys) {
+                if (calendar.before(Calendar.getInstance())) {
+                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                }
+                l = calendar.timeInMillis - System.currentTimeMillis()
+            } else {
+                if (getIntoHours()) {
+                    l = 0
+                } else {
+                    if (calendar.before(Calendar.getInstance())) {
+                        calendar.add(Calendar.DAY_OF_MONTH, 1)
+                    }
+                    l = calendar.timeInMillis - System.currentTimeMillis()
+                }
+            }
+        } else {
+            l = 0
         }
-        l = calendar.timeInMillis - System.currentTimeMillis()
         return l
     }
 
@@ -461,8 +544,8 @@ class RepoImpl @Inject constructor(
         localDataSource.deleteEstadoBaja()
     }
 
-    override suspend fun deleteSeleccionado() {
-        localDataSource.deleteSeleccionado()
+    override suspend fun deleteEncuestaSeleccionado() {
+        localDataSource.deleteEncuestaSeleccionado()
     }
 
     override suspend fun deleteRespuesta() {

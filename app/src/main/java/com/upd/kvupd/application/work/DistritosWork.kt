@@ -1,23 +1,25 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.MSG_DISTRITO
 import com.upd.kvupd.utils.Constant.W_DISTRITO
-import com.upd.kvupd.utils.Interface.servworkListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.HttpException
 
-class DistritosWork @WorkerInject constructor(
+@HiltWorker
+class DistritosWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository
@@ -38,7 +40,7 @@ class DistritosWork @WorkerInject constructor(
                             Result.success()
                         } else {
                             repository.saveDistritos(rsp)
-                            MSG_DISTRITO = "Distritos descargados"
+                            MSG_DISTRITO = "* Distritos descargados"
                             Result.success()
                         }
                     }
@@ -48,10 +50,10 @@ class DistritosWork @WorkerInject constructor(
                     rst = Result.retry()
                 }
             } else {
-                MSG_DISTRITO = "Full"
+                MSG_DISTRITO = "* Full"
                 rst = Result.success()
             }
-            servworkListener?.onFinishWork(W_DISTRITO)
+            interListener?.onFinishWork(W_DISTRITO)
             return@withContext rst
         }
 

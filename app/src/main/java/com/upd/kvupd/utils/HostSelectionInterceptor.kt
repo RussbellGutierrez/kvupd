@@ -19,40 +19,35 @@ import javax.inject.Singleton
 class HostSelectionInterceptor @Inject constructor() :
     Interceptor {
     @Volatile
-    private var host = BASE_URL.toHttpUrlOrNull()
+    private var host = BASE_URL.toHttpUrlOrNull()!!
 
     init {
         setHostBaseUrl()
     }
 
     fun setHostBaseUrl() {
-        when (OPTURL) {
-            "base" -> host = BASE_URL.toHttpUrlOrNull()
-            "ipp" -> host = IP_P.toHttpUrlOrNull()
-            "ips" -> host = IP_S.toHttpUrlOrNull()
-            "aux" -> host = IP_AUX.toHttpUrlOrNull()
+        host = when (OPTURL) {
+            "base" -> BASE_URL.toHttpUrlOrNull() ?: throw IllegalArgumentException("Invalid URL Interceptor BASE")
+            "ipp" -> IP_P.toHttpUrlOrNull() ?: throw IllegalArgumentException("Invalid URL Interceptor IPP")
+            "ips" -> IP_S.toHttpUrlOrNull() ?: throw IllegalArgumentException("Invalid URL Interceptor IPS")
+            "aux" -> IP_AUX.toHttpUrlOrNull() ?: throw IllegalArgumentException("Invalid URL Interceptor AUX")
+            else -> throw IllegalArgumentException("Invalid Opt URL")
         }
     }
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         var request: Request = chain.request()
-        if (host != null) {
-            var newUrl: HttpUrl? = null
-            try {
-                newUrl = request.url.newBuilder()
-                    .scheme(host!!.scheme)
-                    .host(host!!.toUrl().toURI().host)
-                    .build()
-            } catch (e: URISyntaxException) {
-                e.printStackTrace()
-            }
-            assert(newUrl != null)
-            request = newUrl?.let {
-                request.newBuilder()
-                    .url(it)
-                    .build()
-            }!!
+
+        val newUrl: HttpUrl = request.url.newBuilder()
+            .scheme(host.scheme)
+            .host(host.toUrl().toURI().host)
+            .build()
+
+        request = newUrl.let {
+            request.newBuilder()
+                .url(it)
+                .build()
         }
         return chain.proceed(request)
     }

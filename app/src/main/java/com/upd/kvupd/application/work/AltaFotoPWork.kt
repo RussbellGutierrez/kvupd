@@ -4,13 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TAFoto
-import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IPA
@@ -19,15 +16,17 @@ import com.upd.kvupd.utils.Constant.IP_P
 import com.upd.kvupd.utils.Constant.IP_S
 import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.HostSelectionInterceptor
-import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 
-class AltaFotoPWork @WorkerInject constructor(
+@HiltWorker
+class AltaFotoPWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository,

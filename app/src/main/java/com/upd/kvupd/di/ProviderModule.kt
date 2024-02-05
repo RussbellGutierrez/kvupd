@@ -1,21 +1,14 @@
 package com.upd.kvupd.di
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Room
 import androidx.work.WorkManager
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationSettingsRequest
 import com.squareup.moshi.Moshi
 import com.upd.kvupd.data.local.AppDB
 import com.upd.kvupd.data.model.JSONObjectAdapter
 import com.upd.kvupd.data.remote.ApiClient
 import com.upd.kvupd.utils.Constant.BASE_URL
 import com.upd.kvupd.utils.Constant.DB_NAME
-import com.upd.kvupd.utils.Constant.GPS_FAST_INTERVAL
-import com.upd.kvupd.utils.Constant.GPS_NORMAL_INTERVAL
-import com.upd.kvupd.utils.Constant.POSITION_F_INTERVAL
-import com.upd.kvupd.utils.Constant.POSITION_N_INTERVAL
 import com.upd.kvupd.utils.HostSelectionInterceptor
 import dagger.Module
 import dagger.Provides
@@ -90,43 +83,4 @@ object ProviderModule {
     @Singleton
     @Provides
     fun providerWorkManager(@ApplicationContext ctx: Context) = WorkManager.getInstance(ctx)
-
-    @LocationRequestGps
-    @Singleton
-    @Provides
-    fun providerLocationRequest(): LocationRequest {
-        return LocationRequest.create().apply {
-            smallestDisplacement = 2.0f
-            interval = GPS_NORMAL_INTERVAL
-            fastestInterval = GPS_FAST_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-    }
-
-    @LocationSettingsRequestGps
-    @Singleton
-    @Provides
-    fun providerLocationSettingsRequest(@LocationRequestGps locationRequest: LocationRequest) =
-        LocationSettingsRequest.Builder().apply {
-            addLocationRequest(locationRequest)
-        }.build()
-
-    @LocationRequestPosition
-    @Singleton
-    @Provides
-    fun providerLocationRequestP(): LocationRequest {
-        return LocationRequest.create().apply {
-            interval = POSITION_N_INTERVAL
-            fastestInterval = POSITION_F_INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-    }
-
-    @LocationSettingsRequestPosition
-    @Singleton
-    @Provides
-    fun providerLocationSettingsRequestP(@LocationRequestPosition locationRequest: LocationRequest) =
-        LocationSettingsRequest.Builder().apply {
-            addLocationRequest(locationRequest)
-        }.build()
 }

@@ -83,7 +83,7 @@ class FBaja : Fragment(), BajaAdapter.OnBajaListener, MenuProvider {
     }
 
     private fun setupList(list: List<TBaja>) {
-        if (list.isNullOrEmpty()) {
+        if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvBajas.setUI("v", false)
         } else {

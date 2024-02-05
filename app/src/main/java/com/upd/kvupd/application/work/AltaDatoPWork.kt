@@ -2,8 +2,7 @@ package com.upd.kvupd.application.work
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.Assisted
-import androidx.hilt.work.WorkerInject
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.data.model.TADatos
@@ -18,12 +17,15 @@ import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.HostSelectionInterceptor
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.toReqBody
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody
 import org.json.JSONObject
 
-class AltaDatoPWork @WorkerInject constructor(
+@HiltWorker
+class AltaDatoPWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val repository: Repository,

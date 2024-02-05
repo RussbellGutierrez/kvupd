@@ -11,21 +11,32 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.*
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFAltaMapaBinding
-import com.upd.kvupd.utils.*
+import com.upd.kvupd.utils.Constant
 import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWDA
 import com.upd.kvupd.utils.Constant.PROCEDE
+import com.upd.kvupd.utils.InfoWindow
+import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,14 +45,13 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     OnInfoWindowLongClickListener, OnMarkerDragListener {
 
     private val viewmodel by activityViewModels<AppViewModel>()
-    private val args: FAltaMapaArgs by navArgs()
     private var _bind: FragmentFAltaMapaBinding? = null
     private val bind get() = _bind!!
     private var snippet = ""
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
-    private lateinit var location: Location
-    private lateinit var markers: List<Marker>
+    private lateinit var lastLocation: Location
+    private lateinit var markerList: List<Marker>
     private lateinit var rutas: List<TRutas>
     private val _tag by lazy { FAltaMapa::class.java.simpleName }
 
@@ -52,7 +62,6 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        location = GPS_LOC
     }
 
     override fun onResume() {
@@ -84,15 +93,16 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
 
         viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
-                location.longitude = it[0].longitud
-                location.latitude = it[0].latitud
+                lastLocation = LatLng(it[0].latitud, it[0].longitud).toLocation()
             }
         }
 
         viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            map.clear()
-            markers = viewmodel.altaMarker(map, it)
-            drawRoutes()
+            if (::map.isInitialized) {
+                map.clear()
+                markerList = viewmodel.altaMarker(map, it)
+                drawRoutes()
+            }
         }
 
         viewmodel.altamark.observe(viewLifecycleOwner) {
@@ -102,7 +112,7 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
             }
         }
 
-        bind.fabUbicacion.setOnClickListener { moveCamera(location) }
+        bind.fabUbicacion.setOnClickListener { moveCamera() }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
     }
 
@@ -119,9 +129,8 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
                 setOnInfoWindowLongClickListener(this@FAltaMapa)
                 setInfoWindowAdapter(InfoWindow(LayoutInflater.from(requireContext())))
             }
-            moveCamera(location)
+            map.setOnMapLoadedCallback { moveCamera() }
         }
-        comingDatos()
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
@@ -137,7 +146,11 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     }
 
     override fun onMapLongClick(p0: LatLng) {
-        showDialog("Advertencia", "¿Poner un alta en la ubicacion marcada?") { viewmodel.addingAlta(p0.toLocation()) }
+        showDialog("Advertencia", "¿Poner un alta en la ubicacion marcada?") {
+            viewmodel.addingAlta(
+                p0.toLocation()
+            )
+        }
     }
 
     override fun onMarkerDragStart(p0: Marker) {
@@ -153,58 +166,72 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
     }
 
     private fun movingAndShowing() {
-        val m = markers.find { it.snippet == snippet }
-        moveCamera(m!!.position.toLocation())
+        val m = markerList.find { it.snippet == snippet }
+        val location = m!!.position.toLocation()
+        if (::map.isInitialized) {
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude, location.longitude), 17f
+                )
+            )
+        }
         m.showInfoWindow()
     }
 
-    private fun comingDatos() {
-        args.idaux.let {
-            if (it > 0) {
-                snippet = it.toString()
-                viewmodel.getAltaData(snippet)
-            }
+    private fun moveCamera() {
+        val location = if (Constant.isGPSLOCinitialized()) {
+            GPS_LOC
+        } else {
+            lastLocation
         }
-    }
-
-    private fun moveCamera(location: Location) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude, location.longitude), 15f
+        if (::map.isInitialized) {
+            map.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(location.latitude, location.longitude), 15f
+                )
             )
-        )
+        }
     }
 
     private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
-        when {
-            markers.isNotEmpty() -> {
-                markers.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(location.latitude, location.longitude))
+        if (::markerList.isInitialized) {
+            if (markerList.isNotEmpty()) {
+                markerList.forEach { i -> builder.include(i.position) }
+                builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
                 val bounds = builder.build()
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
+            } else {
+                snack("Sin marcadores para ubicar")
             }
-            markers.isEmpty() -> snack("Sin marcadores para ubicar")
+        } else {
+            snack("No se inicializaron los marcadores")
         }
     }
 
     private fun drawRoutes() {
         val polygon = mutableListOf<LatLng>()
-        if (::rutas.isInitialized && !rutas.isNullOrEmpty()) {
+        if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
                 val coordenadas = i.corte.split(",")
-                coordenadas.forEach { j ->
-                    val item = j.trim().split(" ")
-                    polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                if (coordenadas.isNotEmpty()) {
+                    coordenadas.forEach { j ->
+                        val item = j.trim().split(" ")
+                        if (item.size >= 2) {
+                            polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
+                        }
+                    }
+                    if (polygon.isNotEmpty()) {
+                        map.addPolygon(
+                            PolygonOptions()
+                                .addAll(polygon)
+                                .strokeWidth(2f)
+                                .strokeColor(Color.parseColor("#D01215"))
+                                .fillColor(Color.argb(102, 118, 131, 219))
+                        )
+                        polygon.clear()
+                    }
                 }
-                map.addPolygon(
-                    PolygonOptions()
-                        .addAll(polygon)
-                        .strokeWidth(2f)
-                        .strokeColor(Color.parseColor("#D01215"))
-                        .fillColor(Color.argb(102, 118, 131, 219))
-                )
-                polygon.clear()
             }
         } else {
             snack("No se encontraron rutas")

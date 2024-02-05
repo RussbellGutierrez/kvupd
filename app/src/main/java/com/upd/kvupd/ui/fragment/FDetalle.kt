@@ -53,7 +53,7 @@ class FDetalle : Fragment(), GenericoAdapter.OnGenericoListener,
         super.onCreate(savedInstanceState)
         generListener = this
         visisuListener = this
-        data = arguments!!
+        data = requireArguments()
     }
 
     override fun onCreateView(

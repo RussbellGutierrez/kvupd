@@ -260,11 +260,10 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     }
 
     private fun setupFields() {
+        hideprogress()
         if (adStored != null) {
-
             if (distrito.isNotEmpty() && giro.isNotEmpty() && subgiro.isNotEmpty() && ruta.isNotEmpty()) {
 
-                hideprogress()
                 Log.w(_tag, "Distrito: ${distrito.size}")
                 Log.w(_tag, "Giro: ${giro.size}")
                 Log.w(_tag, "Ruta: ${ruta.size}")
@@ -325,8 +324,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     thumbnailPhoto(adStored!!.dniruta, true)
                 }
             }
-        } else {
-            hideprogress()
         }
     }
 
@@ -555,9 +552,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 }
                 when (ALTADATOS) {
                     "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
-                    "mapa" -> findNavController().navigate(
-                        FAltaDatosDirections.actionFAltaDatosToFAltaMapa(args.idaux)
-                    )
+                    "mapa" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAltaMapa)
                 }
             }
         }

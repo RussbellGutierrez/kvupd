@@ -2,7 +2,6 @@ package com.upd.kvupd.viewmodel
 
 import android.graphics.Bitmap
 import android.location.Location
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,7 +45,6 @@ import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
-import com.upd.kvupd.data.model.TClientes
 import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
@@ -61,12 +59,15 @@ import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
 import java.util.Calendar
+import javax.inject.Inject
 
-class AppViewModel @ViewModelInject constructor(
+@HiltViewModel
+class AppViewModel @Inject constructor(
     private val repository: Repository,
     private val functions: Functions
 ) : ViewModel() {
@@ -793,17 +794,13 @@ class AppViewModel @ViewModelInject constructor(
             repository.getConfig().let {
                 if (it != null) {
                     val user = when (it.tipo) {
-                        "V" -> repository.getClientes()
-                        else -> repository.getEmpleados()
+                        "V" -> repository.getClientes().isNotEmpty()
+                        else -> repository.getEmpleados().isNotEmpty()
                     }
-                    val dist = repository.getDistritos()
-                    val neg = repository.getNegocios()
+                    val dist = repository.getDistritos().isNotEmpty()
+                    val neg = repository.getNegocios().isNotEmpty()
 
-                    val userb = user.isNotEmpty()
-                    val distb = dist.isNotEmpty()
-                    val negb = neg.isNotEmpty()
-
-                    _inicio.value = Event(userb && distb && negb)
+                    _inicio.value = Event(user && dist && neg)
                 } else {
                     _inicio.value = Event(false)
                 }
@@ -930,7 +927,7 @@ class AppViewModel @ViewModelInject constructor(
             repository.deleteNegocios()
             repository.deleteRutas()
             repository.deleteEncuesta()
-            repository.deleteSeleccionado()
+            repository.deleteEncuestaSeleccionado()
             repository.deleteRespuesta()
             repository.deleteEstado()
             repository.deleteSeguimiento()
@@ -943,6 +940,31 @@ class AppViewModel @ViewModelInject constructor(
             functions.deleteFotos()
             repository.deleteIncidencia()
             repository.deleteAAux()
+        }
+    }
+
+    fun cleanSomeTables() {
+        viewModelScope.launch {
+            repository.deleteConfig()
+            repository.deleteClientes()
+            repository.deleteEmpleados()
+            repository.deleteDistritos()
+            repository.deleteNegocios()
+            repository.deleteRutas()
+            repository.deleteEncuesta()
+            repository.deleteEncuestaSeleccionado()
+            repository.deleteSeguimiento()
+            repository.deleteAlta()
+            repository.deleteAltaDatos()
+            repository.deleteBaja()
+            repository.deleteBajaSuper()
+            repository.deleteBajaEstado()
+            functions.deleteFotos()
+
+            val item = functions.saveSystemActions("APP", "Limpieza y sincronizacion total")
+            if (item != null) {
+                repository.saveIncidencia(item)
+            }
         }
     }
 

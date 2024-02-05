@@ -1,15 +1,26 @@
 package com.upd.kvupd.application.work
 
-import android.app.*
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.upd.kvupd.R
+import com.upd.kvupd.application.Receiver
 import com.upd.kvupd.ui.activity.MainActivity
+import com.upd.kvupd.utils.Constant.ACTION_NOTIFICATION_DISMISSED
 import com.upd.kvupd.utils.Constant.CONFIG_CHANNEL
 import com.upd.kvupd.utils.Constant.CONFIG_NOTIF
+import com.upd.kvupd.utils.Constant.DISMISS_ID
+import com.upd.kvupd.utils.Constant.DISMISS_NAME
 import com.upd.kvupd.utils.Constant.DISTRITO_CHANNEL
 import com.upd.kvupd.utils.Constant.DISTRITO_NOTIF
 import com.upd.kvupd.utils.Constant.ENCUESTA_CHANNEL
@@ -34,11 +45,24 @@ class HelperNotification @Inject constructor(
     @ApplicationContext private val ctx: Context
 ) {
 
-    private fun createPendingIntent(intent: Intent): PendingIntent {
+    private fun createPendingIntent(): PendingIntent {
+        val intent = Intent(ctx, MainActivity::class.java)
         val stackBuilder = TaskStackBuilder.create(ctx)
         stackBuilder.addNextIntentWithParentStack(intent)
         return stackBuilder.getPendingIntent(
             0,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun createDeletePending(): PendingIntent {
+        val intent = Intent(ctx, Receiver::class.java)
+        intent.action = ACTION_NOTIFICATION_DISMISSED
+        intent.putExtra(DISMISS_NAME, DISMISS_ID)
+        return PendingIntent.getBroadcast(
+            ctx,
+            DISMISS_ID,
+            intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
@@ -58,20 +82,19 @@ class HelperNotification @Inject constructor(
             notificationManager.createNotificationChannel(channel)
         }
 
-        val intent = Intent(ctx, MainActivity::class.java)
-        val pending = createPendingIntent(intent)
-
         val builder = NotificationCompat.Builder(ctx, SETUP_CHANNEL)
             .setSmallIcon(R.drawable.setup)
             .setContentTitle("KVentas")
             .setContentText("App running")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
-            .setContentIntent(pending)
+            .setContentIntent(createPendingIntent())
+            .setDeleteIntent(createDeletePending())
             .setOngoing(true)
         return builder.build()
     }
 
+    @SuppressLint("MissingPermission")
     fun configNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -96,6 +119,7 @@ class HelperNotification @Inject constructor(
         manager.notify(CONFIG_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun configNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, CONFIG_CHANNEL)
@@ -112,8 +136,15 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(CONFIG_NOTIF, notif.build())
+
+        if (MSG_CONFIG.contains("*")) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manager.cancel(CONFIG_NOTIF)
+            }, 5000)
+        }
     }
 
+    @SuppressLint("MissingPermission")
     fun userNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -138,6 +169,7 @@ class HelperNotification @Inject constructor(
         manager.notify(USER_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun userNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, USER_CHANNEL)
@@ -154,8 +186,15 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(USER_NOTIF, notif.build())
+
+        if (MSG_USER.contains("*")) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manager.cancel(USER_NOTIF)
+            }, 5000)
+        }
     }
 
+    @SuppressLint("MissingPermission")
     fun distritoNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -180,6 +219,7 @@ class HelperNotification @Inject constructor(
         manager.notify(DISTRITO_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun distritoNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, DISTRITO_CHANNEL)
@@ -196,8 +236,15 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(DISTRITO_NOTIF, notif.build())
+
+        if (MSG_DISTRITO.contains("*")) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manager.cancel(DISTRITO_NOTIF)
+            }, 5000)
+        }
     }
 
+    @SuppressLint("MissingPermission")
     fun negocioNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -222,6 +269,7 @@ class HelperNotification @Inject constructor(
         manager.notify(NEGOCIO_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun negocioNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, NEGOCIO_CHANNEL)
@@ -238,8 +286,15 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(NEGOCIO_NOTIF, notif.build())
+
+        if (MSG_NEGOCIO.contains("*")) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manager.cancel(NEGOCIO_NOTIF)
+            }, 5000)
+        }
     }
 
+    @SuppressLint("MissingPermission")
     fun rutaNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -264,6 +319,7 @@ class HelperNotification @Inject constructor(
         manager.notify(RUTA_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun rutaNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, RUTA_CHANNEL)
@@ -280,8 +336,15 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(RUTA_NOTIF, notif.build())
+
+        if (MSG_RUTA.contains("*")) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manager.cancel(RUTA_NOTIF)
+            }, 5000)
+        }
     }
 
+    @SuppressLint("MissingPermission")
     fun encuestaNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -306,6 +369,7 @@ class HelperNotification @Inject constructor(
         manager.notify(ENCUESTA_NOTIF, builder.build())
     }
 
+    @SuppressLint("MissingPermission")
     fun encuestaNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, ENCUESTA_CHANNEL)
@@ -322,6 +386,9 @@ class HelperNotification @Inject constructor(
             .setOngoing(false)
         notif.setCategory(Notification.CATEGORY_SERVICE)
         manager.notify(ENCUESTA_NOTIF, notif.build())
-    }
 
+        Handler(Looper.getMainLooper()).postDelayed({
+            manager.cancel(ENCUESTA_NOTIF)
+        }, 5000)
+    }
 }
