@@ -4,7 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
@@ -20,16 +25,22 @@ import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFClienteBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
-import com.upd.kvupd.ui.dialog.DCliente
-import com.upd.kvupd.utils.*
+import com.upd.kvupd.ui.dialog.DSemana
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.PROCEDE
 import com.upd.kvupd.utils.Interface.clienteListener
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.progress
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -109,7 +120,7 @@ class FCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnCl
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
-        R.id.descargar -> consume { DCliente().show(parentFragmentManager, "dialog") }
+        R.id.descargar -> consume { DSemana().show(parentFragmentManager, "dialog") }
         R.id.mapa -> consume {
             findNavController().navigate(
                 FClienteDirections.actionFClienteToFMapa(null)

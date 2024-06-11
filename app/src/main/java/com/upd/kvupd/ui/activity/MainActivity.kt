@@ -2,7 +2,6 @@ package com.upd.kvupd.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -14,12 +13,12 @@ import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.domain.OnClosingApp
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
 import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
 import com.upd.kvupd.utils.Constant.REQ_CODE
 import com.upd.kvupd.utils.Interface.closeListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.Permission
 import com.upd.kvupd.utils.isServiceRunning
 import com.upd.kvupd.utils.showDialog
@@ -51,18 +50,16 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
         setSupportActionBar(bind.toolbar)
         setupApp()
         closeListener = this
-        Log.w("MainActivity", "Oncreate")
     }
 
     override fun closingActivity(notRegister: Boolean) {
-        if (isServiceRunning(ServiceSetup::class.java))
-            stopService(Intent(this, ServiceSetup::class.java))
-
         if (isServiceRunning(ServicePosicion::class.java))
             stopService(Intent(this, ServicePosicion::class.java))
 
         if (isServiceRunning(ServiceFinish::class.java))
             stopService(Intent(this, ServiceFinish::class.java))
+
+        interListener?.closeGPS()
 
         runOnUiThread {
             if (notRegister) {

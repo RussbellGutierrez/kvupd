@@ -46,7 +46,6 @@ import com.upd.kvupd.utils.Constant.isGPSLOCinitialized
 import com.upd.kvupd.utils.InfoWindow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.filterObs
-import com.upd.kvupd.utils.search
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.snack
@@ -198,7 +197,9 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         if (::markerList.isInitialized) {
             if (markerList.isNotEmpty()) {
                 markerList.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
+                if (isGPSLOCinitialized()) {
+                    builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
+                }
                 val bounds = builder.build()
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
             } else {
@@ -290,7 +291,9 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
 
     private fun searchList(list: List<DataCliente>) {
         val nl = viewmodel.filterListCliente(list)
-        search(nl)
+        findNavController().navigate(
+            FMapaDirections.actionFMapaToDBuscar(nl)
+        )
     }
 
     private fun navigateToDialog(dialog: Int, cliente: DataCliente) {

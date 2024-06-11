@@ -1,6 +1,9 @@
 package com.upd.kvupd.domain
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -12,12 +15,12 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresPermission
-import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
@@ -42,15 +45,14 @@ import com.upd.kvupd.application.work.BajaPWork
 import com.upd.kvupd.application.work.ConfigWork
 import com.upd.kvupd.application.work.DistritosWork
 import com.upd.kvupd.application.work.EncuestaWork
-import com.upd.kvupd.application.work.FinishWork
 import com.upd.kvupd.application.work.FotoPWork
 import com.upd.kvupd.application.work.NegociosWork
 import com.upd.kvupd.application.work.RespuestaPWork
 import com.upd.kvupd.application.work.RutasWork
-import com.upd.kvupd.application.work.SetupWork
 import com.upd.kvupd.application.work.UserWork
 import com.upd.kvupd.application.work.VisitaPWork
 import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.DataSearch
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
@@ -60,6 +62,8 @@ import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
+import com.upd.kvupd.utils.Constant.ACTION_ALARM_FINISH
+import com.upd.kvupd.utils.Constant.ACTION_ALARM_SETUP
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.LOOPING
@@ -76,10 +80,8 @@ import com.upd.kvupd.utils.Constant.WP_VISITA
 import com.upd.kvupd.utils.Constant.W_CONFIG
 import com.upd.kvupd.utils.Constant.W_DISTRITO
 import com.upd.kvupd.utils.Constant.W_ENCUESTA
-import com.upd.kvupd.utils.Constant.W_FINISH
 import com.upd.kvupd.utils.Constant.W_NEGOCIO
 import com.upd.kvupd.utils.Constant.W_RUTA
-import com.upd.kvupd.utils.Constant.W_SETUP
 import com.upd.kvupd.utils.Constant.W_USER
 import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.gpsListener
@@ -103,7 +105,8 @@ import javax.inject.Inject
 
 class FunImpl @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val notificationManager: NotificationManager
 ) : Functions {
 
     override fun generateQR(value: String): Bitmap {
@@ -221,17 +224,6 @@ class FunImpl @Inject constructor(
         return "App: KVU Ver: ${BuildConfig.VERSION_NAME} $resultado"
     }
 
-    override fun formatLongToHour(l: Long): String {
-        var segundos = l / 1000
-        var minutos = segundos / 60
-        val horas = minutos / 60
-
-        segundos %= 60
-        minutos %= 60
-
-        return "${horas}h - ${minutos}m - ${segundos}s"
-    }
-
     @RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
     override fun isConnected(): Boolean {
         val resultado: Boolean
@@ -269,67 +261,84 @@ class FunImpl @Inject constructor(
         return day == Calendar.SUNDAY
     }
 
-    override fun filterListCliente(list: List<DataCliente>): MutableList<String> {
-        val dt = mutableListOf<String>()
-        list.forEach { i ->
-            val cliente = "${i.id} - ${i.nombre}"
+    override fun filterListCliente(list: List<DataCliente>): DataSearch {
+        val cm = mutableListOf<DataCliente>()
+        val sorted = list.sortedBy { it.nombre }
+        sorted.forEach { i ->
             if (FILTRO_OBS != 9) {
-
                 if (FILTRO_OBS == i.observacion) {
-                    dt.add(cliente)
+                    cm.add(i)
                 }
             } else {
-                dt.add(cliente)
+                cm.add(i)
             }
         }
-        return dt
+        return DataSearch(cm)
     }
 
     @SuppressLint("MissingPermission")
     override fun mobileInternetState() {
+
+        val debounceTimeout = 30000L
+        val debounceHandler = Handler(Looper.getMainLooper())
+        var lastNetworkCapabilities: NetworkCapabilities? = null
+
         val connectivityManager = ctx.getSystemService(ConnectivityManager::class.java)
         connectivityManager.registerDefaultNetworkCallback(object :
             ConnectivityManager.NetworkCallback() {
 
             override fun onLost(network: Network) {
-                val item = saveSystemActions("INTERNET", "Servicio internet desconectado")
-                if (item != null) {
-                    interListener?.savingSystemReport(item)
-                }
+
+                debounceHandler.removeCallbacksAndMessages(null)
+                debounceHandler.postDelayed({
+                    val item = saveSystemActions("INTERNET", "Servicio internet desconectado")
+                    if (item != null) {
+                        interListener?.savingSystemReport(item)
+                    }
+                }, debounceTimeout)
             }
 
             override fun onCapabilitiesChanged(network: Network, nc: NetworkCapabilities) {
-                val st = when {
-                    nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
-                    nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
-                    nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                        val tm = ctx.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-                        when (tm.dataNetworkType) {
-                            TelephonyManager.NETWORK_TYPE_IDEN -> "2G MOBILE 25 kbps"
-                            TelephonyManager.NETWORK_TYPE_CDMA -> "2G MOBILE 14-64 kbps"
-                            TelephonyManager.NETWORK_TYPE_1xRTT -> "2G MOBILE 50-100 kbps"
-                            TelephonyManager.NETWORK_TYPE_EDGE -> "2G MOBILE 50-100 kbps"
-                            TelephonyManager.NETWORK_TYPE_GPRS -> "2G MOBILE 100 kbps"
-                            TelephonyManager.NETWORK_TYPE_EVDO_0 -> "3G MOBILE 400-1000 kbps"
-                            TelephonyManager.NETWORK_TYPE_EVDO_A -> "3G MOBILE 600-1400 kbps"
-                            TelephonyManager.NETWORK_TYPE_HSPA -> "3G MOBILE 700-1700 kbps"
-                            TelephonyManager.NETWORK_TYPE_UMTS -> "3G MOBILE 400-7000 kbps"
-                            TelephonyManager.NETWORK_TYPE_EHRPD -> "3G MOBILE 1-2 Mbps"
-                            TelephonyManager.NETWORK_TYPE_HSUPA -> "3G MOBILE 1-23 Mbps"
-                            TelephonyManager.NETWORK_TYPE_HSDPA -> "3G MOBILE 2-14 Mbps"
-                            TelephonyManager.NETWORK_TYPE_EVDO_B -> "3G MOBILE 5 Mbps"
-                            TelephonyManager.NETWORK_TYPE_HSPAP -> "3G MOBILE 10-20 Mbps"
-                            TelephonyManager.NETWORK_TYPE_LTE -> "4G MOBILE 10+ Mbps"
-                            else -> "MOBILE UNKNOW"
+
+                debounceHandler.removeCallbacksAndMessages(null)
+                debounceHandler.postDelayed({
+                    if (lastNetworkCapabilities != nc) {
+                        lastNetworkCapabilities = nc
+
+                        val st = when {
+                            nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
+                            nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ETHERNET"
+                            nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                                val tm =
+                                    ctx.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+                                when (tm.dataNetworkType) {
+                                    TelephonyManager.NETWORK_TYPE_IDEN -> "2G MOBILE 25 kbps"
+                                    TelephonyManager.NETWORK_TYPE_CDMA -> "2G MOBILE 14-64 kbps"
+                                    TelephonyManager.NETWORK_TYPE_1xRTT -> "2G MOBILE 50-100 kbps"
+                                    TelephonyManager.NETWORK_TYPE_EDGE -> "2G MOBILE 50-100 kbps"
+                                    TelephonyManager.NETWORK_TYPE_GPRS -> "2G MOBILE 100 kbps"
+                                    TelephonyManager.NETWORK_TYPE_EVDO_0 -> "3G MOBILE 400-1000 kbps"
+                                    TelephonyManager.NETWORK_TYPE_EVDO_A -> "3G MOBILE 600-1400 kbps"
+                                    TelephonyManager.NETWORK_TYPE_HSPA -> "3G MOBILE 700-1700 kbps"
+                                    TelephonyManager.NETWORK_TYPE_UMTS -> "3G MOBILE 400-7000 kbps"
+                                    TelephonyManager.NETWORK_TYPE_EHRPD -> "3G MOBILE 1-2 Mbps"
+                                    TelephonyManager.NETWORK_TYPE_HSUPA -> "3G MOBILE 1-23 Mbps"
+                                    TelephonyManager.NETWORK_TYPE_HSDPA -> "3G MOBILE 2-14 Mbps"
+                                    TelephonyManager.NETWORK_TYPE_EVDO_B -> "3G MOBILE 5 Mbps"
+                                    TelephonyManager.NETWORK_TYPE_HSPAP -> "3G MOBILE 10-20 Mbps"
+                                    TelephonyManager.NETWORK_TYPE_LTE -> "4G MOBILE 10+ Mbps"
+                                    else -> "MOBILE UNKNOW"
+                                }
+                            }
+
+                            else -> "UNKNOW"
+                        }
+                        val item = saveSystemActions("INTERNET", "Internet conectado $st")
+                        if (item != null) {
+                            interListener?.savingSystemReport(item)
                         }
                     }
-
-                    else -> "UNKNOW"
-                }
-                val item = saveSystemActions("INTERNET", "Internet conectado $st")
-                if (item != null) {
-                    interListener?.savingSystemReport(item)
-                }
+                }, debounceTimeout)
             }
         })
     }
@@ -361,10 +370,6 @@ class FunImpl @Inject constructor(
             return TIncidencia(tipo, CONF.codigo, obs, fecha)
         }
         return null
-    }
-
-    override fun callingNotifAgain() {
-        interListener?.showNotificationSystem()
     }
 
     override fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker> {
@@ -459,7 +464,7 @@ class FunImpl @Inject constructor(
         if (!ctx.isServiceRunning(cs)) {
             if (foreground) {
                 when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> ctx.startService(
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> ctx.startForegroundService(
                         intent
                     )
 
@@ -487,42 +492,42 @@ class FunImpl @Inject constructor(
             .enqueue()
     }
 
-    override fun chooseCloseWorker(work: String) {
-        when (work) {
-            "setup" -> workManager.cancelUniqueWork(W_SETUP)
-            "finish" -> workManager.cancelUniqueWork(W_FINISH)
-            "periodic" -> workManager.cancelAllWorkByTag(PERIODIC_WORK)
-        }
+    override fun closePeriodicWorker() {
+        workManager.cancelAllWorkByTag(PERIODIC_WORK)
     }
 
-    override fun workerSetup(long: Long) {
-        val delay = if (long < 0) 5000 else long
-        val work = OneTimeWorkRequestBuilder<SetupWork>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                3,
-                TimeUnit.MINUTES
+    override fun alarmSetup(long: Long) {
+        val time = if (long <= 0) 5000 else long
+        val intent = Intent(ctx, Receiver::class.java)
+        intent.action = ACTION_ALARM_SETUP
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                ctx,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            .addTag(W_SETUP)
-            .setConstraints(constrainsWork())
-            .build()
-        workManager.enqueueUniqueWork(W_SETUP, ExistingWorkPolicy.REPLACE, work)
+
+        val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 
-    override fun workerFinish(long: Long) {
-        val delay = if (long < 0) 5000 else long
-        val work = OneTimeWorkRequestBuilder<FinishWork>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                3,
-                TimeUnit.MINUTES
+    override fun alarmFinish(long: Long) {
+        val time = if (long <= 0) 5000 else long
+        val intent = Intent(ctx, Receiver::class.java)
+        intent.action = ACTION_ALARM_FINISH
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(
+                ctx,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            .addTag(W_FINISH)
-            .setConstraints(constrainsWork())
-            .build()
-        workManager.enqueueUniqueWork(W_FINISH, ExistingWorkPolicy.REPLACE, work)
+
+        val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 
     override fun workerConfiguracion() =
@@ -695,5 +700,9 @@ class FunImpl @Inject constructor(
             ExistingPeriodicWorkPolicy.REPLACE,
             wp
         )
+    }
+
+    override fun closeAllNotifications() {
+        notificationManager.cancelAll()
     }
 }

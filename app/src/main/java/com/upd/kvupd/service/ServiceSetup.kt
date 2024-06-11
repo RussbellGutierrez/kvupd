@@ -1,7 +1,6 @@
 package com.upd.kvupd.service
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
@@ -58,6 +57,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -87,7 +87,7 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
     private var negocio = false
     private var ruta = false
     private var encuesta = false
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var serviceScope: CoroutineScope? = null
     private lateinit var locationClient: LocationClient
     private lateinit var configLiveData: LiveData<Event<List<WorkInfo>>>
     private lateinit var userLiveData: LiveData<Event<List<WorkInfo>>>
@@ -100,14 +100,15 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(_tag, "Service setup destroyed")
+        serviceScope?.cancel()
+        serviceScope = null
         interListener = null
-        serviceScope.cancel()
     }
 
     override fun onCreate() {
         super.onCreate()
         Log.d(_tag, "Service setup launch")
-        functions.chooseCloseWorker("setup")
+        createServiceScope()
         functions.enableBroadcastGPS()
         functions.enableBatteryChange()
         functions.mobileInternetState()
@@ -127,9 +128,23 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         Log.d(_tag, "Service startcommand")
-        serviceNotification()
+        changeBetweenIconNotification(0)
         launchLocation()
         return START_STICKY
+    }
+
+    private fun createServiceScope() {
+        serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    }
+
+    private fun restartServiceFunctions() {
+        initObsWork()
+        verifyHours()
+        changeBetweenIconNotification(0)
+        if (serviceScope == null || serviceScope?.isActive == false) {
+            createServiceScope()
+            launchLocation()
+        }
     }
 
     private fun initObsWork() {
@@ -142,44 +157,24 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
         encuestaLiveData = workManager.getWorkInfosByTagLiveData(W_ENCUESTA).map { Event(it) }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun serviceNotification() {
-        val not = helperNotification.setupNotif()
-        not.flags = Notification.FLAG_ONGOING_EVENT
-        when {
-            Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU -> startForeground(
-                SETUP_NOTIF,
-                not,
-                FOREGROUND_SERVICE_TYPE_LOCATION
-            )
-
-            Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> startForeground(
-                SETUP_NOTIF,
-                not
-            )
-
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> NotificationManagerCompat.from(this)
-                .notify(SETUP_NOTIF, not)
-        }
-    }
-
     private fun launchLocation() {
-        locationClient
-            .getLocationUpdates(GPS_NORMAL_INTERVAL, GPS_FAST_INTERVAL, GPS_METERS)
-            .catch { e -> e.printStackTrace() }
-            .onEach { location ->
-                Log.d(
-                    _tag,
-                    "GPS Location ${location.longitude} / ${location.latitude} / ${location.accuracy}"
-                )
-                GPS_LOC = location
-                if (location.accuracy <= 50f) {
-                    Log.d(_tag, "Saving location")
-                    saveLocation(location)
+        serviceScope?.let {
+            locationClient
+                .getLocationUpdates(GPS_NORMAL_INTERVAL, GPS_FAST_INTERVAL, GPS_METERS)
+                .catch { e -> e.printStackTrace() }
+                .onEach { location ->
+                    Log.d(
+                        _tag,
+                        "GPS Location ${location.longitude} / ${location.latitude} / ${location.accuracy}"
+                    )
+                    GPS_LOC = location
+                    if (location.accuracy <= 50f) {
+                        Log.d(_tag, "Saving location")
+                        saveLocation(location)
+                    }
                 }
-            }
-            .launchIn(serviceScope)
+                .launchIn(it)
+        }
     }
 
     private fun priorityWorkers() {
@@ -191,12 +186,8 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
             helperNotification.encuestaNotifLaunch()
 
             repository.getFinishTime().let {
-                val horas = functions.formatLongToHour(it)
-                val item = functions.saveSystemActions("APP", "Servicio finaliza $horas")
-                if (item != null) {
-                    repository.saveIncidencia(item)
-                }
-                functions.workerFinish(it)
+                functions.alarmFinish(it)
+                Log.i(_tag, "Finish time $it")
             }
         }
     }
@@ -212,6 +203,11 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
             functions.workerperRespuesta()
             functions.workerperFoto()
             //functions.workerperAltaFoto()
+            user = false
+            distrito = false
+            negocio = false
+            ruta = false
+            encuesta = false
         }
     }
 
@@ -453,12 +449,46 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
         }
     }
 
-    override fun showNotificationSystem() {
+    override fun showNotificationSystem(opt: Int) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
-            val notification = helperNotification.setupNotif()
-            notification.flags = Notification.FLAG_ONGOING_EVENT
+            val notification = if (opt == 0) {
+                helperNotification.setupNotif()
+            } else {
+                helperNotification.sleepNotif()
+            }
             startForeground(SETUP_NOTIF, notification, FOREGROUND_SERVICE_TYPE_LOCATION)
         }
+    }
+
+    override fun closeGPS() {
+        serviceScope?.cancel()
+        serviceScope = null
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun changeBetweenIconNotification(opt: Int) {
+        val notif = when (opt) {
+            0 -> helperNotification.setupNotif()
+            else -> helperNotification.sleepNotif()
+        }
+        NotificationManagerCompat.from(this).notify(SETUP_NOTIF, notif)
+        when {
+            Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU -> startForeground(
+                SETUP_NOTIF,
+                notif,
+                FOREGROUND_SERVICE_TYPE_LOCATION
+            )
+
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.TIRAMISU &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> startForeground(
+                SETUP_NOTIF,
+                notif
+            )
+        }
+    }
+
+    override fun launchAgainProcess() {
+        restartServiceFunctions()
     }
 
     private fun configFailed() {

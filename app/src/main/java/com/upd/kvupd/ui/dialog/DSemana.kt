@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.upd.kvupd.databinding.DialogClienteDiaBinding
+import com.upd.kvupd.databinding.DialogSemanaClienteBinding
 import com.upd.kvupd.utils.castDate
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
-class DCliente : DialogFragment() {
+class DSemana : DialogFragment() {
 
     private val viewmodel by activityViewModels<AppViewModel>()
-    private var _bind: DialogClienteDiaBinding? = null
+    private var _bind: DialogSemanaClienteBinding? = null
     private val bind get() = _bind!!
-    private val _tag by lazy { DCliente::class.java.simpleName }
+    private val _tag by lazy { DSemana::class.java.simpleName }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class DCliente : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = DialogClienteDiaBinding.inflate(inflater, container, false)
+        _bind = DialogSemanaClienteBinding.inflate(inflater, container, false)
         return bind.root
     }
 

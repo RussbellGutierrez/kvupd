@@ -1,5 +1,6 @@
 package com.upd.kvupd.di
 
+import android.app.NotificationManager
 import android.content.Context
 import androidx.room.Room
 import androidx.work.WorkManager
@@ -83,4 +84,9 @@ object ProviderModule {
     @Singleton
     @Provides
     fun providerWorkManager(@ApplicationContext ctx: Context) = WorkManager.getInstance(ctx)
+
+    @Singleton
+    @Provides
+    fun providerNotificationManager(@ApplicationContext ctx: Context) =
+        ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 }

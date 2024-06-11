@@ -6,6 +6,7 @@ import com.upd.kvupd.domain.OnInterSetup
 import com.upd.kvupd.ui.adapter.AltaAdapter
 import com.upd.kvupd.ui.adapter.BajaAdapter
 import com.upd.kvupd.ui.adapter.BajaSupervisorAdapter
+import com.upd.kvupd.ui.adapter.BuscarAdapter
 import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.adapter.GenericoAdapter
 import com.upd.kvupd.ui.adapter.SolesAdapter
@@ -21,6 +22,7 @@ object Interface {
     lateinit var altaListener: AltaAdapter.OnAltaListener
     lateinit var bajaListener: BajaAdapter.OnBajaListener
     lateinit var bajaSuperListener: BajaSupervisorAdapter.OnBajaSuperListener
+    lateinit var buscarListener: BuscarAdapter.OnBuscarListener
     var closeListener: OnClosingApp? = null
     var interListener: OnInterSetup? = null
     var gpsListener: OnGpsState? = null

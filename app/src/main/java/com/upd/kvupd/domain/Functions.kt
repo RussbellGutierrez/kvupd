@@ -6,6 +6,7 @@ import androidx.work.OneTimeWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.data.model.DataCliente
+import com.upd.kvupd.data.model.DataSearch
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
@@ -22,32 +23,29 @@ interface Functions {
     fun parseQRtoIMEI(add: Boolean = false): String
     fun getQR(): Bitmap?
     fun appSO(): String
-    fun formatLongToHour(l: Long): String
     fun isConnected(): Boolean
     fun deleteFotos()
     fun isSunday(): Boolean
-    fun filterListCliente(list: List<DataCliente>): MutableList<String>
+    fun filterListCliente(list: List<DataCliente>): DataSearch
     fun mobileInternetState()
     fun enableBroadcastGPS()
     fun checkGPSEnabled()
     fun enableBatteryChange()
     fun saveSystemActions(tipo: String, msg: String?): TIncidencia?
-    fun callingNotifAgain()
 
     fun setupMarkers(map: GoogleMap, list: List<MarkerMap>): List<Marker>
     fun pedimapMarkers(map: GoogleMap, list: List<Pedimap>): List<Marker>
     fun altaMarkers(map: GoogleMap, list: List<TAlta>): List<Marker>
     fun bajaMarker(map: GoogleMap, baja: TBajaSuper): List<Marker>
-    fun consultaMarker(map:GoogleMap,list: List<TConsulta>): List<Marker>
+    fun consultaMarker(map: GoogleMap, list: List<TConsulta>): List<Marker>
 
     fun executeService(service: String, foreground: Boolean)
     fun constrainsWork(): Constraints
     fun launchWorkers()
 
-    //fun sinchroWorkers()
-    fun chooseCloseWorker(work: String)
-    fun workerSetup(long: Long)
-    fun workerFinish(long: Long)
+    fun closePeriodicWorker()
+    fun alarmSetup(long: Long)
+    fun alarmFinish(long: Long)
 
     fun workerConfiguracion(): OneTimeWorkRequest
     fun workerUser(): OneTimeWorkRequest
@@ -64,4 +62,6 @@ interface Functions {
     fun workerperRespuesta()
     fun workerperFoto()
     fun workerperAltaFoto()
+
+    fun closeAllNotifications()
 }

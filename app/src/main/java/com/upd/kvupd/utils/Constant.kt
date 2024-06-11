@@ -87,6 +87,11 @@ object Constant {
     const val DISMISS_NAME = "999"
     const val DISMISS_ID = 999
     const val ACTION_NOTIFICATION_DISMISSED = "com.upd.kvupd.ACTION_NOTIFICATION_DISMISSED"
+    const val SLEEP_NAME = "998"
+    const val SLEEP_ID = 998
+    const val ACTION_NOTIFICATION_SLEEPED = "com.upd.kvupd.ACTION_NOTIFICATION_SLEEPED"
+    const val ACTION_ALARM_SETUP = "com.upd.kvupd.ACTION_LAUNCH_SERVICE"
+    const val ACTION_ALARM_FINISH = "com.upd.kvupd.ACTION_CLOSE_SERVICE"
 
     const val GPS_NORMAL_INTERVAL = 138000L
     const val GPS_FAST_INTERVAL = 60000L

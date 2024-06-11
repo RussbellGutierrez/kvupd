@@ -19,6 +19,7 @@ import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.closeListener
+import com.upd.kvupd.utils.Interface.interListener
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.isServiceRunning
 import com.upd.kvupd.utils.toReqBody
@@ -58,7 +59,7 @@ class ServiceFinish : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        functions.chooseCloseWorker("finish")
+        functions.closeAllNotifications()
         procedureExit()
     }
 
@@ -104,23 +105,22 @@ class ServiceFinish : LifecycleService() {
                 sendServer(7)
             }
 
-            functions.chooseCloseWorker("periodic")
+            functions.closePeriodicWorker()
 
             repository.getStarterTime().let {
+                functions.alarmSetup(it)
                 Log.i(_tag, "Starter time $it")
-                functions.workerSetup(it)
             }
 
             Timer().schedule(10000) {
                 Log.w(_tag, "Cleaning and closing app")
                 deleteTables()
                 closeListener?.closingActivity() ?: run {
-                    if (isServiceRunning(ServiceSetup::class.java))
-                        stopService(Intent(this@ServiceFinish, ServiceSetup::class.java))
-
                     if (isServiceRunning(ServicePosicion::class.java))
                         stopService(Intent(this@ServiceFinish, ServicePosicion::class.java))
 
+                    interListener?.changeBetweenIconNotification(1)
+                    interListener?.closeGPS()
                     stopSelf()
                 }
             }
@@ -409,5 +409,4 @@ class ServiceFinish : LifecycleService() {
             repository.deleteAAux()
         }
     }
-
 }

@@ -3,11 +3,20 @@ package com.upd.kvupd.di
 import android.content.Context
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
-import com.upd.kvupd.ui.adapter.*
+import com.upd.kvupd.ui.adapter.AltaAdapter
+import com.upd.kvupd.ui.adapter.BajaAdapter
+import com.upd.kvupd.ui.adapter.BajaSupervisorAdapter
+import com.upd.kvupd.ui.adapter.BajaVendedorAdapter
+import com.upd.kvupd.ui.adapter.BuscarAdapter
+import com.upd.kvupd.ui.adapter.ClienteAdapter
+import com.upd.kvupd.ui.adapter.GenericoAdapter
+import com.upd.kvupd.ui.adapter.IncidenciaAdapter
+import com.upd.kvupd.ui.adapter.SolesAdapter
+import com.upd.kvupd.ui.adapter.UmesAdapter
+import com.upd.kvupd.ui.adapter.VisisuperAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
@@ -49,5 +58,8 @@ object AdapterModule {
 
     @Provides
     fun providerIncidenciaAdapter() = IncidenciaAdapter()
+
+    @Provides
+    fun providerBuscarAdapter() = BuscarAdapter()
 
 }

@@ -17,6 +17,7 @@ import com.upd.kvupd.R
 import com.upd.kvupd.application.Receiver
 import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.utils.Constant.ACTION_NOTIFICATION_DISMISSED
+import com.upd.kvupd.utils.Constant.ACTION_NOTIFICATION_SLEEPED
 import com.upd.kvupd.utils.Constant.CONFIG_CHANNEL
 import com.upd.kvupd.utils.Constant.CONFIG_NOTIF
 import com.upd.kvupd.utils.Constant.DISMISS_ID
@@ -36,13 +37,16 @@ import com.upd.kvupd.utils.Constant.NEGOCIO_NOTIF
 import com.upd.kvupd.utils.Constant.RUTA_CHANNEL
 import com.upd.kvupd.utils.Constant.RUTA_NOTIF
 import com.upd.kvupd.utils.Constant.SETUP_CHANNEL
+import com.upd.kvupd.utils.Constant.SLEEP_ID
+import com.upd.kvupd.utils.Constant.SLEEP_NAME
 import com.upd.kvupd.utils.Constant.USER_CHANNEL
 import com.upd.kvupd.utils.Constant.USER_NOTIF
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class HelperNotification @Inject constructor(
-    @ApplicationContext private val ctx: Context
+    @ApplicationContext private val ctx: Context,
+    private val notificationManager: NotificationManager
 ) {
 
     private fun createPendingIntent(): PendingIntent {
@@ -67,6 +71,18 @@ class HelperNotification @Inject constructor(
         )
     }
 
+    private fun createSleepPending(): PendingIntent {
+        val intent = Intent(ctx, Receiver::class.java)
+        intent.action = ACTION_NOTIFICATION_SLEEPED
+        intent.putExtra(SLEEP_NAME, SLEEP_ID)
+        return PendingIntent.getBroadcast(
+            ctx,
+            SLEEP_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     fun setupNotif(): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -75,10 +91,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para service setup"
-
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -94,6 +106,29 @@ class HelperNotification @Inject constructor(
         return builder.build()
     }
 
+    fun sleepNotif(): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                SETUP_CHANNEL,
+                "ServiceSetup",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            channel.description = "Notificacion para service setup"
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder = NotificationCompat.Builder(ctx, SETUP_CHANNEL)
+            .setSmallIcon(R.drawable.dormir)
+            .setContentTitle("KVentas")
+            .setContentText("Sleep service")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVibrate(LongArray(0))
+            .setContentIntent(createPendingIntent())
+            .setDeleteIntent(createSleepPending())
+            .setOngoing(true)
+        return builder.build()
+    }
+
     @SuppressLint("MissingPermission")
     fun configNotifLaunch() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -103,8 +138,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para configuracion"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -153,8 +186,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para usuarios"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -203,8 +234,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para distritos"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -253,8 +282,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para negocios"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -303,8 +330,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para rutas"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -353,8 +378,6 @@ class HelperNotification @Inject constructor(
                 NotificationManager.IMPORTANCE_HIGH
             )
             channel.description = "Notificacion para encuesta"
-            val notificationManager =
-                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
 

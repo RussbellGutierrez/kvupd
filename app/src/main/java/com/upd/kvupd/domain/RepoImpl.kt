@@ -274,7 +274,8 @@ class RepoImpl @Inject constructor(
         } else {
             l = 0
         }
-        return l
+        val hora = System.currentTimeMillis() + l
+        return hora
     }
 
     override suspend fun getFinishTime(): Long {
@@ -291,7 +292,8 @@ class RepoImpl @Inject constructor(
                 0
             }
         }
-        return l
+        val hora = System.currentTimeMillis() + l
+        return hora
     }
 
     override suspend fun getIntoHours(): Boolean {

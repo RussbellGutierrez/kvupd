@@ -34,7 +34,6 @@ import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.data.model.TConsulta
-import com.upd.kvupd.ui.dialog.DBuscar
 import com.upd.kvupd.ui.dialog.DFiltroObs
 import com.upd.kvupd.ui.dialog.DProgress
 import com.upd.kvupd.utils.Constant.DL_WIDTH
@@ -125,15 +124,6 @@ fun Context.isGPSDisabled(): Boolean {
 
 fun Date.dateToday(formato: Int) =
     this.timeToText(formato)
-
-fun Fragment.search(list: MutableList<String>) {
-    val bundle = bundleOf(
-        "lista" to list
-    )
-    val dlg = DBuscar()
-    dlg.arguments = bundle
-    dlg.show(parentFragmentManager, "dialog")
-}
 
 fun Fragment.filterObs() {
     val dlg = DFiltroObs()

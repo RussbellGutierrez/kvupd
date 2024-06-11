@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -17,35 +18,31 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
+            android:text="Busqueda"
             android:textColor="@color/lightgreen"
-            android:text="Busqueda"/>
+            android:textSize="17sp" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="3dp"/>
+            android:layout_marginVertical="3dp" />
 
-        <EditText
-            android:id="@+id/edt_cliente"
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="12dp"
-            android:layout_marginVertical="8dp"
-            android:hint="Buscar..."
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            android:drawableLeft="@drawable/buscar"
-            android:drawableTint="@color/gray"
-            android:drawablePadding="3dp"/>
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:queryBackground="@color/transparent"
+            android:layout_marginHorizontal="10dp"
+            app:iconifiedByDefault="false"
+            app:queryHint="Buscar cliente"
+            app:searchHintIcon="@null"/>
 
-        <ListView
-            android:id="@+id/lst_cliente"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_buscar"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:divider="@color/transplightgray"
-            android:dividerHeight="1dp"/>
+            tools:listitem="@layout/row_buscar" />
 
     </LinearLayout>
 

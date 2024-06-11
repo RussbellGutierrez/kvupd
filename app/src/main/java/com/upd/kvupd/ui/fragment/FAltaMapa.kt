@@ -32,6 +32,7 @@ import com.upd.kvupd.utils.Constant.ALTADATOS
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWDA
 import com.upd.kvupd.utils.Constant.PROCEDE
+import com.upd.kvupd.utils.Constant.isGPSLOCinitialized
 import com.upd.kvupd.utils.InfoWindow
 import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.showDialog
@@ -198,7 +199,9 @@ class FAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnMark
         if (::markerList.isInitialized) {
             if (markerList.isNotEmpty()) {
                 markerList.forEach { i -> builder.include(i.position) }
-                builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
+                if (isGPSLOCinitialized()) {
+                    builder.include(LatLng(GPS_LOC.latitude, GPS_LOC.longitude))
+                }
                 val bounds = builder.build()
                 map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
             } else {

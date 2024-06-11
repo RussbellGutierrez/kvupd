@@ -26,6 +26,7 @@ data class MarkerMap(
     @ColumnInfo(name = "atendido") val atendido: Int
 )
 
+@Parcelize
 data class DataCliente(
     @ColumnInfo(name = "idcliente") val id: Int,
     @ColumnInfo(name = "nomcli") val nombre: String,
@@ -34,7 +35,7 @@ data class DataCliente(
     @ColumnInfo(name = "negocio") val negocio: String,
     @ColumnInfo(name = "telefono") val telefono: String,
     @ColumnInfo(name = "observacion") val observacion: Int
-)
+) : Parcelable
 
 data class DataAlta(
     @ColumnInfo(name = "idcliente") val id: Int,
@@ -53,6 +54,11 @@ data class LocationAlta(
     @ColumnInfo(name = "precision") val precision: Double,
     @ColumnInfo(name = "estado") val estado: String
 )
+
+@Parcelize
+data class DataSearch(
+    val lista: MutableList<DataCliente>
+) : Parcelable
 
 data class MiniUpdAlta(
     @ColumnInfo(name = "idaux") val idaux: Int,
