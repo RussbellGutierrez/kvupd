@@ -162,11 +162,11 @@ fun List<TNegocio>.asNegocioList(): List<Negocio> = this.map {
 fun Negocio.asTNegocio(): TNegocio =
     TNegocio(this.codigo, this.nombre, this.giro, this.descripcion)
 
-fun List<Distrito>.asSpinner(): List<String> = this.map {
+fun List<TDistrito>.asSpinner(): List<String> = this.map {
     "${it.codigo} - ${it.nombre}"
 }
 
-fun List<Negocio>.asSpinner(opt: Int): List<String> = this.map {
+fun List<TNegocio>.asSpinner(opt: Int): List<String> = this.map {
     if (opt == 0) {
         "${it.giro} - ${it.descripcion}"
     } else {

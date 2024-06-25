@@ -53,10 +53,12 @@ import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TDistrito
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.data.model.TEstado
 import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TNegocio
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.data.model.TSeguimiento
@@ -75,8 +77,8 @@ interface Repository {
     fun getFlowLocation(): Flow<List<TSeguimiento>?>
     fun getFlowMarker(observacion: String): Flow<List<MarkerMap>>
     fun getFlowAltas(): Flow<List<TAlta>>
-    fun getFlowDistritos(): Flow<List<Distrito>>
-    fun getFlowNegocios(): Flow<List<Negocio>>
+    fun getFlowDistritos(): Flow<List<TDistrito>>
+    fun getFlowNegocios(): Flow<List<TNegocio>>
     fun getFlowBajas(): Flow<List<TBaja>>
     fun getFlowRowBaja(): Flow<List<RowBaja>>
     fun getFlowRutas(): Flow<List<TRutas>>

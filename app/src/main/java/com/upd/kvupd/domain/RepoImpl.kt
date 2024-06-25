@@ -54,10 +54,12 @@ import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TDistrito
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.data.model.TEstado
 import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TNegocio
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.data.model.TSeguimiento
@@ -109,11 +111,11 @@ class RepoImpl @Inject constructor(
         return localDataSource.getAltas().distinctUntilChanged()
     }
 
-    override fun getFlowDistritos(): Flow<List<Distrito>> {
+    override fun getFlowDistritos(): Flow<List<TDistrito>> {
         return localDataSource.getObsDistritos().distinctUntilChanged()
     }
 
-    override fun getFlowNegocios(): Flow<List<Negocio>> {
+    override fun getFlowNegocios(): Flow<List<TNegocio>> {
         return localDataSource.getObsNegocios().distinctUntilChanged()
     }
 

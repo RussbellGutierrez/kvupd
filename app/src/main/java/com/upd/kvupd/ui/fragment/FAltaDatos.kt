@@ -32,9 +32,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TNegocio
 import com.upd.kvupd.data.model.asSpinner
 import com.upd.kvupd.data.model.toSpinner
 import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
@@ -62,7 +62,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private val bind get() = _bind!!
     private var tipo = ""
     private var abspath = ""
-    private var negocios = listOf<Negocio>()
+    private var negocios = listOf<TNegocio>()
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
     private var subgiro = listOf<String>()

@@ -26,10 +26,12 @@ import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.data.model.TConsulta
+import com.upd.kvupd.data.model.TDistrito
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.data.model.TEstado
 import com.upd.kvupd.data.model.TIncidencia
+import com.upd.kvupd.data.model.TNegocio
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.data.model.TSeguimiento
@@ -80,11 +82,11 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         return qdao.getAltas()
     }
 
-    fun getObsDistritos(): Flow<List<Distrito>> {
+    fun getObsDistritos(): Flow<List<TDistrito>> {
         return qdao.getObsDistritos()
     }
 
-    fun getObsNegocios(): Flow<List<Negocio>> {
+    fun getObsNegocios(): Flow<List<TNegocio>> {
         return qdao.getObsNegocios()
     }
 
