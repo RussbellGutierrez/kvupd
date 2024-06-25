@@ -51,8 +51,6 @@ object Constant {
     fun isCONFinitialized(): Boolean = ::CONF.isInitialized
 
     const val PERIODIC_WORK = "WorkVentas"
-    const val W_SETUP = "VSetup"
-    const val W_FINISH = "VFinish"
     const val W_CONFIG = "VConfiguracion"
     const val W_USER = "VUser"
     const val W_DISTRITO = "VDistrito"

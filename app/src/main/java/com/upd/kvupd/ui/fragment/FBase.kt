@@ -307,7 +307,10 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
             showDialog(
                 "Correcto",
                 "Vamos a cerrar la aplicacion, vuelva a ejecutarlo por favor"
-            ) { closeListener?.closingActivity() }
+            ) {
+                closeListener?.closingActivity()
+                closeListener?.closeServiceSetup()
+            }
         }
     }
 

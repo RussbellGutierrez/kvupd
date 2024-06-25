@@ -13,6 +13,7 @@ import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.domain.OnClosingApp
 import com.upd.kvupd.service.ServiceFinish
 import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
 import com.upd.kvupd.utils.Constant.IS_SUNDAY
 import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
@@ -83,6 +84,11 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
                 }
             }
         }
+    }
+
+    override fun closeServiceSetup() {
+        if (isServiceRunning(ServiceSetup::class.java))
+            stopService(Intent(this, ServiceSetup::class.java))
     }
 
     override fun onSupportNavigateUp(): Boolean {
