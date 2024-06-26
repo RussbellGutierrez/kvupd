@@ -55,11 +55,6 @@ data class LocationAlta(
     @ColumnInfo(name = "estado") val estado: String
 )
 
-@Parcelize
-data class DataSearch(
-    val lista: MutableList<DataCliente>
-) : Parcelable
-
 data class MiniUpdAlta(
     @ColumnInfo(name = "idaux") val idaux: Int,
     @ColumnInfo(name = "datos") val datos: Int

@@ -43,7 +43,7 @@ class AltaDatoPWork @AssistedInject constructor(
                         when (it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveAltaDatos(i)
+                                repository.updateAltaDatos(i)
                                 Log.d(_tag, "Altadato enviado $i")
                             }
                             is NetworkRetrofit.Error -> {

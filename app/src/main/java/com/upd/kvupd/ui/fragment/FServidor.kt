@@ -5,25 +5,41 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.*
+import com.upd.kvupd.data.model.TADatos
+import com.upd.kvupd.data.model.TAFoto
+import com.upd.kvupd.data.model.TAlta
+import com.upd.kvupd.data.model.TBEstado
+import com.upd.kvupd.data.model.TBaja
+import com.upd.kvupd.data.model.TRespuesta
+import com.upd.kvupd.data.model.TSeguimiento
+import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.databinding.FragmentFServidorBinding
-import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.Constant.CONF
 import com.upd.kvupd.utils.Constant.IMEI
 import com.upd.kvupd.utils.Constant.IP_AUX
 import com.upd.kvupd.utils.Constant.OPTURL
+import com.upd.kvupd.utils.HostSelectionInterceptor
+import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.util.*
+import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.schedule
 
@@ -495,7 +511,7 @@ class FServidor : Fragment(), MenuProvider {
                 when (y) {
                     is NetworkRetrofit.Success -> if (::foto.isInitialized) {
                         foto.estado = "Enviado"
-                        viewmodel.updFoto(foto)
+                        viewmodel.updRespuesta(foto)
                         Log.d(_tag, "Foto enviada $foto")
                     }
                     is NetworkRetrofit.Error -> {
@@ -512,7 +528,7 @@ class FServidor : Fragment(), MenuProvider {
                 when (y) {
                     is NetworkRetrofit.Success -> if (::dni.isInitialized) {
                         dni.estado = "Enviado"
-                        viewmodel.savingDNI(dni)
+                        viewmodel.updAltaFoto(dni)
                         Log.d(_tag, "DNI enviado $dni")
                     }
                     is NetworkRetrofit.Error -> {

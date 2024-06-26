@@ -7,7 +7,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
 import com.upd.kvupd.utils.Constant.REQ_CODE
 import javax.inject.Inject
 
@@ -36,8 +35,6 @@ class Permission @Inject constructor(private val act: Activity) {
         val lp = mutableListOf<String>()
         lp.add(perCamera)
         lp.add(perPhone)
-        lp.add(perRead)
-        lp.add(perWrite)
 
         //NOTA: A partir de la version Q, el access_background_location debe llamarse luego
         //de llamar los demas permisos, sino se anularan y no mostrara nada
@@ -56,12 +53,14 @@ class Permission @Inject constructor(private val act: Activity) {
             }
 
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                    Build.VERSION.SDK_INT > Build.VERSION_CODES.Q -> {
                 lp.add(perAccessFineLocation)
                 lp.add(perAccessCoarseLocation)
             }
 
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.Q -> {
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q -> {
+                lp.add(perRead)
+                lp.add(perWrite)
                 lp.add(perAccessFineLocation)
                 lp.add(perAccessCoarseLocation)
             }
@@ -69,34 +68,58 @@ class Permission @Inject constructor(private val act: Activity) {
         return lp.toTypedArray()
     }
 
-    fun reqBackPermission() {
+    fun checkAccessBackground(): Boolean {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            return checkSinglePermission(perBackgroundLocation)
+        }
+        return true
+    }
 
-            if (!checkSinglePermission(perBackgroundLocation)) {
-
-                if (checkSinglePermission(perAccessFineLocation) &&
-                    checkSinglePermission(perAccessCoarseLocation)
-                ) {
-
-                    val backPermList = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-
-                    AlertDialog.Builder(act)
-                        .setTitle("Ubicacion Segundo Plano")
-                        .setMessage("Otorgar permiso de localizacion en segundo plano para tener coordenadas actualizadas")
-                        .setPositiveButton("Permitir") { _, _ ->
-                            act.requestPermissions(
-                                backPermList,
-                                REQ_BACK_CODE
-                            )
-                        }
-                        .setNegativeButton("Cancelar") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .create()
-                        .show()
-                }
+    fun reqBackgroundLocationPermission() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            if (checkSinglePermission(perAccessFineLocation) &&
+                checkSinglePermission(perAccessCoarseLocation)
+            ) {
+                AlertDialog.Builder(act)
+                    .setTitle("Ubicacion Segundo Plano")
+                    .setMessage("Otorgar permiso de localizacion en segundo plano para tener coordenadas actualizadas")
+                    .setPositiveButton("Permitir") { _, _ ->
+                        act.requestPermissions(
+                            listOf(perBackgroundLocation).toTypedArray(),
+                            REQ_CODE
+                        )
+                    }
+                    .setNegativeButton("Cancelar") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
             }
         }
+    }
+
+    fun deniedPermissions(lista: Array<String>) {
+        AlertDialog.Builder(act)
+            .setTitle("Permisos Denegados")
+            .setMessage("No se otorgaron todos los permisos necesarios. Por favor, otórgalos para el correcto funcionamiento.")
+            .setPositiveButton("Aceptar permisos") { _, _ ->
+                act.requestPermissions(lista, REQ_CODE)
+            }
+            .setNegativeButton("Cancelar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    fun checkAllPermissions(): Boolean {
+        val permisos = listPermission()
+        permisos.forEach { y ->
+            if (!checkSinglePermission(y)) {
+                return false
+            }
+        }
+        return true
     }
 
     private fun checkSinglePermission(permission: String): Boolean {

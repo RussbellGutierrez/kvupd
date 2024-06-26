@@ -251,14 +251,6 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.insertEstadoBaja(estado)
     }
 
-    suspend fun saveRespuestaIndividual(rsp: TRespuesta) {
-        dao.insertRespuestaIndividual(rsp)
-    }
-
-    suspend fun saveFoto(rsp: TRespuesta) {
-        dao.insertFoto(rsp)
-    }
-
     suspend fun saveSeleccionado(selec: TEncuestaSeleccionado) {
         dao.insertSeleccionado(selec)
     }
@@ -287,12 +279,36 @@ class LocalDataSource @Inject constructor(private val dao: AppDAO, private val q
         dao.updateMiniAlta(mini)
     }
 
+    suspend fun updateVisita(upd: TVisita) {
+        dao.updateVisita(upd)
+    }
+
+    suspend fun updateAlta(upd: TAlta) {
+        dao.updateAlta(upd)
+    }
+
     suspend fun updateAltaDatos(upd: TADatos) {
         dao.updateAltaDatos(upd)
     }
 
+    suspend fun updateAltaFoto(upd: TAFoto) {
+        dao.updateAltaFoto(upd)
+    }
+
     suspend fun updateMiniBaja(mini: MiniUpdBaja) {
         dao.updateMiniBaja(mini)
+    }
+
+    suspend fun updateBaja(upd: TBaja) {
+        dao.updateBaja(upd)
+    }
+
+    suspend fun updateBajaEstado(upd: TBEstado) {
+        dao.updateBajaEstado(upd)
+    }
+
+    suspend fun updateRespuesta(rsp: TRespuesta) {
+        dao.updateRespuesta(rsp)
     }
 
     suspend fun deleteConfig() {

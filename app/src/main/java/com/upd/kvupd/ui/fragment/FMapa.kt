@@ -292,7 +292,7 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     private fun searchList(list: List<DataCliente>) {
         val nl = viewmodel.filterListCliente(list)
         findNavController().navigate(
-            FMapaDirections.actionFMapaToDBuscar(nl)
+            FMapaDirections.actionFMapaToDBuscar(nl.toTypedArray())
         )
     }
 

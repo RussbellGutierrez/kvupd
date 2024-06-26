@@ -6,7 +6,6 @@ import androidx.work.OneTimeWorkRequest
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.DataSearch
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
@@ -26,7 +25,7 @@ interface Functions {
     fun isConnected(): Boolean
     fun deleteFotos()
     fun isSunday(): Boolean
-    fun filterListCliente(list: List<DataCliente>): DataSearch
+    fun filterListCliente(list: List<DataCliente>): List<DataCliente>
     fun mobileInternetState()
     fun enableBroadcastGPS()
     fun checkGPSEnabled()

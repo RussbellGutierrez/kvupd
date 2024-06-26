@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.activity
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,6 @@ import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.service.ServiceSetup
 import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
 import com.upd.kvupd.utils.Constant.IS_SUNDAY
-import com.upd.kvupd.utils.Constant.REQ_BACK_CODE
 import com.upd.kvupd.utils.Constant.REQ_CODE
 import com.upd.kvupd.utils.Interface.closeListener
 import com.upd.kvupd.utils.Interface.interListener
@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
         if (isServiceRunning(ServiceFinish::class.java))
             stopService(Intent(this, ServiceFinish::class.java))
 
+        interListener?.changeBetweenIconNotification(1)
         interListener?.closeGPS()
 
         runOnUiThread {
@@ -102,8 +103,32 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            REQ_CODE -> permission.reqBackPermission()
-            REQ_BACK_CODE -> snack("GPS segundo plano")
+            REQ_CODE -> {
+                if (permissions.isEmpty() || grantResults.isEmpty()) {
+                    showDialog(
+                        "Advertencia",
+                        "Por favor, otorgue todos los permisos necesarios para que la aplicación funcione correctamente."
+                    ) {
+                        permission.reqPerm()
+                    }
+                    return
+                }
+                val deniedPermissions = mutableListOf<String>()
+                for ((index, result) in grantResults.withIndex()) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        deniedPermissions.add(permissions[index])
+                    }
+                }
+                if (deniedPermissions.isNotEmpty()) {
+                    permission.deniedPermissions(deniedPermissions.toTypedArray())
+                    return
+                }
+                if (!permission.checkAccessBackground()) {
+                    permission.reqBackgroundLocationPermission()
+                    return
+                }
+                snack("GPS segundo plano")
+            }
         }
     }
 
@@ -111,6 +136,7 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
         if (isPlayServicesEnabled()) {
             permission.reqPerm()
             setUpNavController()
+            viewModel.startingApp(permission.checkAllPermissions())
         }
     }
 

@@ -42,7 +42,7 @@ class BajaPWork @AssistedInject constructor(
                         when(it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveBaja(i)
+                                repository.updateBaja(i)
                                 Log.d(_tag,"Baja enviado $i")
                             }
                             is NetworkRetrofit.Error -> {

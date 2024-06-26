@@ -52,7 +52,6 @@ import com.upd.kvupd.application.work.RutasWork
 import com.upd.kvupd.application.work.UserWork
 import com.upd.kvupd.application.work.VisitaPWork
 import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.DataSearch
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.data.model.TAlta
@@ -261,7 +260,7 @@ class FunImpl @Inject constructor(
         return day == Calendar.SUNDAY
     }
 
-    override fun filterListCliente(list: List<DataCliente>): DataSearch {
+    override fun filterListCliente(list: List<DataCliente>): List<DataCliente> {
         val cm = mutableListOf<DataCliente>()
         val sorted = list.sortedBy { it.nombre }
         sorted.forEach { i ->
@@ -273,7 +272,7 @@ class FunImpl @Inject constructor(
                 cm.add(i)
             }
         }
-        return DataSearch(cm)
+        return cm
     }
 
     @SuppressLint("MissingPermission")

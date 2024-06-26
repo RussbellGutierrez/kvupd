@@ -404,14 +404,6 @@ class RepoImpl @Inject constructor(
         localDataSource.saveEstadoBaja(estado)
     }
 
-    override suspend fun saveRespuestaOneByOne(respuesta: TRespuesta) {
-        localDataSource.saveRespuestaIndividual(respuesta)
-    }
-
-    override suspend fun saveFoto(respuesta: TRespuesta) {
-        localDataSource.saveFoto(respuesta)
-    }
-
     override suspend fun saveSeleccionado(selec: TEncuestaSeleccionado) {
         localDataSource.saveSeleccionado(selec)
     }
@@ -468,6 +460,22 @@ class RepoImpl @Inject constructor(
         localDataSource.updateSeguimiento(coordenada)
     }
 
+    override suspend fun updateVisita(visita: TVisita) {
+        localDataSource.updateVisita(visita)
+    }
+
+    override suspend fun updateAlta(alta: TAlta) {
+        localDataSource.updateAlta(alta)
+    }
+
+    override suspend fun updateBaja(baja: TBaja) {
+        localDataSource.updateBaja(baja)
+    }
+
+    override suspend fun updateBajaEstado(be: TBEstado) {
+        localDataSource.updateBajaEstado(be)
+    }
+
     override suspend fun updateLocationAlta(locationAlta: LocationAlta) {
         localDataSource.updateLocationAlta(locationAlta)
     }
@@ -480,8 +488,16 @@ class RepoImpl @Inject constructor(
         localDataSource.updateAltaDatos(upd)
     }
 
+    override suspend fun updateAltaFoto(foto: TAFoto) {
+        localDataSource.updateAltaFoto(foto)
+    }
+
     override suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja) {
         localDataSource.updateMiniBaja(miniUpdBaja)
+    }
+
+    override suspend fun updateRespuesta(respuesta: TRespuesta) {
+        localDataSource.updateRespuesta(respuesta)
     }
 
     override suspend fun deleteConfig() {

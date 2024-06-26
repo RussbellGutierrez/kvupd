@@ -74,7 +74,9 @@ class AppViewModel @Inject constructor(
 
     private val _tag by lazy { AppViewModel::class.java.simpleName }
 
-    //  MutableLiveData with Event trigger only once
+    private val _startUp: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val startUp: LiveData<Event<Boolean>> = _startUp
+
     private val _ipaux: MutableLiveData<Event<String>> = MutableLiveData()
     val ipaux: LiveData<Event<String>> = _ipaux
 
@@ -276,6 +278,10 @@ class AppViewModel @Inject constructor(
 
     private val _respuesta: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val respuesta: LiveData<Event<Boolean>> = _respuesta
+
+    fun startingApp(start: Boolean) {
+        _startUp.value = Event(start)
+    }
 
     fun markerMap(observacion: Int) {
         viewModelScope.launch {
@@ -615,9 +621,8 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun setupApp(T: () -> Unit) {
-        if (functions.existQR()) {
-            functions.addIPtoQRIMEI()
+    fun checkHoursAndLaunch(permisos: Boolean, T: () -> Unit) {
+        if (functions.existQR() && permisos) {
             intoHours()
         } else {
             T()
@@ -696,6 +701,12 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun saveAltaFoto(it: TAFoto) {
+        viewModelScope.launch {
+            repository.saveAltaFoto(it)
+        }
+    }
+
     fun updateLocationAlta(m: Marker) {
         viewModelScope.launch {
             val item = LocationAlta(
@@ -707,12 +718,6 @@ class AppViewModel @Inject constructor(
                 "Pendiente"
             )
             repository.updateLocationAlta(item)
-        }
-    }
-
-    fun updateBaja(datos: MiniUpdBaja) {
-        viewModelScope.launch {
-            repository.updateMiniBaja(datos)
         }
     }
 
@@ -729,6 +734,12 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun updateBaja(datos: MiniUpdBaja) {
+        viewModelScope.launch {
+            repository.updateMiniBaja(datos)
+        }
+    }
+
     fun updSeguimiento(it: TSeguimiento) {
         viewModelScope.launch {
             repository.updateSeguimiento(it)
@@ -737,49 +748,43 @@ class AppViewModel @Inject constructor(
 
     fun updVisita(it: TVisita) {
         viewModelScope.launch {
-            repository.saveVisita(it)
+            repository.updateVisita(it)
         }
     }
 
     fun updAlta(it: TAlta) {
         viewModelScope.launch {
-            repository.saveAlta(it)
+            repository.updateAlta(it)
         }
     }
 
     fun updAltaDatos(it: TADatos) {
         viewModelScope.launch {
-            repository.saveAltaDatos(it)
+            repository.updateAltaDatos(it)
+        }
+    }
+
+    fun updAltaFoto(it: TAFoto) {
+        viewModelScope.launch {
+            repository.updateAltaFoto(it)
         }
     }
 
     fun updBaja(it: TBaja) {
         viewModelScope.launch {
-            repository.saveBaja(it)
+            repository.updateBaja(it)
         }
     }
 
     fun updBajaEstado(it: TBEstado) {
         viewModelScope.launch {
-            repository.saveBajaEstado(it)
+            repository.updateBajaEstado(it)
         }
     }
 
     fun updRespuesta(it: TRespuesta) {
         viewModelScope.launch {
-            repository.saveRespuestaOneByOne(it)
-        }
-    }
-
-    fun updFoto(it: TRespuesta) {
-        viewModelScope.launch {
-            repository.saveFoto(it)
-        }
-    }
-
-    fun savingDNI(it: TAFoto) {
-        viewModelScope.launch {
-            repository.saveAltaFoto(it)
+            repository.updateRespuesta(it)
         }
     }
 

@@ -44,7 +44,7 @@ class AltaFotoPWork @AssistedInject constructor(
                         when (it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveAltaFoto(i)
+                                repository.updateAltaFoto(i)
                                 Log.d(_tag, "Foto enviado $i")
                             }
                             is NetworkRetrofit.Error -> {

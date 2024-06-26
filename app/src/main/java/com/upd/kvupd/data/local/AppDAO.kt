@@ -116,12 +116,6 @@ interface AppDAO {
     suspend fun insertRespuesta(rsp: List<TRespuesta>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRespuestaIndividual(rsp: TRespuesta)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFoto(rsp: TRespuesta)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIncidencia(rsp: TIncidencia)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -130,14 +124,32 @@ interface AppDAO {
     @Update(entity = TSeguimiento::class)
     suspend fun updateSeguimiento(upd: TSeguimiento)
 
+    @Update(entity = TVisita::class)
+    suspend fun updateVisita(upd: TVisita)
+
+    @Update(entity = TAlta::class)
+    suspend fun updateAlta(upd: TAlta)
+
+    @Update(entity = TBaja::class)
+    suspend fun updateBaja(upd: TBaja)
+
+    @Update(entity = TBEstado::class)
+    suspend fun updateBajaEstado(upd: TBEstado)
+
+    @Update(entity = TRespuesta::class)
+    suspend fun updateRespuesta(rsp: TRespuesta)
+
+    @Update(entity = TADatos::class)
+    suspend fun updateAltaDatos(upd: TADatos)
+
+    @Update(entity = TAFoto::class)
+    suspend fun updateAltaFoto(upd: TAFoto)
+
     @Update(entity = TAlta::class)
     suspend fun updateLocationAlta(upd: LocationAlta)
 
     @Update(entity = TAlta::class)
     suspend fun updateMiniAlta(upd: MiniUpdAlta)
-
-    @Update(entity = TADatos::class)
-    suspend fun updateAltaDatos(upd: TADatos)
 
     @Update(entity = TBaja::class)
     suspend fun updateMiniBaja(upd: MiniUpdBaja)

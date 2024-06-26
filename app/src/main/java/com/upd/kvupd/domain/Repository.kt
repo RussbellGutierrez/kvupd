@@ -128,8 +128,6 @@ interface Repository {
     suspend fun saveAAux(aux: TAAux)
     suspend fun saveBajaSuper(baja: List<BajaSupervisor>)
     suspend fun saveBajaEstado(estado: TBEstado)
-    suspend fun saveRespuestaOneByOne(respuesta: TRespuesta)
-    suspend fun saveFoto(respuesta: TRespuesta)
     suspend fun saveSeleccionado(selec: TEncuestaSeleccionado)
     suspend fun saveRespuesta(respuesta: List<TRespuesta>)
     suspend fun saveIncidencia(respuesta: TIncidencia)
@@ -146,10 +144,16 @@ interface Repository {
     suspend fun getServerAltaFoto(estado: String): List<TAFoto>
 
     suspend fun updateSeguimiento(coordenada: TSeguimiento)
+    suspend fun updateVisita(visita: TVisita)
+    suspend fun updateAlta(alta: TAlta)
+    suspend fun updateBaja(baja: TBaja)
+    suspend fun updateBajaEstado(be: TBEstado)
     suspend fun updateLocationAlta(locationAlta: LocationAlta)
     suspend fun updateMiniAlta(miniUpdAlta: MiniUpdAlta)
     suspend fun updateAltaDatos(upd: TADatos)
+    suspend fun updateAltaFoto(foto: TAFoto)
     suspend fun updateMiniBaja(miniUpdBaja: MiniUpdBaja)
+    suspend fun updateRespuesta(respuesta: TRespuesta)
 
     suspend fun deleteConfig()
     suspend fun deleteClientes()

@@ -42,7 +42,7 @@ class VisitaPWork @AssistedInject constructor(
                         when(it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveVisita(i)
+                                repository.updateVisita(i)
                                 Log.d(_tag,"Visita enviado $i")
                             }
                             is NetworkRetrofit.Error -> {

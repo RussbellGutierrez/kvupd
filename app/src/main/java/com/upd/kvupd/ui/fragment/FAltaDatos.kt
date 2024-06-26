@@ -548,7 +548,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                             viewmodel.fecha(6),
                             "Pendiente"
                         )
-                    viewmodel.savingDNI(dni)
+                    viewmodel.saveAltaFoto(dni)
                 }
                 when (ALTADATOS) {
                     "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)

@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
@@ -36,7 +35,6 @@ import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
@@ -73,8 +71,10 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewmodel.setupApp { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
+        viewmodel.startUp.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                viewmodel.checkHoursAndLaunch(y) { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
+            }
         }
 
         bind.fabVendedor.setOnClickListener {

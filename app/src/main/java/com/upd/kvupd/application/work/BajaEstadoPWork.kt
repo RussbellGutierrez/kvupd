@@ -42,7 +42,7 @@ class BajaEstadoPWork @AssistedInject constructor(
                         when(it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveBajaEstado(i)
+                                repository.updateBajaEstado(i)
                                 Log.d(_tag,"Bajaestado enviado $i")
                             }
                             is NetworkRetrofit.Error -> {

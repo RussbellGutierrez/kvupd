@@ -148,7 +148,7 @@ class ServiceFinish : LifecycleService() {
                                 when (it) {
                                     is NetworkRetrofit.Success -> {
                                         i.estado = "Enviado"
-                                        repository.saveSeguimiento(i)
+                                        repository.updateSeguimiento(i)
                                         Log.d(_tag, "Seguimiento enviado $i")
                                     }
 
@@ -178,7 +178,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveVisita(i)
+                                    repository.updateVisita(i)
                                     Log.d(_tag, "Visita enviado $i")
                                 }
 
@@ -207,7 +207,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveAlta(i)
+                                    repository.updateAlta(i)
                                     Log.d(_tag, "Alta enviado $i")
                                 }
 
@@ -256,7 +256,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveAltaDatos(i)
+                                    repository.updateAltaDatos(i)
                                     Log.d(_tag, "Altadato enviado $i")
                                 }
 
@@ -286,7 +286,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveBaja(i)
+                                    repository.updateBaja(i)
                                     Log.d(_tag, "Baja enviado $i")
                                 }
 
@@ -313,7 +313,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveBajaEstado(i)
+                                    repository.updateBajaEstado(i)
                                     Log.d(_tag, "Bajaestado enviado $i")
                                 }
 
@@ -340,7 +340,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveRespuestaOneByOne(i)
+                                    repository.updateRespuesta(i)
                                     Log.d(_tag, "Respuesta enviado $i")
                                 }
 
@@ -372,7 +372,7 @@ class ServiceFinish : LifecycleService() {
                             when (it) {
                                 is NetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
-                                    repository.saveFoto(i)
+                                    repository.updateRespuesta(i)
                                     Log.d(_tag, "Foto enviado $i")
                                 }
 

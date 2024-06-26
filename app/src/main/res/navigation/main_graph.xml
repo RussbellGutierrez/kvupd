@@ -474,6 +474,6 @@
         tools:layout="@layout/dialog_busqueda">
         <argument
             android:name="lista"
-            app:argType="com.upd.kvupd.data.model.DataSearch" />
+            app:argType="com.upd.kvupd.data.model.DataCliente[]" />
     </dialog>
 </navigation>

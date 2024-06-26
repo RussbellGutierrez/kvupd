@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.DataSearch
 import com.upd.kvupd.databinding.DialogBusquedaBinding
 import com.upd.kvupd.ui.adapter.BuscarAdapter
 import com.upd.kvupd.utils.Interface.buscarListener
@@ -58,7 +57,7 @@ class DBuscar : DialogFragment(), SearchView.OnQueryTextListener, BuscarAdapter.
         bind.rcvBuscar.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvBuscar.adapter = adapter
         bind.searchView.setOnQueryTextListener(this)
-        setupList(args.lista)
+        setupList(args.lista.toList())
     }
 
     override fun onQueryTextSubmit(query: String) = false
@@ -84,9 +83,9 @@ class DBuscar : DialogFragment(), SearchView.OnQueryTextListener, BuscarAdapter.
         dismiss()
     }
 
-    private fun setupList(list: DataSearch) {
+    private fun setupList(list: List<DataCliente>) {
         listrow.clear()
-        listrow.addAll(list.lista)
+        listrow.addAll(list)
         adapter.mDiffer.submitList(listrow)
     }
 }

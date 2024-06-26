@@ -42,7 +42,7 @@ class RespuestaPWork @AssistedInject constructor(
                         when(it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
-                                repository.saveRespuestaOneByOne(i)
+                                repository.updateRespuesta(i)
                                 Log.d(_tag,"Respuesta enviado $i")
                             }
                             is NetworkRetrofit.Error -> {
