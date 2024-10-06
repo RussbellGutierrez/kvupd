@@ -282,6 +282,9 @@ class FServidor : Fragment(), MenuProvider {
                         p.put("precision", j.precision)
                         p.put("anulado", j.anulado)
                         p.put("empresa", CONF.empresa)
+                        if (CONF.tipo == "S") {
+                            p.put("estado", 2)
+                        }
                         Log.d(_tag, "Baj: $p")
                         viewmodel.webBaja(p.toReqBody())
                     }
@@ -400,6 +403,7 @@ class FServidor : Fragment(), MenuProvider {
                         seguimiento.estado = "Enviado"
                         viewmodel.updSeguimiento(seguimiento)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mS = y.message!!
                         Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
@@ -416,6 +420,7 @@ class FServidor : Fragment(), MenuProvider {
                         visita.estado = "Enviado"
                         viewmodel.updVisita(visita)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mV = y.message!!
                         Log.w(_tag, "Visita-> ${y.message} $visita")
@@ -432,6 +437,7 @@ class FServidor : Fragment(), MenuProvider {
                         alta.estado = "Enviado"
                         viewmodel.updAlta(alta)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mA = y.message!!
                         Log.w(_tag, "Alta-> ${y.message} $alta")
@@ -448,6 +454,7 @@ class FServidor : Fragment(), MenuProvider {
                         altadatos.estado = "Enviado"
                         viewmodel.updAltaDatos(altadatos)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mAD = y.message!!
                         Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
@@ -464,6 +471,7 @@ class FServidor : Fragment(), MenuProvider {
                         baja.estado = "Enviado"
                         viewmodel.updBaja(baja)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mB = y.message!!
                         Log.w(_tag, "Baja-> ${y.message} $baja")
@@ -480,6 +488,7 @@ class FServidor : Fragment(), MenuProvider {
                         bajaestado.estado = "Enviado"
                         viewmodel.updBajaEstado(bajaestado)
                     }
+
                     is NetworkRetrofit.Error -> {
                         mBE = y.message!!
                         Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
@@ -497,6 +506,7 @@ class FServidor : Fragment(), MenuProvider {
                         viewmodel.updRespuesta(respuesta)
                         Log.d(_tag, "Respuesta enviada $respuesta")
                     }
+
                     is NetworkRetrofit.Error -> {
                         mR = y.message!!
                         Log.e(_tag, "Respuesta-> ${y.message} $respuesta")
@@ -514,6 +524,7 @@ class FServidor : Fragment(), MenuProvider {
                         viewmodel.updRespuesta(foto)
                         Log.d(_tag, "Foto enviada $foto")
                     }
+
                     is NetworkRetrofit.Error -> {
                         mF = y.message!!
                         Log.e(_tag, "Foto-> ${y.message} $foto")
@@ -531,6 +542,7 @@ class FServidor : Fragment(), MenuProvider {
                         viewmodel.updAltaFoto(dni)
                         Log.d(_tag, "DNI enviado $dni")
                     }
+
                     is NetworkRetrofit.Error -> {
                         mDNI = y.message!!
                         Log.e(_tag, "DNI-> ${y.message} $dni")
@@ -576,6 +588,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp1.text = mensaje
                 }
             }
+
             1 -> {
                 listV = size
                 texto = "Visitas : $size"
@@ -586,6 +599,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp2.text = mensaje
                 }
             }
+
             2 -> {
                 listA = size
                 texto = "Altas : $size"
@@ -596,6 +610,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp3.text = mensaje
                 }
             }
+
             3 -> {
                 listAD = size
                 texto = "Detalle altas : $size"
@@ -606,6 +621,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp4.text = mensaje
                 }
             }
+
             4 -> {
                 listB = size
                 texto = "Bajas : $size"
@@ -616,6 +632,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp5.text = mensaje
                 }
             }
+
             5 -> {
                 listBE = size
                 texto = "Bajas confirmadas : $size"
@@ -626,6 +643,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp6.text = mensaje
                 }
             }
+
             6 -> {
                 listR = size
                 texto = "Encuestas resueltas : $size"
@@ -636,6 +654,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp7.text = mensaje
                 }
             }
+
             7 -> {
                 listF = size
                 texto = "Fotos encuesta : $size"
@@ -646,6 +665,7 @@ class FServidor : Fragment(), MenuProvider {
                     bind.txtComp8.text = mensaje
                 }
             }
+
             8 -> {
                 listDNI = size
                 texto = "DNI tomados : $size"
@@ -675,6 +695,7 @@ class FServidor : Fragment(), MenuProvider {
                     listS--
                 }
             }
+
             1 -> {
                 if (listV == 1) {
                     bind.progress2.setUI("v", false)
@@ -689,6 +710,7 @@ class FServidor : Fragment(), MenuProvider {
                     listV--
                 }
             }
+
             2 -> {
                 if (listA == 1) {
                     bind.progress3.setUI("v", false)
@@ -703,6 +725,7 @@ class FServidor : Fragment(), MenuProvider {
                     listA--
                 }
             }
+
             3 -> {
                 if (listAD == 1) {
                     bind.progress4.setUI("v", false)
@@ -717,6 +740,7 @@ class FServidor : Fragment(), MenuProvider {
                     listAD--
                 }
             }
+
             4 -> {
                 if (listB == 1) {
                     bind.progress5.setUI("v", false)
@@ -731,6 +755,7 @@ class FServidor : Fragment(), MenuProvider {
                     listB--
                 }
             }
+
             5 -> {
                 if (listBE == 1) {
                     bind.progress6.setUI("v", false)
@@ -745,6 +770,7 @@ class FServidor : Fragment(), MenuProvider {
                     listBE--
                 }
             }
+
             6 -> {
                 if (listR == 1) {
                     bind.progress7.setUI("v", false)
@@ -759,6 +785,7 @@ class FServidor : Fragment(), MenuProvider {
                     listR--
                 }
             }
+
             7 -> {
                 if (listF == 1) {
                     bind.progress8.setUI("v", false)
@@ -773,6 +800,7 @@ class FServidor : Fragment(), MenuProvider {
                     listF--
                 }
             }
+
             8 -> {
                 if (listDNI == 1) {
                     bind.progress9.setUI("v", false)

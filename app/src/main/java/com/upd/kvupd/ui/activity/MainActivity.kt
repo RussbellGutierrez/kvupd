@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
                     }
                 }
                 if (deniedPermissions.isNotEmpty()) {
-                    permission.deniedPermissions(deniedPermissions.toTypedArray())
+                    permission.deniedPermissions()
                     return
                 }
                 if (!permission.checkAccessBackground()) {
@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity(), OnClosingApp {
         if (isPlayServicesEnabled()) {
             permission.reqPerm()
             setUpNavController()
-            viewModel.startingApp(permission.checkAllPermissions())
+            viewModel.startingApp()
         }
     }
 

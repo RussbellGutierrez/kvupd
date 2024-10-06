@@ -72,7 +72,7 @@ class AppViewModel @Inject constructor(
     private val functions: Functions
 ) : ViewModel() {
 
-    private val _tag by lazy { AppViewModel::class.java.simpleName }
+    private val   _tag by lazy { AppViewModel::class.java.simpleName }
 
     private val _startUp: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val startUp: LiveData<Event<Boolean>> = _startUp
@@ -279,8 +279,8 @@ class AppViewModel @Inject constructor(
     private val _respuesta: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val respuesta: LiveData<Event<Boolean>> = _respuesta
 
-    fun startingApp(start: Boolean) {
-        _startUp.value = Event(start)
+    fun startingApp() {
+        _startUp.value = Event(true)
     }
 
     fun markerMap(observacion: Int) {
@@ -480,27 +480,9 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    /*fun fetchCambiosEmpleado(body: RequestBody) = viewModelScope.launch {
-        repository.getWebCambiosEmp(body).collect {
-            _cambioemp.value = Event(it)
-        }
-    }*/
-
-    /*fun fetchUmes(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmes(body).collect {
-            _umes.value = Event(it)
-        }
-    }*/
-
     fun fetchSoles(body: RequestBody) = viewModelScope.launch {
         repository.getWebSoles(body).collect {
             _soles.value = Event(it)
-        }
-    }
-
-    fun fetchUmesGenerico(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmesGenerico(body).collect {
-            _generico.value = Event(it)
         }
     }
 
@@ -509,12 +491,6 @@ class AppViewModel @Inject constructor(
             _generico.value = Event(it)
         }
     }
-
-    /*fun fetchUmeDetalle(body: RequestBody) = viewModelScope.launch {
-        repository.getWebUmesDetalle(body).collect {
-            _detalle.value = Event(it)
-        }
-    }*/
 
     fun fetchDetCobertura(body: RequestBody) = viewModelScope.launch {
         repository.getWebCoberturaDetalle(body).collect {
@@ -621,8 +597,8 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun checkHoursAndLaunch(permisos: Boolean, T: () -> Unit) {
-        if (functions.existQR() && permisos) {
+    fun checkHoursAndLaunch(T: () -> Unit) {
+        if (functions.existQR()) {
             intoHours()
         } else {
             T()

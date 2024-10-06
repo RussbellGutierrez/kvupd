@@ -72,8 +72,8 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         viewmodel.startUp.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                viewmodel.checkHoursAndLaunch(y) { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
+            it.getContentIfNotHandled()?.let { _ ->
+                viewmodel.checkHoursAndLaunch { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
             }
         }
 

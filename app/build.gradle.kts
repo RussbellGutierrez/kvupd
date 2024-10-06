@@ -17,8 +17,8 @@ android {
         applicationId = "com.upd.kvupd"
         minSdk = 24
         targetSdk = 34
-        versionCode = 240010502
-        versionName = "1.5.2"
+        versionCode = 240010503
+        versionName = "1.5.3"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

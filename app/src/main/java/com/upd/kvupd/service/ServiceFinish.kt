@@ -282,6 +282,9 @@ class ServiceFinish : LifecycleService() {
                         p.put("precision", i.precision)
                         p.put("anulado", i.anulado)
                         p.put("empresa", CONF.empresa)
+                        if (CONF.tipo == "S") {
+                            p.put("estado", 2)
+                        }
                         repository.setWebBaja(p.toReqBody()).collect {
                             when (it) {
                                 is NetworkRetrofit.Success -> {

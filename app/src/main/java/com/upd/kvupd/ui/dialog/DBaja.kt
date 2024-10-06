@@ -38,10 +38,6 @@ class DBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        /*if (isPOSLOCinitialized()) {
-            POS_LOC.longitude = 0.0
-            POS_LOC.latitude = 0.0
-        }*/
         requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
         dismissAllDialogs(parentFragmentManager)
     }

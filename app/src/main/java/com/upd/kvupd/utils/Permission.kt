@@ -2,7 +2,10 @@ package com.upd.kvupd.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.PermissionChecker.PERMISSION_GRANTED
@@ -98,12 +101,15 @@ class Permission @Inject constructor(private val act: Activity) {
         }
     }
 
-    fun deniedPermissions(lista: Array<String>) {
+    fun deniedPermissions() {
         AlertDialog.Builder(act)
             .setTitle("Permisos Denegados")
             .setMessage("No se otorgaron todos los permisos necesarios. Por favor, otórgalos para el correcto funcionamiento.")
             .setPositiveButton("Aceptar permisos") { _, _ ->
-                act.requestPermissions(lista, REQ_CODE)
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", act.packageName, null)
+                intent.data = uri
+                act.startActivity(intent)
             }
             .setNegativeButton("Cancelar") { dialog, _ ->
                 dialog.dismiss()
