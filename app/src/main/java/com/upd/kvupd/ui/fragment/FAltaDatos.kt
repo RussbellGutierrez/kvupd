@@ -91,6 +91,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(_tag, "ViewCreated")
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
@@ -264,10 +265,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         if (adStored != null) {
             if (distrito.isNotEmpty() && giro.isNotEmpty() && subgiro.isNotEmpty() && ruta.isNotEmpty()) {
 
-                Log.w(_tag, "Distrito: ${distrito.size}")
-                Log.w(_tag, "Giro: ${giro.size}")
-                Log.w(_tag, "Ruta: ${ruta.size}")
-
                 if (adStored?.tipo == "PJ") {
                     bind.rbJuridica.isChecked = true
                     setDataSpinner("PJ")
@@ -287,35 +284,29 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 getAndSetSubGiros(auxItem.giro)
                 val alsg = subgiro.indexOf(adStored?.giro)
 
-                Log.w(_tag, "Distrito: ${distrito.size}")
-                Log.w(_tag, "Giro: ${giro.size}")
-                Log.w(_tag, "Ruta: ${ruta.size}")
-
                 Log.w(_tag, "Distrito pos: $ald")
                 Log.w(_tag, "Giro pos: $alg")
                 Log.w(_tag, "Ruta pos: $alr")
 
+                processDocumento(setDocumento(adStored!!.tipodocu))
                 bind.edtRazon.setText(adStored?.razon)
                 bind.edtPaterno.setText(adStored?.appaterno)
                 bind.edtMaterno.setText(adStored?.apmaterno)
                 bind.edtNombre.setText(adStored?.nombre)
                 bind.edtDnice.setText(adStored?.dnice)
                 bind.edtRuc.setText(adStored?.ruc)
-                bind.spnDocumento.setSelection(setDocumento(adStored!!.tipodocu))
-                processDocumento(setDocumento(adStored!!.tipodocu))
-                //bind.edtDocumento.setText(adStored.documento)
                 bind.edtMovil1.setText(adStored?.movil1)
                 bind.edtMovil2.setText(adStored?.movil2)
                 bind.edtCorreo.setText(adStored?.correo)
-                bind.spnVia.setSelection(setVia(adStored!!.via))
                 bind.edtManzana.setText(adStored?.manzana)
                 bind.edtDireccion.setText(adStored?.direccion)
-                bind.spnNumero.setSelection(setUbicacion(adStored!!.ubicacion))
                 bind.edtNumero.setText(adStored?.numero)
-                bind.spnZona.setSelection(setZona(adStored!!.zona))
                 bind.edtZona.setText(adStored?.zonanombre)
-                //bind.edtRuta.setText(adStored?.ruta)
                 bind.edtSecuencia.setText(adStored?.secuencia)
+                bind.spnDocumento.setSelection(setDocumento(adStored!!.tipodocu))
+                bind.spnVia.setSelection(setVia(adStored!!.via))
+                bind.spnNumero.setSelection(setUbicacion(adStored!!.ubicacion))
+                bind.spnZona.setSelection(setZona(adStored!!.zona))
                 bind.spnRuta.setSelection(alr)
                 bind.spnDistrito.setSelection(ald)
                 bind.spnGiro.setSelection(alg)
@@ -324,6 +315,8 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     thumbnailPhoto(adStored!!.dniruta, true)
                 }
             }
+        } else {
+            Log.d(_tag, "SetupFields Null")
         }
     }
 
@@ -419,7 +412,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         val dnice = bind.edtDnice.text.toString().trim().uppercase()
         val ruc = bind.edtRuc.text.toString().trim().uppercase()
         val tipodoc = getDocumento()
-        //val documento = bind.edtDocumento.text.toString().trim().uppercase()
         val movil1 = bind.edtMovil1.text.toString().trim()
         val movil2 = bind.edtMovil2.text.toString().trim()
         val correo = bind.edtCorreo.text.toString().trim()
@@ -446,15 +438,11 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 "Advertencia",
                 "Debe ingresar el RUC de la empresa"
             ) {}
-            /*tipo == "PJ" && ruc == "" && dnice == "" -> showDialog(
-                "Advertencia",
-                "Debe registrar RUC y DNI"
+
+            tipo == "PN" && ruc == "" && dnice == "" -> showDialog(
+                "Advertencia", "Debe ingresar un documento"
             ) {}
-            tipo == "PN" && dnice == "" -> showDialog(
-                "Advertencia",
-                "Debe registrar un DNI o CARNET EXTRANJERIA"
-            ) {}*/
-            //documento == "" -> showDialog("Error", "Ingrese documento de identificacion") {}
+
             movil1 == "" && movil2 == "" -> showDialog(
                 "Advertencia",
                 "Ingrese un numero de celular"
@@ -493,10 +481,6 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             ) {}
 
             secuencia.toInt() == 0 -> showDialog("Advertencia", "Ingrese una secuencia valida") {}
-            /*bind.txtRuta.text == "" -> showDialog(
-                "Advertencia",
-                "Debe tomar una foto del documento del cliente"
-            ) {}*/
             subgiro == "" -> showDialog("Advertencia", "Debe seleccionar un subgiro") {}
             ruc != "" && !ruc.checkDocumento(tipo) -> showDialog(
                 "Advertencia",
@@ -510,6 +494,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
             else -> {
                 val dnipath = bind.txtRuta.text.toString()
+                val observacion = bind.edtObservacion.text.toString()
                 val item = TADatos(
                     args.idaux,
                     CONF.codigo,
@@ -536,6 +521,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     ruta,
                     secuencia,
                     dnipath,
+                    observacion,
                     "Pendiente"
                 )
                 viewmodel.saveAltaDatos(item)
@@ -565,14 +551,14 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "DPTO" -> "DPTO"
         "PUESTO" -> "PTO"
         "LOTE" -> "LT"
-        else -> "Ninguno"
+        else -> "NINGUNO"
     }
 
     private fun getDocumento() = when (bind.spnDocumento.selectedItem.toString()) {
         "RUC" -> "RUC"
         "DNI" -> "DNI"
         "CARNET" -> "CE"
-        else -> "Ninguno"
+        else -> "NINGUNO"
     }
 
     private fun getVia() = when (bind.spnVia.selectedItem.toString()) {
@@ -586,7 +572,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "PASAJE" -> "PJE"
         "PASEO" -> "P"
         "PLAZA" -> "PLZA"
-        else -> "Ninguno"
+        else -> "NINGUNO"
     }
 
     private fun getZona() = when (bind.spnZona.selectedItem.toString()) {
@@ -616,7 +602,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "URBANIZACION" -> "URB"
         "VILLA" -> "VILLA"
         "ZONA INDUSTRIAL" -> "ZI"
-        else -> "Ninguno"
+        else -> "NINGUNO"
     }
 
     private fun setUbicacion(texto: String) = when (texto) {
@@ -637,46 +623,46 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     }
 
     private fun setVia(texto: String) = when (texto) {
-        "AV" -> 0
-        "BLVR" -> 1
-        "CL" -> 2
-        "CARR" -> 3
-        "INT" -> 4
-        "JR" -> 5
-        "MCDO" -> 6
-        "PJE" -> 7
-        "P" -> 8
-        "PLZA" -> 9
-        else -> 999
+        "AV" -> 1
+        "BLVR" -> 2
+        "CL" -> 3
+        "CARR" -> 4
+        "INT" -> 5
+        "JR" -> 6
+        "MCDO" -> 7
+        "PJE" -> 8
+        "P" -> 9
+        "PLZA" -> 10
+        else -> 0
     }
 
     private fun setZona(texto: String) = when (texto) {
-        "AMPL" -> 0
-        "ANEXO" -> 1
-        "AAHH" -> 2
-        "ASOC" -> 3
-        "ASOC VIV" -> 4
-        "BAR" -> 5
-        "CC" -> 6
-        "CP" -> 7
-        "COMI" -> 8
-        "COND" -> 9
-        "CONJ HAB" -> 10
-        "CR" -> 11
-        "COOP" -> 12
-        "COOP VIV" -> 13
-        "HAB URB" -> 14
-        "LOT" -> 15
-        "PARC" -> 16
-        "POB" -> 17
-        "PJ" -> 18
-        "QUINTA" -> 19
-        "RES" -> 20
-        "SECT" -> 21
-        "UV" -> 22
-        "URB" -> 23
-        "VILLA" -> 24
-        "ZI" -> 25
-        else -> 999
+        "AMPL" -> 1
+        "ANEXO" -> 2
+        "AAHH" -> 3
+        "ASOC" -> 4
+        "ASOC VIV" -> 5
+        "BAR" -> 6
+        "CC" -> 7
+        "CP" -> 8
+        "COMI" -> 9
+        "COND" -> 10
+        "CONJ HAB" -> 11
+        "CR" -> 12
+        "COOP" -> 13
+        "COOP VIV" -> 14
+        "HAB URB" -> 15
+        "LOT" -> 16
+        "PARC" -> 17
+        "POB" -> 18
+        "PJ" -> 19
+        "QUINTA" -> 20
+        "RES" -> 21
+        "SECT" -> 22
+        "UV" -> 23
+        "URB" -> 24
+        "VILLA" -> 25
+        "ZI" -> 26
+        else -> 0
     }
 }

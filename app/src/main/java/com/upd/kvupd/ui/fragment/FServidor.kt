@@ -249,6 +249,7 @@ class FServidor : Fragment(), MenuProvider {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
+                        p.put("observacion", j.observacion)
 
                         when (j.manzana) {
                             "" -> p.put("calle", "${j.via} ${j.direccion} ${j.ubicacion}")

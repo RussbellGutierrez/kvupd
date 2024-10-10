@@ -13,6 +13,7 @@
         <item>FACTURA</item>
     </string-array>
     <string-array name="vias">
+        <item>NINGUNO</item>
         <item>AVENIDA</item>
         <item>BOULEVARD</item>
         <item>CALLE</item>
@@ -25,6 +26,7 @@
         <item>PLAZA</item>
     </string-array>
     <string-array name="zona">
+        <item>NINGUNO</item>
         <item>AMPLIACION</item>
         <item>ANEXO</item>
         <item>ASENTAMIENTO HUMANO</item>

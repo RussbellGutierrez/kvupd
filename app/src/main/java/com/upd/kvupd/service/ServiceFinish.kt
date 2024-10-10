@@ -244,6 +244,7 @@ class ServiceFinish : LifecycleService() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
+                        p.put("observacion", i.observacion)
 
                         when (i.manzana) {
                             "" -> p.put("calle", "${i.via} ${i.direccion} ${i.ubicacion}")

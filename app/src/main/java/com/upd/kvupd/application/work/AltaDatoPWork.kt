@@ -46,6 +46,7 @@ class AltaDatoPWork @AssistedInject constructor(
                                 repository.updateAltaDatos(i)
                                 Log.d(_tag, "Altadato enviado $i")
                             }
+
                             is NetworkRetrofit.Error -> {
                                 changeHostServer()
                                 Log.e(_tag, "Altadato Error ${it.message}")
@@ -83,6 +84,7 @@ class AltaDatoPWork @AssistedInject constructor(
         p.put("sucursal", CONF.sucursal)
         p.put("esquema", CONF.esquema)
         p.put("empresa", CONF.empresa)
+        p.put("observacion", j.observacion)
 
         when (j.manzana) {
             "" -> p.put("calle", "${j.via} ${j.direccion} ${j.ubicacion}")
@@ -101,10 +103,12 @@ class AltaDatoPWork @AssistedInject constructor(
                     OPTURL = "ipp"
                     IP_P = "http://${sesion!!.ipp}/api/"
                 }
+
                 "ipp" -> {
                     OPTURL = "ips"
                     IP_S = "http://${sesion!!.ips}/api/"
                 }
+
                 "ips" -> {
                     OPTURL = "aux"
                     IP_AUX = "http://$IPA/api/"

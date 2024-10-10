@@ -358,6 +358,7 @@ data class TADatos(
     val ruta: String,
     val secuencia: String,
     val dniruta: String,
+    val observacion: String,
     var estado: String
 )
 

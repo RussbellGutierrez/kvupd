@@ -188,8 +188,8 @@
                 android:gravity="center"
                 android:textColor="@color/lightcrimson"
                 android:textStyle="bold"
-                tools:text="MENSAJE QUE AVISA EL TIPO DE DOCUMENTO"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                tools:text="MENSAJE QUE AVISA EL TIPO DE DOCUMENTO" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inl_ruc"
@@ -528,7 +528,7 @@
                     android:id="@+id/spn_ruta"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"/>
+                    android:layout_weight="0.5" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -543,13 +543,32 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Secuencia"
-                        android:imeOptions="actionDone"
+                        android:imeOptions="actionNext"
                         android:inputType="number"
                         android:maxLines="1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="2dp"
+                app:boxBackgroundColor="@null">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_observacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Observacion (opcional)"
+                    android:imeOptions="actionDone"
+                    android:inputType="textMultiLine"
+                    android:maxLines="5"
+                    android:minLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
