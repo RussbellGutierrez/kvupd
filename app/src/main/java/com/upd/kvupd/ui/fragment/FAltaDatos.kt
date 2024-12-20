@@ -48,6 +48,7 @@ import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -446,6 +447,26 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             movil1 == "" && movil2 == "" -> showDialog(
                 "Advertencia",
                 "Ingrese un numero de celular"
+            ) {}
+
+            movil1 != "" && !movil1.startsWith("9") -> showDialog(
+                "Advertencia",
+                "Los numero de celular deben comenzar con 9"
+            ) {}
+
+            movil2 != "" && !movil2.startsWith("9") -> showDialog(
+                "Advertencia",
+                "Los numero de celular deben comenzar con 9"
+            ) {}
+
+            movil1 != "" && movil1.length != 9 -> showDialog(
+                "Advertencia",
+                "Los celulares deben tener 9 digitos"
+            ) {}
+
+            movil2 != "" && movil2.length != 9 -> showDialog(
+                "Advertencia",
+                "Los celulares deben tener 9 digitos"
             ) {}
 
             correo != "" && !correo.checkEmail() -> showDialog(
