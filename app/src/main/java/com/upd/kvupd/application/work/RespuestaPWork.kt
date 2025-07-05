@@ -39,15 +39,16 @@ class RespuestaPWork @AssistedInject constructor(
                 item.forEach { i ->
                     val p = requestBody(i)
                     repository.setWebRespuestas(p).collect {
-                        when(it) {
+                        when (it) {
                             is NetworkRetrofit.Success -> {
                                 i.estado = "Enviado"
                                 repository.updateRespuesta(i)
-                                Log.d(_tag,"Respuesta enviado $i")
+                                Log.d(_tag, "Respuesta enviado $i")
                             }
+
                             is NetworkRetrofit.Error -> {
                                 changeHostServer()
-                                Log.e(_tag,"Respuesta Error ${it.message}")
+                                Log.e(_tag, "Respuesta Error ${it.message}")
                             }
                         }
                     }
@@ -64,6 +65,8 @@ class RespuestaPWork @AssistedInject constructor(
         p.put("encuesta", j.encuesta)
         p.put("pregunta", j.pregunta)
         p.put("respuesta", j.respuesta)
+        p.put("xcoord", j.longitud)
+        p.put("ycoord", j.latitud)
         p.put("fecha", j.fecha)
         return p.toReqBody()
     }
@@ -75,10 +78,12 @@ class RespuestaPWork @AssistedInject constructor(
                     OPTURL = "ipp"
                     IP_P = "http://${sesion!!.ipp}/api/"
                 }
+
                 "ipp" -> {
                     OPTURL = "ips"
                     IP_S = "http://${sesion!!.ips}/api/"
                 }
+
                 "ips" -> {
                     OPTURL = "aux"
                     IP_AUX = "http://$IPA/api/"

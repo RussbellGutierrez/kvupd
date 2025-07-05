@@ -339,6 +339,8 @@ class ServiceFinish : LifecycleService() {
                         p.put("encuesta", i.encuesta)
                         p.put("pregunta", i.pregunta)
                         p.put("respuesta", i.respuesta)
+                        p.put("xcoord", i.longitud)
+                        p.put("ycoord", i.latitud)
                         p.put("fecha", i.fecha)
                         repository.setWebRespuestas(p.toReqBody()).collect {
                             when (it) {

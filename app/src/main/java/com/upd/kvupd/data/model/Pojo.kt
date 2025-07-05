@@ -107,6 +107,11 @@ data class RespuestaHistorico(
     @ColumnInfo(name = "encuestas") val encuesta: String
 )
 
+data class RespuestaClientePrevio(
+    val respondio: Boolean,
+    val cliente: Int
+)
+
 data class OrderVenta(
     val cliente: String,
     val pedidos: List<Venta>

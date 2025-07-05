@@ -215,13 +215,15 @@ data class TEncuestaSeleccionado(
 
 @Entity(primaryKeys = ["cliente", "encuesta", "pregunta"])
 data class TRespuesta(
-    val cliente: Int,
+    val cliente: String,
     val fecha: String,
     val encuesta: Int,
     val pregunta: Int,
     val respuesta: String,
     val rutafoto: String,
     val foto: Int,
+    val longitud: Double,
+    val latitud: Double,
     var estado: String
 )
 

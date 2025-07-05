@@ -332,6 +332,8 @@ class FServidor : Fragment(), MenuProvider {
                         p.put("encuesta", j.encuesta)
                         p.put("pregunta", j.pregunta)
                         p.put("respuesta", j.respuesta)
+                        p.put("xcoord", j.longitud)
+                        p.put("ycoord", j.latitud)
                         p.put("fecha", j.fecha)
                         Log.d(_tag, "Resp: $p")
                         viewmodel.webRespuesta(p.toReqBody())
@@ -829,8 +831,8 @@ class FServidor : Fragment(), MenuProvider {
         var cli = 0
         var enc = 0
         list.forEach { g ->
-            if (cli != g.cliente || enc != g.encuesta) {
-                cli = g.cliente
+            if (cli != g.cliente.toInt() || enc != g.encuesta) {
+                cli = g.cliente.toInt()
                 enc = g.encuesta
                 tmn.add(g)
             }

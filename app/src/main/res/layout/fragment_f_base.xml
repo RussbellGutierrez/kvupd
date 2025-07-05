@@ -257,6 +257,31 @@
             android:orientation="vertical">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_encuesta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/lista"
+                app:elevation="1dp"
+                app:useCompatPadding="true" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="ENCUESTAS"
+                android:textColor="@color/lightgray"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_altas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

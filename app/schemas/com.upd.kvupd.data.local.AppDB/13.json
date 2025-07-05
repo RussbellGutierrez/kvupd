@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 13,
-    "identityHash": "86c95172ce9cd25bfefb1b2c605686c2",
+    "identityHash": "295722f985df023dc9dea8fd0c9565fe",
     "entities": [
       {
         "tableName": "TSesion",
@@ -498,12 +498,12 @@
       },
       {
         "tableName": "TRespuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `foto` INTEGER NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `foto` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
         "fields": [
           {
             "fieldPath": "cliente",
             "columnName": "cliente",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -540,6 +540,18 @@
             "fieldPath": "foto",
             "columnName": "foto",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitud",
+            "columnName": "longitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitud",
+            "columnName": "latitud",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -1497,7 +1509,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86c95172ce9cd25bfefb1b2c605686c2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '295722f985df023dc9dea8fd0c9565fe')"
     ]
   }
 }

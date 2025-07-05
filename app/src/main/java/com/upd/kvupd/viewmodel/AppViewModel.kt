@@ -2,6 +2,7 @@ package com.upd.kvupd.viewmodel
 
 import android.graphics.Bitmap
 import android.location.Location
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,18 +40,21 @@ import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.MiniUpdAlta
 import com.upd.kvupd.data.model.MiniUpdBaja
 import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.RespuestaClientePrevio
 import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.data.model.TAFoto
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.data.model.TBEstado
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TBajaSuper
+import com.upd.kvupd.data.model.TClientes
 import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.data.model.TEncuesta
 import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.data.model.TVisita
+import com.upd.kvupd.data.model.asTCliente
 import com.upd.kvupd.data.model.asTEstado
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
@@ -72,7 +76,7 @@ class AppViewModel @Inject constructor(
     private val functions: Functions
 ) : ViewModel() {
 
-    private val   _tag by lazy { AppViewModel::class.java.simpleName }
+    private val _tag by lazy { AppViewModel::class.java.simpleName }
 
     private val _startUp: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val startUp: LiveData<Event<Boolean>> = _startUp
@@ -191,11 +195,28 @@ class AppViewModel @Inject constructor(
     private val _altadatos: MutableLiveData<Event<TADatos?>> = MutableLiveData()
     val altadatos: LiveData<Event<TADatos?>> = _altadatos
 
+    private val _consultado: MutableLiveData<Event<List<TConsulta>>> = MutableLiveData()
+    val consultado: LiveData<Event<List<TConsulta>>> = _consultado
+
+    private val _clienteRoom: MutableLiveData<Event<List<TClientes>>> = MutableLiveData()
+    val clienteRoom: LiveData<Event<List<TClientes>>> = _clienteRoom
+
     private val _preguntas: MutableLiveData<Event<List<TEncuesta>>> = MutableLiveData()
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
 
-    private val _consultado: MutableLiveData<Event<List<TConsulta>>> = MutableLiveData()
-    val consultado: LiveData<Event<List<TConsulta>>> = _consultado
+    private val _respuestas = mutableStateMapOf<Int, String>() // preguntaId -> respuesta
+    val respuestas: Map<Int, String> get() = _respuestas
+
+    private val _respuestaPrevia: MutableLiveData<Event<RespuestaClientePrevio>> = MutableLiveData()
+    val respuestaPrevia: LiveData<Event<RespuestaClientePrevio>> = _respuestaPrevia
+
+    fun actualizarRespuesta(preguntaId: Int, respuesta: String) {
+        _respuestas[preguntaId] = respuesta
+    }
+
+    fun limpiarRespuestas() {
+        _respuestas.clear()
+    }
 
     fun configObserver() = repository.getFlowConfig().asLiveData()
 
@@ -276,8 +297,8 @@ class AppViewModel @Inject constructor(
     private val _cabecera: MutableLiveData<Event<List<Cabecera>>> = MutableLiveData()
     val cabecera: LiveData<Event<List<Cabecera>>> = _cabecera
 
-    private val _respuesta: MutableLiveData<Event<Boolean>> = MutableLiveData()
-    val respuesta: LiveData<Event<Boolean>> = _respuesta
+    private val _clienteRespondio: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val clienteRespondio: LiveData<Event<Boolean>> = _clienteRespondio
 
     fun startingApp() {
         _startUp.value = Event(true)
@@ -541,11 +562,21 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun getClientes() = viewModelScope.launch {
+        repository.getClientes().let { result ->
+            val newList = result.map { it.asTCliente() }
+            _clienteRoom.value = Event(newList)
+        }
+    }
+
     fun getPreguntas() = viewModelScope.launch {
         repository.getPreguntas().let {
             _preguntas.value = Event(it)
         }
     }
+
+    suspend fun isEncuestaEmpty(): Boolean =
+        repository.getPreguntas().isEmpty()
 
     suspend fun isConfigEmpty(): Boolean =
         repository.getConfig() == null
@@ -871,6 +902,33 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun respuestaPreviaCliente(cabecera: List<Cabecera>, cliente: Int) {
+        viewModelScope.launch {
+
+            var clienteRespondio = false
+            if (repository.clienteRespondioActual(cliente.toString())) {
+                clienteRespondio = true
+            } else {
+                cabecera.forEach { i ->
+                    if (i.seleccion == 1) {
+                        val rsp = repository.clienteRespondioAntes(cliente.toString())
+                        if (rsp.isEmpty()) {
+                            clienteRespondio = false
+                        } else {
+                            rsp.split(",").forEach { j ->
+                                if (j.trim() == i.id.toString()) {
+                                    clienteRespondio = true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            _respuestaPrevia.value =
+                Event(RespuestaClientePrevio(clienteRespondio, cliente))
+        }
+    }
+
     fun clienteRespondio(cabecera: List<Cabecera>, cliente: String) {
         viewModelScope.launch {
 
@@ -893,7 +951,7 @@ class AppViewModel @Inject constructor(
                     }
                 }
             }
-            _respuesta.value = Event(respuesta)
+            _clienteRespondio.value = Event(respuesta)
         }
     }
 
