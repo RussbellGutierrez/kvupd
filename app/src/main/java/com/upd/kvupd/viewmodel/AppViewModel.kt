@@ -59,6 +59,11 @@ import com.upd.kvupd.data.model.asTEstado
 import com.upd.kvupd.domain.Functions
 import com.upd.kvupd.domain.Repository
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.IPA
+import com.upd.kvupd.utils.Constant.IP_AUX
+import com.upd.kvupd.utils.Constant.IP_P
+import com.upd.kvupd.utils.Constant.IP_S
+import com.upd.kvupd.utils.Constant.OPTURL
 import com.upd.kvupd.utils.Event
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.dateToday
@@ -201,6 +206,9 @@ class AppViewModel @Inject constructor(
     private val _clienteRoom: MutableLiveData<Event<List<TClientes>>> = MutableLiveData()
     val clienteRoom: LiveData<Event<List<TClientes>>> = _clienteRoom
 
+    private val _urlServer: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val urlServer: LiveData<Event<Boolean>> = _urlServer
+
     private val _preguntas: MutableLiveData<Event<List<TEncuesta>>> = MutableLiveData()
     val preguntas: LiveData<Event<List<TEncuesta>>> = _preguntas
 
@@ -312,33 +320,33 @@ class AppViewModel @Inject constructor(
         }
     }
 
-    fun fetchServerAll(estado: String) {
+    fun fetchServerAll() {
         viewModelScope.launch {
-            repository.getServerSeguimiento(estado).let {
+            repository.getServerSeguimiento("Todo").let {
                 _servseguimiento.value = Event(it)
             }
-            repository.getServerVisita(estado).let {
+            repository.getServerVisita("Todo").let {
                 _servvisita.value = Event(it)
             }
-            repository.getServerAlta(estado).let {
+            repository.getServerAlta("Todo").let {
                 _servalta.value = Event(it)
             }
-            repository.getServerAltadatos(estado).let {
+            repository.getServerAltadatos("Todo").let {
                 _servaltadatos.value = Event(it)
             }
-            repository.getServerBaja(estado).let {
+            repository.getServerBaja("Todo").let {
                 _servbaja.value = Event(it)
             }
-            repository.getServerBajaestado(estado).let {
+            repository.getServerBajaestado("Todo").let {
                 _servbajaestado.value = Event(it)
             }
-            repository.getServerRespuesta(estado).let {
+            repository.getServerRespuesta("Todo").let {
                 _servrespuesta.value = Event(it)
             }
-            repository.getServerFoto(estado).let {
+            repository.getServerFoto("Todo").let {
                 _servfoto.value = Event(it)
             }
-            repository.getServerAltaFoto(estado).let {
+            repository.getServerAltaFoto("Todo").let {
                 _servdni.value = Event(it)
             }
         }
@@ -1011,6 +1019,39 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteClientes()
             repository.deleteRutas()
+        }
+    }
+
+    fun changeURLserver() {
+        viewModelScope.launch {
+            repository.getSesion().let { sesion ->
+                when (OPTURL) {
+                    "base" -> {
+                        OPTURL = "aux"
+                        IP_AUX = "http://${IPA}/api/"
+                    }
+
+                    "aux" -> {
+                        OPTURL = "ipp"
+                        IP_P = "http://${sesion!!.ipp}/api/"
+                    }
+
+                    "ipp" -> {
+                        OPTURL = "ips"
+                        IP_S = "http://${sesion!!.ips}/api/"
+                    }
+
+                    "ips" -> {
+                        OPTURL = "aux"
+                        IP_AUX = "http://${IPA}/api/"
+                    }
+
+                    else -> {
+                        OPTURL = "base"
+                    }
+                }
+            }
+            _urlServer.value = Event(true)
         }
     }
 }

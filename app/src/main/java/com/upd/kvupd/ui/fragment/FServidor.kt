@@ -34,6 +34,7 @@ import com.upd.kvupd.utils.HostSelectionInterceptor
 import com.upd.kvupd.utils.NetworkRetrofit
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +72,7 @@ class FServidor : Fragment(), MenuProvider {
     private var mR = ""
     private var mF = ""
     private var mDNI = ""
+    private var errorResponse = 0
     private lateinit var seguimiento: TSeguimiento
     private lateinit var visita: TVisita
     private lateinit var alta: TAlta
@@ -112,7 +114,7 @@ class FServidor : Fragment(), MenuProvider {
         }
 
         restoreUI()
-        viewmodel.fetchServerAll("Todo")
+        viewmodel.fetchServerAll()
         getDataRoom()
         updateDataRoom()
 
@@ -124,9 +126,21 @@ class FServidor : Fragment(), MenuProvider {
                 host.setHostBaseUrl()
 
                 restoreUI()
-                viewmodel.fetchServerAll("Todo")
+                viewmodel.fetchServerAll()
                 getDataRoom()
                 updateDataRoom()
+            }
+        }
+
+        viewmodel.urlServer.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { server ->
+                if (server) {
+                    host.setHostBaseUrl()
+                    restoreUI()
+                    viewmodel.fetchServerAll()
+                    getDataRoom()
+                    updateDataRoom()
+                }
             }
         }
     }
@@ -137,6 +151,7 @@ class FServidor : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
+        R.id.situacional -> consume { retryUploadData() }
         else -> false
     }
 
@@ -408,6 +423,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mS = y.message!!
                         Log.w(_tag, "Seguimiento-> ${y.message} $seguimiento")
                     }
@@ -425,6 +441,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mV = y.message!!
                         Log.w(_tag, "Visita-> ${y.message} $visita")
                     }
@@ -442,6 +459,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mA = y.message!!
                         Log.w(_tag, "Alta-> ${y.message} $alta")
                     }
@@ -459,6 +477,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mAD = y.message!!
                         Log.w(_tag, "AltaDatos-> ${y.message} $altadatos")
                     }
@@ -476,6 +495,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mB = y.message!!
                         Log.w(_tag, "Baja-> ${y.message} $baja")
                     }
@@ -493,6 +513,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mBE = y.message!!
                         Log.w(_tag, "BajaEstado-> ${y.message} $bajaestado")
                     }
@@ -511,6 +532,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mR = y.message!!
                         Log.e(_tag, "Respuesta-> ${y.message} $respuesta")
                     }
@@ -529,6 +551,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mF = y.message!!
                         Log.e(_tag, "Foto-> ${y.message} $foto")
                     }
@@ -547,6 +570,7 @@ class FServidor : Fragment(), MenuProvider {
                     }
 
                     is NetworkRetrofit.Error -> {
+                        errorResponse++
                         mDNI = y.message!!
                         Log.e(_tag, "DNI-> ${y.message} $dni")
                     }
@@ -838,5 +862,20 @@ class FServidor : Fragment(), MenuProvider {
             }
         }
         setTextUI(tmn.size, 6)
+    }
+
+    private fun retryUploadData() {
+        if (errorResponse > 0) {
+            showDialog(
+                "Advertencia", "Use esta opcion en caso presente problemas para subir los datos, " +
+                        "en cada intento se van modificando las direcciones IP, si no es posible enviar datos utilice la opcion " +
+                        "alternativa, se encuentra a la derecha en la parte superior.", true
+            ) {
+                errorResponse = 0
+                viewmodel.changeURLserver()
+            }
+        } else {
+            showDialog("Correcto", "No es necesario, no hubo errores al subir los datos") {}
+        }
     }
 }

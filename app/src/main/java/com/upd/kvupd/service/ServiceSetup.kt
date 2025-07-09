@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.map
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -123,6 +124,7 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
         IPA = functions.parseQRtoIP()
         initObsWork()
         verifyHours()
+        initIPS()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -229,6 +231,18 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
                 } else {
                     closeEntireApp()
                 }
+            }
+        }
+    }
+
+    private fun initIPS() {
+        lifecycleScope.launch {
+            repository.getSesion().let { sesion ->
+                if (sesion != null) {
+                    IP_P = "http://${sesion.ipp}/api/"
+                    IP_S = "http://${sesion.ips}/api/"
+                }
+                IP_AUX = "http://${IPA}/api/"
             }
         }
     }

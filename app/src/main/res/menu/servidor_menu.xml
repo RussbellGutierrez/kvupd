@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="HardcodedText">
+
+    <item
+        android:id="@+id/situacional"
+        android:icon="@drawable/modificar"
+        android:title="Reintentar"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/emergencia"
         android:title="Emergencia"

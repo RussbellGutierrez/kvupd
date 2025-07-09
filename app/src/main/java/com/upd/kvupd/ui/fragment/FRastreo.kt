@@ -153,7 +153,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
             builder.include(LatLng(location.latitude, location.longitude))
             val bounds = builder.build()
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
-        }else{
+        } else {
             snack("No se detectan marcadores")
         }
     }
@@ -214,6 +214,7 @@ class FRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProv
         p.put("empleado", CONF.codigo)
         p.put("empresa", CONF.empresa)
         p.put("esquema", CONF.esquema)
+        println(p)
         progress("Descargando vendedores")
         viewmodel.fetchPedimap(p.toReqBody())
     }
