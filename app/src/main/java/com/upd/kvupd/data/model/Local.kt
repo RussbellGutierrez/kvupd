@@ -80,7 +80,8 @@ data class TClientes(
     val secuencia: Int,
     val numcuit: String,
     val encuestas: String,
-    val ventas: Int
+    val ventas: Int,
+    val ventanio: Int
 )
 
 fun List<TClientes>.asClienteList(): List<Cliente> = this.map {
@@ -98,7 +99,8 @@ fun List<TClientes>.asClienteList(): List<Cliente> = this.map {
         it.secuencia,
         it.numcuit,
         it.encuestas,
-        it.ventas
+        it.ventas,
+        it.ventanio
     )
 }
 
@@ -117,7 +119,8 @@ fun Cliente.asTCliente(): TClientes =
         this.secuencia,
         this.numcuit,
         this.encuestas,
-        this.ventas
+        this.ventas,
+        this.ventanio
     )
 
 @Entity(primaryKeys = ["codigo"])

@@ -99,7 +99,7 @@ object QueryConstant {
 
     const val GET_MARKERS = "" +
             "SELECT c.ventas, c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
-            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido " +
+            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido, c.ventanio " +
             "FROM TClientes c " +
             "LEFT JOIN TEstado e on c.idcliente=e.idcliente AND c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +

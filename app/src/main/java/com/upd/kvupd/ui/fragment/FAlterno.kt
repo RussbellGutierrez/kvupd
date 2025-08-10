@@ -193,9 +193,12 @@ class FAlterno : Fragment() {
             listaClientesAux.removeIf { it.idcliente in eliminar }
 
             // Creamos las listas con los nombres y poblamos la nueva lista limpia
+            val emoji = "\uD83D\uDE35"
             val codigosClientes = listaClientesAux.map { it.idcliente }
-            val nombresClientes =
-                listaClientesAux.map { "${it.idcliente} - ${it.nomcli}" }.toMutableList()
+            val nombresClientes = listaClientesAux.map { cliente ->
+                val prefijoEmoji = if (cliente.ventanio == 1) "$emoji " else ""
+                "$prefijoEmoji${cliente.idcliente} - ${cliente.nomcli}"
+            }.toMutableList()
             nombresClientes.add("Persona externa al padron")
 
             listaClientesLimpia.addAll(codigosClientes)

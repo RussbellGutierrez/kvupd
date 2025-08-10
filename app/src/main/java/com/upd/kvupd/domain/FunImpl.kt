@@ -379,13 +379,22 @@ class FunImpl @Inject constructor(
                 (i.longitud < 0 && i.latitud > 0) ||
                 (i.longitud > 0 && i.latitud < 0)
             ) {
-                if (i.venta == 0) {
-                    m.add(map.addingMarker(i, R.drawable.pin_venta))
+                if (i.compra == 1) {
+                    m.add(map.addingMarker(i, R.drawable.pin_peligro))
                 } else {
-                    when (i.observacion) {
-                        0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
-                        in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
-                        9 -> if (i.atendido < 2) m.add(map.addingMarker(i, R.drawable.pin_chess))
+                    if (i.venta == 0) {
+                        m.add(map.addingMarker(i, R.drawable.pin_venta))
+                    } else {
+                        when (i.observacion) {
+                            0 -> m.add(map.addingMarker(i, R.drawable.pin_pedido))
+                            in 1..7 -> m.add(map.addingMarker(i, R.drawable.pin_otros))
+                            9 -> if (i.atendido < 2) m.add(
+                                map.addingMarker(
+                                    i,
+                                    R.drawable.pin_chess
+                                )
+                            )
+                        }
                     }
                 }
             }
