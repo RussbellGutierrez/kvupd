@@ -38,6 +38,7 @@ import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFMapaBinding
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.DESTINO_NAV
 import com.upd.kvupd.utils.Constant.FILTRO_OBS
 import com.upd.kvupd.utils.Constant.GPS_LOC
 import com.upd.kvupd.utils.Constant.IWAM
@@ -300,16 +301,21 @@ class FMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
         val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
         when (dialog) {
             0 -> when (CONF.tipo) {
-                "V" -> findNavController().navigate(
-                    FMapaDirections.actionFMapaToBDObservacion(item)
-                )
+                "V" -> {
+                    DESTINO_NAV = "mapa"
+                    findNavController().navigate(
+                        FMapaDirections.actionFMapaToFAlterno(cliente.id)//FMapaDirections.actionFMapaToBDObservacion(item)
+                    )
+                }
 
                 "S" -> viewmodel.checkingEncuesta {
                     if (it) {
+                        DESTINO_NAV = "mapa"
                         findNavController().navigate(
-                            FMapaDirections.actionFMapaToBDObservacion(item)
+                            FMapaDirections.actionFMapaToFAlterno(cliente.id)//FMapaDirections.actionFMapaToBDObservacion(item)
                         )
                     } else {
+                        DESTINO_NAV = "base"
                         snack("Regrese a la lista y elija una encuesta")
                     }
                 }

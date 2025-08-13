@@ -24,6 +24,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
@@ -35,12 +36,14 @@ import com.upd.kvupd.databinding.FragmentFAlternoBinding
 import com.upd.kvupd.databinding.RowAlternoBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.DESTINO_NAV
 import com.upd.kvupd.utils.Constant.POS_LOC
 import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
 import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
@@ -54,8 +57,10 @@ import java.util.Locale
 class FAlterno : Fragment() {
 
     private val viewmodel by activityViewModels<AppViewModel>()
+    private val args: FAlternoArgs by navArgs()
     private var _bind: FragmentFAlternoBinding? = null
     private val bind get() = _bind!!
+    private var clienteDelMapa = 0
     private var countList = 0
     private var abspath = ""
     private var foto = false
@@ -89,6 +94,8 @@ class FAlterno : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        clienteDelMapa = args.cliente
 
         viewmodel.clienteRoom.observe(viewLifecycleOwner) { it ->
             it.getContentIfNotHandled()?.let { clientes ->
@@ -210,6 +217,15 @@ class FAlterno : Fragment() {
                 nombresClientes
             )
             bind.autoCliente.setAdapter(adapter)
+
+            // Selección automática si el argumento no es 0
+            if (clienteDelMapa != 0) {
+                val index = listaClientesLimpia.indexOf(clienteDelMapa)
+                if (index != -1) {
+                    bind.autoCliente.setText(nombresClientes[index], false)
+                    setupUI(index)
+                }
+            }
         }
     }
 
@@ -416,7 +432,12 @@ class FAlterno : Fragment() {
             }
 
         viewmodel.savingRespuestas(listaGuardar)
-        findNavController().navigate(R.id.action_FAlterno_to_FBase)
+        if (DESTINO_NAV == "mapa") {
+            DESTINO_NAV = "base"
+            findNavController().navigate(R.id.action_FAlterno_to_FMapa)
+        } else {
+            findNavController().navigate(R.id.action_FAlterno_to_FBase)
+        }
         snack("Encuesta guardada correctamente")
     }
 }

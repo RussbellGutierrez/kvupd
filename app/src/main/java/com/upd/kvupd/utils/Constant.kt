@@ -11,6 +11,8 @@ object Constant {
 
     var FILTRO_OBS = 9
 
+    var DESTINO_NAV = "base"
+
     const val M_PEDIDO = "Hizo pedido"
     const val M_CERRADO = "Puesto cerrado"
     const val M_PRODUCTO = "Tiene producto"
