@@ -87,6 +87,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FBase_to_FAlterno"
+            app:destination="@id/FAlterno"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
@@ -162,6 +169,13 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/FBase" />
         <action
+            android:id="@+id/action_FMapa_to_FAlterno"
+            app:destination="@id/FAlterno"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
             android:id="@+id/action_FMapa_to_DBuscar"
             app:destination="@id/DBuscar"
             app:enterAnim="@anim/slide_in_right"
@@ -202,10 +216,6 @@
         android:id="@+id/FEncuesta"
         android:name="com.upd.kvupd.ui.fragment.FEncuesta"
         android:label="Encuesta"
-        app:enterAnim="@anim/slide_in_right"
-        app:exitAnim="@anim/slide_out_left"
-        app:popEnterAnim="@anim/slide_in_left"
-        app:popExitAnim="@anim/slide_out_right"
         tools:layout="@layout/fragment_f_encuesta">
         <action
             android:id="@+id/action_FEncuesta_to_FMapa"
@@ -476,4 +486,29 @@
             android:name="lista"
             app:argType="com.upd.kvupd.data.model.DataCliente[]" />
     </dialog>
+    <fragment
+        android:id="@+id/FAlterno"
+        android:name="com.upd.kvupd.ui.fragment.FAlterno"
+        android:label="Encuesta"
+        tools:layout="@layout/fragment_f_alterno" >
+        <action
+            android:id="@+id/action_FAlterno_to_FBase"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/FBase" />
+        <action
+            android:id="@+id/action_FAlterno_to_FMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/FMapa"
+            app:popUpToInclusive="false" />
+        <argument
+            android:name="cliente"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

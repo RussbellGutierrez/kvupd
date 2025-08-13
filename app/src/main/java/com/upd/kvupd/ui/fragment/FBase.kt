@@ -13,15 +13,19 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.domain.OnGpsState
 import com.upd.kvupd.utils.Constant.CONF
+import com.upd.kvupd.utils.Constant.isCONFinitialized
 import com.upd.kvupd.utils.Interface.closeListener
 import com.upd.kvupd.utils.Interface.gpsListener
 import com.upd.kvupd.utils.NetworkRetrofit
@@ -35,6 +39,7 @@ import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
@@ -119,6 +124,12 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
                 viewmodel.dataDownloaded()
             }
         }
+        bind.fabEncuesta.setOnClickListener {
+            checkingGPS {
+                opt = 8
+                viewmodel.dataDownloaded()
+            }
+        }
 
         viewmodel.inicio.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -138,6 +149,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
                         5 -> findNavController().navigate(R.id.action_FBase_to_FBaja)
                         6 -> findNavController().navigate(R.id.action_FBase_to_FServidor)
                         7 -> findNavController().navigate(R.id.action_FBase_to_FConsulta)
+                        8 -> checkEncuestaSelect()
                     }
                 } else {
                     snack("Los datos no se han descargado")
@@ -314,4 +326,28 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         }
     }
 
+    private fun checkEncuestaSelect() {
+        lifecycleScope.launch {
+            // Esperamos resultado de la función suspendida
+            val sinEncuesta = viewmodel.isEncuestaEmpty()
+
+            if (sinEncuesta) {
+                snack("No hay encuestas disponibles para procesar")
+                return@launch
+            }
+
+            if (isCONFinitialized()) {
+                when (CONF.tipo) {
+                    "V" -> findNavController().navigate(R.id.action_FBase_to_FAlterno)
+                    "S" -> viewmodel.checkingEncuesta {
+                        if (it) {
+                            findNavController().navigate(R.id.action_FBase_to_FAlterno)
+                        } else {
+                            snack("Debe elegir una encuesta primero")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ sealed class NetworkRetrofit<T>(
     val data: T? = null,
     val message: String? = null
 ) {
-    class Success<T>(data: T) : NetworkRetrofit<T>(data)
-    class Error<T>(message: String?, data: T? = null) : NetworkRetrofit<T>(data, message)
+    data class Success<T>(val result: T) : NetworkRetrofit<T>(data = result)
+    data class Error<T>(val errorMessage: String?, val errorData: T? = null) :
+        NetworkRetrofit<T>(data = errorData, message = errorMessage)
 }

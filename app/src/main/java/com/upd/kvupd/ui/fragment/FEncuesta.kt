@@ -104,7 +104,7 @@ class FEncuesta : Fragment() {
                 if (y.isNotEmpty()) {
                     preguntas = y
                     encuesta = y[0].id
-                    foto = preguntas.find { j -> j.foto } != null
+                    foto = preguntas.any { j -> j.foto }
                     total = preguntas.size
                     drawQuestion()
                 }
@@ -144,6 +144,7 @@ class FEncuesta : Fragment() {
                                 "A" -> bind.edtLibre.inputType = InputType.TYPE_CLASS_TEXT
                             }
                         }
+
                         "U" -> {
                             it.respuesta.split("|").forEach { y ->
                                 val rb = RadioButton(requireActivity())
@@ -161,6 +162,7 @@ class FEncuesta : Fragment() {
                                 }
                             }
                         }
+
                         "M" -> {
                             val checkbox = arrayListOf<CheckBox>()
                             it.respuesta.split("|").forEach { y ->
@@ -182,8 +184,10 @@ class FEncuesta : Fragment() {
                                         when {
                                             radiocheck.contains("|${y.text}") -> radiocheck =
                                                 radiocheck.replace("|${y.text}", "")
+
                                             radiocheck.contains("${y.text}|") -> radiocheck =
                                                 radiocheck.replace("${y.text}|", "")
+
                                             radiocheck.contains(y.text) -> radiocheck =
                                                 radiocheck.replace(y.text.toString(), "")
                                         }
@@ -221,11 +225,13 @@ class FEncuesta : Fragment() {
                 bind.lnrMultiple.setUI("v", false)
                 bind.txtLibre.setUI("v", true)
             }
+
             "U" -> {
                 bind.rbUnico.setUI("v", true)
                 bind.lnrMultiple.setUI("v", false)
                 bind.txtLibre.setUI("v", false)
             }
+
             "M" -> {
                 bind.rbUnico.setUI("v", false)
                 bind.lnrMultiple.setUI("v", true)
@@ -277,6 +283,7 @@ class FEncuesta : Fragment() {
                         posicion++
                         drawQuestion()
                     }
+
                     "U" -> {
                         if (it.condicional) {
                             previo = "${it.pregunta}|$radiocheck"
@@ -286,12 +293,14 @@ class FEncuesta : Fragment() {
                         posicion++
                         drawQuestion()
                     }
+
                     "M" -> {
                         val item = Respuesta(it.id, it.pregunta, radiocheck, "", 0)
                         respuesta.add(item)
                         posicion++
                         drawQuestion()
                     }
+
                     else -> "Nothing"
                 }
             }
@@ -382,13 +391,15 @@ class FEncuesta : Fragment() {
         val fecha = viewmodel.fecha(4)
         respuesta.forEach {
             val item = TRespuesta(
-                cliente,
+                cliente.toString(),
                 fecha,
                 it.encuesta,
                 it.pregunta,
                 it.respuesta,
                 it.ruta,
                 it.foto,
+                0.0,
+                0.0,
                 "Pendiente"
             )
             list.add(item)

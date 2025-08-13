@@ -79,7 +79,7 @@ class BDObservacion : BottomSheetDialogFragment() {
                 }
             }
         }
-        viewmodel.respuesta.observe(viewLifecycleOwner) {
+        viewmodel.clienteRespondio.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 dismiss()
                 if (!y) {

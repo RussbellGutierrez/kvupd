@@ -59,7 +59,8 @@ data class Cliente(
     @Json(name = "secuencia") val secuencia: Int,
     @Json(name = "numcuit") val numcuit: String,
     @Json(name = "encuestas") val encuestas: String,
-    @Json(name = "venta") val ventas: Int
+    @Json(name = "venta") val ventas: Int,
+    @Json(name = "ventanio") val ventanio: Int
 )
 
 @JsonClass(generateAdapter = true)

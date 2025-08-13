@@ -23,7 +23,8 @@ data class MarkerMap(
     @ColumnInfo(name = "longitud") val longitud: Double,
     @ColumnInfo(name = "latitud") val latitud: Double,
     @ColumnInfo(name = "observacion") val observacion: Int,
-    @ColumnInfo(name = "atendido") val atendido: Int
+    @ColumnInfo(name = "atendido") val atendido: Int,
+    @ColumnInfo(name = "ventanio") val compra: Int
 )
 
 @Parcelize
@@ -105,6 +106,11 @@ data class RespuestaCliente(
 
 data class RespuestaHistorico(
     @ColumnInfo(name = "encuestas") val encuesta: String
+)
+
+data class RespuestaClientePrevio(
+    val respondio: Boolean,
+    val cliente: Int
 )
 
 data class OrderVenta(

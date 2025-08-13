@@ -26,7 +26,7 @@ import com.upd.kvupd.data.model.TSesion
 import com.upd.kvupd.data.model.TVisita
 
 @Database(
-    version = 13,
+    version = 15,
     entities = [TSesion::class, TConfiguracion::class, TClientes::class, TEmpleados::class, TDistrito::class,
         TNegocio::class, TRutas::class, TEncuesta::class, TRespuesta::class, TEstado::class, TSeguimiento::class,
         TVisita::class, TBaja::class, TAlta::class, TADatos::class, TBajaSuper::class, TBEstado::class,

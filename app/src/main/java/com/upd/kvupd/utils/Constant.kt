@@ -11,6 +11,8 @@ object Constant {
 
     var FILTRO_OBS = 9
 
+    var DESTINO_NAV = "base"
+
     const val M_PEDIDO = "Hizo pedido"
     const val M_CERRADO = "Puesto cerrado"
     const val M_PRODUCTO = "Tiene producto"
@@ -102,7 +104,7 @@ object Constant {
     const val D_HEIGHT = ConstraintLayout.LayoutParams.WRAP_CONTENT
 
     var OPTURL = "base"
-    var BASE_URL = "http://191.98.177.57/api/"
+    var BASE_URL = "http://190.187.90.132/api/"
     var IP_P = ""
     var IP_S = ""
     var IP_AUX = ""

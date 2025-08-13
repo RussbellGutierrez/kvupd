@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 13,
-    "identityHash": "295722f985df023dc9dea8fd0c9565fe",
+    "version": 14,
+    "identityHash": "16915bdf9c8989f6425df50ad50c32b7",
     "entities": [
       {
         "tableName": "TSesion",
@@ -172,7 +172,7 @@
       },
       {
         "tableName": "TClientes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `nomcli` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `domicli` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `fecha` TEXT NOT NULL, `secuencia` INTEGER NOT NULL, `numcuit` TEXT NOT NULL, `encuestas` TEXT NOT NULL, `ventas` INTEGER NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `nomcli` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `domicli` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `fecha` TEXT NOT NULL, `secuencia` INTEGER NOT NULL, `numcuit` TEXT NOT NULL, `encuestas` TEXT NOT NULL, `ventas` INTEGER NOT NULL, `ventanio` INTEGER NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
         "fields": [
           {
             "fieldPath": "idcliente",
@@ -255,6 +255,12 @@
           {
             "fieldPath": "ventas",
             "columnName": "ventas",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ventanio",
+            "columnName": "ventanio",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1509,7 +1515,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '295722f985df023dc9dea8fd0c9565fe')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16915bdf9c8989f6425df50ad50c32b7')"
     ]
   }
 }

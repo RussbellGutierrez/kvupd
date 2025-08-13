@@ -8,11 +8,15 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.upd.kvupd.R
 import com.upd.kvupd.application.Receiver
 import com.upd.kvupd.ui.activity.MainActivity
@@ -96,6 +100,7 @@ class HelperNotification @Inject constructor(
 
         val builder = NotificationCompat.Builder(ctx, SETUP_CHANNEL)
             .setSmallIcon(R.drawable.setup)
+            .setLargeIcon(AppCompatResources.getDrawable(ctx, R.drawable.setup)?.toBitmap())
             .setContentTitle("KVentas")
             .setContentText("App running")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
