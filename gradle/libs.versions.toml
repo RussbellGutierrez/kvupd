@@ -1,19 +1,19 @@
 [versions]
-agp = "8.4.1"
-kotlin = "1.9.0"
+agp = "8.4.0"
+kotlin = "2.1.0"
 kapt = "1.9.0"
-hilt = "2.51.1"
+hilt = "2.56.2"
 safe = "2.7.7"
 secret = "2.0.1"
-coreKtx = "1.13.1"
+coreKtx = "1.15.0"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.0"
-constraintlayout = "2.1.4"
-ksp = "1.9.0-1.0.12"
+constraintlayout = "2.2.0"
+ksp = "2.0.21-1.0.27"
 parcelize = "1.9.0"
 coroutines = "1.9.0-RC"
 location = "21.3.0"
@@ -22,12 +22,12 @@ maps = "18.2.0"
 fragment = "1.7.1"
 cardview = "1.0.0"
 preference = "1.2.1"
-lifecycleKtx = "2.8.1"
+lifecycleKtx = "2.8.7"
+navigationKtx = "2.8.5"
 lifecycle = "2.2.0"
 flexbox = "3.0.0"
 work = "2.7.1"
-navigation = "2.7.7"
-room = "2.6.1"
+room = "2.7.1"
 workcompiler = "1.0.0"
 retrofit = "2.9.0"
 moshi = "1.13.0"
@@ -36,8 +36,12 @@ zxing = "4.3.0"
 dialog = "3.3.0"
 glide = "4.11.0"
 socket = "1.0.0"
+google-services = "4.4.1"
+firebase-bom = "32.7.2"
 
 [libraries]
+
+# AndroidX Core & UI
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
@@ -45,61 +49,120 @@ androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", versio
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+# Material Design
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
-play-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "location" }
-play-vision = { group = "com.google.android.gms", name = "play-services-vision", version.ref = "vision" }
-play-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "maps" }
+dialogs = { group = "com.afollestad.material-dialogs", name = "core", version.ref = "dialog" }
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+# Lifecycle
 lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleKtx" }
 lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleKtx" }
 lifecycle-extensions = { group = "androidx.lifecycle", name = "lifecycle-extensions", version.ref = "lifecycle" }
-flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
-worker = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
-navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
-navigation-dynamic = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "navigation" }
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+
+# Navigation
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationKtx" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationKtx" }
+navigation-dynamic = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "navigationKtx" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationKtx" }
+
+# Room
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "workcompiler" }
-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "workcompiler" }
-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx" }
+firebase-installations-ktx = { group = "com.google.firebase", name = "firebase-installations-ktx" }
+
+# Moshi
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+
+# Retrofit
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+
+# OkHttp
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Hilt
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+
+# Google Play Services
+play-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "location" }
+play-vision = { group = "com.google.android.gms", name = "play-services-vision", version.ref = "vision" }
+play-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "maps" }
+
+# Coroutines
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
+# WorkManager
+worker = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "workcompiler" }
+hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "workcompiler" }
+
+# Otros
 zxing = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing" }
-dialogs = { group = "com.afollestad.material-dialogs", name = "core", version.ref = "dialog" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 socket = { group = "io.socket", name = "socket.io-client", version.ref = "socket" }
 
 [bundles]
+
+# Corrutinas
 feature-coroutines = ["kotlinx-coroutines-android", "kotlinx-coroutines-core"]
+
+# Google Play Services
 feature-play-services = ["play-location", "play-vision", "play-maps"]
+
+# Ciclo de vida (Lifecycle)
 feature-lifecycle = ["lifecycle-viewmodel", "lifecycle-livedata", "lifecycle-extensions"]
+
+# Navegación
 feature-navigation = ["navigation-fragment", "navigation-ui", "navigation-dynamic", "navigation-compose"]
-feature-room = ["room", "room-runtime"]
+
+# Room
+feature-room = ["room", "room-runtime"]#"room-compiler"
+
+# Retrofit + Moshi
 feature-retrofit = ["retrofit", "retrofit-converter"]
-feature-moshi = ["moshi", "moshi-kotlin"]
+feature-moshi = ["moshi", "moshi-kotlin"]#"moshi-codegen"
+
+# OkHttp
 feature-okhttp = ["okhttp", "okhttp-interceptor"]
+
+# Firebase
+feature-firebase = ["firebase-analytics", "firebase-messaging-ktx", "firebase-database-ktx", "firebase-installations-ktx"]
+
+# UI & Material
+feature-ui = ["androidx-core-ktx", "androidx-appcompat", "material", "dialogs", "androidx-activity", "androidx-fragment", "androidx-cardview", "androidx-preference", "androidx-constraintlayout", "flexbox"]
 
 #los nombres solo pueden tener hasta 3 textos (google-android-plugin)
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safe" }
 android-mapsplatform-secretsGradlePlugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secret" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
 parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "parcelize" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+
+
+
+
+

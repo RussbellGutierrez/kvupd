@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.RowClienteBinding
-import com.upd.kvupd.domain.Repository
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.clienteListener
+import com.upd.kvupd.domain.OldRepository
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldInterface.clienteListener
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.textToTime
@@ -29,8 +29,8 @@ import javax.inject.Inject
 
 class ClienteAdapter @Inject constructor(
     @ApplicationContext private val ctx: Context,
-    private val repository: Repository
-) : RecyclerView.Adapter<BaseViewHolder<*>>() {
+    private val repository: OldRepository
+) : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<RowCliente>() {
 
@@ -65,12 +65,12 @@ class ClienteAdapter @Inject constructor(
 
     var mDiffer: AsyncListDiffer<RowCliente> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowClienteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -82,7 +82,7 @@ class ClienteAdapter @Inject constructor(
 
     private inner class ViewHolder(
         private val bind: RowClienteBinding
-    ) : BaseViewHolder<RowCliente>(bind.root) {
+    ) : OldBaseViewHolder<RowCliente>(bind.root) {
 
         override fun bind(item: RowCliente) {
             CoroutineScope(Dispatchers.Main).launch {

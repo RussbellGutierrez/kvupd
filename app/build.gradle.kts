@@ -1,24 +1,25 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.android.mapsplatform.secretsGradlePlugin)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
     alias(libs.plugins.parcelize)
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace = "com.upd.kvupd"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.upd.kvupd"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 240010508
-        versionName = "1.5.8"
+        targetSdk = 35
+        versionCode = 240010600
+        versionName = "1.6.0"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -60,35 +61,29 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.cardview)
-    implementation(libs.androidx.preference)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.material)
-    implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.feature.ui)
     implementation(libs.bundles.feature.coroutines)
     implementation(libs.bundles.feature.play.services)
     implementation(libs.bundles.feature.lifecycle)
-    implementation(libs.flexbox)
-    implementation(libs.worker)
     implementation(libs.bundles.feature.navigation)
     implementation(libs.bundles.feature.room)
-    ksp(libs.room.compiler)
-    implementation(libs.hilt.work)
-    kapt(libs.hilt.compiler)
     implementation(libs.bundles.feature.retrofit)
     implementation(libs.bundles.feature.moshi)
-    ksp(libs.moshi.codegen)
     implementation(libs.bundles.feature.okhttp)
-    implementation(libs.zxing)
-    implementation(libs.dialogs)
+    implementation(libs.bundles.feature.firebase)
+    implementation(libs.dagger.hilt)
+    implementation(libs.worker)
+    implementation(libs.hilt.work)
     implementation(libs.glide)
-    ksp(libs.glide.compiler)
+    implementation(libs.zxing)
     implementation(libs.socket) { exclude(group = "org.json", module = "json") }
+
+    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.room.compiler)
+    kapt(libs.hilt.compiler)
+    ksp(libs.moshi.codegen)
+    ksp(libs.glide.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

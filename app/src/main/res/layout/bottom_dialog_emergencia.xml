@@ -8,7 +8,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".ui.dialog.BDEmergencia">
+    tools:context=".ui.dialog.OldBDEmergencia">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

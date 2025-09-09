@@ -17,37 +17,36 @@ import com.google.android.gms.location.LocationServices
 import com.upd.kvupd.application.work.HelperNotification
 import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.data.model.TSeguimiento
-import com.upd.kvupd.domain.Functions
-import com.upd.kvupd.domain.LocationClient
-import com.upd.kvupd.domain.OnInterSetup
-import com.upd.kvupd.domain.Repository
-import com.upd.kvupd.utils.CaptureLocation
-import com.upd.kvupd.utils.Constant
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Constant.GPS_FAST_INTERVAL
-import com.upd.kvupd.utils.Constant.GPS_LOC
-import com.upd.kvupd.utils.Constant.GPS_METERS
-import com.upd.kvupd.utils.Constant.GPS_NORMAL_INTERVAL
-import com.upd.kvupd.utils.Constant.IMEI
-import com.upd.kvupd.utils.Constant.IPA
-import com.upd.kvupd.utils.Constant.IP_AUX
-import com.upd.kvupd.utils.Constant.IP_P
-import com.upd.kvupd.utils.Constant.IP_S
-import com.upd.kvupd.utils.Constant.LOOPING
-import com.upd.kvupd.utils.Constant.OPTURL
-import com.upd.kvupd.utils.Constant.SETUP_NOTIF
-import com.upd.kvupd.utils.Constant.W_CONFIG
-import com.upd.kvupd.utils.Constant.W_DISTRITO
-import com.upd.kvupd.utils.Constant.W_ENCUESTA
-import com.upd.kvupd.utils.Constant.W_NEGOCIO
-import com.upd.kvupd.utils.Constant.W_RUTA
-import com.upd.kvupd.utils.Constant.W_USER
-import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Event
-import com.upd.kvupd.utils.HostSelectionInterceptor
-import com.upd.kvupd.utils.Interface.closeListener
-import com.upd.kvupd.utils.Interface.interListener
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.domain.OldFunctions
+import com.upd.kvupd.domain.OldLocationClient
+import com.upd.kvupd.domain.OldOnInterSetup
+import com.upd.kvupd.domain.OldRepository
+import com.upd.kvupd.utils.OldCaptureLocation
+import com.upd.kvupd.utils.OldConstant
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldConstant.GPS_FAST_INTERVAL
+import com.upd.kvupd.utils.OldConstant.GPS_LOC
+import com.upd.kvupd.utils.OldConstant.GPS_METERS
+import com.upd.kvupd.utils.OldConstant.GPS_NORMAL_INTERVAL
+import com.upd.kvupd.utils.OldConstant.IMEI
+import com.upd.kvupd.utils.OldConstant.IPA
+import com.upd.kvupd.utils.OldConstant.IP_AUX
+import com.upd.kvupd.utils.OldConstant.IP_P
+import com.upd.kvupd.utils.OldConstant.IP_S
+import com.upd.kvupd.utils.OldConstant.LOOPING
+import com.upd.kvupd.utils.OldConstant.OPTURL
+import com.upd.kvupd.utils.OldConstant.SETUP_NOTIF
+import com.upd.kvupd.utils.OldConstant.W_CONFIG
+import com.upd.kvupd.utils.OldConstant.W_DISTRITO
+import com.upd.kvupd.utils.OldConstant.W_ENCUESTA
+import com.upd.kvupd.utils.OldConstant.W_NEGOCIO
+import com.upd.kvupd.utils.OldConstant.W_RUTA
+import com.upd.kvupd.utils.OldConstant.W_USER
+import com.upd.kvupd.utils.OldConstant.isCONFinitialized
+import com.upd.kvupd.utils.OldEvent
+import com.upd.kvupd.utils.OldHostSelectionInterceptor
+import com.upd.kvupd.utils.OldInterface.closeListener
+import com.upd.kvupd.utils.OldInterface.interListener
 import com.upd.kvupd.utils.dateToday
 import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,22 +65,22 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ServiceSetup : LifecycleService(), OnInterSetup {
+class ServiceSetup : LifecycleService(), OldOnInterSetup {
 
     @Inject
     lateinit var workManager: WorkManager
 
     @Inject
-    lateinit var functions: Functions
+    lateinit var functions: OldFunctions
 
     @Inject
-    lateinit var repository: Repository
+    lateinit var repository: OldRepository
 
     @Inject
     lateinit var helperNotification: HelperNotification
 
     @Inject
-    lateinit var host: HostSelectionInterceptor
+    lateinit var host: OldHostSelectionInterceptor
 
     private var user = false
     private var distrito = false
@@ -89,13 +88,13 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
     private var ruta = false
     private var encuesta = false
     private var serviceScope: CoroutineScope? = null
-    private lateinit var locationClient: LocationClient
-    private lateinit var configLiveData: LiveData<Event<List<WorkInfo>>>
-    private lateinit var userLiveData: LiveData<Event<List<WorkInfo>>>
-    private lateinit var distritoLiveData: LiveData<Event<List<WorkInfo>>>
-    private lateinit var negocioLiveData: LiveData<Event<List<WorkInfo>>>
-    private lateinit var rutaLiveData: LiveData<Event<List<WorkInfo>>>
-    private lateinit var encuestaLiveData: LiveData<Event<List<WorkInfo>>>
+    private lateinit var locationClient: OldLocationClient
+    private lateinit var configLiveData: LiveData<OldEvent<List<WorkInfo>>>
+    private lateinit var userLiveData: LiveData<OldEvent<List<WorkInfo>>>
+    private lateinit var distritoLiveData: LiveData<OldEvent<List<WorkInfo>>>
+    private lateinit var negocioLiveData: LiveData<OldEvent<List<WorkInfo>>>
+    private lateinit var rutaLiveData: LiveData<OldEvent<List<WorkInfo>>>
+    private lateinit var encuestaLiveData: LiveData<OldEvent<List<WorkInfo>>>
     private val _tag by lazy { ServiceSetup::class.java.simpleName }
 
     override fun onDestroy() {
@@ -115,7 +114,7 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
         functions.mobileInternetState()
 
         interListener = this
-        locationClient = CaptureLocation(
+        locationClient = OldCaptureLocation(
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
         )
@@ -151,12 +150,12 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
 
     private fun initObsWork() {
         helperNotification.configNotifLaunch()
-        configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { Event(it) }
-        userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { Event(it) }
-        distritoLiveData = workManager.getWorkInfosByTagLiveData(W_DISTRITO).map { Event(it) }
-        negocioLiveData = workManager.getWorkInfosByTagLiveData(W_NEGOCIO).map { Event(it) }
-        rutaLiveData = workManager.getWorkInfosByTagLiveData(W_RUTA).map { Event(it) }
-        encuestaLiveData = workManager.getWorkInfosByTagLiveData(W_ENCUESTA).map { Event(it) }
+        configLiveData = workManager.getWorkInfosByTagLiveData(W_CONFIG).map { OldEvent(it) }
+        userLiveData = workManager.getWorkInfosByTagLiveData(W_USER).map { OldEvent(it) }
+        distritoLiveData = workManager.getWorkInfosByTagLiveData(W_DISTRITO).map { OldEvent(it) }
+        negocioLiveData = workManager.getWorkInfosByTagLiveData(W_NEGOCIO).map { OldEvent(it) }
+        rutaLiveData = workManager.getWorkInfosByTagLiveData(W_RUTA).map { OldEvent(it) }
+        encuestaLiveData = workManager.getWorkInfosByTagLiveData(W_ENCUESTA).map { OldEvent(it) }
     }
 
     private fun launchLocation() {
@@ -290,7 +289,7 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
                     location.longitude,
                     location.latitude,
                     location.accuracy.toDouble(),
-                    Constant.BATTERY_PCT.toDouble(),
+                    OldConstant.BATTERY_PCT.toDouble(),
                     "Pendiente"
                 )
                 repository.saveSeguimiento(item)
@@ -303,20 +302,20 @@ class ServiceSetup : LifecycleService(), OnInterSetup {
         CoroutineScope(Dispatchers.IO).launch {
             if (isCONFinitialized() && CONF.seguimiento == 1) {
                 val p = requestBody(item)
-                repository.setWebSeguimiento(p).collect {
+                /*repository.setWebSeguimiento(p).collect {
                     when (it) {
-                        is NetworkRetrofit.Success -> {
+                        is OldNetworkRetrofit.Success -> {
                             item.estado = "Enviado"
                             repository.updateSeguimiento(item)
                             Log.d(_tag, "Seguimiento enviado $item")
                         }
 
-                        is NetworkRetrofit.Error -> {
+                        is OldNetworkRetrofit.Error -> {
                             changeHostServer()
                             Log.e(_tag, "Seguimiento Error ${it.message}")
                         }
                     }
-                }
+                }*/
             }
         }
     }

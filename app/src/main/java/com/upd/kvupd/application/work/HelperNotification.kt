@@ -8,8 +8,6 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -18,33 +16,33 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.upd.kvupd.R
-import com.upd.kvupd.application.Receiver
+import com.upd.kvupd.application.OldReceiver
 import com.upd.kvupd.ui.activity.MainActivity
-import com.upd.kvupd.utils.Constant.ACTION_NOTIFICATION_DISMISSED
-import com.upd.kvupd.utils.Constant.ACTION_NOTIFICATION_SLEEPED
-import com.upd.kvupd.utils.Constant.CONFIG_CHANNEL
-import com.upd.kvupd.utils.Constant.CONFIG_NOTIF
-import com.upd.kvupd.utils.Constant.DISMISS_ID
-import com.upd.kvupd.utils.Constant.DISMISS_NAME
-import com.upd.kvupd.utils.Constant.DISTRITO_CHANNEL
-import com.upd.kvupd.utils.Constant.DISTRITO_NOTIF
-import com.upd.kvupd.utils.Constant.ENCUESTA_CHANNEL
-import com.upd.kvupd.utils.Constant.ENCUESTA_NOTIF
-import com.upd.kvupd.utils.Constant.MSG_CONFIG
-import com.upd.kvupd.utils.Constant.MSG_DISTRITO
-import com.upd.kvupd.utils.Constant.MSG_ENCUESTA
-import com.upd.kvupd.utils.Constant.MSG_NEGOCIO
-import com.upd.kvupd.utils.Constant.MSG_RUTA
-import com.upd.kvupd.utils.Constant.MSG_USER
-import com.upd.kvupd.utils.Constant.NEGOCIO_CHANNEL
-import com.upd.kvupd.utils.Constant.NEGOCIO_NOTIF
-import com.upd.kvupd.utils.Constant.RUTA_CHANNEL
-import com.upd.kvupd.utils.Constant.RUTA_NOTIF
-import com.upd.kvupd.utils.Constant.SETUP_CHANNEL
-import com.upd.kvupd.utils.Constant.SLEEP_ID
-import com.upd.kvupd.utils.Constant.SLEEP_NAME
-import com.upd.kvupd.utils.Constant.USER_CHANNEL
-import com.upd.kvupd.utils.Constant.USER_NOTIF
+import com.upd.kvupd.utils.OldConstant.ACTION_NOTIFICATION_DISMISSED
+import com.upd.kvupd.utils.OldConstant.ACTION_NOTIFICATION_SLEEPED
+import com.upd.kvupd.utils.OldConstant.CONFIG_CHANNEL
+import com.upd.kvupd.utils.OldConstant.CONFIG_NOTIF
+import com.upd.kvupd.utils.OldConstant.DISMISS_ID
+import com.upd.kvupd.utils.OldConstant.DISMISS_NAME
+import com.upd.kvupd.utils.OldConstant.DISTRITO_CHANNEL
+import com.upd.kvupd.utils.OldConstant.DISTRITO_NOTIF
+import com.upd.kvupd.utils.OldConstant.ENCUESTA_CHANNEL
+import com.upd.kvupd.utils.OldConstant.ENCUESTA_NOTIF
+import com.upd.kvupd.utils.OldConstant.MSG_CONFIG
+import com.upd.kvupd.utils.OldConstant.MSG_DISTRITO
+import com.upd.kvupd.utils.OldConstant.MSG_ENCUESTA
+import com.upd.kvupd.utils.OldConstant.MSG_NEGOCIO
+import com.upd.kvupd.utils.OldConstant.MSG_RUTA
+import com.upd.kvupd.utils.OldConstant.MSG_USER
+import com.upd.kvupd.utils.OldConstant.NEGOCIO_CHANNEL
+import com.upd.kvupd.utils.OldConstant.NEGOCIO_NOTIF
+import com.upd.kvupd.utils.OldConstant.RUTA_CHANNEL
+import com.upd.kvupd.utils.OldConstant.RUTA_NOTIF
+import com.upd.kvupd.utils.OldConstant.SETUP_CHANNEL
+import com.upd.kvupd.utils.OldConstant.SLEEP_ID
+import com.upd.kvupd.utils.OldConstant.SLEEP_NAME
+import com.upd.kvupd.utils.OldConstant.USER_CHANNEL
+import com.upd.kvupd.utils.OldConstant.USER_NOTIF
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -64,7 +62,7 @@ class HelperNotification @Inject constructor(
     }
 
     private fun createDeletePending(): PendingIntent {
-        val intent = Intent(ctx, Receiver::class.java)
+        val intent = Intent(ctx, OldReceiver::class.java)
         intent.action = ACTION_NOTIFICATION_DISMISSED
         intent.putExtra(DISMISS_NAME, DISMISS_ID)
         return PendingIntent.getBroadcast(
@@ -76,7 +74,7 @@ class HelperNotification @Inject constructor(
     }
 
     private fun createSleepPending(): PendingIntent {
-        val intent = Intent(ctx, Receiver::class.java)
+        val intent = Intent(ctx, OldReceiver::class.java)
         intent.action = ACTION_NOTIFICATION_SLEEPED
         intent.putExtra(SLEEP_NAME, SLEEP_ID)
         return PendingIntent.getBroadcast(

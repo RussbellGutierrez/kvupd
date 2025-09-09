@@ -2,43 +2,32 @@ package com.upd.kvupd.data.model
 
 object QueryConstant {
 
-    const val GET_SESION = "SELECT * FROM TSesion"
-    const val GET_CONFIG = "SELECT * FROM TConfiguracion"
-    const val GET_CLIENTES = "SELECT * FROM TClientes"
-    const val GET_EMPLEADOS = "SELECT * FROM TEmpleados"
-    const val GET_DISTRITOS = "SELECT * FROM TDistrito ORDER BY CAST(codigo AS INTEGER) ASC"
-    const val GET_NEGOCIOS = "SELECT * FROM TNegocio ORDER BY CAST(codigo AS INTEGER) ASC"
-    const val GET_RUTAS = "SELECT * FROM TRutas"
+    const val GET_CONFIGURACION = "SELECT * FROM TableConfiguracion"
+    const val GET_CLIENTES = "SELECT * FROM TableCliente"
+    const val GET_VENDEDORES = "SELECT * FROM TableVendedor"
+    const val GET_DISTRITOS = "SELECT * FROM TableDistrito ORDER BY CAST(codigo AS INTEGER) ASC"
+    const val GET_NEGOCIOS = "SELECT * FROM TableNegocio ORDER BY CAST(codigo AS INTEGER) ASC"
+    const val GET_RUTAS = "SELECT * FROM TableRuta"
+    const val GET_ENCUESTA = "" +
+            "SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, e.respuesta, e.formato, e.condicional, e.previa, e.eleccion, e.necesaria " +
+            "FROM TableEncuesta e " +
+            "INNER JOIN TableSeleccionEncuesta s on e.id=s.encuesta " +
+            "ORDER BY e.pregunta ASC "
+    const val GET_ENCUESTA_SELECCION = "SELECT * FROM TableSeleccionEncuesta"
+    const val GET_INCIDENCIA = "SELECT * FROM TableIncidencia ORDER BY fecha DESC"
+
+
+
+
+    /***        CAMBIAR O MODIFICAR        ***/
+    //const val GET_SESION = "SELECT * FROM TSesion"
+
     const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
     const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
     const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
     const val GET_BAJA_SUPER =
         "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
-    const val GET_SELECCION = "SELECT * FROM TEncuestaSeleccionado"
-    const val GET_INCIDENCIA = "SELECT * FROM TIncidencia ORDER BY fecha DESC"
-
-    const val DEL_CONFIG = "DELETE FROM TConfiguracion"
-    const val DEL_CLIENTES = "DELETE FROM TClientes"
-    const val DEL_EMPLEADOS = "DELETE FROM TEmpleados"
-    const val DEL_DISTRITOS = "DELETE FROM TDistrito"
-    const val DEL_NEGOCIOS = "DELETE FROM TNegocio"
-    const val DEL_RUTAS = "DELETE FROM TRutas"
-    const val DEL_ENCUESTA = "DELETE FROM TEncuesta"
-    const val DEL_CONSULTA = "DELETE FROM TConsulta"
-    const val DEL_SEGUIMIENTO = "DELETE FROM TSeguimiento"
-    const val DEL_VISITA = "DELETE FROM TVisita"
-    const val DEL_ESTADO = "DELETE FROM TEstado"
-    const val DEL_BAJA = "DELETE FROM TBaja"
-    const val DEL_ALTA = "DELETE FROM TAlta"
-    const val DEL_ALTADATOS = "DELETE FROM TADatos"
-    const val DEL_BAJASUPER = "DELETE FROM TBajaSuper"
-    const val DEL_ESTADOBAJA = "DELETE FROM TBEstado"
-    const val DEL_SELECCION = "DELETE FROM TEncuestaSeleccionado"
-    const val DEL_RESPUESTA = "DELETE FROM TRespuesta"
-    const val DEL_INCIDENCIA = "DELETE FROM TIncidencia"
-    const val DEL_AFOTO = "DELETE FROM TAFoto"
-    const val DEL_AAUX = "DELETE FROM TAAux"
 
     const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
             "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
@@ -99,7 +88,7 @@ object QueryConstant {
 
     const val GET_MARKERS = "" +
             "SELECT c.ventas, c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
-            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido " +
+            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido, c.ventanio " +
             "FROM TClientes c " +
             "LEFT JOIN TEstado e on c.idcliente=e.idcliente AND c.ruta=e.ruta " +
             "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
@@ -130,11 +119,7 @@ object QueryConstant {
             "WHERE e.procede ISNULL " +
             "ORDER BY creado ASC "
 
-    const val GET_ENCUESTA = "" +
-            "SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, e.respuesta, e.formato, e.condicional, e.previa, e.eleccion, e.necesaria " +
-            "FROM TEncuesta e " +
-            "INNER JOIN TEncuestaSeleccionado s on e.id=s.encuesta " +
-            "ORDER BY e.pregunta ASC "
+
 
     //Tener cuidado con las consultas donde se usan operadores adicionales (LIKE '%dato_consulta%', GLOB '*dato_consulta*')
     const val GET_CONSULTA = "" +

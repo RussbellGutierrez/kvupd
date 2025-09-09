@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/FBase">
+
+    <fragment
+        android:id="@+id/FBase"
+        android:name="com.upd.kvupd.ui.fragment.FBase"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_f_base">
+
+        <action
+            android:id="@+id/action_FBase_to_BDConfiguracion"
+            app:destination="@id/BDConfiguracion"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+
+        <action
+            android:id="@+id/action_FBase_to_DSincronizarDiario"
+            app:destination="@id/DSincronizarDiario"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+
+    <dialog
+        android:id="@+id/BDConfiguracion"
+        android:name="com.upd.kvupd.ui.dialog.BDConfiguracion"
+        android:label="Configuracion"
+        tools:layout="@layout/bottom_configuracion" />
+
+    <dialog
+        android:id="@+id/DSincronizarDiario"
+        android:name="com.upd.kvupd.ui.dialog.DSincronizarDiario"
+        android:label="Sincronizacion"
+        tools:layout="@layout/custom_dialog_progressbar" />
+
+</navigation>

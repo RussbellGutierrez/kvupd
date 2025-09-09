@@ -8,7 +8,7 @@
     android:padding="20dp"
     android:gravity="center"
     android:background="@drawable/bicolor_dialog"
-    tools:context=".ui.dialog.BDObservacion">
+    tools:context=".ui.dialog.OldBDObservacion">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

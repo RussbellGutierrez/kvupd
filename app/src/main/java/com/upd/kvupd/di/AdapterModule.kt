@@ -1,8 +1,8 @@
 package com.upd.kvupd.di
 
 import android.content.Context
-import com.upd.kvupd.domain.Functions
-import com.upd.kvupd.domain.Repository
+import com.upd.kvupd.domain.OldFunctions
+import com.upd.kvupd.domain.OldRepository
 import com.upd.kvupd.ui.adapter.AltaAdapter
 import com.upd.kvupd.ui.adapter.BajaAdapter
 import com.upd.kvupd.ui.adapter.BajaSupervisorAdapter
@@ -12,7 +12,7 @@ import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.adapter.GenericoAdapter
 import com.upd.kvupd.ui.adapter.IncidenciaAdapter
 import com.upd.kvupd.ui.adapter.SolesAdapter
-import com.upd.kvupd.ui.adapter.UmesAdapter
+import com.upd.kvupd.ui.adapter.OldUmesAdapter
 import com.upd.kvupd.ui.adapter.VisisuperAdapter
 import dagger.Module
 import dagger.Provides
@@ -27,11 +27,11 @@ object AdapterModule {
     @Provides
     fun prodiverClienteAdapter(
         @ApplicationContext ctx: Context,
-        repository: Repository
+        repository: OldRepository
     ) = ClienteAdapter(ctx, repository)
 
     @Provides
-    fun prodiverUmeAdapter() = UmesAdapter()
+    fun prodiverUmeAdapter() = OldUmesAdapter()
 
     @Provides
     fun prodiverSolesAdapter() = SolesAdapter()
@@ -53,7 +53,7 @@ object AdapterModule {
 
     @Provides
     fun providerBajaVendedorAdapter(
-        functions: Functions
+        functions: OldFunctions
     ) = BajaVendedorAdapter(functions)
 
     @Provides

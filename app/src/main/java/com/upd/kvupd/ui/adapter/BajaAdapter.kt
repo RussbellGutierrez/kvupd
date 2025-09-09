@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.databinding.RowBajaBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Interface.bajaListener
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldInterface.bajaListener
 import com.upd.kvupd.utils.setUI
 import javax.inject.Inject
 
-class BajaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class BajaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<TBaja>() {
 
@@ -51,12 +51,12 @@ class BajaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
 
     var mDiffer: AsyncListDiffer<TBaja> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowBajaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -68,7 +68,7 @@ class BajaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
 
     private inner class ViewHolder(
         private val bind: RowBajaBinding
-    ) : BaseViewHolder<TBaja>(bind.root) {
+    ) : OldBaseViewHolder<TBaja>(bind.root) {
 
         override fun bind(item: TBaja) {
 

@@ -13,16 +13,14 @@ import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.data.model.TVisita
-import com.upd.kvupd.domain.Functions
-import com.upd.kvupd.domain.Repository
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Constant.IMEI
-import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Interface.closeListener
-import com.upd.kvupd.utils.Interface.interListener
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.domain.OldFunctions
+import com.upd.kvupd.domain.OldRepository
+import com.upd.kvupd.utils.OldInterface.closeListener
+import com.upd.kvupd.utils.OldInterface.interListener
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldConstant.IMEI
+import com.upd.kvupd.utils.OldConstant.isCONFinitialized
 import com.upd.kvupd.utils.isServiceRunning
-import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,10 +35,10 @@ import kotlin.concurrent.schedule
 class ServiceFinish : LifecycleService() {
 
     @Inject
-    lateinit var functions: Functions
+    lateinit var functions: OldFunctions
 
     @Inject
-    lateinit var repository: Repository
+    lateinit var repository: OldRepository
 
     private var pse: List<TSeguimiento>? = null
     private var pvi: List<TVisita>? = null
@@ -144,19 +142,19 @@ class ServiceFinish : LifecycleService() {
                             p.put("sucursal", CONF.sucursal)
                             p.put("esquema", CONF.esquema)
                             p.put("empresa", CONF.empresa)
-                            repository.setWebSeguimiento(p.toReqBody()).collect {
+                            /*repository.setWebSeguimiento(p.toReqBody()).collect {
                                 when (it) {
-                                    is NetworkRetrofit.Success -> {
+                                    is OldNetworkRetrofit.Success -> {
                                         i.estado = "Enviado"
                                         repository.updateSeguimiento(i)
                                         Log.d(_tag, "Seguimiento enviado $i")
                                     }
 
-                                    is NetworkRetrofit.Error -> Log.e(
+                                    is OldNetworkRetrofit.Error -> Log.e(
                                         _tag, "Seguimiento Error ${it.message}"
                                     )
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
@@ -174,20 +172,20 @@ class ServiceFinish : LifecycleService() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
-                        repository.setWebVisita(p.toReqBody()).collect {
+                        /*repository.setWebVisita(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateVisita(i)
                                     Log.d(_tag, "Visita enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(
+                                is OldNetworkRetrofit.Error -> Log.e(
                                     _tag,
                                     "Visita Error ${it.message}"
                                 )
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -203,17 +201,17 @@ class ServiceFinish : LifecycleService() {
                         p.put("sucursal", CONF.sucursal)
                         p.put("esquema", CONF.esquema)
                         p.put("empresa", CONF.empresa)
-                        repository.setWebAlta(p.toReqBody()).collect {
+                        /*repository.setWebAlta(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateAlta(i)
                                     Log.d(_tag, "Alta enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Alta Error ${it.message}")
+                                is OldNetworkRetrofit.Error -> Log.e(_tag, "Alta Error ${it.message}")
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -253,20 +251,20 @@ class ServiceFinish : LifecycleService() {
                                 "${i.via} ${i.direccion} MZ ${i.manzana} ${i.ubicacion}"
                             )
                         }
-                        repository.setWebAltaDatos(p.toReqBody()).collect {
+                        /*repository.setWebAltaDatos(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateAltaDatos(i)
                                     Log.d(_tag, "Altadato enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(
+                                is OldNetworkRetrofit.Error -> Log.e(
                                     _tag,
                                     "Altadato Error ${it.message}"
                                 )
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -286,17 +284,17 @@ class ServiceFinish : LifecycleService() {
                         if (CONF.tipo == "S") {
                             p.put("estado", 2)
                         }
-                        repository.setWebBaja(p.toReqBody()).collect {
+                        /*repository.setWebBaja(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateBaja(i)
                                     Log.d(_tag, "Baja enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Baja Error ${it.message}")
+                                is OldNetworkRetrofit.Error -> Log.e(_tag, "Baja Error ${it.message}")
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -313,20 +311,20 @@ class ServiceFinish : LifecycleService() {
                         p.put("ycoord", i.latitud)
                         p.put("confirmar", i.procede)
                         p.put("empresa", CONF.empresa)
-                        repository.setWebBajaEstados(p.toReqBody()).collect {
+                        /*repository.setWebBajaEstados(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateBajaEstado(i)
                                     Log.d(_tag, "Bajaestado enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(
+                                is OldNetworkRetrofit.Error -> Log.e(
                                     _tag,
                                     "Bajaestado Error ${it.message}"
                                 )
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -342,20 +340,20 @@ class ServiceFinish : LifecycleService() {
                         p.put("xcoord", i.longitud)
                         p.put("ycoord", i.latitud)
                         p.put("fecha", i.fecha)
-                        repository.setWebRespuestas(p.toReqBody()).collect {
+                        /*repository.setWebRespuestas(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateRespuesta(i)
                                     Log.d(_tag, "Respuesta enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(
+                                is OldNetworkRetrofit.Error -> Log.e(
                                     _tag,
                                     "Respuesta Error ${it.message}"
                                 )
                             }
-                        }
+                        }*/
                     }
                 }
 
@@ -374,17 +372,17 @@ class ServiceFinish : LifecycleService() {
                         p.put("encuesta", i.encuesta)
                         p.put("sucursal", CONF.sucursal)
                         p.put("foto", foto)
-                        repository.setWebFotos(p.toReqBody()).collect {
+                        /*repository.setWebFotos(p.toReqBody()).collect {
                             when (it) {
-                                is NetworkRetrofit.Success -> {
+                                is OldNetworkRetrofit.Success -> {
                                     i.estado = "Enviado"
                                     repository.updateRespuesta(i)
                                     Log.d(_tag, "Foto enviado $i")
                                 }
 
-                                is NetworkRetrofit.Error -> Log.e(_tag, "Foto Error ${it.message}")
+                                is OldNetworkRetrofit.Error -> Log.e(_tag, "Foto Error ${it.message}")
                             }
-                        }
+                        }*/
                     }
                 }
             }

@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.databinding.RowAltaBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Interface.altaListener
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldInterface.altaListener
 import javax.inject.Inject
 
-class AltaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class AltaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<TAlta>() {
 
@@ -48,12 +48,12 @@ class AltaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
 
     var mDiffer: AsyncListDiffer<TAlta> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowAltaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -65,7 +65,7 @@ class AltaAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>
 
     private inner class ViewHolder(
         private val bind: RowAltaBinding
-    ) : BaseViewHolder<TAlta>(bind.root) {
+    ) : OldBaseViewHolder<TAlta>(bind.root) {
 
         override fun bind(item: TAlta) {
             val texto = "Alta cliente - ${item.idaux}"

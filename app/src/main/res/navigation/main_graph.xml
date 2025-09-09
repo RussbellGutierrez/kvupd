@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FBase"
-        android:name="com.upd.kvupd.ui.fragment.FBase"
+        android:name="com.upd.kvupd.ui.fragment.OldFBase"
         android:label="@string/app_name"
         tools:layout="@layout/fragment_f_base">
         <action
@@ -97,12 +97,12 @@
     </fragment>
     <fragment
         android:id="@+id/FAjuste"
-        android:name="com.upd.kvupd.ui.fragment.FAjuste"
+        android:name="com.upd.kvupd.ui.fragment.OldFAjuste"
         android:label="Ajustes"
-        tools:layout="@layout/fragment_f_ajuste" />
+        tools:layout="@layout/old_fragment_f_ajuste" />
     <dialog
         android:id="@+id/BDLogin"
-        android:name="com.upd.kvupd.ui.dialog.BDLogin"
+        android:name="com.upd.kvupd.ui.dialog.OldBDLogin"
         android:label="Login"
         tools:layout="@layout/bottom_dialog_login">
         <action
@@ -115,7 +115,7 @@
     </dialog>
     <fragment
         android:id="@+id/FCliente"
-        android:name="com.upd.kvupd.ui.fragment.FCliente"
+        android:name="com.upd.kvupd.ui.fragment.OldFCliente"
         android:label="Clientes"
         tools:layout="@layout/fragment_f_cliente">
         <action
@@ -142,7 +142,7 @@
     </fragment>
     <fragment
         android:id="@+id/FMapa"
-        android:name="com.upd.kvupd.ui.fragment.FMapa"
+        android:name="com.upd.kvupd.ui.fragment.OldFMapa"
         android:label="Mapa"
         tools:layout="@layout/fragment_f_mapa">
         <action
@@ -169,6 +169,13 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/FBase" />
         <action
+            android:id="@+id/action_FMapa_to_FAlterno"
+            app:destination="@id/FAlterno"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
             android:id="@+id/action_FMapa_to_DBuscar"
             app:destination="@id/DBuscar"
             app:enterAnim="@anim/slide_in_right"
@@ -190,7 +197,7 @@
     </fragment>
     <dialog
         android:id="@+id/BDObservacion"
-        android:name="com.upd.kvupd.ui.dialog.BDObservacion"
+        android:name="com.upd.kvupd.ui.dialog.OldBDObservacion"
         android:label="Observacion"
         tools:layout="@layout/bottom_dialog_observacion">
         <action
@@ -207,7 +214,7 @@
     </dialog>
     <fragment
         android:id="@+id/FEncuesta"
-        android:name="com.upd.kvupd.ui.fragment.FEncuesta"
+        android:name="com.upd.kvupd.ui.fragment.OldFEncuesta"
         android:label="Encuesta"
         tools:layout="@layout/fragment_f_encuesta">
         <action
@@ -238,7 +245,7 @@
     </fragment>
     <dialog
         android:id="@+id/DBaja"
-        android:name="com.upd.kvupd.ui.dialog.DBaja"
+        android:name="com.upd.kvupd.ui.dialog.OldDBaja"
         android:label="Baja"
         tools:layout="@layout/dialog_baja">
         <argument
@@ -248,7 +255,7 @@
     </dialog>
     <fragment
         android:id="@+id/FReporte"
-        android:name="com.upd.kvupd.ui.fragment.FReporte"
+        android:name="com.upd.kvupd.ui.fragment.OldFReporte"
         android:label="Reporte"
         tools:layout="@layout/fragment_f_reporte">
         <action
@@ -268,7 +275,7 @@
     </fragment>
     <fragment
         android:id="@+id/FDetalle"
-        android:name="com.upd.kvupd.ui.fragment.FDetalle"
+        android:name="com.upd.kvupd.ui.fragment.OldFDetalle"
         android:label="Detalle"
         tools:layout="@layout/fragment_f_detalle">
         <action
@@ -281,12 +288,12 @@
     </fragment>
     <fragment
         android:id="@+id/DMiniDetalle"
-        android:name="com.upd.kvupd.ui.dialog.DMiniDetalle"
+        android:name="com.upd.kvupd.ui.dialog.OldDMiniDetalle"
         android:label="Subdetalle"
         tools:layout="@layout/dialog_mini_detalle" />
     <fragment
         android:id="@+id/FVendedor"
-        android:name="com.upd.kvupd.ui.fragment.FVendedor"
+        android:name="com.upd.kvupd.ui.fragment.OldFVendedor"
         android:label="Clientes"
         tools:layout="@layout/fragment_f_vendedor">
         <action
@@ -313,12 +320,12 @@
     </fragment>
     <fragment
         android:id="@+id/FRastreo"
-        android:name="com.upd.kvupd.ui.fragment.FRastreo"
+        android:name="com.upd.kvupd.ui.fragment.OldFRastreo"
         android:label="Monitoreo"
         tools:layout="@layout/fragment_f_rastreo" />
     <fragment
         android:id="@+id/FAlta"
-        android:name="com.upd.kvupd.ui.fragment.FAlta"
+        android:name="com.upd.kvupd.ui.fragment.OldFAlta"
         android:label="Alta"
         tools:layout="@layout/fragment_f_alta">
         <action
@@ -338,7 +345,7 @@
     </fragment>
     <fragment
         android:id="@+id/FAltaMapa"
-        android:name="com.upd.kvupd.ui.fragment.FAltaMapa"
+        android:name="com.upd.kvupd.ui.fragment.OldFAltaMapa"
         android:label="Alta manual"
         tools:layout="@layout/fragment_f_alta_mapa">
         <action
@@ -351,7 +358,7 @@
     </fragment>
     <fragment
         android:id="@+id/FAltaDatos"
-        android:name="com.upd.kvupd.ui.fragment.FAltaDatos"
+        android:name="com.upd.kvupd.ui.fragment.OldFAltaDatos"
         android:label="Datos del alta"
         tools:layout="@layout/fragment_f_alta_datos">
         <action
@@ -376,7 +383,7 @@
     </fragment>
     <fragment
         android:id="@+id/FBaja"
-        android:name="com.upd.kvupd.ui.fragment.FBaja"
+        android:name="com.upd.kvupd.ui.fragment.OldFBaja"
         android:label="Baja"
         tools:layout="@layout/fragment_f_baja">
         <action
@@ -389,7 +396,7 @@
     </fragment>
     <fragment
         android:id="@+id/FBajaDatos"
-        android:name="com.upd.kvupd.ui.fragment.FBajaDatos"
+        android:name="com.upd.kvupd.ui.fragment.OldFBajaDatos"
         android:label="Bajas generadas"
         tools:layout="@layout/fragment_f_baja_datos">
         <action
@@ -402,7 +409,7 @@
     </fragment>
     <fragment
         android:id="@+id/FValidar"
-        android:name="com.upd.kvupd.ui.fragment.FValidar"
+        android:name="com.upd.kvupd.ui.fragment.OldFValidar"
         android:label="Validar"
         tools:layout="@layout/fragment_f_validar">
         <action
@@ -420,7 +427,7 @@
     </fragment>
     <fragment
         android:id="@+id/FServidor"
-        android:name="com.upd.kvupd.ui.fragment.FServidor"
+        android:name="com.upd.kvupd.ui.fragment.OldFServidor"
         android:label="Servidor"
         tools:layout="@layout/fragment_f_servidor">
         <action
@@ -433,17 +440,17 @@
     </fragment>
     <fragment
         android:id="@+id/FIncidencia"
-        android:name="com.upd.kvupd.ui.fragment.FIncidencia"
+        android:name="com.upd.kvupd.ui.fragment.OldFIncidencia"
         android:label="Incidencia"
         tools:layout="@layout/fragment_f_incidencia" />
     <dialog
         android:id="@+id/BDEmergencia"
-        android:name="com.upd.kvupd.ui.dialog.BDEmergencia"
+        android:name="com.upd.kvupd.ui.dialog.OldBDEmergencia"
         android:label="Emergencia"
         tools:layout="@layout/bottom_dialog_emergencia" />
     <dialog
         android:id="@+id/DClienteAux"
-        android:name="com.upd.kvupd.ui.dialog.DClienteAux"
+        android:name="com.upd.kvupd.ui.dialog.OldDClienteAux"
         android:label="Auxiliar"
         tools:layout="@layout/dialog_cliente_aux">
         <action
@@ -467,12 +474,12 @@
     </dialog>
     <fragment
         android:id="@+id/FConsulta"
-        android:name="com.upd.kvupd.ui.fragment.FConsulta"
+        android:name="com.upd.kvupd.ui.fragment.OldFConsulta"
         android:label="Consulta clientes"
         tools:layout="@layout/fragment_f_consulta" />
     <dialog
         android:id="@+id/DBuscar"
-        android:name="com.upd.kvupd.ui.dialog.DBuscar"
+        android:name="com.upd.kvupd.ui.dialog.OldDBuscar"
         android:label="Buscar"
         tools:layout="@layout/dialog_busqueda">
         <argument
@@ -481,7 +488,7 @@
     </dialog>
     <fragment
         android:id="@+id/FAlterno"
-        android:name="com.upd.kvupd.ui.fragment.FAlterno"
+        android:name="com.upd.kvupd.ui.fragment.OldFAlterno"
         android:label="Encuesta"
         tools:layout="@layout/fragment_f_alterno" >
         <action
@@ -491,5 +498,17 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@+id/FBase" />
+        <action
+            android:id="@+id/action_FAlterno_to_FMapa"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/FMapa"
+            app:popUpToInclusive="false" />
+        <argument
+            android:name="cliente"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

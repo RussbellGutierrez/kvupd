@@ -2,91 +2,73 @@ package com.upd.kvupd.di
 
 import android.app.NotificationManager
 import android.content.Context
-import androidx.room.Room
+import android.content.SharedPreferences
 import androidx.work.WorkManager
+import com.google.firebase.database.FirebaseDatabase
 import com.squareup.moshi.Moshi
-import com.upd.kvupd.data.local.AppDB
-import com.upd.kvupd.data.model.JSONObjectAdapter
-import com.upd.kvupd.data.remote.ApiClient
-import com.upd.kvupd.utils.Constant.BASE_URL
-import com.upd.kvupd.utils.Constant.DB_NAME
-import com.upd.kvupd.utils.HostSelectionInterceptor
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.upd.kvupd.data.local.DataBaseInitializer
+import com.upd.kvupd.data.local.Crud
+import com.upd.kvupd.data.local.QueryList
+import com.upd.kvupd.data.local.TablesRoom
+import com.upd.kvupd.data.remote.FirebaseHelper
+import com.upd.kvupd.data.remote.FlexibleAdapterMoshi
+import com.upd.kvupd.utils.SharedPreferenceKeys.SHARED_NOMBRE
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ProviderModule {
 
-    @Singleton
     @Provides
-    fun providerDB(@ApplicationContext ctx: Context) =
-        Room.databaseBuilder(ctx, AppDB::class.java, DB_NAME)
-            .fallbackToDestructiveMigration()
-            .build()
+    @Singleton
+    fun providerSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
+        context.getSharedPreferences(SHARED_NOMBRE, Context.MODE_PRIVATE)
 
     @Singleton
     @Provides
-    fun providerDao(db: AppDB) = db.getDao()
+    fun providerDataBase(initializer: DataBaseInitializer): TablesRoom =
+        initializer.build()
+
+    @Provides
+    fun providerCrudDAO(db: TablesRoom): Crud = db.getCrudDao()
+
+    @Provides
+    fun providerQueryDAO(db: TablesRoom): QueryList = db.getQueryDao()
 
     @Singleton
     @Provides
-    fun providerQueryDao(db: AppDB) = db.getQDao()
+    fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(FlexibleAdapterMoshi())
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
     @Singleton
     @Provides
-    fun providerMoshi() =
-        MoshiConverterFactory.create(Moshi.Builder().add(JSONObjectAdapter()).build())
+    fun provideMoshiConverterFactory(moshi: Moshi): MoshiConverterFactory =
+        MoshiConverterFactory.create(moshi)
 
     @Singleton
     @Provides
-    fun providerHostSelectionInterceptor() =
-        HostSelectionInterceptor()
+    fun providerFirebaseDatabase(): FirebaseDatabase = FirebaseDatabase.getInstance()
 
     @Singleton
     @Provides
-    fun providerHttpClient(
-        hostSelectionInterceptor: HostSelectionInterceptor
-    ): OkHttpClient {
-        return OkHttpClient
-            .Builder()
-            .readTimeout(15, TimeUnit.SECONDS)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .addInterceptor(hostSelectionInterceptor)
-            .build()
-    }
+    fun providerFirebaseHelper(firebaseDatabase: FirebaseDatabase): FirebaseHelper =
+        FirebaseHelper(firebaseDatabase)
 
-    @Singleton
     @Provides
-    fun providerRetrofit(
-        okHttpClient: OkHttpClient,
-        moshiConverterFactory: MoshiConverterFactory
-    ): Retrofit {
-        return Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(BASE_URL)
-            .addConverterFactory(moshiConverterFactory)
-            .build()
-    }
+    @Singleton
+    fun providerWorkManager(@ApplicationContext context: Context): WorkManager =
+        WorkManager.getInstance(context)
 
-    @Singleton
     @Provides
-    fun providerApi(retrofit: Retrofit) = retrofit.create(ApiClient::class.java)
-
-    @Singleton
-    @Provides
-    fun providerWorkManager(@ApplicationContext ctx: Context) = WorkManager.getInstance(ctx)
-
-    @Singleton
-    @Provides
-    fun providerNotificationManager(@ApplicationContext ctx: Context) =
-        ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun providerNotificationManager(@ApplicationContext context: Context): NotificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 }

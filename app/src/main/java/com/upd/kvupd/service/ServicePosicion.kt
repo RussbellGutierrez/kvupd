@@ -4,13 +4,13 @@ import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LifecycleService
 import com.google.android.gms.location.LocationServices
-import com.upd.kvupd.domain.LocationClient
-import com.upd.kvupd.utils.CaptureLocation
-import com.upd.kvupd.utils.Constant.POSITION_F_INTERVAL
-import com.upd.kvupd.utils.Constant.POSITION_METERS
-import com.upd.kvupd.utils.Constant.POSITION_N_INTERVAL
-import com.upd.kvupd.utils.Constant.POS_LOC
-import com.upd.kvupd.utils.Constant.isPOSLOCinitialized
+import com.upd.kvupd.domain.OldLocationClient
+import com.upd.kvupd.utils.OldCaptureLocation
+import com.upd.kvupd.utils.OldConstant.POSITION_F_INTERVAL
+import com.upd.kvupd.utils.OldConstant.POSITION_METERS
+import com.upd.kvupd.utils.OldConstant.POSITION_N_INTERVAL
+import com.upd.kvupd.utils.OldConstant.POS_LOC
+import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.onEach
 class ServicePosicion : LifecycleService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private lateinit var locationClient: LocationClient
+    private lateinit var locationClient: OldLocationClient
     private val _tag by lazy { ServicePosicion::class.java.simpleName }
 
     override fun onDestroy() {
@@ -39,7 +39,7 @@ class ServicePosicion : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        locationClient = CaptureLocation(
+        locationClient = OldCaptureLocation(
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
         )

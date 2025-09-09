@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.databinding.RowReporteBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.generListener
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldInterface.generListener
 import com.upd.kvupd.utils.percent
 import com.upd.kvupd.utils.setUI
 import javax.inject.Inject
 
-class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<Generico>() {
 
@@ -48,12 +48,12 @@ class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolde
 
     var mDiffer: AsyncListDiffer<Generico> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowReporteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -65,7 +65,7 @@ class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolde
 
     private inner class ViewHolder(
         private val bind: RowReporteBinding
-    ) : BaseViewHolder<Generico>(bind.root) {
+    ) : OldBaseViewHolder<Generico>(bind.root) {
 
         override fun bind(item: Generico) {
             val titulo = item.datos.descripcion

@@ -13,54 +13,35 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
-import com.upd.kvupd.domain.OnGpsState
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Constant.isCONFinitialized
-import com.upd.kvupd.utils.Interface.closeListener
-import com.upd.kvupd.utils.Interface.gpsListener
-import com.upd.kvupd.utils.NetworkRetrofit
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldInterface.closeListener
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.hideprogress
 import com.upd.kvupd.utils.isGPSDisabled
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toReqBody
-import com.upd.kvupd.viewmodel.AppViewModel
+import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class FBase : Fragment(), OnGpsState, MenuProvider {
+class FBase : Fragment(), MenuProvider {
 
-    private val viewmodel by activityViewModels<AppViewModel>()
+    private val viewmodel by activityViewModels<APIViewModel>()
     private var _bind: FragmentFBaseBinding? = null
     private val bind get() = _bind!!
-    private var opt = 0
-    private var sincro = 0
     private val _tag by lazy { FBase::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        gpsListener = null
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        gpsListener = this
     }
 
     override fun onCreateView(
@@ -76,7 +57,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        viewmodel.startUp.observe(viewLifecycleOwner) {
+        /*viewmodel.startUp.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { _ ->
                 viewmodel.checkHoursAndLaunch { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
             }
@@ -164,7 +145,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         viewmodel.encuesta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
-                    is NetworkRetrofit.Success -> if (y.data?.jobl.isNullOrEmpty()) {
+                    is OldNetworkRetrofit.Success -> if (y.data?.jobl.isNullOrEmpty()) {
                         showDialog(
                             "Advertencia",
                             "No tiene encuesta programada"
@@ -176,7 +157,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
                         ) {}
                     }
 
-                    is NetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+                    is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
         }
@@ -199,38 +180,32 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         }
         viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
             setRuta(result)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewmodel.checking.observe(viewLifecycleOwner) {
-            if (it) {
-                viewmodel.launchSetup()
-            } else {
-                closeListener?.closingActivity()
-            }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(R.menu.n_base_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.sincronizar -> consume { sinchroData() }
+        /*R.id.sincronizar -> consume { sinchroData() }
         R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_BDLogin) }
         R.id.encuesta -> consume { launchEncuesta() }
         R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
         R.id.total -> consume { reSincAllData() }
+        R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }*/
+        R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
+        R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
+        R.id.encuesta -> consume {  }
+        R.id.incidencia -> consume {  }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
 
-    override fun changeGPSstate(gps: Boolean) {
+    /*override fun changeGPSstate(gps: Boolean) {
         val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
         bind.fabGps.imageTintList = ColorStateList.valueOf(color)
-    }
+    }*/
 
     private fun setParams(config: TConfiguracion) {
         if (config.tipo != "S") {
@@ -289,17 +264,17 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         p.put("empleado", CONF.codigo)
         p.put("empresa", CONF.empresa)
         progress("Descargando encuesta")
-        viewmodel.fetchEncuesta(p.toReqBody())
+        //viewmodel.fetchEncuesta(p.toReqBody())
     }
 
-    private fun sinchroData() {
+    /*private fun sinchroData() {
         if (viewmodel.internetAvailable()) {
             progress("Sincronizando datos")
             viewmodel.fetchSinchro()
         } else {
             snack("No tenemos señal de internet")
         }
-    }
+    }*/
 
     private fun checkingGPS(T: () -> Unit) {
         if (requireContext().isGPSDisabled()) {
@@ -315,7 +290,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
             "Esta opcion va a eliminar todos los datos de kventas, solo se debe usar en caso sea necesario. ¿Desea continuar?",
             true
         ) {
-            viewmodel.cleanSomeTables()
+            //viewmodel.cleanSomeTables()
             showDialog(
                 "Correcto",
                 "Vamos a cerrar la aplicacion, vuelva a ejecutarlo por favor"
@@ -326,7 +301,7 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
         }
     }
 
-    private fun checkEncuestaSelect() {
+    /*private fun checkEncuestaSelect() {
         lifecycleScope.launch {
             // Esperamos resultado de la función suspendida
             val sinEncuesta = viewmodel.isEncuestaEmpty()
@@ -349,5 +324,5 @@ class FBase : Fragment(), OnGpsState, MenuProvider {
                 }
             }
         }
-    }
+    }*/
 }

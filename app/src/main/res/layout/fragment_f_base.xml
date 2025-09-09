@@ -141,6 +141,7 @@
         android:paddingHorizontal="40dp"
         android:paddingVertical="10dp"
         app:flexWrap="wrap"
+        android:visibility="gone"
         app:justifyContent="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -225,6 +226,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_reporte"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -250,6 +252,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_encuesta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -275,6 +278,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_alta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -300,6 +304,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_baja"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -325,6 +330,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lnr_servidor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"

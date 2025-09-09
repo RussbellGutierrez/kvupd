@@ -1,160 +1,146 @@
 package com.upd.kvupd.ui.activity
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.upd.kvupd.databinding.ActivityMainBinding
-import com.upd.kvupd.domain.OnClosingApp
-import com.upd.kvupd.service.ServiceFinish
-import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.service.ServiceSetup
-import com.upd.kvupd.utils.Constant.IS_CONFIG_FAILED
-import com.upd.kvupd.utils.Constant.IS_SUNDAY
-import com.upd.kvupd.utils.Constant.REQ_CODE
-import com.upd.kvupd.utils.Interface.closeListener
-import com.upd.kvupd.utils.Interface.interListener
-import com.upd.kvupd.utils.Permission
-import com.upd.kvupd.utils.isServiceRunning
-import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.snack
+import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.ui.sealed.InitialState
+import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
+import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
+import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
+import com.upd.kvupd.utils.PermissionManager
+import com.upd.kvupd.utils.buildMaterialDialog
+import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.toast
-import com.upd.kvupd.viewmodel.AppViewModel
+import com.upd.kvupd.viewmodel.ALLViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), OnClosingApp {
+class MainActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<AppViewModel>()
-    private lateinit var bind: ActivityMainBinding
+    private val localViewModel by viewModels<ALLViewModel>()
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var navController: NavController
 
     @Inject
-    lateinit var permission: Permission
+    lateinit var permissionManager: PermissionManager
 
-    override fun onDestroy() {
-        super.onDestroy()
-        closeListener = null
+    // Launcher centralizado
+    private val permisosLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        val baseOk = permissionManager.checkBasePermissions()
+        val backgroundOk = permissionManager.checkBackgroundLocationPermission()
+        localViewModel.iniciarFlujo(this, baseOk, backgroundOk)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bind = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(bind.root)
-        setSupportActionBar(bind.toolbar)
-        setupApp()
-        closeListener = this
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        observarEstadosEventosUUID()
+        configurarNavegacion()
+
+        localViewModel.iniciarFlujo(
+            this,
+            permissionManager.checkBasePermissions(),
+            permissionManager.checkBackgroundLocationPermission()
+        )
     }
 
-    override fun closingActivity(notRegister: Boolean) {
-        if (isServiceRunning(ServicePosicion::class.java))
-            stopService(Intent(this, ServicePosicion::class.java))
-
-        if (isServiceRunning(ServiceFinish::class.java))
-            stopService(Intent(this, ServiceFinish::class.java))
-
-        interListener?.changeBetweenIconNotification(1)
-        interListener?.closeGPS()
-
-        runOnUiThread {
-            if (notRegister) {
-                showDialog(
-                    "error",
-                    "Revise en la lista de dispositivos si está registrado su equipo celular"
-                ) {
-                    finishAndRemoveTask()
-                }
-            } else {
-                if (!IS_SUNDAY && IS_CONFIG_FAILED) {
-                    showDialog(
-                        "error",
-                        "Al parecer se elimino su registro, consulte con sistemas"
-                    ) {
-                        finishAndRemoveTask()
+    private fun observarEstadosEventosUUID() {
+        collectFlow(localViewModel.uuidEstados) { state ->
+            when (state) {
+                is InitialState.Loading -> {
+                    if (state.mensaje.isNotEmpty()) {
+                        mostrarDialog(
+                            AppDialogType.Progreso(
+                                mensaje = state.mensaje
+                            )
+                        )
                     }
-                } else {
-                    toast("Cerrando KVentas")
-                    finishAndRemoveTask()
                 }
+
+                InitialState.NoGooglePlay ->
+                    mostrarDialog(
+                        AppDialogType.Informativo(
+                            titulo = T_ERROR,
+                            mensaje = "KVentas necesita los servicios de Google Play para ejecutarse.",
+                            onPositive = { finishAndRemoveTask() }
+                        )
+                    )
+
+                InitialState.NoBasePermissions -> lifecycleScope.launch {
+                    permisosLauncher.launch(permissionManager.getBasePermissions())
+                }
+
+                InitialState.NoBackgroundLocationPermission -> lifecycleScope.launch {
+                    permisosLauncher.launch(permissionManager.getBackgroundLocationPermission())
+                }
+
+                InitialState.NoUUID ->
+                    mostrarDialog(
+                        AppDialogType.Informativo(
+                            titulo = T_WARNING,
+                            mensaje = "El equipo no cuenta con un identificador, necesitamos crearlo.",
+                            onPositive = { localViewModel.procesandoHashFirebase() }
+                        )
+                    )
+
+                InitialState.CreatedUUID ->
+                    mostrarDialog(
+                        AppDialogType.Informativo(
+                            titulo = T_SUCCESS,
+                            mensaje = "Identificador creado correctamente, asigne y luego sincronice por favor."
+                        )
+                    )
+
+                InitialState.FailCreateUUID ->
+                    mostrarDialog(
+                        AppDialogType.Informativo(
+                            titulo = T_ERROR,
+                            mensaje = "Ocurrio un error procesando el identificador. Desea intentarlo nuevamente?",
+                            mostrarNegativo = true,
+                            onPositive = { localViewModel.procesandoHashFirebase() },
+                            onNegative = null
+                        )
+                    )
+
+                InitialState.HasUUID -> toast("Bienvenido")
             }
         }
     }
 
-    override fun closeServiceSetup() {
-        if (isServiceRunning(ServiceSetup::class.java))
-            stopService(Intent(this, ServiceSetup::class.java))
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            REQ_CODE -> {
-                if (permissions.isEmpty() || grantResults.isEmpty()) {
-                    showDialog(
-                        "Advertencia",
-                        "Por favor, otorgue todos los permisos necesarios para que la aplicación funcione correctamente."
-                    ) {
-                        permission.reqPerm()
-                    }
-                    return
-                }
-                val deniedPermissions = mutableListOf<String>()
-                for ((index, result) in grantResults.withIndex()) {
-                    if (result != PackageManager.PERMISSION_GRANTED) {
-                        deniedPermissions.add(permissions[index])
-                    }
-                }
-                if (deniedPermissions.isNotEmpty()) {
-                    permission.deniedPermissions()
-                    return
-                }
-                if (!permission.checkAccessBackground()) {
-                    permission.reqBackgroundLocationPermission()
-                    return
-                }
-                snack("GPS segundo plano")
-            }
-        }
-    }
-
-    private fun setupApp() {
-        if (isPlayServicesEnabled()) {
-            permission.reqPerm()
-            setUpNavController()
-            viewModel.startingApp()
-        }
-    }
-
-    private fun setUpNavController() {
-        navController = bind.navHostFragment.getFragment<NavHostFragment>().navController
+    private fun configurarNavegacion() {
+        navController = binding.navHostFragment
+            .getFragment<NavHostFragment>().navController
         NavigationUI.setupActionBarWithNavController(this, navController)
     }
 
-    private fun isPlayServicesEnabled(): Boolean {
-        val api = GoogleApiAvailability()
-        val rc = api.isGooglePlayServicesAvailable(this)
-        if (rc != ConnectionResult.SUCCESS) {
-            if (api.isUserResolvableError(rc)) {
-                toast("KVentas necesita los servicios de GooglePlay para ejecutarse")
-            }
-            finishAndRemoveTask()
-            return false
+    private fun mostrarDialog(dialogType: AppDialogType) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Cerrar diálogo previo si existe
+            InstanciaDialog.cerrarDialogActual()
+
+            // Crear el dialog
+            val dialog = buildMaterialDialog(this@MainActivity, dialogType)
+
+            // Mostrarlo
+            dialog.show()
+
+            // Guardar referencia
+            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
         }
-        return true
     }
 }

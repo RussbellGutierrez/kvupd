@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.databinding.RowBuscarBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.buscarListener
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldInterface.buscarListener
 import javax.inject.Inject
 
-class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<DataCliente>() {
 
@@ -47,12 +47,12 @@ class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<
 
     var mDiffer: AsyncListDiffer<DataCliente> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowBuscarBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -64,7 +64,7 @@ class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<
 
     private inner class ViewHolder(
         private val bind: RowBuscarBinding
-    ) : BaseViewHolder<DataCliente>(bind.root) {
+    ) : OldBaseViewHolder<DataCliente>(bind.root) {
 
         @SuppressLint("UseCompatLoadingForDrawables")
         override fun bind(item: DataCliente) {

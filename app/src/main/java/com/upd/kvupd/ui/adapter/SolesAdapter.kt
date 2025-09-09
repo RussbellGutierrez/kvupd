@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.RowReporteBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Constant.CONF
-import com.upd.kvupd.utils.Interface.solesListener
+import com.upd.kvupd.utils.OldBaseViewHolder
+import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.percent
 import com.upd.kvupd.utils.setUI
 import javax.inject.Inject
 
-class SolesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class SolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<Soles>() {
 
@@ -48,12 +48,12 @@ class SolesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*
 
     var mDiffer: AsyncListDiffer<Soles> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowReporteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
@@ -65,7 +65,7 @@ class SolesAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*
 
     private inner class ViewHolder(
         private val bind: RowReporteBinding
-    ) : BaseViewHolder<Soles>(bind.root) {
+    ) : OldBaseViewHolder<Soles>(bind.root) {
 
         override fun bind(item: Soles) {
             val titulo = item.linea.descripcion

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/registro"
+        android:title="Registrar equipo"
+        android:icon="@drawable/registro"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/sincronizar"
+        android:title="Sincronizacion diaria"
+        android:icon="@drawable/actualizar"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/encuesta"
+        android:title="Descargar encuesta"
+        android:icon="@drawable/encuesta"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/incidencia"
+        android:title="Reporte sistema"
+        android:icon="@drawable/otros"
+        app:showAsAction="collapseActionView"/>
+
+    <item
+        android:id="@+id/apagar"
+        android:title="Cerrar aplicacion"
+        android:icon="@drawable/apagar"
+        app:showAsAction="collapseActionView"/>
+</menu>

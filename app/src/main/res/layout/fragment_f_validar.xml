@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:layout_marginVertical="5dp"
     android:layout_marginHorizontal="10dp"
-    tools:context=".ui.fragment.FValidar">
+    tools:context=".ui.fragment.OldFValidar">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,22 +1,13 @@
 package com.upd.kvupd.ui.adapter
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.Visisuper
-import com.upd.kvupd.databinding.RowMiniDetalleBinding
-import com.upd.kvupd.utils.BaseViewHolder
-import com.upd.kvupd.utils.Interface.visisuListener
-import com.upd.kvupd.utils.percent
-import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.OldBaseViewHolder
 import javax.inject.Inject
 
-class VisisuperAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHolder<*>>() {
+class VisisuperAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<Visisuper>() {
+    /*private val diffCallback = (object : DiffUtil.ItemCallback<Visisuper>() {
 
         override fun areItemsTheSame(oldItem: Visisuper, newItem: Visisuper): Boolean {
             return oldItem.id == newItem.id
@@ -82,5 +73,16 @@ class VisisuperAdapter @Inject constructor() : RecyclerView.Adapter<BaseViewHold
     interface OnVisisuperListener {
         fun onItemClick(visisuper: Visisuper)
         fun onCloseItem(visisuper: Visisuper)
+    }*/
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
     }
 }
