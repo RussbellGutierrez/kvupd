@@ -2,54 +2,73 @@ package com.upd.kvupd.data.model
 
 object QueryConstant {
 
+    // Eliminar o revisar las tablas que contengan lo siguiente:
+    // TableSeleccionEncuesta
     const val GET_CONFIGURACION = "SELECT * FROM TableConfiguracion"
     const val GET_CLIENTES = "SELECT * FROM TableCliente"
     const val GET_VENDEDORES = "SELECT * FROM TableVendedor"
     const val GET_DISTRITOS = "SELECT * FROM TableDistrito ORDER BY CAST(codigo AS INTEGER) ASC"
     const val GET_NEGOCIOS = "SELECT * FROM TableNegocio ORDER BY CAST(codigo AS INTEGER) ASC"
     const val GET_RUTAS = "SELECT * FROM TableRuta"
-    const val GET_ENCUESTA = "" +
-            "SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, e.respuesta, e.formato, e.condicional, e.previa, e.eleccion, e.necesaria " +
-            "FROM TableEncuesta e " +
-            "INNER JOIN TableSeleccionEncuesta s on e.id=s.encuesta " +
-            "ORDER BY e.pregunta ASC "
-    const val GET_ENCUESTA_SELECCION = "SELECT * FROM TableSeleccionEncuesta"
+    const val GET_ENCUESTA = """
+        SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, 
+               e.respuesta, e.formato, e.condicional, e.previa, 
+               e.eleccion, e.necesaria, e.seleccionada
+        FROM TableEncuesta e
+        WHERE e.seleccionada = 1
+        ORDER BY e.pregunta ASC
+    """
     const val GET_INCIDENCIA = "SELECT * FROM TableIncidencia ORDER BY fecha DESC"
 
-
+    ////  SERVER
+    const val SEGUIMIENTO_SERVER = """
+        SELECT * FROM TableSeguimiento
+        WHERE sincronizado = :sync
+        ORDER BY fecha ASC
+    """
+    const val ALTA_SERVER = """
+        SELECT * FROM TableAlta
+        WHERE sincronizado = :sync
+        ORDER BY fecha ASC
+    """
+    const val ALTADATO_SERVER = """
+        SELECT * FROM TableAltaDatos
+        WHERE sincronizado = :sync
+    """
+    const val BAJA_SERVER = """
+        SELECT * FROM TableBaja
+        WHERE sincronizado = :sync
+        ORDER BY fecha ASC
+    """
+    const val ESTADO_SERVER = """
+        SELECT * FROM TableEstado
+        WHERE sincronizado = :sync
+        ORDER BY fechaconf ASC
+    """
+    const val RESPUESTA_SERVER = """
+        SELECT * FROM TableRespuesta
+        WHERE sincronizado = :sync
+          AND respuesta != ''
+        ORDER BY fecha ASC
+    """
+    const val FOTO_SERVER = """
+        SELECT * FROM TableRespuesta
+        WHERE sincronizado = :sync
+          AND foto = 1
+        ORDER BY fecha ASC
+    """
 
 
     /***        CAMBIAR O MODIFICAR        ***/
     //const val GET_SESION = "SELECT * FROM TSesion"
 
-    const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
+    /*const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
     const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
     const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
     const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
     const val GET_BAJA_SUPER =
         "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
 
-    const val GET_SEGUIMIENTO_SERVER = "SELECT * FROM TSeguimiento " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
-    const val GET_VISITA_SERVER = "SELECT * FROM TVisita " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
-    const val GET_ALTA_SERVER = "SELECT * FROM TAlta " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
-    const val GET_ALTADATO_SERVER = "SELECT * FROM TADatos " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo')"
-    const val GET_BAJA_SERVER = "SELECT * FROM TBaja " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
-    const val GET_BAJAESTADO_SERVER = "SELECT * FROM TBEstado " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fechaconf ASC"
-
-    const val GET_RESPUESTA_SERVER = "SELECT * FROM TRespuesta " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND respuesta != '' ORDER BY fecha ASC"
-
-    const val GET_FOTO_SERVER = "SELECT * FROM TRespuesta " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') AND foto = 1 ORDER BY fecha ASC"
-
-    const val GET_AFOTO_SERVER = "SELECT * FROM TAFoto " +
-            "WHERE ((:estado <> 'Todo' AND estado = :estado) OR :estado = 'Todo') ORDER BY fecha ASC"
 
     const val GET_RESPUESTA_CLIENTE = "" +
             "SELECT encuesta " +
@@ -120,11 +139,11 @@ object QueryConstant {
             "ORDER BY creado ASC "
 
 
-
     //Tener cuidado con las consultas donde se usan operadores adicionales (LIKE '%dato_consulta%', GLOB '*dato_consulta*')
     const val GET_CONSULTA = "" +
             "SELECT * " +
             "FROM TConsulta " +
             "WHERE ((:numero <> '0' AND (cliente = :numero OR documento = :numero)) OR :numero = '0') " +
             "AND ((:nombre <> 'NOT' AND nombre GLOB :nombre) OR :nombre = 'NOT') "
+     */
 }

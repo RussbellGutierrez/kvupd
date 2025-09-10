@@ -2,15 +2,81 @@ package com.upd.kvupd.data.local
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.QueryConstant.ALTADATO_SERVER
+import com.upd.kvupd.data.model.QueryConstant.ALTA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.BAJA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.ESTADO_SERVER
+import com.upd.kvupd.data.model.QueryConstant.FOTO_SERVER
+import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIGURACION
+import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
+import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
+import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
+import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
+import com.upd.kvupd.data.model.QueryConstant.GET_VENDEDORES
+import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.SEGUIMIENTO_SERVER
+import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.TableAltaDatos
+import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.TableDistrito
+import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.TableEstado
+import com.upd.kvupd.data.model.TableNegocio
+import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableRuta
+import com.upd.kvupd.data.model.TableSeguimiento
+import com.upd.kvupd.data.model.TableVendedor
 
 @Dao
 interface QueryList {
-
     @Query(GET_CONFIGURACION)
     suspend fun getConfiguracion(): TableConfiguracion?
 
+    @Query(GET_CLIENTES)
+    suspend fun getClientes(): List<TableCliente>
+
+    @Query(GET_VENDEDORES)
+    suspend fun getVendedores(): List<TableVendedor>
+
+    @Query(GET_DISTRITOS)
+    suspend fun getDistritos(): List<TableDistrito>
+
+    @Query(GET_NEGOCIOS)
+    suspend fun getNegocios(): List<TableNegocio>
+
+    @Query(GET_RUTAS)
+    suspend fun getRutas(): List<TableRuta>
+
+    @Query(GET_ENCUESTA)
+    suspend fun getEncuestas(): List<TableEncuesta>
+
+    ////  SERVER
+    @Query(SEGUIMIENTO_SERVER)
+    suspend fun seguimientoServer(estado: String): List<TableSeguimiento>
+
+    @Query(ALTA_SERVER)
+    suspend fun altaServer(estado: String): List<TableAlta>
+
+    @Query(ALTADATO_SERVER)
+    suspend fun datosAltaServer(estado: String): List<TableAltaDatos>
+
+    @Query(BAJA_SERVER)
+    suspend fun bajaServer(estado: String): List<TableBaja>
+
+    @Query(ESTADO_SERVER)
+    suspend fun estadosServer(estado: String): List<TableEstado>
+
+    @Query(RESPUESTA_SERVER)
+    suspend fun respuestaServer(estado: String): List<TableRespuesta>
+
+    @Query(FOTO_SERVER)
+    suspend fun fotoServer(estado: String): List<TableRespuesta>
+
+    /////////////////////////////////////////////////          REVISAR
     /*@Query(GET_CONFIG)
     fun getObsConfig(): Flow<List<TConfiguracion>>
 
@@ -47,31 +113,7 @@ interface QueryList {
     @Query(GET_INCIDENCIA)
     fun getIncidencias(): Flow<List<TIncidencia>>
 
-    @Query(GET_SESION)
-    suspend fun getSesion(): TSesion?
 
-
-
-    @Query(GET_CLIENTES)
-    suspend fun getClientes(): List<TClientes>
-
-    @Query(GET_EMPLEADOS)
-    suspend fun getEmpleados(): List<TEmpleados>
-
-    @Query(GET_DISTRITOS)
-    suspend fun getDistrito(): List<TDistrito>
-
-    @Query(GET_NEGOCIOS)
-    suspend fun getNegocio(): List<TNegocio>
-
-    @Query(GET_RUTAS)
-    suspend fun getRutas(): List<TRutas>
-
-    @Query(GET_CABE_ENCUESTAS)
-    suspend fun getCabeEncuesta(): List<Cabecera>
-
-    @Query(GET_ENCUESTA)
-    suspend fun getEncuesta(): List<TEncuesta>
 
     @Query(GET_CONSULTA)
     suspend fun getConsulta(numero: String, nombre: String): List<TConsulta>
@@ -103,31 +145,5 @@ interface QueryList {
     @Query(GET_RESPUESTA_HISTORICO)
     suspend fun getRespuestaH(cliente: String): RespuestaHistorico
 
-    /*  Dao send data to server    */
-    @Query(GET_SEGUIMIENTO_SERVER)
-    suspend fun seguimientoServer(estado: String): List<TSeguimiento>
-
-    @Query(GET_VISITA_SERVER)
-    suspend fun visitaServer(estado: String): List<TVisita>
-
-    @Query(GET_ALTA_SERVER)
-    suspend fun altaServer(estado: String): List<TAlta>
-
-    @Query(GET_ALTADATO_SERVER)
-    suspend fun altadatosServer(estado: String): List<TADatos>
-
-    @Query(GET_BAJA_SERVER)
-    suspend fun bajaServer(estado: String): List<TBaja>
-
-    @Query(GET_BAJAESTADO_SERVER)
-    suspend fun bajaestadoServer(estado: String): List<TBEstado>
-
-    @Query(GET_RESPUESTA_SERVER)
-    suspend fun respuestaServer(estado: String): List<TRespuesta>
-
-    @Query(GET_FOTO_SERVER)
-    suspend fun fotoServer(estado: String): List<TRespuesta>
-
-    @Query(GET_AFOTO_SERVER)
-    suspend fun altaFotoServer(estado: String): List<TAFoto>*/
+    */
 }

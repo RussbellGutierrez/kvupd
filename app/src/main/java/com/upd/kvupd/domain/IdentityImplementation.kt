@@ -6,10 +6,10 @@ import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_UID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class GeneralImplementation @Inject constructor(
+class IdentityImplementation @Inject constructor(
     @ApplicationContext private val context: Context,
     private val androidSource: IdentificadorSource
-) : GeneralFunctions {
+) : IdentityFunctions {
     override fun obtenerIdentificador(): String? {
         return androidSource.obtenerSharedKey(KEY_UID)
     }

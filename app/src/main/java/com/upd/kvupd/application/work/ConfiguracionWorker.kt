@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.upd.kvupd.domain.GeneralImplementation
+import com.upd.kvupd.domain.IdentityImplementation
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.first
 class ConfiguracionWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val generalImplementation: GeneralImplementation,
+    private val generalImplementation: IdentityImplementation,
     private val serverFunctions: ServerFunctions,
     private val jsobFunctions: JsObFunctions
 ) : CoroutineWorker(appContext, workerParameters) {

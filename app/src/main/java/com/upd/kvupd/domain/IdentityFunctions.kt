@@ -1,6 +1,6 @@
 package com.upd.kvupd.domain
 
-interface GeneralFunctions {
+interface IdentityFunctions {
     fun obtenerIdentificador(): String?
     fun existeIdentificador(): Boolean
     fun crearIdentificador(): String

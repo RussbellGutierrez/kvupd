@@ -1,4 +1,8 @@
 package com.upd.kvupd.data.local
 
-class RoomQuerySource {
+import javax.inject.Inject
+
+class RoomQuerySource @Inject constructor(
+    private val query: QueryList
+) {
 }

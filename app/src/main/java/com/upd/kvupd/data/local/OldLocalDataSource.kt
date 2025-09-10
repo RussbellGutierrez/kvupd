@@ -213,133 +213,133 @@ class OldLocalDataSource @Inject constructor(private val dao: Crud, private val 
                     dao.insertAFoto(rsp)
                 }
 
-    suspend fun updateSeguimiento(coordenada: TSeguimiento) {
-        dao.updateSeguimiento(coordenada)
-    }
+                suspend fun updateSeguimiento(coordenada: TSeguimiento) {
+                    dao.updateSeguimiento(coordenada)
+                }
 
-    suspend fun updateLocationAlta(locationAlta: LocationAlta) {
-        dao.updateLocationAlta(locationAlta)
-    }
+                suspend fun updateLocationAlta(locationAlta: LocationAlta) {
+                    dao.updateLocationAlta(locationAlta)
+                }
 
-    suspend fun updateMiniAlta(mini: MiniUpdAlta) {
-        dao.updateMiniAlta(mini)
-    }
+                suspend fun updateMiniAlta(mini: MiniUpdAlta) {
+                    dao.updateMiniAlta(mini)
+                }
 
-    suspend fun updateVisita(upd: TVisita) {
-        dao.updateVisita(upd)
-    }
+                suspend fun updateVisita(upd: TVisita) {
+                    dao.updateVisita(upd)
+                }
 
-    suspend fun updateAlta(upd: TAlta) {
-        dao.updateAlta(upd)
-    }
+                suspend fun updateAlta(upd: TAlta) {
+                    dao.updateAlta(upd)
+                }
 
-    suspend fun updateAltaDatos(upd: TADatos) {
-        dao.updateAltaDatos(upd)
-    }
+                suspend fun updateAltaDatos(upd: TADatos) {
+                    dao.updateAltaDatos(upd)
+                }
 
-    suspend fun updateAltaFoto(upd: TAFoto) {
-        dao.updateAltaFoto(upd)
-    }
+                suspend fun updateAltaFoto(upd: TAFoto) {
+                    dao.updateAltaFoto(upd)
+                }
 
-    suspend fun updateMiniBaja(mini: MiniUpdBaja) {
-        dao.updateMiniBaja(mini)
-    }
+                suspend fun updateMiniBaja(mini: MiniUpdBaja) {
+                    dao.updateMiniBaja(mini)
+                }
 
-    suspend fun updateBaja(upd: TBaja) {
-        dao.updateBaja(upd)
-    }
+                suspend fun updateBaja(upd: TBaja) {
+                    dao.updateBaja(upd)
+                }
 
-    suspend fun updateBajaEstado(upd: TBEstado) {
-        dao.updateBajaEstado(upd)
-    }
+                suspend fun updateBajaEstado(upd: TBEstado) {
+                    dao.updateBajaEstado(upd)
+                }
 
-    suspend fun updateRespuesta(rsp: TRespuesta) {
-        dao.updateRespuesta(rsp)
-    }
+                suspend fun updateRespuesta(rsp: TRespuesta) {
+                    dao.updateRespuesta(rsp)
+                }
 
-    suspend fun deleteConfig() {
-        dao.deleteConfig()
-    }
+                suspend fun deleteConfig() {
+                    dao.deleteConfig()
+                }
 
-    suspend fun deleteCliente() {
-        dao.deleteClientes()
-    }
+                suspend fun deleteCliente() {
+                    dao.deleteClientes()
+                }
 
-    suspend fun deleteEmpleado() {
-        dao.deleteEmpleado()
-    }
+                suspend fun deleteEmpleado() {
+                    dao.deleteEmpleado()
+                }
 
-    suspend fun deleteDistrito() {
-        dao.deleteDistrito()
-    }
+                suspend fun deleteDistrito() {
+                    dao.deleteDistrito()
+                }
 
-    suspend fun deleteNegocio() {
-        dao.deleteNegocio()
-    }
+                suspend fun deleteNegocio() {
+                    dao.deleteNegocio()
+                }
 
-    suspend fun deleteRuta() {
-        dao.deleteRutas()
-    }
+                suspend fun deleteRuta() {
+                    dao.deleteRutas()
+                }
 
-    suspend fun deleteEncuesta() {
-        dao.deleteEncuesta()
-    }
+                suspend fun deleteEncuesta() {
+                    dao.deleteEncuesta()
+                }
 
-    suspend fun deleteConsulta() {
-        dao.deleteConsulta()
-    }
+                suspend fun deleteConsulta() {
+                    dao.deleteConsulta()
+                }
 
-    suspend fun deleteSeguimiento() {
-        dao.deleteSeguimiento()
-    }
+                suspend fun deleteSeguimiento() {
+                    dao.deleteSeguimiento()
+                }
 
-    suspend fun deleteVisita() {
-        dao.deleteVisita()
-    }
+                suspend fun deleteVisita() {
+                    dao.deleteVisita()
+                }
 
-    suspend fun deleteEstado() {
-        dao.deleteEstado()
-    }
+                suspend fun deleteEstado() {
+                    dao.deleteEstado()
+                }
 
-    suspend fun deleteBaja() {
-        dao.deleteBaja()
-    }
+                suspend fun deleteBaja() {
+                    dao.deleteBaja()
+                }
 
-    suspend fun deleteAlta() {
-        dao.deleteAlta()
-    }
+                suspend fun deleteAlta() {
+                    dao.deleteAlta()
+                }
 
-    suspend fun deleteAltaDatos() {
-        dao.deleteAltaDatos()
-    }
+                suspend fun deleteAltaDatos() {
+                    dao.deleteAltaDatos()
+                }
 
-    suspend fun deleteBajaSuper() {
-        dao.deleteBajaSuper()
-    }
+                suspend fun deleteBajaSuper() {
+                    dao.deleteBajaSuper()
+                }
 
-    suspend fun deleteEstadoBaja() {
-        dao.deleteEstadoBaja()
-    }
+                suspend fun deleteEstadoBaja() {
+                    dao.deleteEstadoBaja()
+                }
 
-    suspend fun deleteEncuestaSeleccionado() {
-        dao.deleteEncuestaSeleccionado()
-    }
+                suspend fun deleteEncuestaSeleccionado() {
+                    dao.deleteEncuestaSeleccionado()
+                }
 
-    suspend fun deleteRespuesta() {
-        dao.deleteRespuesta()
-    }
+                suspend fun deleteRespuesta() {
+                    dao.deleteRespuesta()
+                }
 
-    suspend fun deleteIncidencia() {
-        dao.deleteIncidencia()
-    }
+                suspend fun deleteIncidencia() {
+                    dao.deleteIncidencia()
+                }
 
-    suspend fun deleteAltaFoto() {
-        dao.deleteAFoto()
-    }
+                suspend fun deleteAltaFoto() {
+                    dao.deleteAFoto()
+                }
 
-    suspend fun deleteAAux() {
-        dao.deleteAAux()
-    }
+                suspend fun deleteAAux() {
+                    dao.deleteAAux()
+                }
 
     suspend fun getServerSeguimiento(estado: String): List<TSeguimiento> {
         return qdao.seguimientoServer(estado)

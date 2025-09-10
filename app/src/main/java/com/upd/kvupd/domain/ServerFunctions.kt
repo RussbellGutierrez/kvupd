@@ -13,15 +13,14 @@ import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
-import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
+import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.data.model.JsonResponseAny
-import com.upd.kvupd.data.model.Login
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
@@ -35,7 +34,6 @@ interface ServerFunctions {
     fun apiDownloadNegocio(body: RequestBody): Flow<ResultadoApi<JsonNegocio>>
     fun apiDownloadEncuesta(body: RequestBody): Flow<ResultadoApi<JsonEncuesta>>
 
-    fun apiQueryLogin(body: RequestBody): Flow<ResultadoApi<Login>>
     fun apiQueryConsulta(body: RequestBody): Flow<ResultadoApi<JsonConsulta>>
     fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>>
     fun apiQuerySupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>>

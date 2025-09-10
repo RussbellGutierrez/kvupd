@@ -13,15 +13,14 @@ import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
-import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
+import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.data.model.JsonResponseAny
-import com.upd.kvupd.data.model.Login
 import com.upd.kvupd.data.remote.DownloadSource
 import com.upd.kvupd.data.remote.UploadSource
 import com.upd.kvupd.ui.sealed.ResultadoApi
@@ -75,12 +74,6 @@ class ServerImplementation @Inject constructor(
         remoteFlowCall(
             setupHolder = { downloadSource },
             block = { downloadEncuesta(body) }
-        )
-
-    override fun apiQueryLogin(body: RequestBody): Flow<ResultadoApi<Login>> =
-        remoteFlowCall(
-            setupHolder = { downloadSource },
-            block = { queryLogin(body) }
         )
 
     override fun apiQueryConsulta(body: RequestBody): Flow<ResultadoApi<JsonConsulta>> =

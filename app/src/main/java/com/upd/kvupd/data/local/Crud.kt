@@ -7,10 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTADATOS
-import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA_AUXILIAR
-import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA_FOTO
 import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA
-import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_ESTADO
 import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_SUPERVISOR
 import com.upd.kvupd.data.model.CrudConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.CrudConstant.DEL_CONFIGURACION
@@ -23,14 +20,10 @@ import com.upd.kvupd.data.model.CrudConstant.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_RUTAS
 import com.upd.kvupd.data.model.CrudConstant.DEL_SEGUIMIENTO
-import com.upd.kvupd.data.model.CrudConstant.DEL_SELECCION_ENCUESTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_VENDEDOR
 import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaAuxiliar
 import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableAltaFoto
 import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaEstado
 import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
@@ -43,12 +36,10 @@ import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
 import com.upd.kvupd.data.model.TableSeguimiento
-import com.upd.kvupd.data.model.TableSeleccionEncuesta
 import com.upd.kvupd.data.model.TableVendedor
 
 @Dao
 interface Crud {
-
     ////  INSERTS
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConfiguracion(conf: List<TableConfiguracion>)
@@ -90,25 +81,13 @@ interface Crud {
     suspend fun insertAltaDatos(da: TableAltaDatos)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAltaAuxiliar(aux: TableAltaAuxiliar)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBajaSupervisor(baja: List<TableBajaSupervisor>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEstadoBaja(estado: TableBajaEstado)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEncuestaElegida(selec: TableSeleccionEncuesta)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRespuesta(rsp: List<TableRespuesta>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIncidencia(rsp: TableIncidencia)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAltaFoto(rsp: TableAltaFoto)
 
     //// UPDATES
     @Update(entity = TableSeguimiento::class)
@@ -120,17 +99,11 @@ interface Crud {
     @Update(entity = TableBaja::class)
     suspend fun updateBaja(upd: TableBaja)
 
-    @Update(entity = TableBajaEstado::class)
-    suspend fun updateBajaEstado(upd: TableBajaEstado)
-
     @Update(entity = TableRespuesta::class)
     suspend fun updateRespuesta(rsp: TableRespuesta)
 
     @Update(entity = TableAltaDatos::class)
     suspend fun updateAltaDatos(upd: TableAltaDatos)
-
-    @Update(entity = TableAltaFoto::class)
-    suspend fun updateAltaFoto(upd: TableAltaFoto)
 
     //// DELETES
     @Query(DEL_CONFIGURACION)
@@ -140,7 +113,7 @@ interface Crud {
     suspend fun deleteClientes()
 
     @Query(DEL_VENDEDOR)
-    suspend fun deleteVendedor()
+    suspend fun deleteVendedores()
 
     @Query(DEL_DISTRITOS)
     suspend fun deleteDistritos()
@@ -173,23 +146,11 @@ interface Crud {
     suspend fun deleteAltaDatos()
 
     @Query(DEL_BAJA_SUPERVISOR)
-    suspend fun deleteBajaSuper()
-
-    @Query(DEL_BAJA_ESTADO)
-    suspend fun deleteBajaEstado()
-
-    @Query(DEL_SELECCION_ENCUESTA)
-    suspend fun deleteEncuestaSeleccionado()
+    suspend fun deleteBajaSupervisor()
 
     @Query(DEL_RESPUESTA)
     suspend fun deleteRespuesta()
 
     @Query(DEL_INCIDENCIA)
     suspend fun deleteIncidencia()
-
-    @Query(DEL_ALTA_FOTO)
-    suspend fun deleteAltaFoto()
-
-    @Query(DEL_ALTA_AUXILIAR)
-    suspend fun deleteAltaAuxiliar()
 }

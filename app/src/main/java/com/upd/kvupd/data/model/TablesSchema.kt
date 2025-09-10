@@ -60,6 +60,15 @@ data class TableNegocio(
     val descripcion: String
 )
 
+@Entity(primaryKeys = ["ruta"])
+data class TableRuta(
+    val ruta: Int,
+    val corte: String,
+    val longitud: Double,
+    val latitud: Double,
+    val visita: String
+)
+
 @Entity(primaryKeys = ["id", "pregunta"])
 data class TableEncuesta(
     val id: Int,
@@ -73,14 +82,10 @@ data class TableEncuesta(
     val condicional: Boolean,
     val previa: Int,
     val eleccion: String,
-    val necesaria: Boolean
-)
+    val necesaria: Boolean,
 
-@Entity(primaryKeys = ["id"])
-data class TableSeleccionEncuesta(
-    val id: Int,
-    val encuesta: Int,
-    val foto: Boolean
+    // 👉 Nuevo campo para indicar la encuesta activa
+    val seleccionada: Boolean = false
 )
 
 @Entity(primaryKeys = ["cliente", "encuesta", "pregunta"])
@@ -94,24 +99,9 @@ data class TableRespuesta(
     val foto: Int,
     val longitud: Double,
     val latitud: Double,
-    var estado: String
-)
 
-@Entity(primaryKeys = ["ruta"])
-data class TableRuta(
-    val ruta: Int,
-    val corte: String,
-    val longitud: Double,
-    val latitud: Double,
-    val visita: String
-)
-
-@Entity(primaryKeys = ["idcliente", "ruta"])
-data class TableEstado(
-    val idcliente: Int,
-    val empleado: Int,
-    val ruta: Int,
-    val atendido: Int
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )
 
 @Entity(primaryKeys = ["fecha", "longitud", "latitud"])
@@ -122,7 +112,9 @@ data class TableSeguimiento(
     val latitud: Double,
     val precision: Double,
     val bateria: Double,
-    var estado: String
+
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )
 
 @Entity(primaryKeys = ["cliente"])
@@ -136,19 +128,24 @@ data class TableBaja(
     val precision: Double,
     val fecha: String,
     val anulado: Int,
-    var estado: String
+
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )
 
 @Entity(primaryKeys = ["idaux"])
 data class TableAlta(
-    val idaux: Int,
+    val idaux: Int,             // PK interna local (autoincremental si quieres)
+    val empleado: Int,          // empleado que generó el alta
     val fecha: String,
-    val empleado: Int,
     val longitud: Double,
     val latitud: Double,
     val precision: Double,
     var estado: String,
-    val datos: Int
+    val datos: Int,
+
+    // 🔑 Nuevo campo
+    val codigoGenerado: String  // Ej. "100001", "100002", ...
 )
 
 @Entity(primaryKeys = ["idaux"])
@@ -179,16 +176,9 @@ data class TableAltaDatos(
     val secuencia: String,
     val dniruta: String,
     val observacion: String,
-    var estado: String
-)
 
-@Entity(primaryKeys = ["idaux"])
-data class TableAltaFoto(
-    val idaux: Int,
-    val empleado: Int,
-    val ruta: String,
-    val fecha: String,
-    var estado: String
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )
 
 @Entity(primaryKeys = ["clicodigo", "creado"])
@@ -221,31 +211,12 @@ data class TableBajaSupervisor(
     val compra: String
 )
 
-@Entity(primaryKeys = ["cliente", "fecha"])
-data class TableBajaEstado(
-    var empleado: Int,
-    var cliente: Int,
-    var procede: Int,
-    var fecha: String,
-    var precision: Double,
-    var longitud: Double,
-    var latitud: Double,
-    var fechaconf: String,
-    var observacion: String,
-    var estado: String
-)
-
 @Entity(primaryKeys = ["tipo", "fecha"])
 data class TableIncidencia(
     var tipo: String,
     var usuario: Int,
     var observacion: String,
     var fecha: String
-)
-
-@Entity(primaryKeys = ["idaux"])
-data class TableAltaAuxiliar(
-    val idaux: Int
 )
 
 @Entity(primaryKeys = ["cliente", "documento"])
@@ -261,4 +232,31 @@ data class TableConsulta(
     val anulado: Int,
     val documento: String,
     val ventas: Int
+)
+
+@Entity(primaryKeys = ["cliente", "fecha", "tipo"])
+data class TableEstado(
+
+    // ----------- Identificadores principales -----------
+    val cliente: Int,       // ID del cliente afectado
+    val empleado: Int,      // Empleado que realizó la acción
+    val tipo: String,       // Tipo de estado: "VISITA", "BAJA", "ALTA", etc.
+    val fecha: String,      // Fecha en la que se registró el evento
+
+    // ----------- Datos de VISITA (antes en TableEstado) -----------
+    val ruta: Int? = null,        // Ruta a la que pertenece (si aplica)
+    val atendido: Int? = null,    // 0 = no atendido, 1 = atendido
+
+    // ----------- Datos de BAJA (antes en TableBajaEstado) -----------
+    val procede: Int? = null,         // 1 = procede, 0 = no procede
+    val observacion: String? = null,  // Comentarios u observaciones
+    val fechaconf: String? = null,    // Fecha de confirmación (si aplica)
+
+    // ----------- Ubicación (usada en bajas o si se desea loguear visitas con coordenadas) -----------
+    val longitud: Double? = null,     // Longitud GPS
+    val latitud: Double? = null,      // Latitud GPS
+    val precision: Double? = null,    // Precisión de la ubicación
+
+    // 🔑----------- Control de sincronización -----------
+    var sincronizado: Boolean = false // false = pendiente de enviar, true = enviado al servidor
 )

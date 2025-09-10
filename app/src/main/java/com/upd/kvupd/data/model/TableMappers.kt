@@ -73,9 +73,6 @@ fun Ruta.asTRutas(): TableRuta =
         this.visita
     )
 
-fun TableBaja.createForTEstado(ruta: Int): TableEstado =
-    TableEstado(this.cliente, OldConstant.CONF.codigo, ruta, 2)
-
 fun BajaSupervisor.asTBajaSuper(): TableBajaSupervisor =
     TableBajaSupervisor(
         this.sucursal,

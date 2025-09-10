@@ -9,16 +9,12 @@ import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
 import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaAuxiliar
 import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableAltaFoto
 import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaEstado
 import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableIncidencia
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableSeguimiento
-import com.upd.kvupd.data.model.TableSeleccionEncuesta
 import com.upd.kvupd.data.model.Vendedor
 import com.upd.kvupd.data.model.asTBajaSuper
 import com.upd.kvupd.data.model.asTCliente
@@ -34,7 +30,6 @@ import javax.inject.Inject
 class RoomCrudSource @Inject constructor(
     private val crud: Crud
 ) {
-
     /////      INSERT
     suspend fun apiGuardarConfiguracion(item: List<Configuracion>) {
         crud.insertConfiguracion(item.map { it.asTConfig() })
@@ -84,10 +79,6 @@ class RoomCrudSource @Inject constructor(
         crud.insertBaja(item)
     }
 
-    suspend fun guardarBajasEstado(item: TableBajaEstado) {
-        crud.insertEstadoBaja(item)
-    }
-
     suspend fun guardarAltas(item: TableAlta) {
         crud.insertAlta(item)
     }
@@ -96,24 +87,12 @@ class RoomCrudSource @Inject constructor(
         crud.insertAltaDatos(item)
     }
 
-    suspend fun guardarAltaAuxiliar(item: TableAltaAuxiliar) {
-        crud.insertAltaAuxiliar(item)
-    }
-
-    suspend fun guardarSeleccionEncuesta(item: TableSeleccionEncuesta) {
-        crud.insertEncuestaElegida(item)
-    }
-
     suspend fun guardarRespuestas(item: List<TableRespuesta>) {
         crud.insertRespuesta(item)
     }
 
     suspend fun guardarIncidencias(item: TableIncidencia) {
         crud.insertIncidencia(item)
-    }
-
-    suspend fun guardarFotoAlta(item: TableAltaFoto) {
-        crud.insertAltaFoto(item)
     }
 
     /////      UPDATE
@@ -129,22 +108,76 @@ class RoomCrudSource @Inject constructor(
         crud.updateAltaDatos(actual)
     }
 
-    suspend fun actualizarFotoAlta(actual: TableAltaFoto) {
-        crud.updateAltaFoto(actual)
-    }
-    /*
-    suspend fun updateBaja(upd: TBaja) {
-        dao.updateBaja(upd)
+    suspend fun actualizarBaja(actual: TableBaja) {
+        crud.updateBaja(actual)
     }
 
-    suspend fun updateBajaEstado(upd: TBEstado) {
-        dao.updateBajaEstado(upd)
+    suspend fun actualizarRespuesta(actual: TableRespuesta){
+        crud.updateRespuesta(actual)
     }
-
-    suspend fun updateRespuesta(rsp: TRespuesta) {
-        dao.updateRespuesta(rsp)
-    }*/
-
 
     /////      DELETE
+    suspend fun borrarConfiguracion(){
+        crud.deleteConfiguracion()
+    }
+
+    suspend fun borrarClientes(){
+        crud.deleteClientes()
+    }
+
+    suspend fun borrarVendedores(){
+        crud.deleteVendedores()
+    }
+
+    suspend fun borrarDistritos(){
+        crud.deleteDistritos()
+    }
+
+    suspend fun borrarNegocios(){
+        crud.deleteNegocios()
+    }
+
+    suspend fun borrarRutas(){
+        crud.deleteRutas()
+    }
+
+    suspend fun borrarEncuesta(){
+        crud.deleteEncuesta()
+    }
+
+    suspend fun borrarConsultas(){
+        crud.deleteConsulta()
+    }
+
+    suspend fun borrarSeguimiento(){
+        crud.deleteSeguimiento()
+    }
+
+    suspend fun borrarEstados(){
+        crud.deleteEstado()
+    }
+
+    suspend fun borrarBaja(){
+        crud.deleteBaja()
+    }
+
+    suspend fun borrarAlta(){
+        crud.deleteAlta()
+    }
+
+    suspend fun borrarDatosAlta(){
+        crud.deleteAltaDatos()
+    }
+
+    suspend fun borrarBajaSupervisor(){
+        crud.deleteBajaSupervisor()
+    }
+
+    suspend fun borrarRespuestas(){
+        crud.deleteRespuesta()
+    }
+
+    suspend fun borrarIncidencias(){
+        crud.deleteIncidencia()
+    }
 }
