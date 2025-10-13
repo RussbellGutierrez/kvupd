@@ -13,19 +13,17 @@ import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
-import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
+import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.data.model.JsonResponseAny
-import com.upd.kvupd.data.model.Login
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_CONSULTA
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_ESTADOLISTA_BAJAS
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_LISTA_BAJAS
-import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_LOGIN
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_PEDIMAP
 import com.upd.kvupd.utils.ApisDescargaInicial.API_CLIENTE
 import com.upd.kvupd.utils.ApisDescargaInicial.API_CONFIGURACION
@@ -80,8 +78,6 @@ interface ApiService {
 
 
     // CONSULTA DE DATOS EN SERVIDOR
-    @POST(FETCH_LOGIN) // Parametros: usuario,clave,empresa
-    suspend fun queryLogin(@Body body: RequestBody): Response<Login>
     @POST(FETCH_CONSULTA) // Parametros: fecha,empresa
     suspend fun queryConsulta(@Body body: RequestBody): Response<JsonConsulta>
     @POST(FETCH_PEDIMAP) // Parametros: empleado, empresa

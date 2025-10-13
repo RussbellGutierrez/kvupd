@@ -46,7 +46,7 @@ import com.upd.kvupd.utils.OldConstant.USER_NOTIF
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class HelperNotification @Inject constructor(
+class OldHelperNotification @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val notificationManager: NotificationManager
 ) {

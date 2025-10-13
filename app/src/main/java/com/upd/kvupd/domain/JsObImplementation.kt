@@ -1,6 +1,8 @@
 package com.upd.kvupd.domain
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.JsonObjectDataSource
 import com.upd.kvupd.data.model.TableConfiguracion
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -14,10 +16,11 @@ class JsObImplementation @Inject constructor(
     override fun jsonRegistrarEquipo(identificador: String, empresa: String): RequestBody =
         jsonObjectDataSource.registrarEquipo(identificador, empresa)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun jsonObjectConfiguracion(identificador: String): RequestBody =
         jsonObjectDataSource.jsonRequestConfiguracion(identificador)
 
-    override fun jsonObjectClientes(item: TableConfiguracion, fecha: String): RequestBody =
+    override fun jsonObjectClientes(item: TableConfiguracion, fecha: String?): RequestBody =
         jsonObjectDataSource.jsonRequestClientes(item, fecha)
 
     override fun jsonObjectBasico(item: TableConfiguracion): RequestBody =

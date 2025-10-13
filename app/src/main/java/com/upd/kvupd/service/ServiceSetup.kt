@@ -14,7 +14,7 @@ import androidx.lifecycle.map
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.gms.location.LocationServices
-import com.upd.kvupd.application.work.HelperNotification
+import com.upd.kvupd.application.work.OldHelperNotification
 import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.data.model.TSeguimiento
 import com.upd.kvupd.domain.OldFunctions
@@ -77,7 +77,7 @@ class ServiceSetup : LifecycleService(), OldOnInterSetup {
     lateinit var repository: OldRepository
 
     @Inject
-    lateinit var helperNotification: HelperNotification
+    lateinit var helperNotification: OldHelperNotification
 
     @Inject
     lateinit var host: OldHostSelectionInterceptor

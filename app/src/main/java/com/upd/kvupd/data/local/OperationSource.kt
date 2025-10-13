@@ -8,7 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
-import com.upd.kvupd.application.work.VendedoresWorker
+import com.upd.kvupd.application.work.EmpleadosWorker
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.WorkerTags.WORK_CLIENTE
 import com.upd.kvupd.utils.WorkerTags.WORK_CONFIGURACION
@@ -51,7 +51,7 @@ class OperationSource @Inject constructor(
             .build()
 
     private fun workerEmpleados() =
-        OneTimeWorkRequestBuilder<VendedoresWorker>()
+        OneTimeWorkRequestBuilder<EmpleadosWorker>()
             .addTag(WORK_EMPLEADO)
             .setConstraints(constraints)
             .build()

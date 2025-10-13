@@ -13,14 +13,13 @@ import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
-import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.data.model.Login
 import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -56,9 +55,6 @@ class DownloadSource @Inject constructor(
 
 
     // CONSULTA DE DATOS EN SERVIDOR
-    suspend fun queryLogin(body: RequestBody): Response<Login> =
-        api().queryLogin(body)
-
     suspend fun queryConsulta(body: RequestBody): Response<JsonConsulta> =
         api().queryConsulta(body)
 

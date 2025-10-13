@@ -2,17 +2,20 @@ package com.upd.kvupd.data.local
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.upd.kvupd.data.model.Cabecera
+import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.QueryConstant.ALTADATO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.ALTA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.BAJA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.ESTADO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.FOTO_SERVER
+import com.upd.kvupd.data.model.QueryConstant.GET_ALTAS
+import com.upd.kvupd.data.model.QueryConstant.GET_BAJA_ESPECIFICA
 import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIGURACION
 import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
+import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_CLIENTE
 import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_VENDEDORES
 import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_SERVER
@@ -30,6 +33,7 @@ import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
 import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.data.model.TableVendedor
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface QueryList {
@@ -54,46 +58,51 @@ interface QueryList {
     @Query(GET_ENCUESTA)
     suspend fun getEncuestas(): List<TableEncuesta>
 
+    @Query(GET_BAJA_ESPECIFICA)
+    suspend fun getBajaCliente(cliente: String): TableBaja?
+
+    ////  FLOW
+    @Query(GET_CONFIGURACION)
+    fun flowConfiguracion(): Flow<List<TableConfiguracion>>
+
+    @Query(GET_RECYCLER_CLIENTE)
+    fun flowClientes(): Flow<List<FlowCliente>>
+
+    @Query(GET_ALTAS)
+    fun flowAltas(): Flow<List<TableAlta>>
+
     ////  SERVER
     @Query(SEGUIMIENTO_SERVER)
-    suspend fun seguimientoServer(estado: String): List<TableSeguimiento>
+    suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento>
 
     @Query(ALTA_SERVER)
-    suspend fun altaServer(estado: String): List<TableAlta>
+    suspend fun serverAltas(sync: Boolean): List<TableAlta>
 
     @Query(ALTADATO_SERVER)
-    suspend fun datosAltaServer(estado: String): List<TableAltaDatos>
+    suspend fun serverAltaDatos(sync: Boolean): List<TableAltaDatos>
 
     @Query(BAJA_SERVER)
-    suspend fun bajaServer(estado: String): List<TableBaja>
+    suspend fun serverBajas(sync: Boolean): List<TableBaja>
 
     @Query(ESTADO_SERVER)
-    suspend fun estadosServer(estado: String): List<TableEstado>
+    suspend fun serverEstados(sync: Boolean): List<TableEstado>
 
     @Query(RESPUESTA_SERVER)
-    suspend fun respuestaServer(estado: String): List<TableRespuesta>
+    suspend fun serverRespuestas(sync: Boolean): List<TableRespuesta>
 
     @Query(FOTO_SERVER)
-    suspend fun fotoServer(estado: String): List<TableRespuesta>
+    suspend fun serverFotos(sync: Boolean): List<TableRespuesta>
+
+
 
     /////////////////////////////////////////////////          REVISAR
-    /*@Query(GET_CONFIG)
-    fun getObsConfig(): Flow<List<TConfiguracion>>
-
-    @Query(GET_SESION)
-    fun getObsSession(): Flow<TSesion?>
-
-    @Query(GET_ROW_CLIENTES)
-    fun getRowClientes(): Flow<List<RowCliente>>
+    /*
 
     @Query(GET_LAST_LOCATION)
     fun getLastLocation(): Flow<List<TSeguimiento>?>
 
     @Query(GET_MARKERS)
     fun getMarkers(observacion: String): Flow<List<MarkerMap>>
-
-    @Query(GET_ALTAS)
-    fun getAltas(): Flow<List<TAlta>>
 
     @Query(GET_NEGOCIOS)
     fun getObsNegocios(): Flow<List<TNegocio>>
@@ -121,8 +130,7 @@ interface QueryList {
     @Query(GET_DATA_CLIENTE)
     suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente>
 
-    @Query(GET_BAJA_SPECIFIC)
-    suspend fun getBajaCliente(cliente: String): TBaja?
+
 
     @Query(GET_DATA_ALTA)
     suspend fun getDataAlta(alta: String): DataAlta

@@ -1,6 +1,7 @@
 package com.upd.kvupd.utils
 
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.upd.kvupd.BuildConfig
@@ -75,6 +76,7 @@ object ExtraInfo {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 object FechaHoraUtil {
     private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())

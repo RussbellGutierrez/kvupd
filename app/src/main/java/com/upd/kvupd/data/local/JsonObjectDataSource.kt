@@ -2,6 +2,7 @@ package com.upd.kvupd.data.local
 
 import android.content.Context
 import android.os.Build
+import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.utils.ExtraInfo
@@ -31,6 +32,7 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun jsonRequestConfiguracion(identificador: String): RequestBody {
         val fabricante = ExtraInfo.obtener(InfoDispositivo.FABRICANTE).uppercase()
         val modelo = ExtraInfo.obtener(InfoDispositivo.MODELO).uppercase()
@@ -45,11 +47,12 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
-    fun jsonRequestClientes(dato: TableConfiguracion, fecha: String): RequestBody {
-        val json = JSONObject()
-        json.put("empleado", dato.codigo)
-        json.put("empresa", dato.empresa)
-        json.put("fecha", fecha)
+    fun jsonRequestClientes(dato: TableConfiguracion, fecha: String? = null): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", dato.codigo)
+            put("empresa", dato.empresa)
+            put("fecha", fecha ?: dato.fecha)
+        }
         return json.toReqBody()
     }
 

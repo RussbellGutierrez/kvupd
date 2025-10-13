@@ -4,29 +4,68 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.domain.OldFunctions
-import com.upd.kvupd.domain.OldRepository
+import androidx.work.workDataOf
+import com.upd.kvupd.domain.JsObFunctions
+import com.upd.kvupd.domain.RoomFunctions
+import com.upd.kvupd.domain.ServerFunctions
+import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
 import okhttp3.RequestBody
 import org.json.JSONObject
 
 @HiltWorker
-class VendedoresWorker @AssistedInject constructor(
+class EmpleadosWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val repository: OldRepository,
-    private val functions: OldFunctions
+    private val roomFunctions: RoomFunctions,
+    private val serverFunctions: ServerFunctions,
+    private val jsobFunctions: JsObFunctions
 ) : CoroutineWorker(appContext, workerParameters) {
-    private val _tag by lazy { VendedoresWorker::class.java.simpleName }
 
-    override suspend fun doWork(): Result =
+    override suspend fun doWork(): Result {
+        return try {
+            val config = roomFunctions.queryConfiguracion()
+            if (config == null) {
+                Result.failure(workDataOf("error" to "No se encontro configuracion"))
+            }
+            val json = jsobFunctions.jsonObjectBasico(config!!)
+            serverFunctions.apiDownloadEmpleado(json).first { resultado ->
+                when (resultado) {
+                    is ResultadoApi.Loading -> {
+                        setProgressAsync(workDataOf("estado" to "Iniciando descarga vendedores..."))
+                        false // seguimos escuchando
+                    }
+
+                    is ResultadoApi.Exito -> {
+                        setProgressAsync(workDataOf("estado" to "Vendedores descargados"))
+                        true // cortamos con first
+                    }
+
+                    is ResultadoApi.ErrorHttp -> {
+                        setProgressAsync(workDataOf("estado" to "Error HTTP ${resultado.code}"))
+                        throw Exception("Error HTTP ${resultado.code}: ${resultado.mensaje}")
+                    }
+
+                    is ResultadoApi.Fallo -> {
+                        setProgressAsync(workDataOf("estado" to "Fallo: ${resultado.mensaje}"))
+                        throw Exception("Fallo: ${resultado.mensaje}")
+                    }
+                }
+            }
+
+            Result.success(workDataOf("resultado" to "OK"))
+        } catch (e: Exception) {
+            Result.failure(workDataOf("error" to (e.message ?: "Error desconocido")))
+        }
+    }
+
+    /*override suspend fun doWork(): Result =
         withContext(Dispatchers.IO) {
-            /*lateinit var rst: Result
+            lateinit var rst: Result
             val cli = repository.getClientes()
             val emp = repository.getEmpleados()
             val req = requestBody()
@@ -77,14 +116,7 @@ class VendedoresWorker @AssistedInject constructor(
                     rst = Result.success()
                 }
             }
-            interListener?.onFinishWork(W_USER)*/
+            interListener?.onFinishWork(W_USER)
             return@withContext Result.success()//rst
-        }
-
-    private fun requestBody(): RequestBody {
-        val json = JSONObject()
-        json.put("empleado", CONF.codigo)
-        json.put("empresa", CONF.empresa)
-        return json.toReqBody()
-    }
+        }*/
 }

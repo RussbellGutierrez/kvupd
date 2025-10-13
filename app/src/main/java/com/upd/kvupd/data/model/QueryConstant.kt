@@ -11,14 +11,25 @@ object QueryConstant {
     const val GET_NEGOCIOS = "SELECT * FROM TableNegocio ORDER BY CAST(codigo AS INTEGER) ASC"
     const val GET_RUTAS = "SELECT * FROM TableRuta"
     const val GET_ENCUESTA = """
-        SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, 
-               e.respuesta, e.formato, e.condicional, e.previa, 
-               e.eleccion, e.necesaria, e.seleccionada
+        SELECT e.id, e.nombre, e.foto, e.pregunta, e.descripcion, e.tipo, e.respuesta,
+               e.formato, e.condicional, e.previa, e.eleccion, e.necesaria, e.seleccionada
         FROM TableEncuesta e
         WHERE e.seleccionada = 1
         ORDER BY e.pregunta ASC
     """
+    const val GET_BAJA_ESPECIFICA = "SELECT * FROM TableBaja WHERE cliente = :cliente"
     const val GET_INCIDENCIA = "SELECT * FROM TableIncidencia ORDER BY fecha DESC"
+    const val GET_ALTAS = "SELECT * FROM TableAlta ORDER BY fecha DESC"
+
+    const val GET_RECYCLER_CLIENTE = """
+        SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(v.descripcion,'null') as descripcion, 
+               c.fecha, c.encuestas, IFNULL(r.encuesta,0) as resuelto, c.secuencia, c.ruta 
+        FROM TableCliente c
+        LEFT JOIN TableVendedor v on c.empleado=v.codigo 
+        LEFT JOIN TableRespuesta r on c.idcliente=r.cliente 
+        GROUP BY c.idcliente 
+        ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC
+    """
 
     ////  SERVER
     const val SEGUIMIENTO_SERVER = """
@@ -60,10 +71,9 @@ object QueryConstant {
 
 
     /***        CAMBIAR O MODIFICAR        ***/
-    //const val GET_SESION = "SELECT * FROM TSesion"
 
-    /*const val GET_BAJA_SPECIFIC = "SELECT * FROM TBaja WHERE cliente = :cliente"
-    const val GET_ALTAS = "SELECT * FROM TAlta ORDER BY fecha DESC"
+    /*
+
     const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
     const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
     const val GET_BAJA_SUPER =
@@ -81,14 +91,7 @@ object QueryConstant {
             "FROM TClientes " +
             "WHERE idcliente = :cliente "
 
-    const val GET_ROW_CLIENTES = "" +
-            "SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(p.descripcion,'null') as descripcion, IFNULL(e.atendido,0) as atendido, c.fecha, c.encuestas, IFNULL(r.encuesta,0) as resuelto, c.secuencia, c.ruta " +
-            "FROM TClientes c " +
-            "LEFT JOIN TEstado e on c.idcliente=e.idcliente and c.ruta=e.ruta " +
-            "LEFT JOIN TEmpleados p on c.empleado=p.codigo " +
-            "LEFT JOIN TRespuesta r on c.idcliente=r.cliente " +
-            "GROUP BY c.idcliente " +
-            "ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC "
+
 
     const val GET_LAST_AUX = "" +
             "SELECT * " +

@@ -2,76 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "16915bdf9c8989f6425df50ad50c32b7",
+    "identityHash": "766d7afee362688c44d5bba46abc4b28",
     "entities": [
       {
-        "tableName": "TSesion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `hini` TEXT NOT NULL, `hfin` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
-        "fields": [
-          {
-            "fieldPath": "codigo",
-            "columnName": "codigo",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "empresa",
-            "columnName": "empresa",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "esquema",
-            "columnName": "esquema",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sucursal",
-            "columnName": "sucursal",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "hini",
-            "columnName": "hini",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "hfin",
-            "columnName": "hfin",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ipp",
-            "columnName": "ipp",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ips",
-            "columnName": "ips",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "codigo"
-          ]
-        }
-      },
-      {
-        "tableName": "TConfiguracion",
+        "tableName": "TableConfiguracion",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `hfin` TEXT NOT NULL, `hini` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
@@ -167,7 +101,7 @@
         }
       },
       {
-        "tableName": "TClientes",
+        "tableName": "TableCliente",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `nomcli` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `domicli` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `fecha` TEXT NOT NULL, `secuencia` INTEGER NOT NULL, `numcuit` TEXT NOT NULL, `encuestas` TEXT NOT NULL, `ventas` INTEGER NOT NULL, `ventanio` INTEGER NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
         "fields": [
           {
@@ -270,7 +204,7 @@
         }
       },
       {
-        "tableName": "TEmpleados",
+        "tableName": "TableVendedor",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `descripcion` TEXT NOT NULL, `cargo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
@@ -300,7 +234,7 @@
         }
       },
       {
-        "tableName": "TDistrito",
+        "tableName": "TableDistrito",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` TEXT NOT NULL, `nombre` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
@@ -324,7 +258,7 @@
         }
       },
       {
-        "tableName": "TNegocio",
+        "tableName": "TableNegocio",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` TEXT NOT NULL, `nombre` TEXT NOT NULL, `giro` TEXT NOT NULL, `descripcion` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
@@ -360,50 +294,8 @@
         }
       },
       {
-        "tableName": "TRutas",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruta` INTEGER NOT NULL, `corte` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `visita` TEXT NOT NULL, PRIMARY KEY(`ruta`))",
-        "fields": [
-          {
-            "fieldPath": "ruta",
-            "columnName": "ruta",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "corte",
-            "columnName": "corte",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "longitud",
-            "columnName": "longitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "latitud",
-            "columnName": "latitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "visita",
-            "columnName": "visita",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "ruta"
-          ]
-        }
-      },
-      {
-        "tableName": "TEncuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, `necesaria` INTEGER NOT NULL, PRIMARY KEY(`id`, `pregunta`))",
+        "tableName": "TableEncuesta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `foto` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `descripcion` TEXT NOT NULL, `tipo` TEXT NOT NULL, `respuesta` TEXT NOT NULL, `formato` TEXT NOT NULL, `condicional` INTEGER NOT NULL, `previa` INTEGER NOT NULL, `eleccion` TEXT NOT NULL, `necesaria` INTEGER NOT NULL, `seleccionada` INTEGER NOT NULL, PRIMARY KEY(`id`, `pregunta`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -476,6 +368,12 @@
             "columnName": "necesaria",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "seleccionada",
+            "columnName": "seleccionada",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -487,8 +385,8 @@
         }
       },
       {
-        "tableName": "TRespuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `foto` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
+        "tableName": "TableRespuesta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `foto` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
         "fields": [
           {
             "fieldPath": "cliente",
@@ -545,9 +443,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -561,12 +459,54 @@
         }
       },
       {
-        "tableName": "TEstado",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idcliente` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `ruta` INTEGER NOT NULL, `atendido` INTEGER NOT NULL, PRIMARY KEY(`idcliente`, `ruta`))",
+        "tableName": "TableRuta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruta` INTEGER NOT NULL, `corte` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `visita` TEXT NOT NULL, PRIMARY KEY(`ruta`))",
         "fields": [
           {
-            "fieldPath": "idcliente",
-            "columnName": "idcliente",
+            "fieldPath": "ruta",
+            "columnName": "ruta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "corte",
+            "columnName": "corte",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitud",
+            "columnName": "longitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitud",
+            "columnName": "latitud",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visita",
+            "columnName": "visita",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ruta"
+          ]
+        }
+      },
+      {
+        "tableName": "TableEstado",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `fecha` TEXT NOT NULL, `ruta` INTEGER, `atendido` INTEGER, `procede` INTEGER, `observacion` TEXT, `fechaconf` TEXT, `longitud` REAL, `latitud` REAL, `precision` REAL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `fecha`, `tipo`))",
+        "fields": [
+          {
+            "fieldPath": "cliente",
+            "columnName": "cliente",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -577,14 +517,60 @@
             "notNull": true
           },
           {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "ruta",
             "columnName": "ruta",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "atendido",
             "columnName": "atendido",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "procede",
+            "columnName": "procede",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "observacion",
+            "columnName": "observacion",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fechaconf",
+            "columnName": "fechaconf",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "longitud",
+            "columnName": "longitud",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "latitud",
+            "columnName": "latitud",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "precision",
+            "columnName": "precision",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -592,14 +578,15 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "idcliente",
-            "ruta"
+            "cliente",
+            "fecha",
+            "tipo"
           ]
         }
       },
       {
-        "tableName": "TSeguimiento",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fecha` TEXT NOT NULL, `usuario` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `bateria` REAL NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`fecha`, `longitud`, `latitud`))",
+        "tableName": "TableSeguimiento",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fecha` TEXT NOT NULL, `usuario` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `bateria` REAL NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`fecha`, `longitud`, `latitud`))",
         "fields": [
           {
             "fieldPath": "fecha",
@@ -638,9 +625,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -654,68 +641,8 @@
         }
       },
       {
-        "tableName": "TVisita",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `usuario` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `observacion` INTEGER NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`))",
-        "fields": [
-          {
-            "fieldPath": "cliente",
-            "columnName": "cliente",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "usuario",
-            "columnName": "usuario",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "longitud",
-            "columnName": "longitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "latitud",
-            "columnName": "latitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "observacion",
-            "columnName": "observacion",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "precision",
-            "columnName": "precision",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "cliente"
-          ]
-        }
-      },
-      {
-        "tableName": "TBaja",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `motivo` INTEGER NOT NULL, `comentario` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `fecha` TEXT NOT NULL, `anulado` INTEGER NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`))",
+        "tableName": "TableBaja",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `motivo` INTEGER NOT NULL, `comentario` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `fecha` TEXT NOT NULL, `anulado` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`))",
         "fields": [
           {
             "fieldPath": "cliente",
@@ -772,9 +699,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -786,8 +713,8 @@
         }
       },
       {
-        "tableName": "TAlta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `empleado` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, `datos` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
+        "tableName": "TableAlta",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, `datos` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
         "fields": [
           {
             "fieldPath": "idaux",
@@ -796,15 +723,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "empleado",
             "columnName": "empleado",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -836,6 +763,12 @@
             "columnName": "datos",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -846,8 +779,8 @@
         }
       },
       {
-        "tableName": "TADatos",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `razon` TEXT NOT NULL, `nombre` TEXT NOT NULL, `appaterno` TEXT NOT NULL, `apmaterno` TEXT NOT NULL, `ruc` TEXT NOT NULL, `dnice` TEXT NOT NULL, `tipodocu` TEXT NOT NULL, `movil1` TEXT NOT NULL, `movil2` TEXT NOT NULL, `correo` TEXT NOT NULL, `via` TEXT NOT NULL, `direccion` TEXT NOT NULL, `manzana` TEXT NOT NULL, `zona` TEXT NOT NULL, `zonanombre` TEXT NOT NULL, `ubicacion` TEXT NOT NULL, `numero` TEXT NOT NULL, `distrito` TEXT NOT NULL, `giro` TEXT NOT NULL, `ruta` TEXT NOT NULL, `secuencia` TEXT NOT NULL, `dniruta` TEXT NOT NULL, `observacion` TEXT NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`idaux`))",
+        "tableName": "TableAltaDatos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `razon` TEXT NOT NULL, `nombre` TEXT NOT NULL, `appaterno` TEXT NOT NULL, `apmaterno` TEXT NOT NULL, `ruc` TEXT NOT NULL, `dnice` TEXT NOT NULL, `tipodocu` TEXT NOT NULL, `movil1` TEXT NOT NULL, `movil2` TEXT NOT NULL, `correo` TEXT NOT NULL, `via` TEXT NOT NULL, `direccion` TEXT NOT NULL, `manzana` TEXT NOT NULL, `zona` TEXT NOT NULL, `zonanombre` TEXT NOT NULL, `ubicacion` TEXT NOT NULL, `numero` TEXT NOT NULL, `distrito` TEXT NOT NULL, `giro` TEXT NOT NULL, `ruta` TEXT NOT NULL, `secuencia` TEXT NOT NULL, `dniruta` TEXT NOT NULL, `observacion` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
         "fields": [
           {
             "fieldPath": "idaux",
@@ -1006,9 +939,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -1020,7 +953,7 @@
         }
       },
       {
-        "tableName": "TBajaSuper",
+        "tableName": "TableBajaSupervisor",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sucursal` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `creado` TEXT NOT NULL, `dia` TEXT NOT NULL, `motivo` TEXT NOT NULL, `descripcion` TEXT NOT NULL, `observacion` TEXT NOT NULL, `confirmado` INTEGER, `fechaconf` TEXT NOT NULL, `clicodigo` INTEGER NOT NULL, `clinombre` TEXT NOT NULL, `documento` TEXT NOT NULL, `direccion` TEXT NOT NULL, `ruta` INTEGER NOT NULL, `negocio` TEXT NOT NULL, `canal` TEXT NOT NULL, `pago` TEXT NOT NULL, `visicooler` TEXT NOT NULL, `clilongitud` REAL NOT NULL, `clilatitud` REAL NOT NULL, `hora` TEXT NOT NULL, `precision` REAL NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `compra` TEXT NOT NULL, PRIMARY KEY(`clicodigo`, `creado`))",
         "fields": [
           {
@@ -1188,110 +1121,7 @@
         }
       },
       {
-        "tableName": "TBEstado",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`empleado` INTEGER NOT NULL, `cliente` INTEGER NOT NULL, `procede` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `precision` REAL NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `fechaconf` TEXT NOT NULL, `observacion` TEXT NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`cliente`, `fecha`))",
-        "fields": [
-          {
-            "fieldPath": "empleado",
-            "columnName": "empleado",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "cliente",
-            "columnName": "cliente",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "procede",
-            "columnName": "procede",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "precision",
-            "columnName": "precision",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "longitud",
-            "columnName": "longitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "latitud",
-            "columnName": "latitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fechaconf",
-            "columnName": "fechaconf",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "observacion",
-            "columnName": "observacion",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "cliente",
-            "fecha"
-          ]
-        }
-      },
-      {
-        "tableName": "TEncuestaSeleccionado",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `encuesta` INTEGER NOT NULL, `foto` INTEGER NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "encuesta",
-            "columnName": "encuesta",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "foto",
-            "columnName": "foto",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
-        "tableName": "TIncidencia",
+        "tableName": "TableIncidencia",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tipo` TEXT NOT NULL, `usuario` INTEGER NOT NULL, `observacion` TEXT NOT NULL, `fecha` TEXT NOT NULL, PRIMARY KEY(`tipo`, `fecha`))",
         "fields": [
           {
@@ -1328,67 +1158,7 @@
         }
       },
       {
-        "tableName": "TAFoto",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `ruta` TEXT NOT NULL, `fecha` TEXT NOT NULL, `estado` TEXT NOT NULL, PRIMARY KEY(`idaux`))",
-        "fields": [
-          {
-            "fieldPath": "idaux",
-            "columnName": "idaux",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "empleado",
-            "columnName": "empleado",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ruta",
-            "columnName": "ruta",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "idaux"
-          ]
-        }
-      },
-      {
-        "tableName": "TAAux",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
-        "fields": [
-          {
-            "fieldPath": "idaux",
-            "columnName": "idaux",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "idaux"
-          ]
-        }
-      },
-      {
-        "tableName": "TConsulta",
+        "tableName": "TableConsulta",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `domicilio` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `telefono` TEXT NOT NULL, `negocio` TEXT NOT NULL, `canal` TEXT NOT NULL, `anulado` INTEGER NOT NULL, `documento` TEXT NOT NULL, `ventas` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `documento`))",
         "fields": [
           {
@@ -1469,7 +1239,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '16915bdf9c8989f6425df50ad50c32b7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '766d7afee362688c44d5bba46abc4b28')"
     ]
   }
 }

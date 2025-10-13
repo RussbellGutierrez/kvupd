@@ -135,7 +135,7 @@ data class TableBaja(
 
 @Entity(primaryKeys = ["idaux"])
 data class TableAlta(
-    val idaux: Int,             // PK interna local (autoincremental si quieres)
+    val idaux: Int,             // Codigo usuario + dia + hora
     val empleado: Int,          // empleado que generó el alta
     val fecha: String,
     val longitud: Double,
@@ -144,8 +144,8 @@ data class TableAlta(
     var estado: String,
     val datos: Int,
 
-    // 🔑 Nuevo campo
-    val codigoGenerado: String  // Ej. "100001", "100002", ...
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )
 
 @Entity(primaryKeys = ["idaux"])
