@@ -572,14 +572,14 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "DPTO" -> "DPTO"
         "PUESTO" -> "PTO"
         "LOTE" -> "LT"
-        else -> "NINGUNO"
+        else -> ""
     }
 
     private fun getDocumento() = when (bind.spnDocumento.selectedItem.toString()) {
         "RUC" -> "RUC"
         "DNI" -> "DNI"
         "CARNET" -> "CE"
-        else -> "NINGUNO"
+        else -> ""
     }
 
     private fun getVia() = when (bind.spnVia.selectedItem.toString()) {
@@ -593,7 +593,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "PASAJE" -> "PJE"
         "PASEO" -> "P"
         "PLAZA" -> "PLZA"
-        else -> "NINGUNO"
+        else -> ""
     }
 
     private fun getZona() = when (bind.spnZona.selectedItem.toString()) {
@@ -623,7 +623,7 @@ class FAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         "URBANIZACION" -> "URB"
         "VILLA" -> "VILLA"
         "ZONA INDUSTRIAL" -> "ZI"
-        else -> "NINGUNO"
+        else -> ""
     }
 
     private fun setUbicacion(texto: String) = when (texto) {
