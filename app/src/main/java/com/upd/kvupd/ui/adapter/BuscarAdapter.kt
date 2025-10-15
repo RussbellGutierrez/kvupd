@@ -7,11 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.R
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.databinding.RowBuscarBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.buscarListener
 import javax.inject.Inject
 
@@ -71,10 +69,10 @@ class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHold
 
             val cliente = "${item.id} - ${item.nombre}"
 
-            when (CONF.esquema) {
+            /*when (CONF.esquema) {
                 1 -> bind.imgEmp.setImageResource(R.drawable.terranorte)
                 7 -> bind.imgEmp.setImageResource(R.drawable.oriunda)
-            }
+            }*/
 
             bind.txtCliente.text = cliente
 

@@ -79,7 +79,7 @@ class OldDBuscar : DialogFragment(), SearchView.OnQueryTextListener, BuscarAdapt
     }
 
     override fun onClienteClick(cliente: DataCliente) {
-        viewmodel.setClienteSelect(cliente.id.toString())
+        //viewmodel.setClienteSelect(cliente.id.toString())
         dismiss()
     }
 

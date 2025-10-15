@@ -10,21 +10,18 @@ import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.RowClienteBinding
 import com.upd.kvupd.domain.OldRepository
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.clienteListener
 import com.upd.kvupd.utils.dateToday
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.textToTime
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 class ClienteAdapter @Inject constructor(
@@ -91,7 +88,7 @@ class ClienteAdapter @Inject constructor(
                 val secuencia = "Sec ${item.secuencia}"
                 val fc = item.fecha.textToTime(5)
 
-                if (CONF.tipo == "V") {
+                /*if (CONF.tipo == "V") {
                     bind.txtVendedor.setUI("v", false)
                     bind.dvdVendedor.setUI("v", false)
                     if (fecha.compareTo(fc) == 0) {
@@ -99,9 +96,9 @@ class ClienteAdapter @Inject constructor(
                     } else {
                         bind.txtFecha.setTextColor(ctx.getColor(R.color.gold))
                     }
-                }
+                }*/
 
-                val selec = repository.getSeleccionado()
+                /*val selec = repository.getSeleccionado()
                 if (selec != null) {
                     if (item.encuestas == "") {
                         if (item.resuelto > 0) {
@@ -129,7 +126,7 @@ class ClienteAdapter @Inject constructor(
                             }
                         }
                     }
-                }
+                }*/
 
                 bind.txtVendedor.text = item.nomven
                 bind.txtCliente.text = cliente

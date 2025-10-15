@@ -16,8 +16,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
@@ -30,16 +28,12 @@ import com.upd.kvupd.ui.dialog.OldDVendedor
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldInterface.clienteListener
-import com.upd.kvupd.utils.OldNetworkRetrofit
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
 import javax.inject.Inject
@@ -91,7 +85,7 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
 
         bind.searchView.setOnQueryTextListener(this)
 
-        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+        /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             row = it
             setupList(it)
         }
@@ -126,7 +120,7 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
                     is OldNetworkRetrofit.Error -> showDialog("Error", "Rutas server ${y.message}") {}
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -165,17 +159,17 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
     }
 
     override fun onClienteClick(cliente: RowCliente) {
-        viewLifecycleOwner.lifecycleScope.launch {
+        /*viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(0, cliente)
-        }
+        }*/
     }
 
     override fun onPressCliente(cliente: RowCliente) {
-        viewLifecycleOwner.lifecycleScope.launch {
+        /*viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(1, cliente)
-        }
+        }*/
     }
 
     private val resultLauncher =
@@ -209,18 +203,18 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
     private fun launchDownload(codigo: String, fecha: String) {
         progress("Descargando clientes y rutas")
 
-        viewmodel.cleanDataVendedor()
+        //viewmodel.cleanDataVendedor()
 
         val clientes = JSONObject()
         clientes.put("empleado", codigo)
         clientes.put("fecha", fecha)
         clientes.put("empresa", CONF.empresa)
-        viewmodel.fetchClientes(clientes.toReqBody())
+        //viewmodel.fetchClientes(clientes.toReqBody())
 
         val rutas = JSONObject()
         rutas.put("empleado", codigo)
         rutas.put("empresa", CONF.empresa)
-        viewmodel.fetchRutas(rutas.toReqBody())
+        //viewmodel.fetchRutas(rutas.toReqBody())
     }
 
     private fun setupList(list: List<RowCliente>) {
@@ -239,7 +233,7 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
             snack("Cliente con baja, revise lista de bajas")
         } else {
             val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
-            when (dialog) {
+            /*when (dialog) {
                 0 -> viewmodel.checkingEncuesta {
                     if (it) {
                         findNavController().navigate(
@@ -253,7 +247,7 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
                 1 -> findNavController().navigate(
                     OldFVendedorDirections.actionFVendedorToDClienteAux(item)
                 )
-            }
+            }*/
         }
     }
 }

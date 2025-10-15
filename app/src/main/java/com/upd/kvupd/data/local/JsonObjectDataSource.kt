@@ -7,6 +7,7 @@ import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.OldConstant
 import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
@@ -57,8 +58,10 @@ class JsonObjectDataSource @Inject constructor(
     }
 
     fun jsonRequestBasico(dato: TableConfiguracion): RequestBody {
+        val empleado = if (dato.tipo == "S") 0 else dato.codigo
+
         val json = JSONObject()
-        json.put("empleado", dato.codigo)
+        json.put("empleado", empleado)
         json.put("empresa", dato.empresa)
         return json.toReqBody()
     }

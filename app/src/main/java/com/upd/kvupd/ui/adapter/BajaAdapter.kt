@@ -1,24 +1,13 @@
 package com.upd.kvupd.ui.adapter
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.widget.ImageViewCompat
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.TBaja
-import com.upd.kvupd.databinding.RowBajaBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldInterface.bajaListener
-import com.upd.kvupd.utils.setUI
 import javax.inject.Inject
 
 class BajaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<TBaja>() {
+    /*private val diffCallback = (object : DiffUtil.ItemCallback<TBaja>() {
 
         override fun areItemsTheSame(oldItem: TBaja, newItem: TBaja): Boolean {
             return oldItem.cliente == newItem.cliente
@@ -106,5 +95,16 @@ class BajaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder
 
     interface OnBajaListener {
         fun onPressBaja(baja: TBaja)
+    }*/
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
     }
 }

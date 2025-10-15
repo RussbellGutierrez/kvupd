@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.upd.kvupd.databinding.ChipsBinding
 import com.upd.kvupd.databinding.DialogClienteVendedorBinding
 import com.upd.kvupd.utils.castDate
 import com.upd.kvupd.utils.setCreate
@@ -17,7 +16,7 @@ import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
 class OldDVendedor : DialogFragment() {
@@ -58,14 +57,14 @@ class OldDVendedor : DialogFragment() {
 
     private fun setup() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewmodel.gettingVendedores().forEach { i ->
+            /*viewmodel.gettingVendedores().forEach { i ->
                 val minbind = ChipsBinding.inflate(layoutInflater, view as ViewGroup, false)
                 minbind.txtChip.text = i.codigo.toString()
                 minbind.cardChip.setOnClickListener {
                     bind.txtVendedor.text = i.descripcion
                 }
                 bind.flxVendedor.addView(minbind.root)
-            }
+            }*/
         }
     }
 
@@ -90,7 +89,7 @@ class OldDVendedor : DialogFragment() {
             bind.txtMensaje.text = "Elija un vendedor y fecha por favor"
         } else {
             dismiss()
-            viewmodel.setVendedorSelect(listOf(codigo, fecha))
+            //viewmodel.setVendedorSelect(listOf(codigo, fecha))
         }
     }
 }

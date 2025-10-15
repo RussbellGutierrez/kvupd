@@ -71,7 +71,20 @@
                 app:layout_constraintLeft_toLeftOf="@+id/constraint1"
                 app:layout_constraintRight_toRightOf="@+id/constraint1"
                 app:layout_constraintTop_toBottomOf="@+id/text2"
-                tools:text="a4b963cf-57c4-4105-b90b-869f9f98b04d" />
+                tools:text="abcdefg-123456-hijklmn-7890" />
+
+            <TextView
+                android:id="@+id/text3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:gravity="center"
+                android:textColor="@color/lightcrimson"
+                android:textSize="15sp"
+                android:text="Luego de registrar el equipo, búsquelo por su código en Pedimap"
+                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
+                app:layout_constraintRight_toRightOf="@+id/constraint1"
+                app:layout_constraintTop_toBottomOf="@+id/txt_uuid"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textinput1"
@@ -82,7 +95,7 @@
                 android:hint="Seleccione la empresa"
                 app:layout_constraintLeft_toLeftOf="@+id/constraint1"
                 app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/txt_uuid">
+                app:layout_constraintTop_toBottomOf="@+id/text3">
 
                 <AutoCompleteTextView
                     android:id="@+id/auto_empresa"

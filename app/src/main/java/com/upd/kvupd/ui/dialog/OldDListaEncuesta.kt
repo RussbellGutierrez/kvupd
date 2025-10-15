@@ -1,15 +1,12 @@
 package com.upd.kvupd.ui.dialog
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.upd.kvupd.data.model.Cabecera
-import com.upd.kvupd.data.model.TEncuestaSeleccionado
 import com.upd.kvupd.databinding.DialogListaEncuestaBinding
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
@@ -58,7 +55,7 @@ class OldDListaEncuesta : DialogFragment() {
         }
         bind.btnSeleccion.setOnClickListener { saveSeleccion() }
 
-        viewmodel.cabecera.observe(viewLifecycleOwner) {
+        /*viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 y.forEach { j ->
                     Log.d(_tag,"Encuesta $j")
@@ -73,17 +70,17 @@ class OldDListaEncuesta : DialogFragment() {
                     lista.add(j)
                 }
             }
-        }
+        }*/
     }
 
     private fun setup() {
-        viewmodel.gettingEncuestaLista()
+        //viewmodel.gettingEncuestaLista()
     }
 
     private fun saveSeleccion() {
-        val datos = seleccion.split("@")
+        /*val datos = seleccion.split("@")
         val item = TEncuestaSeleccionado(1,datos[0].toInt(),datos[1].toBoolean())
         viewmodel.saveSeleccion(item)
-        dismiss()
+        dismiss()*/
     }
 }

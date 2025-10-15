@@ -1,105 +1,9 @@
 package com.upd.kvupd.domain
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.os.Build
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.telephony.TelephonyManager
-import androidx.annotation.RequiresPermission
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.vision.Frame
-import com.google.android.gms.vision.barcode.Barcode
-import com.google.android.gms.vision.barcode.BarcodeDetector
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.journeyapps.barcodescanner.BarcodeEncoder
-import com.upd.kvupd.BuildConfig
-import com.upd.kvupd.R
-import com.upd.kvupd.application.OldReceiver
-import com.upd.kvupd.application.work.OldAltaDatoPWork
-import com.upd.kvupd.application.work.OldAltaFotoPWork
-import com.upd.kvupd.application.work.OldAltaPWork
-import com.upd.kvupd.application.work.OldBajaEstadoPWork
-import com.upd.kvupd.application.work.OldBajaPWork
-import com.upd.kvupd.application.work.OldConfigWork
-import com.upd.kvupd.application.work.OldDistritosWork
-import com.upd.kvupd.application.work.OldEncuestaWork
-import com.upd.kvupd.application.work.OldFotoPWork
-import com.upd.kvupd.application.work.OldNegociosWork
-import com.upd.kvupd.application.work.OldRespuestaPWork
-import com.upd.kvupd.application.work.OldRutasWork
-import com.upd.kvupd.application.work.OldUserWork
-import com.upd.kvupd.application.work.OldVisitaPWork
-import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.MarkerMap
-import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableBajaSupervisor
-import com.upd.kvupd.data.model.TableConsulta
-import com.upd.kvupd.data.model.TableIncidencia
-import com.upd.kvupd.service.ServiceFinish
-import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.service.ServiceSetup
-import com.upd.kvupd.utils.OldConstant.ACTION_ALARM_FINISH
-import com.upd.kvupd.utils.OldConstant.ACTION_ALARM_SETUP
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.FILTRO_OBS
-import com.upd.kvupd.utils.OldConstant.LOOPING
-import com.upd.kvupd.utils.OldConstant.LOOP_CONFIG
-import com.upd.kvupd.utils.OldConstant.PERIODIC_WORK
-import com.upd.kvupd.utils.OldConstant.WP_ALTA
-import com.upd.kvupd.utils.OldConstant.WP_ALTADATO
-import com.upd.kvupd.utils.OldConstant.WP_ALTAFOTO
-import com.upd.kvupd.utils.OldConstant.WP_BAJA
-import com.upd.kvupd.utils.OldConstant.WP_BAJAESTADO
-import com.upd.kvupd.utils.OldConstant.WP_FOTO
-import com.upd.kvupd.utils.OldConstant.WP_RESPUESTA
-import com.upd.kvupd.utils.OldConstant.WP_VISITA
-import com.upd.kvupd.utils.OldConstant.W_CONFIG
-import com.upd.kvupd.utils.OldConstant.W_DISTRITO
-import com.upd.kvupd.utils.OldConstant.W_ENCUESTA
-import com.upd.kvupd.utils.OldConstant.W_NEGOCIO
-import com.upd.kvupd.utils.OldConstant.W_RUTA
-import com.upd.kvupd.utils.OldConstant.W_USER
-import com.upd.kvupd.utils.OldConstant.isCONFinitialized
-import com.upd.kvupd.utils.OldInterface.gpsListener
-import com.upd.kvupd.utils.OldInterface.interListener
-import com.upd.kvupd.utils.addingMarker
-import com.upd.kvupd.utils.dateToday
-import com.upd.kvupd.utils.isGPSDisabled
-import com.upd.kvupd.utils.isServiceRunning
-import com.upd.kvupd.utils.markerAlta
-import com.upd.kvupd.utils.markerBaja
-import com.upd.kvupd.utils.markerConsulta
-import com.upd.kvupd.utils.markerPedimap
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class OldFunImpl @Inject constructor(
@@ -108,7 +12,7 @@ class OldFunImpl @Inject constructor(
     private val notificationManager: NotificationManager
 ) : OldFunctions {
 
-    override fun generateQR(value: String): Bitmap {
+    /*override fun generateQR(value: String): Bitmap {
         lateinit var bitmap: Bitmap
         val mfw = MultiFormatWriter()
         try {
@@ -712,5 +616,5 @@ class OldFunImpl @Inject constructor(
 
     override fun closeAllNotifications() {
         notificationManager.cancelAll()
-    }
+    }*/
 }

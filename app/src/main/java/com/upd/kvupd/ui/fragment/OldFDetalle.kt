@@ -15,13 +15,10 @@ import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
 import com.upd.kvupd.ui.adapter.GenericoAdapter
 import com.upd.kvupd.ui.adapter.VisisuperAdapter
-import com.upd.kvupd.utils.OldInterface.generListener
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldNetworkRetrofit
+import com.upd.kvupd.utils.OldInterface.generListener
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -71,7 +68,7 @@ class OldFDetalle : Fragment(), GenericoAdapter.OnGenericoListener/*,VisisuperAd
 
         checkDetalle()
 
-        viewmodel.generico.observe(viewLifecycleOwner) {
+        /*viewmodel.generico.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -87,7 +84,7 @@ class OldFDetalle : Fragment(), GenericoAdapter.OnGenericoListener/*,VisisuperAd
                     }
                 }
             }
-        }
+        }*/
 
         /*viewmodel.visicooler.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -191,7 +188,7 @@ class OldFDetalle : Fragment(), GenericoAdapter.OnGenericoListener/*,VisisuperAd
         p.put("linea", soles.linea.codigo)
         progress("Descargando informacion")
 
-        viewmodel.fetchSolesGenerico(p.toReqBody())
+        //viewmodel.fetchSolesGenerico(p.toReqBody())
         /*when (CONF.empresa) {
             1 -> detalleUME()//viewmodel.fetchUmesGenerico(p.toReqBody())
             2 -> viewmodel.fetchSolesGenerico(p.toReqBody())

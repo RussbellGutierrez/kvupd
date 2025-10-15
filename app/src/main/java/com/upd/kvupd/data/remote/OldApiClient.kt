@@ -13,14 +13,13 @@ import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
-import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.data.model.Login
 import com.upd.kvupd.utils.OldConstant.API_BAJAESTLIS
 import com.upd.kvupd.utils.OldConstant.API_BAJALIS
 import com.upd.kvupd.utils.OldConstant.API_CARTERA
@@ -36,7 +35,6 @@ import com.upd.kvupd.utils.OldConstant.API_EMPCAMBIO
 import com.upd.kvupd.utils.OldConstant.API_EMPLEADO
 import com.upd.kvupd.utils.OldConstant.API_EMPMARCADOR
 import com.upd.kvupd.utils.OldConstant.API_ENCUESTA
-import com.upd.kvupd.utils.OldConstant.API_LOGIN
 import com.upd.kvupd.utils.OldConstant.API_NEGOCIO
 import com.upd.kvupd.utils.OldConstant.API_PREVENTA
 import com.upd.kvupd.utils.OldConstant.API_REPOEMP
@@ -56,8 +54,8 @@ interface OldApiClient {
     /**PARA OBTENER LA RESPUESTA SIN PARSEAR A TRAVES DE RETROFIT, SE DEBE USAR LA CLASE "ResponseBody"
      * LA CUAL NOS DEVOLVERA UN "response.data?.string()" CON LOS DATOS DEL API**/
 
-    @POST(API_LOGIN)
-    suspend fun loginUser(@Body body: RequestBody): Response<Login>//@param usuario,clave,empresa
+    //@POST(API_LOGIN)
+    //suspend fun loginUser(@Body body: RequestBody): Response<Login>//@param usuario,clave,empresa
 
     @POST(API_CONFIGURACION)
     suspend fun getApiConfig(@Body body:RequestBody): Response<JsonConfiguracion>//@param imei

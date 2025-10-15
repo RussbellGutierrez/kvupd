@@ -25,19 +25,23 @@ class ClientesWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return try {
             val config = roomFunctions.queryConfiguracion()
-            if (config == null) {
-                Result.failure(workDataOf("error" to "No se encontro configuracion"))
-            }
-            val json = jsobFunctions.jsonObjectClientes(config!!, null)
+                ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
+
+            val json = jsobFunctions.jsonObjectClientes(config, null)
             serverFunctions.apiDownloadCliente(json).first { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
-                        setProgressAsync(workDataOf("estado" to "Iniciando descarga clientes..."))
+                        setProgressAsync(workDataOf("estado" to "Descargando clientes..."))
                         false // seguimos escuchando
                     }
 
                     is ResultadoApi.Exito -> {
-                        setProgressAsync(workDataOf("estado" to "Clientes descargados"))
+                        val jobl = resultado.data?.jobl ?: emptyList()
+
+                        setProgressAsync(workDataOf("estado" to "Almacenando clientes"))
+                        roomFunctions.deleteClientes()
+                        roomFunctions.apiSaveClientes(jobl)
+                        setProgressAsync(workDataOf("estado" to "Registros de clientes: ${jobl.size}"))
                         true // cortamos con first
                     }
 

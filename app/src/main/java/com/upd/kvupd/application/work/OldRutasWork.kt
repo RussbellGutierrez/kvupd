@@ -5,14 +5,10 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class OldRutasWork @AssistedInject constructor(
@@ -53,7 +49,7 @@ class OldRutasWork @AssistedInject constructor(
             return@withContext Result.success()//rst
         }
 
-    private fun requestBody(): RequestBody {
+    /*private fun requestBody(): RequestBody {
         val emp = if (CONF.tipo == "S") {
             0
         } else {
@@ -63,6 +59,6 @@ class OldRutasWork @AssistedInject constructor(
         json.put("empleado", emp)
         json.put("empresa", CONF.empresa)
         return json.toReqBody()
-    }
+    }*/
 
 }

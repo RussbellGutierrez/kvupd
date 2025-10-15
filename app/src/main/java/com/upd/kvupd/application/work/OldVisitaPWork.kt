@@ -4,22 +4,12 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IPA
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.IP_P
-import com.upd.kvupd.utils.OldConstant.IP_S
-import com.upd.kvupd.utils.OldConstant.OPTURL
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class OldVisitaPWork @AssistedInject constructor(
@@ -54,7 +44,7 @@ class OldVisitaPWork @AssistedInject constructor(
             return@withContext Result.success()
         }
 
-    private fun requestBody(j: TVisita): RequestBody {
+    /*private fun requestBody(j: TVisita): RequestBody {
         val p = JSONObject()
         p.put("cliente", j.cliente)
         p.put("fecha", j.fecha)
@@ -87,5 +77,5 @@ class OldVisitaPWork @AssistedInject constructor(
             }
             host.setHostBaseUrl()
         }
-    }
+    }*/
 }

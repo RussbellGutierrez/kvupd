@@ -1,23 +1,16 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
-import android.os.Build
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.IMEI
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.dateToday
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
-import java.util.Calendar
 
 @HiltWorker
 class OldConfigWork @AssistedInject constructor(
@@ -92,7 +85,7 @@ class OldConfigWork @AssistedInject constructor(
             return@withContext Result.success()//rst
         }
 
-    private fun getRequestBody(): RequestBody {
+    /*private fun getRequestBody(): RequestBody {
         val app = functions.appSO()
         val modelo = "${Build.MANUFACTURER} ${Build.MODEL}"
         val json = JSONObject()
@@ -125,5 +118,5 @@ class OldConfigWork @AssistedInject constructor(
             }
             host.setHostBaseUrl()
         }*/
-    }
+    }*/
 }

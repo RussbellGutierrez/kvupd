@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.first
 class ConfiguracionWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val generalFunctions: IdentityFunctions,
+    private val identityFunctions: IdentityFunctions,
     private val roomFunctions: RoomFunctions,
     private val serverFunctions: ServerFunctions,
     private val jsobFunctions: JsObFunctions
@@ -26,14 +26,14 @@ class ConfiguracionWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return try {
-            val uuid = generalFunctions.obtenerIdentificador()
+            val uuid = identityFunctions.obtenerIdentificador()
                 ?: return Result.failure(workDataOf("error" to "No se encontro UUID valido"))
 
             val json = jsobFunctions.jsonObjectConfiguracion(uuid)
             serverFunctions.apiDownloadConfiguracion(json).first { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
-                        setProgressAsync(workDataOf("estado" to "Descargando configuración..."))
+                        setProgressAsync(workDataOf("estado" to "Descargando configuracion..."))
                         false // seguimos escuchando
                     }
 
@@ -41,10 +41,10 @@ class ConfiguracionWorker @AssistedInject constructor(
                         val jobl = resultado.data?.jobl
                             ?: throw Exception("No se encontro configuracion")
 
-                        setProgressAsync(workDataOf("estado" to "Guardando configuración"))
+                        setProgressAsync(workDataOf("estado" to "Guardando configuracion"))
                         roomFunctions.deleteConfiguracion()
                         roomFunctions.apiSaveConfiguracion(jobl)
-                        setProgressAsync(workDataOf("estado" to "Configuración almacenada"))
+                        setProgressAsync(workDataOf("estado" to "Configuracion almacenada"))
                         true // cortamos con first
                     }
 

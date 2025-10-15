@@ -1,23 +1,13 @@
 package com.upd.kvupd.ui.adapter
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.widget.ImageViewCompat
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.databinding.RowAltaBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldInterface.altaListener
 import javax.inject.Inject
 
 class AltaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<TAlta>() {
+    /*private val diffCallback = (object : DiffUtil.ItemCallback<TAlta>() {
 
         override fun areItemsTheSame(oldItem: TAlta, newItem: TAlta): Boolean {
             return oldItem.idaux == newItem.idaux
@@ -88,5 +78,16 @@ class AltaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder
 
     interface OnAltaListener {
         fun onItemClick(alta: TAlta)
+    }*/
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
     }
 }

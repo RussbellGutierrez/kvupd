@@ -23,12 +23,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.databinding.FragmentFConsultaBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
-import com.upd.kvupd.utils.OldNetworkRetrofit
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
@@ -36,7 +34,6 @@ import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -50,7 +47,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
     private lateinit var sup: SupportMapFragment
     private lateinit var map: GoogleMap
     private lateinit var markers: List<Marker>
-    private var lc = mutableListOf<TConsulta>()
+    //private var lc = mutableListOf<TConsulta>()
     private val _tag by lazy { OldFConsulta::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -63,7 +60,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewmodel.launchPosition()
+        //viewmodel.launchPosition()
     }
 
     override fun onCreateView(
@@ -87,7 +84,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
         bind.fabCentrar.setOnClickListener { centerMarkers() }
         bind.btnConsulta.setOnClickListener { searchCliente() }
 
-        viewmodel.consulta.observe(viewLifecycleOwner) {
+        /*viewmodel.consulta.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> showDialog(
@@ -113,7 +110,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
                     }
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -172,7 +169,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
         p.put("fecha", CONF.fecha)
         p.put("empresa", CONF.empresa)
         progress("Descargando clientes del día")
-        viewmodel.fetchConsulta(p.toReqBody())
+        //viewmodel.fetchConsulta(p.toReqBody())
     }
 
     private fun searchCliente() {
@@ -199,11 +196,11 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
                 numero = "0"
             }
         }
-        viewmodel.getClienteConsultado(numero, nombre)
+        //viewmodel.getClienteConsultado(numero, nombre)
     }
 
     private fun setupUI(codigo: String?) {
-        if (codigo.isNullOrEmpty()) {
+        /*if (codigo.isNullOrEmpty()) {
             showDialog("Error", "No se encuentra el codigo de cliente") {}
         } else {
             lc.forEach { i ->
@@ -263,6 +260,6 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
                     bind.txtNegocio.text = i.negocio
                 }
             }
-        }
+        }*/
     }
 }

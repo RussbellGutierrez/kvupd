@@ -1,10 +1,6 @@
 package com.upd.kvupd.ui.fragment
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,31 +13,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TADatos
-import com.upd.kvupd.data.model.TAFoto
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.data.model.TBEstado
-import com.upd.kvupd.data.model.TBaja
-import com.upd.kvupd.data.model.TRespuesta
-import com.upd.kvupd.data.model.TSeguimiento
-import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.databinding.FragmentFServidorBinding
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IMEI
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.OPTURL
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.util.Timer
 import javax.inject.Inject
-import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class OldFServidor : Fragment(), MenuProvider {
@@ -72,7 +52,7 @@ class OldFServidor : Fragment(), MenuProvider {
     private var mF = ""
     private var mDNI = ""
     private var errorResponse = 0
-    private lateinit var seguimiento: TSeguimiento
+    /*private lateinit var seguimiento: TSeguimiento
     private lateinit var visita: TVisita
     private lateinit var alta: TAlta
     private lateinit var altadatos: TADatos
@@ -80,7 +60,7 @@ class OldFServidor : Fragment(), MenuProvider {
     private lateinit var bajaestado: TBEstado
     private lateinit var respuesta: TRespuesta
     private lateinit var foto: TRespuesta
-    private lateinit var dni: TAFoto
+    private lateinit var dni: TAFoto*/
 
     private val _tag by lazy { OldFServidor::class.java.simpleName }
 
@@ -113,11 +93,11 @@ class OldFServidor : Fragment(), MenuProvider {
         }
 
         restoreUI()
-        viewmodel.fetchServerAll()
+        //viewmodel.fetchServerAll()
         getDataRoom()
         updateDataRoom()
 
-        viewmodel.ipaux.observe(viewLifecycleOwner) {
+        /*viewmodel.ipaux.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { ip ->
                 prevIP = true
                 OPTURL = "aux"
@@ -141,7 +121,7 @@ class OldFServidor : Fragment(), MenuProvider {
                     updateDataRoom()
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -155,7 +135,7 @@ class OldFServidor : Fragment(), MenuProvider {
     }
 
     private fun getDataRoom() {
-        if (CONF.seguimiento == 1) {
+        /*if (CONF.seguimiento == 1) {
             viewmodel.servseguimiento.observe(viewLifecycleOwner) {
                 it.getContentIfNotHandled()?.let { y ->
                     setTextUI(y.size, 0)
@@ -409,7 +389,7 @@ class OldFServidor : Fragment(), MenuProvider {
                     }
                 }
             }
-        }
+        }*/
     }
 
     private fun updateDataRoom() {
@@ -849,7 +829,7 @@ class OldFServidor : Fragment(), MenuProvider {
         }
     }
 
-    private fun calcEncuestasTotal(list: List<TRespuesta>) {
+    /*private fun calcEncuestasTotal(list: List<TRespuesta>) {
         val tmn = arrayListOf<TRespuesta>()
         var cli = 0
         var enc = 0
@@ -861,7 +841,7 @@ class OldFServidor : Fragment(), MenuProvider {
             }
         }
         setTextUI(tmn.size, 6)
-    }
+    }*/
 
     private fun retryUploadData() {
         if (errorResponse > 0) {
@@ -870,8 +850,8 @@ class OldFServidor : Fragment(), MenuProvider {
                         "en cada intento se van modificando las direcciones IP, si no es posible enviar datos utilice la opcion " +
                         "alternativa, se encuentra a la derecha en la parte superior.", true
             ) {
-                errorResponse = 0
-                viewmodel.changeURLserver()
+                //errorResponse = 0
+                //viewmodel.changeURLserver()
             }
         } else {
             showDialog("Correcto", "No es necesario, no hubo errores al subir los datos") {}

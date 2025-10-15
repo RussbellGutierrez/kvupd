@@ -28,9 +28,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.data.model.TBajaSuper
-import com.upd.kvupd.data.model.TConsulta
 import com.upd.kvupd.ui.dialog.OldDFiltroObs
 import com.upd.kvupd.ui.dialog.OldDProgress
 import com.upd.kvupd.utils.OldConstant.IP_FILTER
@@ -290,7 +287,7 @@ fun GoogleMap.markerPedimap(item: Pedimap, icon: Int): Marker {
     })!!
 }
 
-fun GoogleMap.markerBaja(item: TBajaSuper, icon: Int): Marker {
+/*fun GoogleMap.markerBaja(item: TBajaSuper, icon: Int): Marker {
     return this.addMarker(MarkerOptions().apply {
         val titulo = "${item.clicodigo} - ${item.clinombre}"
         title(titulo)
@@ -318,7 +315,7 @@ fun GoogleMap.markerConsulta(item: TConsulta, icon: Int): Marker {
         icon(BitmapDescriptorFactory.fromResource(icon))
         draggable(false)
     })!!
-}
+}*/
 
 fun LatLng.toLocation(): Location {
     val location = Location(LocationManager.GPS_PROVIDER)

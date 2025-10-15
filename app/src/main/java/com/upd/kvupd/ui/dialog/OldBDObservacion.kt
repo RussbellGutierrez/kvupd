@@ -7,16 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.upd.kvupd.data.model.TVisita
 import com.upd.kvupd.databinding.BottomDialogObservacionBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.POS_LOC
-import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +35,7 @@ class OldBDObservacion : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewmodel.launchPosition()
+        //viewmodel.launchPosition()
     }
 
     override fun onCreateView(
@@ -70,7 +64,7 @@ class OldBDObservacion : BottomSheetDialogFragment() {
         bind.fabOcupado.setOnClickListener { saveVisita(6) }
         bind.fabExiste.setOnClickListener { saveVisita(7) }
 
-        viewmodel.cabecera.observe(viewLifecycleOwner) {
+        /*viewmodel.cabecera.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (y.isNotEmpty() && (obs == 0 || obs == 2 || obs == 3)) {
                     viewmodel.clienteRespondio(y, cliente.toString())
@@ -88,12 +82,12 @@ class OldBDObservacion : BottomSheetDialogFragment() {
                     )
                 }
             }
-        }
+        }*/
     }
 
     private fun saveVisita(seleccion: Int) {
 
-        if (isPOSLOCinitialized() && (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
+        /*if (isPOSLOCinitialized() && (POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0)) {
             obs = seleccion
             val fecha = viewmodel.fecha(4)
 
@@ -112,7 +106,7 @@ class OldBDObservacion : BottomSheetDialogFragment() {
             toast("Cliente ${item.cliente} - ${checkObs(obs)}")
         } else {
             toast("No se encontro coordenadas")
-        }
+        }*/
     }
 
     private fun checkObs(obs: Int): String {

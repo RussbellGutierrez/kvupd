@@ -6,14 +6,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class OldUserWork @AssistedInject constructor(
@@ -81,10 +77,10 @@ class OldUserWork @AssistedInject constructor(
             return@withContext Result.success()//rst
         }
 
-    private fun requestBody(): RequestBody {
+    /*private fun requestBody(): RequestBody {
         val json = JSONObject()
         json.put("empleado", CONF.codigo)
         json.put("empresa", CONF.empresa)
         return json.toReqBody()
-    }
+    }*/
 }

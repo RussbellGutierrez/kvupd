@@ -10,15 +10,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
@@ -31,11 +28,8 @@ import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Respuesta
-import com.upd.kvupd.data.model.TEncuesta
-import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
 import com.upd.kvupd.utils.OldConstant.PROCEDE
-import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -51,7 +45,7 @@ class OldFEncuesta : Fragment() {
     private var _bind: FragmentFEncuestaBinding? = null
     private val args: OldFEncuestaArgs by navArgs()
     private val bind get() = _bind!!
-    private var preguntas = listOf<TEncuesta>()
+    //private var preguntas = listOf<TEncuesta>()
     private var respuesta = mutableListOf<Respuesta>()
     private var cliente = 0
     private var encuesta = 0
@@ -99,7 +93,7 @@ class OldFEncuesta : Fragment() {
         bind.btnSiguiente.setOnClickListener { storeAnswer() }
         bind.btnGuardar.setOnClickListener { saveRespuesta() }
 
-        viewmodel.preguntas.observe(viewLifecycleOwner) {
+        /*viewmodel.preguntas.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 if (y.isNotEmpty()) {
                     preguntas = y
@@ -109,7 +103,7 @@ class OldFEncuesta : Fragment() {
                     drawQuestion()
                 }
             }
-        }
+        }*/
     }
 
     private fun returnFragment() {
@@ -128,12 +122,12 @@ class OldFEncuesta : Fragment() {
             bind.txtCliente.text = "${it.id} - ${it.nombre}"
             bind.txtFoto.text = "${it.id} - ${it.nombre}"
             bind.txtMensaje.text = mensaje
-            viewmodel.getPreguntas()
+            //viewmodel.getPreguntas()
         }
     }
 
     private fun drawQuestion() {
-        if (posicion < total) {
+        /*if (posicion < total) {
             preguntas[posicion].let {
                 hasPrevio(it) {
                     cleanFields(it)
@@ -212,10 +206,10 @@ class OldFEncuesta : Fragment() {
                 bind.lnrPregunta.setUI("v", false)
                 bind.cardMensaje.setUI("v", true)
             }
-        }
+        }*/
     }
 
-    private fun cleanFields(pregunta: TEncuesta) {
+    /*private fun cleanFields(pregunta: TEncuesta) {
         bind.txtEncuesta.text = pregunta.nombre
         bind.txtPregunta.text = pregunta.descripcion
 
@@ -249,9 +243,9 @@ class OldFEncuesta : Fragment() {
         } else {
             bind.btnSiguiente.setUI("v", true)
         }
-    }
+    }*/
 
-    private fun hasPrevio(pregunta: TEncuesta, T: () -> Unit) {
+    /*private fun hasPrevio(pregunta: TEncuesta, T: () -> Unit) {
         if (pregunta.previa == 0) {
             T()
         } else {
@@ -267,10 +261,10 @@ class OldFEncuesta : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     private fun storeAnswer() {
-        if (posicion < total) {
+        /*if (posicion < total) {
             preguntas[posicion].let {
                 when (it.tipo) {
                     "L" -> {
@@ -316,11 +310,11 @@ class OldFEncuesta : Fragment() {
                 }
             }
             drawQuestion()
-        }
+        }*/
     }
 
     private fun createPhoto(): File {
-        val time = viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
+        val time = ""//viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
         val directory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile("Kvupd_${time}_", ".jpg", directory).apply {
             abspath = absolutePath
@@ -387,7 +381,7 @@ class OldFEncuesta : Fragment() {
         }
 
     private fun saveRespuesta() {
-        val list = mutableListOf<TRespuesta>()
+        /*val list = mutableListOf<TRespuesta>()
         val fecha = viewmodel.fecha(4)
         respuesta.forEach {
             val item = TRespuesta(
@@ -405,6 +399,6 @@ class OldFEncuesta : Fragment() {
             list.add(item)
         }
         viewmodel.savingRespuestas(list)
-        returnFragment()
+        returnFragment()*/
     }
 }

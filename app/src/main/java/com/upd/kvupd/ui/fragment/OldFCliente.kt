@@ -16,7 +16,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,16 +25,11 @@ import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFClienteBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.dialog.OldDSemana
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldInterface.clienteListener
-import com.upd.kvupd.utils.OldNetworkRetrofit
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -90,7 +84,7 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
 
         bind.searchView.setOnQueryTextListener(this)
 
-        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
+        /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
             row = result
             setupList(result)
         }
@@ -111,7 +105,7 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
                     is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -149,14 +143,14 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
 
     override fun onClienteClick(cliente: RowCliente) {
         viewLifecycleOwner.lifecycleScope.launch {
-            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            //clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(0, cliente)
         }
     }
 
     override fun onPressCliente(cliente: RowCliente) {
         viewLifecycleOwner.lifecycleScope.launch {
-            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+            //clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(1, cliente)
         }
     }
@@ -191,11 +185,11 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
 
     private fun launchDownload(fecha: String) {
         val json = JSONObject()
-        json.put("empleado", CONF.codigo)
+        /*json.put("empleado", CONF.codigo)
         json.put("fecha", fecha)
         json.put("empresa", CONF.empresa)
         progress("Descargando clientes")
-        viewmodel.fetchClientes(json.toReqBody())
+        viewmodel.fetchClientes(json.toReqBody())*/
     }
 
     private fun setupList(list: List<RowCliente>) {

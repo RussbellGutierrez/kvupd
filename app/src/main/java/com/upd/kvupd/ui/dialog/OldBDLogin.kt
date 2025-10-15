@@ -5,20 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.upd.kvupd.R
 import com.upd.kvupd.databinding.BottomDialogLoginBinding
-import com.upd.kvupd.utils.*
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.IP_P
-import com.upd.kvupd.utils.OldConstant.IP_S
-import com.upd.kvupd.utils.OldConstant.OPTURL
+import com.upd.kvupd.utils.OldHostSelectionInterceptor
+import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -51,10 +43,10 @@ class OldBDLogin : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bind.btnLogin.setOnClickListener {
-            login()
+            //login()
         }
 
-        viewmodel.login.observe(viewLifecycleOwner) { result ->
+        /*viewmodel.login.observe(viewLifecycleOwner) { result ->
             result.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -78,7 +70,7 @@ class OldBDLogin : BottomSheetDialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             configEmpty = viewmodel.isConfigEmpty()
-        }
+        }*/
     }
 
     private fun editEmpty(): Boolean {
@@ -87,7 +79,7 @@ class OldBDLogin : BottomSheetDialogFragment() {
         return (user == "" || pass == "")
     }
 
-    private fun login() {
+    /*private fun login() {
         if (editEmpty()) {
             toast("Complete los campos")
         } else {
@@ -105,7 +97,7 @@ class OldBDLogin : BottomSheetDialogFragment() {
                 callWebApi()
             }
         }
-    }
+    }*/
 
     private fun controlUI(launch: Boolean) {
         bind.edtUser.setUI("e", !launch)
@@ -124,13 +116,13 @@ class OldBDLogin : BottomSheetDialogFragment() {
         val p = JSONObject()
         p.put("usuario", bind.edtUser.text.toString())
         p.put("clave", bind.edtPass.text.toString())
-        p.put("empresa", CONF.empresa)
+        //p.put("empresa", CONF.empresa)
         controlUI(true)
-        viewmodel.fetchLoginAdmin(p.toReqBody())
+        //viewmodel.fetchLoginAdmin(p.toReqBody())
     }
 
     private fun conditionsError(msg: String?) {
-        when (OPTURL) {
+        /*when (OPTURL) {
             "aux" -> errorUI(msg)
             "ipp" -> {
                 OPTURL = "ips"
@@ -139,6 +131,6 @@ class OldBDLogin : BottomSheetDialogFragment() {
                 callWebApi()
             }
             "ips" -> errorUI(msg)
-        }
+        }*/
     }
 }

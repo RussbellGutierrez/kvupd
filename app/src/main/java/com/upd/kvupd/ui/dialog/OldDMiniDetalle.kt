@@ -18,7 +18,6 @@ import com.upd.kvupd.data.model.DetalleCobertura
 import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.data.model.OrderVenta
 import com.upd.kvupd.data.model.PedidoGeneral
-import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.data.model.Venta
 import com.upd.kvupd.data.model.Volumen
 import com.upd.kvupd.databinding.DialogMiniDetalleBinding
@@ -28,12 +27,10 @@ import com.upd.kvupd.databinding.RowMiniDetalleBinding
 import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.databinding.RowTarjetaClienteBinding
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldNetworkRetrofit
 import com.upd.kvupd.utils.percent
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -72,9 +69,9 @@ class OldDMiniDetalle : DialogFragment() {
 
         Log.d(_tag, "Args $data")
 
-        checkMiniDetalle()
+        //checkMiniDetalle()
 
-        viewmodel.detalle.observe(viewLifecycleOwner) {
+        /*viewmodel.detalle.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -144,10 +141,10 @@ class OldDMiniDetalle : DialogFragment() {
                     }
                 }
             }
-        }
+        }*/
     }
 
-    private fun checkMiniDetalle() {
+    /*private fun checkMiniDetalle() {
         when (data.getInt("informe")) {
             0 -> {
                 val array: List<Volumen>? =
@@ -195,7 +192,7 @@ class OldDMiniDetalle : DialogFragment() {
                     val p = JSONObject()
                     p.put("empleado", CONF.codigo)
                     p.put("empresa", CONF.empresa)
-                    viewmodel.fetchCoberturaPendiente(p.toReqBody())
+                    //viewmodel.fetchCoberturaPendiente(p.toReqBody())
                 }
             }
 
@@ -205,7 +202,7 @@ class OldDMiniDetalle : DialogFragment() {
                 val p = JSONObject()
                 p.put("empleado", CONF.codigo)
                 p.put("empresa", CONF.empresa)
-                viewmodel.fetchPediGen(p.toReqBody())
+                //viewmodel.fetchPediGen(p.toReqBody())
             }
 
             4 -> {
@@ -250,7 +247,7 @@ class OldDMiniDetalle : DialogFragment() {
                 launchDownload(generico.datos.codigo, 2)
             }
         }
-    }
+    }*/
 
     private fun preventa(list: List<Volumen>) {
         list.forEach { i ->
@@ -285,9 +282,9 @@ class OldDMiniDetalle : DialogFragment() {
             minbind.txtPorcentaje.text = porcentaje
             minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
-            if (CONF.tipo == "V") {
+            /*if (CONF.tipo == "V") {
                 minbind.imgCerrar.setUI("v", false)
-            }
+            }*/
             bind.lnrMini.addView(minbind.root)
         }
     }
@@ -380,7 +377,7 @@ class OldDMiniDetalle : DialogFragment() {
         val p = JSONObject()
         p.put("empleado", CONF.codigo)
         p.put("empresa", CONF.empresa)
-        viewmodel.fetchDetCobertura(p.toReqBody())
+        //viewmodel.fetchDetCobertura(p.toReqBody())
     }
 
     private fun launchDownload(codigo: Int, nivel: Int) {
@@ -392,7 +389,7 @@ class OldDMiniDetalle : DialogFragment() {
         } else {
             p.put("linea", codigo)
         }
-        viewmodel.fetchSolesDetalle(p.toReqBody())
+        //viewmodel.fetchSolesDetalle(p.toReqBody())
     }
 
     private fun setUmeSoles(list: List<Generico>?) {

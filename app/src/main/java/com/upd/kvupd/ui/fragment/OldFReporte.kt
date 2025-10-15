@@ -18,21 +18,13 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFReporteBinding
 import com.upd.kvupd.ui.adapter.SolesAdapter
-import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IPA
-import com.upd.kvupd.utils.OldConstant.OPTURL
-import com.upd.kvupd.utils.OldConstant.isCONFinitialized
-import com.upd.kvupd.utils.OldNetworkRetrofit
+import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.percent
-import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
@@ -83,7 +75,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
 
         launchFetchs()
 
-        viewmodel.preventa.observe(viewLifecycleOwner) {
+        /*viewmodel.preventa.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -239,7 +231,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
                     }
                 }
             }
-        }
+        }*/
 
         if (CONF.tipo == "S") {
             /*viewmodel.visisuper.observe(viewLifecycleOwner) {
@@ -321,7 +313,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
             }*/
         }
 
-        viewmodel.cambios.observe(viewLifecycleOwner) {
+        /*viewmodel.cambios.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -359,7 +351,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
                     }
                 }
             }
-        }
+        }*/
 
         /*viewmodel.umes.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
@@ -379,7 +371,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
             }
         }*/
 
-        viewmodel.soles.observe(viewLifecycleOwner) { j ->
+        /*viewmodel.soles.observe(viewLifecycleOwner) { j ->
             j.getContentIfNotHandled()?.let { y ->
                 when (y) {
                     is OldNetworkRetrofit.Success -> {
@@ -396,7 +388,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
                     }
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -501,7 +493,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
         p.put("empleado", CONF.codigo)
         p.put("empresa", CONF.empresa)
 
-        viewmodel.fetchPreventa(p.toReqBody())
+        /*viewmodel.fetchPreventa(p.toReqBody())
         viewmodel.fetchCobertura(p.toReqBody())
         viewmodel.fetchCartera(p.toReqBody())
         viewmodel.fetchPedidos(p.toReqBody())
@@ -513,9 +505,9 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
             } else {
                 viewmodel.fetchVisicooler(p.toReqBody())
             }
-        }
+        }*/
 
-        viewmodel.fetchSoles(p.toReqBody())
+        //viewmodel.fetchSoles(p.toReqBody())
         /*if (CONF.empresa == 1) {
             viewmodel.fetchUmes(p.toReqBody())
         } else {
@@ -619,7 +611,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
     }*/
 
     private fun executeUpdater() {
-        val fecha = viewmodel.fecha(3)
+        /*val fecha = viewmodel.fecha(3)
 
         val http = when (OPTURL) {
             "ipp" -> if (isCONFinitialized()) {
@@ -655,7 +647,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
 
         socket.emit("request")
         socket.on("response", respuesta)
-        socket.connect()
+        socket.connect()*/
     }
 
     private val respuesta = Emitter.Listener {

@@ -12,36 +12,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
 import android.widget.ImageView
-import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.children
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TClientes
-import com.upd.kvupd.data.model.TEncuesta
-import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.databinding.FragmentFAlternoBinding
-import com.upd.kvupd.databinding.RowAlternoBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.DESTINO_NAV
 import com.upd.kvupd.utils.OldConstant.POS_LOC
 import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,11 +50,11 @@ class OldFAlterno : Fragment() {
     private var foto = false
     private var longitud = 0.0
     private var latitud = 0.0
-    private var listaClientesAux = mutableListOf<TClientes>()
+    //private var listaClientesAux = mutableListOf<TClientes>()
     private var eliminarClientes = mutableListOf<Int>()
     private var listaClientesLimpia = mutableListOf<Int>()
     private var clienteSeleccionado = 0
-    private lateinit var listaPreguntas: List<TEncuesta>
+    //private lateinit var listaPreguntas: List<TEncuesta>
     private val _tag by lazy { OldFAlterno::class.java.simpleName }
 
     override fun onDestroy() {
@@ -80,7 +65,7 @@ class OldFAlterno : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewmodel.launchPosition()
+        //viewmodel.launchPosition()
     }
 
     override fun onCreateView(
@@ -96,7 +81,7 @@ class OldFAlterno : Fragment() {
 
         clienteDelMapa = args.cliente
 
-        viewmodel.clienteRoom.observe(viewLifecycleOwner) { it ->
+        /*viewmodel.clienteRoom.observe(viewLifecycleOwner) { it ->
             it.getContentIfNotHandled()?.let { clientes ->
                 processClientList(clientes)
             }
@@ -162,7 +147,7 @@ class OldFAlterno : Fragment() {
         }
 
         viewmodel.getClientes()
-        viewmodel.getPreguntas()
+        viewmodel.getPreguntas()*/
     }
 
     private fun setupUI(position: Int) {
@@ -170,10 +155,10 @@ class OldFAlterno : Fragment() {
         clienteSeleccionado = listaClientesLimpia[position]
 
         // Limpiar respuestas
-        viewmodel.limpiarRespuestas()
+        //viewmodel.limpiarRespuestas()
 
         // Redibujar preguntas desde la lista original
-        drawPregunta(listaPreguntas)
+        //drawPregunta(listaPreguntas)
 
         // Iniciamos todos los views de la encuesta
         bind.lnrPreguntas.setUI("v", true)
@@ -181,7 +166,7 @@ class OldFAlterno : Fragment() {
         bind.btnGuardar.setUI("v", true)
     }
 
-    private fun processClientList(clientes: List<TClientes>) {
+    /*private fun processClientList(clientes: List<TClientes>) {
         listaClientesAux.clear()
         listaClientesAux.addAll(clientes)
         viewmodel.gettingEncuestaLista()
@@ -226,9 +211,9 @@ class OldFAlterno : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
-    private fun drawPregunta(preguntas: List<TEncuesta>) {
+    /*private fun drawPregunta(preguntas: List<TEncuesta>) {
         val contenedor = bind.lnrPreguntas
         contenedor.removeAllViews()
 
@@ -294,9 +279,9 @@ class OldFAlterno : Fragment() {
             // Asignamos el view creado al contenedor del parent
             contenedor.addView(view)
         }
-    }
+    }*/
 
-    private fun actualizarVisibilidadCondicional() {
+    /*private fun actualizarVisibilidadCondicional() {
         val respuestas = viewmodel.respuestas
         val contenedor = bind.lnrPreguntas
 
@@ -316,10 +301,10 @@ class OldFAlterno : Fragment() {
                 view?.setUI("v", cumple)
             }
         }
-    }
+    }*/
 
     private fun createPhoto(): File {
-        val time = viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
+        val time = ""//viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
         val directory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile("Kvupd_${time}_", ".jpg", directory).apply {
             abspath = absolutePath
@@ -398,13 +383,13 @@ class OldFAlterno : Fragment() {
         } else {
             val formato = SimpleDateFormat("HHmmss", Locale.getDefault())
             val hora24h = formato.format(Date())
-            "${CONF.codigo}$hora24h"
+            ""//"${CONF.codigo}$hora24h"
         }
     }
 
     private fun saveRespuestasVisibles() {
         val contenedor = bind.lnrPreguntas
-        val respuestas = viewmodel.respuestas
+        /*val respuestas = viewmodel.respuestas
         val fecha = viewmodel.fecha(4)
 
         getCoordenadas()
@@ -436,7 +421,7 @@ class OldFAlterno : Fragment() {
             findNavController().navigate(R.id.action_FAlterno_to_FMapa)
         } else {
             findNavController().navigate(R.id.action_FAlterno_to_FBase)
-        }
+        }*/
         snack("Encuesta guardada correctamente")
     }
 }

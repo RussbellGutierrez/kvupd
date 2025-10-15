@@ -18,7 +18,7 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 
 @HiltWorker
-class EmpleadosWorker @AssistedInject constructor(
+class EncuestasWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val roomFunctions: RoomFunctions,
@@ -32,20 +32,20 @@ class EmpleadosWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
             val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiDownloadEmpleado(json).first { resultado ->
+            serverFunctions.apiDownloadEncuesta(json).first { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
-                        setProgressAsync(workDataOf("estado" to "Iniciando descarga vendedores..."))
+                        setProgressAsync(workDataOf("estado" to "Iniciando descarga encuestas..."))
                         false // seguimos escuchando
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
-                        setProgressAsync(workDataOf("estado" to "Almacenando vendedores"))
-                        roomFunctions.deleteVendedores()
-                        roomFunctions.apiSaveVendedores(jobl)
-                        setProgressAsync(workDataOf("estado" to "Registros de vendedores: ${jobl.size}"))
+                        setProgressAsync(workDataOf("estado" to "Almacenando encuestas"))
+                        roomFunctions.deleteEncuesta()
+                        roomFunctions.apiSaveEncuesta(jobl)
+                        setProgressAsync(workDataOf("estado" to "Registros de encuestas: ${jobl.size}"))
                         true // cortamos con first
                     }
 

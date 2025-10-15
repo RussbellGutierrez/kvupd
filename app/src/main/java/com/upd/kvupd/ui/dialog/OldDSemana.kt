@@ -55,7 +55,7 @@ class OldDSemana : DialogFragment() {
             val dia = bind.txtDia.text.toString().trim()
             if (dia != "") {
                 dismiss()
-                viewmodel.setFecha(dia)
+                //viewmodel.setFecha(dia)
             } else {
                 bind.txtMensaje.setUI("v", true)
             }

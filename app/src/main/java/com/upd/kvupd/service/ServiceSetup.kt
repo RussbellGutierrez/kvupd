@@ -1,73 +1,13 @@
 package com.upd.kvupd.service
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-import android.location.Location
-import android.os.Build
-import android.util.Log
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import com.google.android.gms.location.LocationServices
-import com.upd.kvupd.application.work.OldHelperNotification
-import com.upd.kvupd.data.model.TIncidencia
-import com.upd.kvupd.data.model.TSeguimiento
-import com.upd.kvupd.domain.OldFunctions
-import com.upd.kvupd.domain.OldLocationClient
 import com.upd.kvupd.domain.OldOnInterSetup
-import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldCaptureLocation
-import com.upd.kvupd.utils.OldConstant
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.GPS_FAST_INTERVAL
-import com.upd.kvupd.utils.OldConstant.GPS_LOC
-import com.upd.kvupd.utils.OldConstant.GPS_METERS
-import com.upd.kvupd.utils.OldConstant.GPS_NORMAL_INTERVAL
-import com.upd.kvupd.utils.OldConstant.IMEI
-import com.upd.kvupd.utils.OldConstant.IPA
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.IP_P
-import com.upd.kvupd.utils.OldConstant.IP_S
-import com.upd.kvupd.utils.OldConstant.LOOPING
-import com.upd.kvupd.utils.OldConstant.OPTURL
-import com.upd.kvupd.utils.OldConstant.SETUP_NOTIF
-import com.upd.kvupd.utils.OldConstant.W_CONFIG
-import com.upd.kvupd.utils.OldConstant.W_DISTRITO
-import com.upd.kvupd.utils.OldConstant.W_ENCUESTA
-import com.upd.kvupd.utils.OldConstant.W_NEGOCIO
-import com.upd.kvupd.utils.OldConstant.W_RUTA
-import com.upd.kvupd.utils.OldConstant.W_USER
-import com.upd.kvupd.utils.OldConstant.isCONFinitialized
-import com.upd.kvupd.utils.OldEvent
-import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.OldInterface.closeListener
-import com.upd.kvupd.utils.OldInterface.interListener
-import com.upd.kvupd.utils.dateToday
-import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import okhttp3.RequestBody
-import org.json.JSONObject
-import java.util.Calendar
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ServiceSetup : LifecycleService(), OldOnInterSetup {
 
-    @Inject
+    /*@Inject
     lateinit var workManager: WorkManager
 
     @Inject
@@ -515,5 +455,5 @@ class ServiceSetup : LifecycleService(), OldOnInterSetup {
                 closeListener?.closingActivity(true) ?: stopSelf()
             }
         }
-    }
+    }*/
 }

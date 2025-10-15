@@ -12,29 +12,20 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TAlta
 import com.upd.kvupd.databinding.FragmentFAltaBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.ui.adapter.AltaAdapter
 import com.upd.kvupd.utils.OldConstant.ALTADATOS
-import com.upd.kvupd.utils.OldConstant.POS_LOC
-import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.OldInterface.altaListener
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
+class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFAltaBinding? = null
@@ -52,7 +43,7 @@ class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        altaListener = this
+        //altaListener = this
     }
 
     override fun onCreateView(
@@ -72,7 +63,7 @@ class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
         bind.rcvAltas.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvAltas.adapter = adapter
 
-        viewmodel.launchPosition()
+        /*viewmodel.launchPosition()
         viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             setupList(it)
         }
@@ -87,7 +78,7 @@ class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
                     snack("Procesando coordenadas, intente nuevamente")
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -99,7 +90,7 @@ class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
         else -> false
     }
 
-    override fun onItemClick(alta: TAlta) {
+    /*override fun onItemClick(alta: TAlta) {
         progress("Cargando configuracion")
         findNavController().navigate(
             OldFAltaDirections.actionFAltaToFAltaDatos(alta.idaux)
@@ -115,5 +106,5 @@ class OldFAlta : Fragment(), AltaAdapter.OnAltaListener, MenuProvider {
             bind.rcvAltas.setUI("v", true)
             adapter.mDiffer.submitList(list)
         }
-    }
+    }*/
 }

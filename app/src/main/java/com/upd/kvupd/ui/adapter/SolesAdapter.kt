@@ -13,10 +13,8 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.percent
-import com.upd.kvupd.utils.setUI
 import javax.inject.Inject
 
 class SolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
@@ -74,9 +72,9 @@ class SolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolde
             val percent = percent(item.avance,item.cuota)
             val porcentaje = "$percent%"
 
-            if (CONF.tipo == "V") {
+            /*if (CONF.tipo == "V") {
                 bind.imgCerrar.setUI("v", false)
-            }
+            }*/
 
             when{
                 percent.toDouble() > 85 -> bind.imgFlecha.setImageResource(R.drawable.f_arriba)

@@ -1,19 +1,13 @@
 package com.upd.kvupd.ui.adapter
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.TIncidencia
-import com.upd.kvupd.databinding.RowIncidenciaBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
 import javax.inject.Inject
 
 class IncidenciaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<TIncidencia>() {
+    /*private val diffCallback = (object : DiffUtil.ItemCallback<TIncidencia>() {
 
         override fun areItemsTheSame(oldItem: TIncidencia, newItem: TIncidencia): Boolean {
             return (oldItem.tipo == newItem.tipo && oldItem.fecha == newItem.fecha)
@@ -71,6 +65,17 @@ class IncidenciaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseView
             bind.txtFecha.text = item.fecha
             bind.txtObs.text = item.observacion
         }
+    }*/
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
     }
 
 }

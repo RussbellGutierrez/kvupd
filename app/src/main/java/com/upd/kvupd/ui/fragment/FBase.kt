@@ -1,7 +1,5 @@
 package com.upd.kvupd.ui.fragment
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,19 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
-import com.upd.kvupd.data.model.TConfiguracion
 import com.upd.kvupd.databinding.FragmentFBaseBinding
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.closeListener
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isGPSDisabled
-import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -35,22 +29,13 @@ import org.json.JSONObject
 class FBase : Fragment(), MenuProvider {
 
     private val viewmodel by activityViewModels<APIViewModel>()
-    private var _bind: FragmentFBaseBinding? = null
-    private val bind get() = _bind!!
+    private val binding by viewBinding(FragmentFBaseBinding::bind)
     private val _tag by lazy { FBase::class.java.simpleName }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _bind = null
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _bind = FragmentFBaseBinding.inflate(inflater, container, false)
-        return bind.root
-    }
+    ): View = FragmentFBaseBinding.inflate(inflater, container, false).root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -207,7 +192,7 @@ class FBase : Fragment(), MenuProvider {
         bind.fabGps.imageTintList = ColorStateList.valueOf(color)
     }*/
 
-    private fun setParams(config: TConfiguracion) {
+    /*private fun setParams(config: TConfiguracion) {
         if (config.tipo != "S") {
             bind.lnrVendedor.setUI("v", false)
             bind.txtRuta.setUI("v", true)
@@ -229,7 +214,7 @@ class FBase : Fragment(), MenuProvider {
         bind.txtVersion.text = version
         bind.fabGps.imageTintList = ColorStateList.valueOf(gps)
         bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
-    }
+    }*/
 
     private fun setRuta(l: List<RowCliente>) {
         var mensaje = ""
@@ -245,10 +230,10 @@ class FBase : Fragment(), MenuProvider {
                 mensaje += " - Ruta $i"
             }
         }
-        bind.txtRuta.text = mensaje
+        //bind.txtRuta.text = mensaje
     }
 
-    private fun getUsuario(item: TConfiguracion): String {
+    /*private fun getUsuario(item: TConfiguracion): String {
         return if (item.nombre == "") {
             when (item.tipo) {
                 "S" -> "Supervisor de ventas - ${item.codigo}"
@@ -257,13 +242,13 @@ class FBase : Fragment(), MenuProvider {
         } else {
             "${item.nombre} - ${item.codigo}"
         }
-    }
+    }*/
 
     private fun launchEncuesta() {
         val p = JSONObject()
-        p.put("empleado", CONF.codigo)
-        p.put("empresa", CONF.empresa)
-        progress("Descargando encuesta")
+        //p.put("empleado", CONF.codigo)
+        //p.put("empresa", CONF.empresa)
+        //progress("Descargando encuesta")
         //viewmodel.fetchEncuesta(p.toReqBody())
     }
 

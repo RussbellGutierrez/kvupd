@@ -1,20 +1,7 @@
 package com.upd.kvupd.domain
 
-import android.graphics.Bitmap
-import androidx.work.Constraints
-import androidx.work.OneTimeWorkRequest
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.MarkerMap
-import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.data.model.TBajaSuper
-import com.upd.kvupd.data.model.TConsulta
-import com.upd.kvupd.data.model.TIncidencia
-
 interface OldFunctions {
-    fun generateQR(value: String): Bitmap
+    /*fun generateQR(value: String): Bitmap
     fun saveQR(bm: Bitmap)
     fun existQR(): Boolean
     fun addIPtoQRIMEI()
@@ -62,5 +49,5 @@ interface OldFunctions {
     fun workerperFoto()
     fun workerperAltaFoto()
 
-    fun closeAllNotifications()
+    fun closeAllNotifications()*/
 }

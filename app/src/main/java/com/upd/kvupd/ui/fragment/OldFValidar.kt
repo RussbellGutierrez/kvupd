@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -19,15 +18,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TBEstado
-import com.upd.kvupd.data.model.TBajaSuper
 import com.upd.kvupd.databinding.FragmentFValidarBinding
 import com.upd.kvupd.service.ServicePosicion
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.OldConstant.POS_LOC
 import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
@@ -45,7 +40,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
     private lateinit var map: GoogleMap
     private var laux = listOf<Marker>()
     private lateinit var bmk: Marker
-    private lateinit var bs: TBajaSuper
+    //private lateinit var bs: TBajaSuper
     private var codVend = 0
     private val _tag by lazy { OldFValidar::class.java.simpleName }
 
@@ -59,7 +54,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewmodel.launchPosition()
+        //viewmodel.launchPosition()
     }
 
     override fun onCreateView(
@@ -80,12 +75,12 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
         gettingData()
 
-        viewmodel.bajasuperspecif.observe(viewLifecycleOwner) {
+        /*viewmodel.bajasuperspecif.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
                 bs = y
                 setupUI(bs)
             }
-        }
+        }*/
 
         bind.fabCentrar.setOnClickListener { distanceBetween() }
         bind.btnDenegar.setOnClickListener { saveBajaValidar(0) }
@@ -103,11 +98,11 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             }
             moveCamera(GPS_LOC)
         }
-        laux = viewmodel.bajaMarker(map, bs)
+        /*laux = viewmodel.bajaMarker(map, bs)
         if (laux.isNotEmpty()) {
             bmk = laux[0]
             distanceBetween()
-        }
+        }*/
     }
 
     override fun onMarkerClick(p0: Marker): Boolean {
@@ -128,11 +123,11 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         arg.datos?.let {
             val codigo = it.split("@")[0].trim()
             val fecha = it.split("@")[1].trim()
-            viewmodel.getBajaSuperSpecific(codigo, fecha)
+            //viewmodel.getBajaSuperSpecific(codigo, fecha)
         }
     }
 
-    private fun setupUI(item: TBajaSuper) {
+    /*private fun setupUI(item: TBajaSuper) {
         val cliente = "${item.clicodigo} - ${item.clinombre}"
         val ruta = "Ruta: ${item.ruta}"
         val pago = "Pago: ${item.pago}"
@@ -167,7 +162,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             bind.txtObservacion.setUI("v", true)
             bind.txtObservacion.text = obs
         }
-    }
+    }*/
 
     private fun distanceBetween() {
         if (::bmk.isInitialized) {
@@ -185,7 +180,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0
         ) {
             val observacion = bind.edtComentario.text.toString().trim()
-            val fechaconf = viewmodel.fecha(4)
+            /*val fechaconf = viewmodel.fecha(4)
             val item = TBEstado(
                 codVend,
                 bs.clicodigo,
@@ -202,7 +197,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
             viewmodel.saveEstadoBaja(item)
             findNavController().navigate(
                 OldFValidarDirections.actionFValidarToFBajaDatos()
-            )
+            )*/
         } else {
             snack("Ocurrio un problema con las coordenadas, intentelo nuevamente")
         }

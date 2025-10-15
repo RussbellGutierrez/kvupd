@@ -6,12 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.distinctUntilChanged
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.upd.kvupd.data.model.TIncidencia
 import com.upd.kvupd.databinding.FragmentFIncidenciaBinding
 import com.upd.kvupd.ui.adapter.IncidenciaAdapter
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -46,12 +43,12 @@ class OldFIncidencia : Fragment() {
         bind.rcvIncidencia.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvIncidencia.adapter = adapter
 
-        viewmodel.incidenciaObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+        /*viewmodel.incidenciaObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             setupList(it)
-        }
+        }*/
     }
 
-    private fun setupList(list: List<TIncidencia>) {
+    /*private fun setupList(list: List<TIncidencia>) {
         if (list.isNullOrEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvIncidencia.setUI("v", false)
@@ -60,6 +57,6 @@ class OldFIncidencia : Fragment() {
             bind.rcvIncidencia.setUI("v", true)
             adapter.mDiffer.submitList(list)
         }
-    }
+    }*/
 
 }

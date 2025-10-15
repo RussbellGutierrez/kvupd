@@ -18,7 +18,7 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 
 @HiltWorker
-class EmpleadosWorker @AssistedInject constructor(
+class NegociosWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val roomFunctions: RoomFunctions,
@@ -31,21 +31,21 @@ class EmpleadosWorker @AssistedInject constructor(
             val config = roomFunctions.queryConfiguracion()
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
-            val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiDownloadEmpleado(json).first { resultado ->
+            val json = jsobFunctions.jsonObjectSimple(config)
+            serverFunctions.apiDownloadNegocio(json).first { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
-                        setProgressAsync(workDataOf("estado" to "Iniciando descarga vendedores..."))
+                        setProgressAsync(workDataOf("estado" to "Iniciando descarga negocios..."))
                         false // seguimos escuchando
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
-                        setProgressAsync(workDataOf("estado" to "Almacenando vendedores"))
-                        roomFunctions.deleteVendedores()
-                        roomFunctions.apiSaveVendedores(jobl)
-                        setProgressAsync(workDataOf("estado" to "Registros de vendedores: ${jobl.size}"))
+                        setProgressAsync(workDataOf("estado" to "Almacenando negocios"))
+                        roomFunctions.deleteNegocios()
+                        roomFunctions.apiSaveNegocios(jobl)
+                        setProgressAsync(workDataOf("estado" to "Registros de negocios: ${jobl.size}"))
                         true // cortamos con first
                     }
 

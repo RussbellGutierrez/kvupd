@@ -1,7 +1,6 @@
 package com.upd.kvupd.ui.fragment
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -23,17 +21,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFAltaMapaBinding
-import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.OldConstant
 import com.upd.kvupd.utils.OldConstant.ALTADATOS
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
-import com.upd.kvupd.utils.OldConstant.IWDA
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldConstant.isGPSLOCinitialized
+import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
@@ -53,7 +48,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     private lateinit var map: GoogleMap
     private lateinit var lastLocation: Location
     private lateinit var markerList: List<Marker>
-    private lateinit var rutas: List<TRutas>
+    //private lateinit var rutas: List<TRutas>
     private val _tag by lazy { OldFAltaMapa::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -88,7 +83,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
             sup.getMapAsync(this)
         }
 
-        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+        /*viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
         }
 
@@ -114,7 +109,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         }
 
         bind.fabUbicacion.setOnClickListener { moveCamera() }
-        bind.fabCentrar.setOnClickListener { centerMarkers() }
+        bind.fabCentrar.setOnClickListener { centerMarkers() }*/
     }
 
     @SuppressLint("MissingPermission")
@@ -136,7 +131,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun onMarkerClick(p0: Marker): Boolean {
         snippet = p0.snippet!!
-        viewmodel.getAltaData(snippet)
+        //viewmodel.getAltaData(snippet)
         return true
     }
 
@@ -148,9 +143,9 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun onMapLongClick(p0: LatLng) {
         showDialog("Advertencia", "¿Poner un alta en la ubicacion marcada?") {
-            viewmodel.addingAlta(
+            /*viewmodel.addingAlta(
                 p0.toLocation()
-            )
+            )*/
         }
     }
 
@@ -163,7 +158,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
 
     override fun onMarkerDragEnd(p0: Marker) {
         p0.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.pin_altas))
-        viewmodel.updateLocationAlta(p0)
+        //viewmodel.updateLocationAlta(p0)
     }
 
     private fun movingAndShowing() {
@@ -213,7 +208,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     }
 
     private fun drawRoutes() {
-        val polygon = mutableListOf<LatLng>()
+        /*val polygon = mutableListOf<LatLng>()
         if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
                 val coordenadas = i.corte.split(",")
@@ -238,6 +233,6 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
             }
         } else {
             snack("No se encontraron rutas")
-        }
+        }*/
     }
 }

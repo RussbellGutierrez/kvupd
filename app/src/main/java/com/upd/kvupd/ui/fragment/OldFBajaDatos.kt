@@ -12,9 +12,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.RowBaja
@@ -24,13 +22,10 @@ import com.upd.kvupd.ui.adapter.BajaVendedorAdapter
 import com.upd.kvupd.ui.dialog.OldDFiltro
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.bajaSuperListener
-import com.upd.kvupd.utils.OldNetworkRetrofit
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -76,7 +71,7 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.rcvBajas.layoutManager = LinearLayoutManager(requireContext())
+        /*bind.rcvBajas.layoutManager = LinearLayoutManager(requireContext())
 
         if (CONF.tipo == "S") {
             bind.cardSearch.setUI("v", true)
@@ -121,13 +116,13 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
                     is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
-        }
+        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.bajadatos_menu, menu)
-        if (CONF.tipo == "V")
-            menu.findItem(R.id.filtro).setUI("v", false)
+        /*if (CONF.tipo == "V")
+            menu.findItem(R.id.filtro).setUI("v", false)*/
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
@@ -223,11 +218,11 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         p.put("empresa", CONF.empresa)
 
         progress("Descargando bajas")
-        if (CONF.tipo == "S") {
+        /*if (CONF.tipo == "S") {
             viewmodel.fetchBajaSupervisor(p.toReqBody())
         } else {
             viewmodel.fetchBajaVendedor(p.toReqBody())
-        }
+        }*/
     }
 
 }

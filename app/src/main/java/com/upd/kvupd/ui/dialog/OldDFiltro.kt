@@ -52,6 +52,6 @@ class OldDFiltro : DialogFragment() {
 
     private fun setDayFilter(day: Int) {
         dismiss()
-        viewmodel.setFiltro(day)
+        //viewmodel.setFiltro(day)
     }
 }

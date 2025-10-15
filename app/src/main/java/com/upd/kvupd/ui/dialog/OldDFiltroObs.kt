@@ -43,7 +43,7 @@ class OldDFiltroObs : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkingRadio()
-        bind.rbGrupo.setOnCheckedChangeListener { _, id ->
+        /*bind.rbGrupo.setOnCheckedChangeListener { _, id ->
             when (id) {
                 bind.rbTodos.id -> {
                     FILTRO_OBS = 9
@@ -76,7 +76,7 @@ class OldDFiltroObs : DialogFragment() {
                     dismiss()
                 }
             }
-        }
+        }*/
     }
 
     private fun checkingRadio() {

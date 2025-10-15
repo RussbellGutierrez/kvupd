@@ -28,13 +28,8 @@ import com.upd.kvupd.utils.OldRegexMaskTextWatcher
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isServiceRunning
 import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toReqBody
-import com.upd.kvupd.utils.toast
-import com.upd.kvupd.utils.validateIP
-import com.upd.kvupd.utils.validateImei
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -114,7 +109,7 @@ class OldFAjuste : Fragment(), MenuProvider {
             }
         }
 
-        viewmodel.sessionObserver().observe(viewLifecycleOwner) { result ->
+        /*viewmodel.sessionObserver().observe(viewLifecycleOwner) { result ->
             if (result != null) {
                 reinsert = true
                 showDialog(
@@ -125,7 +120,7 @@ class OldFAjuste : Fragment(), MenuProvider {
                 setParamButton(result.empresa)
                 getIMEIandIP()
             }
-        }
+        }*/
 
         /*viewmodel.register.observe(viewLifecycleOwner) { result ->
             result.getContentIfNotHandled()?.let { y ->
@@ -172,7 +167,7 @@ class OldFAjuste : Fragment(), MenuProvider {
     }
 
     private fun cleaningData() {
-        viewmodel.deleteTables()
+        //viewmodel.deleteTables()
 
         requireActivity().let {
             if (it.isServiceRunning(ServiceSetup::class.java))
@@ -194,11 +189,11 @@ class OldFAjuste : Fragment(), MenuProvider {
             val p = JSONObject()
             p.put("imei", "$imei-V")
             p.put("modelo", modelo.uppercase())
-            p.put("version", viewmodel.appSo())
+            //p.put("version", viewmodel.appSo())
             p.put("empresa", empresa)
             Log.d(_tag, "Config-> $p")
             progress("Registrando usuario en servidor")
-            viewmodel.fetchRegisterDevice(p.toReqBody())
+            //viewmodel.fetchRegisterDevice(p.toReqBody())
         } else {
             snack("Seleccione una empresa, ingrese una ip y complete el IMEI, no olvide marcar la casilla de IMEI")
         }
@@ -226,7 +221,7 @@ class OldFAjuste : Fragment(), MenuProvider {
     }
 
     private fun setParamImei(check: Boolean) {
-        if (check) {
+        /*if (check) {
             if (bind.edtImei.text.validateImei()) {
                 if (bind.edtIp.text.validateIP()) {
                     val qr = "${bind.edtIp.text}-${bind.edtImei.text}"
@@ -243,10 +238,10 @@ class OldFAjuste : Fragment(), MenuProvider {
             }
         } else {
             bind.edtImei.setUI("e", true)
-        }
+        }*/
     }
 
-    private fun getIMEIandIP() {
+    /*private fun getIMEIandIP() {
         val ip = viewmodel.getIP()
         val imei = viewmodel.getIMEI()
         val qr = "$ip-$imei"
@@ -254,5 +249,5 @@ class OldFAjuste : Fragment(), MenuProvider {
         bind.edtIp.setText(ip)
         bind.edtImei.setText(imei)
         bind.chkImei.isChecked = true
-    }
+    }*/
 }

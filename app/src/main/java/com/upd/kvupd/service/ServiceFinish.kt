@@ -1,40 +1,12 @@
 package com.upd.kvupd.service
 
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
-import android.util.Log
 import androidx.lifecycle.LifecycleService
-import com.upd.kvupd.data.model.TADatos
-import com.upd.kvupd.data.model.TAlta
-import com.upd.kvupd.data.model.TBEstado
-import com.upd.kvupd.data.model.TBaja
-import com.upd.kvupd.data.model.TRespuesta
-import com.upd.kvupd.data.model.TSeguimiento
-import com.upd.kvupd.data.model.TVisita
-import com.upd.kvupd.domain.OldFunctions
-import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldInterface.closeListener
-import com.upd.kvupd.utils.OldInterface.interListener
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IMEI
-import com.upd.kvupd.utils.OldConstant.isCONFinitialized
-import com.upd.kvupd.utils.isServiceRunning
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.util.Timer
-import javax.inject.Inject
-import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class ServiceFinish : LifecycleService() {
 
-    @Inject
+    /*@Inject
     lateinit var functions: OldFunctions
 
     @Inject
@@ -412,5 +384,5 @@ class ServiceFinish : LifecycleService() {
             repository.deleteIncidencia()
             repository.deleteAAux()
         }
-    }
+    }*/
 }

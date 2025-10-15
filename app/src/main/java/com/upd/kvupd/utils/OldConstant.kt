@@ -5,7 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.upd.kvupd.data.model.DataAlta
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TConfiguracion
+import com.upd.kvupd.data.model.TableConfiguracion
 
 object OldConstant {
 
@@ -43,7 +43,7 @@ object OldConstant {
     lateinit var POS_LOC: Location
     lateinit var ALTADATOS: String
     lateinit var GPS_LOC: Location
-    lateinit var CONF: TConfiguracion
+    lateinit var CONF: TableConfiguracion
     lateinit var IWAM: DataCliente
     lateinit var IWDA: DataAlta
     lateinit var IWP: Pedimap

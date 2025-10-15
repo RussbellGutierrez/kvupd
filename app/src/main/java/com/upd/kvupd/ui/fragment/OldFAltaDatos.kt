@@ -26,25 +26,16 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TADatos
-import com.upd.kvupd.data.model.TAFoto
-import com.upd.kvupd.data.model.TNegocio
-import com.upd.kvupd.data.model.asSpinner
-import com.upd.kvupd.data.model.toSpinner
 import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
-import com.upd.kvupd.utils.OldConstant.ALTADATOS
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.checkDocumento
 import com.upd.kvupd.utils.checkEmail
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.hideprogress
-import com.upd.kvupd.utils.multiReplace
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
@@ -62,19 +53,19 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private val bind get() = _bind!!
     private var tipo = ""
     private var abspath = ""
-    private var negocios = listOf<TNegocio>()
+    //private var negocios = listOf<TNegocio>()
     private var distrito = listOf<String>()
     private var giro = listOf<String>()
     private var subgiro = listOf<String>()
     private var ruta = listOf<String>()
     private val args: OldFAltaDatosArgs by navArgs()
-    private var adStored: TADatos? = null
+    //private var adStored: TADatos? = null
     private val _tag by lazy { OldFAltaDatos::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        adStored = null
+        //adStored = null
     }
 
     /**Agregar campos dnice,ruc,tdoc,imei, todos string**/
@@ -115,7 +106,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
         bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
 
-        viewmodel.distritosObs().observe(viewLifecycleOwner) {
+        /*viewmodel.distritosObs().observe(viewLifecycleOwner) {
             distrito = it.asSpinner()
             bind.spnDistrito.adapter = ArrayAdapter(
                 requireContext(),
@@ -147,7 +138,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                     adStored = y
                 }
             }
-        }
+        }*/
 
         checkAlta()
     }
@@ -230,7 +221,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     private fun checkAlta() {
         val cliente = "Alta cliente :: ${args.idaux}"
         bind.txtTitulo.text = cliente
-        viewmodel.fetchAltaDatos(args.idaux.toString())
+        //viewmodel.fetchAltaDatos(args.idaux.toString())
     }
 
     private fun processDocumento(id: Int) {
@@ -262,7 +253,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
     private fun setupFields() {
         hideprogress()
-        if (adStored != null) {
+        /*if (adStored != null) {
             if (distrito.isNotEmpty() && giro.isNotEmpty() && subgiro.isNotEmpty() && ruta.isNotEmpty()) {
 
                 if (adStored?.tipo == "PJ") {
@@ -317,17 +308,17 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             }
         } else {
             Log.d(_tag, "SetupFields Null")
-        }
+        }*/
     }
 
     private fun getAndSetSubGiros(giro: String) {
-        subgiro = negocios.filter { it.giro == giro }.asSpinner(1)
+        /*subgiro = negocios.filter { it.giro == giro }.asSpinner(1)
         bind.spnSubgiro.adapter =
             ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
                 subgiro
-            )
+            )*/
     }
 
     private fun dispatchTakePictureIntent() {
@@ -358,7 +349,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         }
 
     private fun createPhoto(): File {
-        val time = viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
+        val time = ""//viewmodel.fecha(4).multiReplace(listOf(" ", "-", ":"), "_")
         val directory = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
         return File.createTempFile("Kvupd_DNI_${time}_", ".jpg", directory).apply {
             abspath = absolutePath
@@ -513,7 +504,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             ) {}
 
             else -> {
-                val dnipath = bind.txtRuta.text.toString()
+                /*val dnipath = bind.txtRuta.text.toString()
                 val observacion = bind.edtObservacion.text.toString()
                 val item = TADatos(
                     args.idaux,
@@ -559,7 +550,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 when (ALTADATOS) {
                     "lista" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAlta)
                     "mapa" -> findNavController().navigate(R.id.action_FAltaDatos_to_FAltaMapa)
-                }
+                }*/
             }
         }
     }

@@ -42,7 +42,7 @@ class OldBDEmergencia : BottomSheetDialogFragment() {
             val ip = bind.edtIp.text.toString()
             if (ip != "") {
                 dismiss()
-                viewmodel.settingIPaux(ip)
+                //viewmodel.settingIPaux(ip)
             }
         }
     }

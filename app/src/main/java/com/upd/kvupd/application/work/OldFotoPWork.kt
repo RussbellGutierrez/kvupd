@@ -1,29 +1,15 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TRespuesta
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IPA
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.IP_P
-import com.upd.kvupd.utils.OldConstant.IP_S
-import com.upd.kvupd.utils.OldConstant.OPTURL
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
 
 @HiltWorker
 class OldFotoPWork @AssistedInject constructor(
@@ -58,7 +44,7 @@ class OldFotoPWork @AssistedInject constructor(
             return@withContext Result.success()
         }
 
-    private fun requestBody(j: TRespuesta): RequestBody {
+    /*private fun requestBody(j: TRespuesta): RequestBody {
         val baos = ByteArrayOutputStream()
         val bm = BitmapFactory.decodeFile(j.rutafoto)
         bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
@@ -93,5 +79,5 @@ class OldFotoPWork @AssistedInject constructor(
             }
             host.setHostBaseUrl()
         }
-    }
+    }*/
 }

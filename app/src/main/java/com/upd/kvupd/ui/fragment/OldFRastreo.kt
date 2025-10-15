@@ -3,7 +3,6 @@ package com.upd.kvupd.ui.fragment
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -14,7 +13,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.distinctUntilChanged
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
@@ -23,10 +21,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TRutas
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.utils.*
 import com.upd.kvupd.utils.OldConstant.CONF
@@ -48,7 +44,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
     private lateinit var location: Location
     private lateinit var markers: List<Marker>
     private lateinit var pdmp: List<Pedimap>
-    private lateinit var rutas: List<TRutas>
+    //private lateinit var rutas: List<TRutas>
     private val _tag by lazy { OldFRastreo::class.java.simpleName }
 
     override fun onDestroyView() {
@@ -79,7 +75,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
             sup.getMapAsync(this)
         }
 
-        viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+        /*viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
         }
 
@@ -108,7 +104,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
                     is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
                 }
             }
-        }
+        }*/
 
         bind.fabUbicacion.setOnClickListener { moveCamera(location) }
         bind.fabCentrar.setOnClickListener { centerMarkers() }
@@ -216,11 +212,11 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
         p.put("esquema", CONF.esquema)
         println(p)
         progress("Descargando vendedores")
-        viewmodel.fetchPedimap(p.toReqBody())
+        //viewmodel.fetchPedimap(p.toReqBody())
     }
 
     private fun drawRoutes() {
-        val polygon = mutableListOf<LatLng>()
+        /*val polygon = mutableListOf<LatLng>()
         if (::rutas.isInitialized && rutas.isNotEmpty()) {
             rutas.forEach { i ->
                 if (i.corte != "") {
@@ -241,7 +237,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
             }
         } else {
             snack("No se encontraron rutas")
-        }
+        }*/
     }
 
 }

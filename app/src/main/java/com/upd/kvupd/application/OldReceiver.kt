@@ -3,25 +3,9 @@ package com.upd.kvupd.application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
-import android.os.BatteryManager
-import android.util.Log
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldInterface.interListener
-import com.upd.kvupd.utils.OldConstant.ACTION_ALARM_FINISH
-import com.upd.kvupd.utils.OldConstant.ACTION_ALARM_SETUP
-import com.upd.kvupd.utils.OldConstant.ACTION_NOTIFICATION_DISMISSED
-import com.upd.kvupd.utils.OldConstant.ACTION_NOTIFICATION_SLEEPED
-import com.upd.kvupd.utils.OldConstant.BATTERY_PCT
-import com.upd.kvupd.utils.OldConstant.DISMISS_ID
-import com.upd.kvupd.utils.OldConstant.DISMISS_NAME
-import com.upd.kvupd.utils.OldConstant.SLEEP_ID
-import com.upd.kvupd.utils.OldConstant.SLEEP_NAME
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -34,7 +18,7 @@ class OldReceiver : BroadcastReceiver() {
     lateinit var functions: OldFunctions
 
     override fun onReceive(p0: Context, p1: Intent) {
-        when (p1.action) {
+        /*when (p1.action) {
             Intent.ACTION_BOOT_COMPLETED -> functions.executeService("setup", true)
             Intent.ACTION_REBOOT -> functions.executeService("setup", true)
             Intent.ACTION_PACKAGE_RESTARTED -> functions.executeService("setup", true)
@@ -44,7 +28,7 @@ class OldReceiver : BroadcastReceiver() {
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = functions.saveSystemActions("TIME", null)
                     if (item != null) {
-                        repository.saveIncidencia(item)
+                        //repository.saveIncidencia(item)
                     }
                 }
             }
@@ -63,7 +47,7 @@ class OldReceiver : BroadcastReceiver() {
                 CoroutineScope(Dispatchers.IO).launch {
                     val item = functions.saveSystemActions("GPS", null)
                     if (item != null) {
-                        repository.saveIncidencia(item)
+                        //repository.saveIncidencia(item)
                     }
                     functions.checkGPSEnabled()
                 }
@@ -92,6 +76,6 @@ class OldReceiver : BroadcastReceiver() {
                 Log.d("Receiver", "Finish alarm launch")
                 functions.executeService("finish", false)
             }
-        }
+        }*/
     }
 }

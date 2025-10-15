@@ -4,23 +4,12 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.upd.kvupd.data.model.TADatos
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.IMEI
-import com.upd.kvupd.utils.OldConstant.IPA
-import com.upd.kvupd.utils.OldConstant.IP_AUX
-import com.upd.kvupd.utils.OldConstant.IP_P
-import com.upd.kvupd.utils.OldConstant.IP_S
-import com.upd.kvupd.utils.OldConstant.OPTURL
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class OldAltaDatoPWork @AssistedInject constructor(
@@ -56,7 +45,7 @@ class OldAltaDatoPWork @AssistedInject constructor(
             return@withContext Result.success()
         }
 
-    private fun requestBody(j: TADatos): RequestBody {
+    /*private fun requestBody(j: TADatos): RequestBody {
         val p = JSONObject()
         p.put("empleado", j.empleado)
         p.put("id", j.idaux)
@@ -92,9 +81,9 @@ class OldAltaDatoPWork @AssistedInject constructor(
             )
         }
         return p.toReqBody()
-    }
+    }*/
 
-    private suspend fun changeHostServer() {
+    /*private suspend fun changeHostServer() {
         repository.getSesion().let { sesion ->
             when (OPTURL) {
                 "aux" -> {
@@ -114,5 +103,5 @@ class OldAltaDatoPWork @AssistedInject constructor(
             }
             host.setHostBaseUrl()
         }
-    }
+    }*/
 }

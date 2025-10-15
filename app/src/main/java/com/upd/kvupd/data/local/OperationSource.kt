@@ -8,11 +8,19 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
+import com.upd.kvupd.application.work.DistritosWorker
 import com.upd.kvupd.application.work.EmpleadosWorker
+import com.upd.kvupd.application.work.EncuestasWorker
+import com.upd.kvupd.application.work.NegociosWorker
+import com.upd.kvupd.application.work.RutasWorker
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.WorkerTags.WORK_CLIENTE
 import com.upd.kvupd.utils.WorkerTags.WORK_CONFIGURACION
+import com.upd.kvupd.utils.WorkerTags.WORK_DISTRITO
 import com.upd.kvupd.utils.WorkerTags.WORK_EMPLEADO
+import com.upd.kvupd.utils.WorkerTags.WORK_ENCUESTA
+import com.upd.kvupd.utils.WorkerTags.WORK_NEGOCIO
+import com.upd.kvupd.utils.WorkerTags.WORK_RUTA
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -29,8 +37,8 @@ class OperationSource @Inject constructor(
         val tipo = TipoUsuario.inicialTipo(usuarioTipo)
 
         val lista: List<OneTimeWorkRequest> = when(tipo){
-            TipoUsuario.Vendedor -> listOf(workerClientes())
-            TipoUsuario.Supervisor -> listOf(workerEmpleados())
+            TipoUsuario.Vendedor -> listOf(workerClientes(),workerDistritos(),workerNegocios(),workerRutas(),workerEncuestas())
+            TipoUsuario.Supervisor -> listOf(workerEmpleados(),workerDistritos(),workerNegocios(),workerRutas(),workerEncuestas())
         }
         workManager
             .beginWith(workerConfiguracion())
@@ -56,27 +64,27 @@ class OperationSource @Inject constructor(
             .setConstraints(constraints)
             .build()
 
-    /*fun workerDistritos() =
-        OneTimeWorkRequestBuilder<DistritosWork>()
+    private fun workerDistritos() =
+        OneTimeWorkRequestBuilder<DistritosWorker>()
             .addTag(WORK_DISTRITO)
             .setConstraints(constraints)
             .build()
 
-    fun workerNegocios() =
-        OneTimeWorkRequestBuilder<NegociosWork>()
+    private fun workerNegocios() =
+        OneTimeWorkRequestBuilder<NegociosWorker>()
             .addTag(WORK_NEGOCIO)
             .setConstraints(constraints)
             .build()
 
-    fun workerRutas() =
-        OneTimeWorkRequestBuilder<RutasWork>()
+    private fun workerRutas() =
+        OneTimeWorkRequestBuilder<RutasWorker>()
             .addTag(WORK_RUTA)
             .setConstraints(constraints)
             .build()
 
-    fun workerEncuestas() =
-        OneTimeWorkRequestBuilder<EncuestaWork>()
+    private fun workerEncuestas() =
+        OneTimeWorkRequestBuilder<EncuestasWorker>()
             .addTag(WORK_ENCUESTA)
             .setConstraints(constraints)
-            .build()*/
+            .build()
 }

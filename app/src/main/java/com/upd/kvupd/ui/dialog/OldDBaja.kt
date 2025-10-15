@@ -10,16 +10,12 @@ import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
-import com.upd.kvupd.data.model.TBaja
 import com.upd.kvupd.databinding.DialogBajaBinding
 import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.utils.OldConstant.POS_LOC
-import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
 import com.upd.kvupd.utils.dismissAllDialogs
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,7 +41,7 @@ class OldDBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setCreate()
-        viewmodel.launchPosition()
+        //viewmodel.launchPosition()
     }
 
     override fun onCreateView(
@@ -89,7 +85,7 @@ class OldDBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(p0: AdapterView<*>?) = Unit
 
     private fun checkFields() {
-        if (isPOSLOCinitialized() &&
+        /*if (isPOSLOCinitialized() &&
             POS_LOC.longitude != 0.0 && POS_LOC.latitude != 0.0) {
             val motivo = when (bind.spnMotivo.selectedItem.toString()) {
                 "DUPLICADO" -> 1
@@ -120,7 +116,7 @@ class OldDBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
             }
         } else {
             toast("No se encontro coordenadas")
-        }
+        }*/
     }
 
 }

@@ -99,7 +99,7 @@ object WorkerTags {
 object FirebaseKeys {
     const val NO_EXISTE = "nothing"
     const val NODO_DIRECCION = "Direccion"
-    const val NODO_IP = "Iplocal"//"Ip"
+    const val NODO_IP = "Ip"
     const val NODO_KVENTAS = "Kventas"
     const val NODO_UUID = "Uuid"
     const val NODO_MODELO = "Modelo"
