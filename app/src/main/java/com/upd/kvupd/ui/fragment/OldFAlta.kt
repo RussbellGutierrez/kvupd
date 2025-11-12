@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFAltaBinding
@@ -82,11 +81,11 @@ class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuP
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.alta_menu, menu)
+        menuInflater.inflate(R.menu.oldalta_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.manual -> consume { findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) }
+        R.id.manual -> consume { }//findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) }
         else -> false
     }
 

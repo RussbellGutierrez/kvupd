@@ -114,7 +114,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.consulta_menu, menu)
+        menuInflater.inflate(R.menu.oldconsulta_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {

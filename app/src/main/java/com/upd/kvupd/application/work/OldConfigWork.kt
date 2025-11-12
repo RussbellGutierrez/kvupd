@@ -16,8 +16,8 @@ import kotlinx.coroutines.withContext
 class OldConfigWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val repository: OldRepository,
-    private val functions: OldFunctions,
+    //private val repository: OldRepository,
+    //private val functions: OldFunctions,
     private val host: OldHostSelectionInterceptor
 ) : CoroutineWorker(appContext, workerParameters) {
     private val _tag by lazy { OldConfigWork::class.java.simpleName }

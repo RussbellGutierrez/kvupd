@@ -8,6 +8,8 @@ import com.upd.kvupd.domain.OldFunImpl
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.domain.OldRepoImpl
 import com.upd.kvupd.domain.OldRepository
+import com.upd.kvupd.domain.OperationsFunctions
+import com.upd.kvupd.domain.OperationsImplementation
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.RoomImplementation
 import com.upd.kvupd.domain.ServerFunctions
@@ -37,6 +39,10 @@ abstract class BinderModule {
     @Singleton
     @Binds
     abstract fun bindRoomImplementation(room: RoomImplementation): RoomFunctions
+
+    @Singleton
+    @Binds
+    abstract fun bindOperationsImplementation(operations: OperationsImplementation): OperationsFunctions
 
     // ELIMINAR LUEGO
     @Singleton

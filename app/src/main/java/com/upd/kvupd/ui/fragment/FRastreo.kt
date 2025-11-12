@@ -16,74 +16,74 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.GPS_LOC
-import com.upd.kvupd.utils.OldConstant.IWP
-import com.upd.kvupd.utils.OldInfoWindow
+import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.toLocation
-import com.upd.kvupd.viewmodel.OldAppViewModel
+import com.upd.kvupd.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
 
 @AndroidEntryPoint
-class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuProvider {
+class FRastreo : Fragment(), MenuProvider {
 
-    private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFRastreoBinding? = null
-    private val bind get() = _bind!!
-    private lateinit var sup: SupportMapFragment
-    private lateinit var map: GoogleMap
-    private lateinit var location: Location
-    private lateinit var markers: List<Marker>
-    private lateinit var pdmp: List<Pedimap>
-    //private lateinit var rutas: List<TRutas>
-    private val _tag by lazy { OldFRastreo::class.java.simpleName }
+    private val binding by viewBinding(FragmentFRastreoBinding::bind)
+    private var _map: GoogleMap? = null
+    private val map get() = _map ?: error("Mapa aun no inicializado o ya destruido")
+    private val _tag by lazy { FRastreo::class.java.simpleName }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _bind = null
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        location = GPS_LOC
+        _map = null
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _bind = FragmentFRastreoBinding.inflate(inflater, container, false)
-        return bind.root
-    }
+    ): View = FragmentFRastreoBinding.inflate(inflater, container, false).root
 
+    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        if (!::sup.isInitialized) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val mapFragment = childFragmentManager.findFragmentById(binding.map.id)
+                    as SupportMapFragment
+
+            _map = mapFragment.awaitMap().apply {
+                settingsMap()
+                isMyLocationEnabled = true
+                //setOnMarkerClickListener(this@FRastreo)
+                //setInfoWindowAdapter(OldInfoWindow(LayoutInflater.from(requireContext())))
+            }
+
+            Log.d(_tag, "🗺️ Mapa inicializado correctamente (${_map.hashCode()})")
+
+            //moveCamera(location)
+            //launchDownload()
+        }
+
+        //val mapFragment = childFragmentManager.findFragmentById(binding.map.id) as SupportMapFragment
+        //mapFragment.getMapAsync(this)
+
+        /*if (!::sup.isInitialized) {
             sup = childFragmentManager.findFragmentById(bind.map.id) as SupportMapFragment
             sup.getMapAsync(this)
-        }
+        }*/
 
         /*viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             rutas = it
@@ -116,8 +116,8 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
             }
         }*/
 
-        bind.fabUbicacion.setOnClickListener { moveCamera(location) }
-        bind.fabCentrar.setOnClickListener { centerMarkers() }
+        //bind.fabUbicacion.setOnClickListener { moveCamera(location) }
+        //bind.fabCentrar.setOnClickListener { centerMarkers() }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -130,7 +130,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
         else -> false
     }
 
-    @SuppressLint("MissingPermission")
+    /*@SuppressLint("MissingPermission")
     override fun onMapReady(p0: GoogleMap) {
         Log.d(_tag, "Iniciando mapa")
         p0.also {
@@ -138,20 +138,20 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
             map.apply {
                 settingsMap()
                 isMyLocationEnabled = true
-                setOnMarkerClickListener(this@OldFRastreo)
+                setOnMarkerClickListener(this@FRastreo)
                 setInfoWindowAdapter(OldInfoWindow(LayoutInflater.from(requireContext())))
             }
             moveCamera(location)
             launchDownload()
         }
-    }
+    }*/
 
-    override fun onMarkerClick(p0: Marker): Boolean {
+    /*override fun onMarkerClick(p0: Marker): Boolean {
         pedimapMarker(p0)
         return true
-    }
+    }*/
 
-    private fun centerMarkers() {
+    /*private fun centerMarkers() {
         val builder = LatLngBounds.Builder()
         if (::markers.isInitialized && markers.isNotEmpty()) {
 
@@ -168,7 +168,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
         IWP = pdmp.find { it.codigo.toString() == marker.snippet }!!
         marker.showInfoWindow()
         moveCamera(marker.position.toLocation())
-    }
+    }*/
 
     private fun moveCamera(location: Location) {
         map.animateCamera(
@@ -178,7 +178,7 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
         )
     }
 
-    private fun showMarker(search: String) {
+    /*private fun showMarker(search: String) {
         if (::markers.isInitialized) {
             val vendedor = markers.find { it.snippet == search }
             if (vendedor != null) {
@@ -187,15 +187,15 @@ class OldFRastreo : Fragment(), OnMapReadyCallback, OnMarkerClickListener, MenuP
                 snack("No se encontro vendedor")
             }
         }
-    }
+    }*/
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                var codigo =
+                /*var codigo =
                     result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
                 codigo = codigo.replace("\\s".toRegex(), "")
-                showMarker(codigo)
+                showMarker(codigo)*/
             } else {
                 snack("Error procesando codigo")
             }

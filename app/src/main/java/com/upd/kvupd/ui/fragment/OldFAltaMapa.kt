@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener
@@ -136,9 +135,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     }
 
     override fun onInfoWindowLongClick(p0: Marker) {
-        findNavController().navigate(
-            OldFAltaMapaDirections.actionFAltaMapaToFAltaDatos(p0.snippet!!.toInt())
-        )
+        //findNavController().navigate(OldFAltaMapaDirections.actionFAltaMapaToFAltaDatos(p0.snippet!!.toInt()))
     }
 
     override fun onMapLongClick(p0: LatLng) {

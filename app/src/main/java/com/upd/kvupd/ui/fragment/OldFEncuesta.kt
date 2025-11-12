@@ -21,15 +21,12 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Respuesta
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
-import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -107,11 +104,11 @@ class OldFEncuesta : Fragment() {
     }
 
     private fun returnFragment() {
-        when (PROCEDE) {
+        /*when (PROCEDE) {
             "Cliente" -> findNavController().navigate(R.id.action_FEncuesta_to_FCliente)
             "Vendedor" -> findNavController().navigate(R.id.action_FEncuesta_to_FVendedor)
             "Mapa" -> findNavController().navigate(R.id.action_FEncuesta_to_FMapa)
-        }
+        }*/
     }
 
     @SuppressLint("SetTextI18n")

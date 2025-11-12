@@ -32,11 +32,10 @@ class RutasWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
             val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiDownloadRuta(json).first { resultado ->
+            serverFunctions.apiDownloadRuta(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Iniciando descarga rutas..."))
-                        false // seguimos escuchando
                     }
 
                     is ResultadoApi.Exito -> {
@@ -46,7 +45,6 @@ class RutasWorker @AssistedInject constructor(
                         roomFunctions.deleteRutas()
                         roomFunctions.apiSaveRutas(jobl)
                         setProgressAsync(workDataOf("estado" to "Registros de rutas: ${jobl.size}"))
-                        true // cortamos con first
                     }
 
                     is ResultadoApi.ErrorHttp -> {

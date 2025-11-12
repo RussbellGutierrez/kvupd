@@ -1,8 +1,8 @@
 package com.upd.kvupd.utils
 
 import android.os.Build
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
@@ -21,14 +21,36 @@ object ConstantsExtras {
     const val NO_FIND_UUID = "/////-/////-/////-/////"
 }
 
+object AlarmConstants {
+    const val ALARMA_INICIO = "INICIO"
+    const val ALARMA_FIN = "FINAL"
+}
+
 object SharedPreferenceKeys {
     const val SHARED_NOMBRE = "KVPREFERENCIA"
     const val KEY_HASH = "hash_id"
     const val KEY_UID = "android_uid"
     const val KEY_ROOM = "version_room"
+    const val KEY_MODO_GPS = "gps_mode"
+    const val KEY_HORA_INICIO = "hora_inicio_gps"
+    const val KEY_HORA_FIN = "hora_fin_gps"
 }
 
-object ConfiguracionFrecuenciaCoordenadas {
+object NotificationHelper {
+    const val NOTIFICATION_ID = 101
+    const val ACTION_OPEN_APP = "com.upd.kvupd.OPEN_APP"
+    const val ACTION_RECREATE_NOTIFICATION = "com.upd.kvupd.RECREATE_NOTIFICATION"
+    const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
+}
+
+object GPSConstants {
+    const val MODO_NORMAL = "normal"
+    const val MODO_EXTENSO = "extendido"
+    const val TRACKER_ID = "rastreogps"
+
+    const val GPS_CHANNEL = "gps_channel"
+    const val GPS_NOTIF_ID = 101
+
     const val TRACKER_INTERVALO_NORMAL = 120_000L
     const val TRACKER_INTERVALO_RAPIDO = 60_000L
     const val TRACKER_LAPSO_EXTENSO = 3_600_000L
@@ -39,9 +61,9 @@ object ConfiguracionFrecuenciaCoordenadas {
 }
 
 object DimensionesDialog {
-    const val DIALOG_ANCHOTODO = ConstraintLayout.LayoutParams.MATCH_PARENT
-    const val DIALOG_ANCHO = ConstraintLayout.LayoutParams.WRAP_CONTENT
-    const val DIALOG_ALTO = ConstraintLayout.LayoutParams.WRAP_CONTENT
+    const val DIALOG_ANCHOTODO = ViewGroup.LayoutParams.MATCH_PARENT
+    const val DIALOG_ANCHO = ViewGroup.LayoutParams.WRAP_CONTENT
+    const val DIALOG_ALTO = ViewGroup.LayoutParams.WRAP_CONTENT
 }
 
 object MaterialDialogTexto {
@@ -84,16 +106,6 @@ object FechaHoraUtil {
     fun ahora(): String = LocalDateTime.now().format(dateTimeFormatter)
 
     fun dia(): String = LocalDate.now().format(dateFormatter)
-}
-
-object WorkerTags {
-    const val WORK_CONFIGURACION = "venta_configuracion"
-    const val WORK_CLIENTE = "venta_cliente"
-    const val WORK_EMPLEADO = "venta_empleado"
-    const val WORK_DISTRITO = "venta_distrito"
-    const val WORK_NEGOCIO = "venta_negocio"
-    const val WORK_RUTA = "venta_ruta"
-    const val WORK_ENCUESTA = "venta_encuesta"
 }
 
 object FirebaseKeys {

@@ -16,7 +16,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.HeadCliente
@@ -124,18 +123,14 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.vendedor_menu, menu)
+        menuInflater.inflate(R.menu.oldvendedor_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { OldDVendedor().show(parentFragmentManager, "dialog") }
         R.id.encuesta -> consume { OldDListaEncuesta().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume {
-            findNavController().navigate(
-                OldFVendedorDirections.actionFVendedorToFMapa(null)
-            )
-        }
+        R.id.mapa -> consume { }//findNavController().navigate(OldFVendedorDirections.actionFVendedorToFMapa(null))}
 
         else -> false
     }

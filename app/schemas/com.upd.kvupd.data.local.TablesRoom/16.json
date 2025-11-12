@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "766d7afee362688c44d5bba46abc4b28",
+    "identityHash": "c96d3641ee9ba06a606bce88fb8224d3",
     "entities": [
       {
         "tableName": "TableConfiguracion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `hfin` TEXT NOT NULL, `hini` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`codigo` INTEGER NOT NULL, `empresa` INTEGER NOT NULL, `esquema` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `nombre` TEXT NOT NULL, `codsuper` INTEGER NOT NULL, `supervisor` TEXT NOT NULL, `horafin` TEXT NOT NULL, `horainicio` TEXT NOT NULL, `ipp` TEXT NOT NULL, `ips` TEXT NOT NULL, `seguimiento` INTEGER NOT NULL, `sucursal` INTEGER NOT NULL, `tipo` TEXT NOT NULL, PRIMARY KEY(`codigo`))",
         "fields": [
           {
             "fieldPath": "codigo",
@@ -51,14 +51,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "hfin",
-            "columnName": "hfin",
+            "fieldPath": "horafin",
+            "columnName": "horafin",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "hini",
-            "columnName": "hini",
+            "fieldPath": "horainicio",
+            "columnName": "horainicio",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1239,7 +1239,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '766d7afee362688c44d5bba46abc4b28')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c96d3641ee9ba06a606bce88fb8224d3')"
     ]
   }
 }

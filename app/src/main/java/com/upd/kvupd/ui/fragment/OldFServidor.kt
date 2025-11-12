@@ -11,7 +11,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFServidorBinding
 import com.upd.kvupd.utils.OldConstant.CONF
@@ -125,11 +124,11 @@ class OldFServidor : Fragment(), MenuProvider {
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.servidor_menu, menu)
+        menuInflater.inflate(R.menu.oldservidor_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.emergencia -> consume { findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
+        R.id.emergencia -> consume { }//findNavController().navigate(R.id.action_FServidor_to_BDEmergencia) }
         R.id.situacional -> consume { retryUploadData() }
         else -> false
     }

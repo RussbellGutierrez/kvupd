@@ -83,9 +83,9 @@ interface RoomFunctions {
     suspend fun queryBajaEspecifica(cliente: String): TableBaja?
 
     ///     Room Flow
-    suspend fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
-    suspend fun listFlowClientes(): Flow<List<FlowCliente>>
-    suspend fun listFlowAltas(): Flow<List<TableAlta>>
+    fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
+    fun listFlowClientes(): Flow<List<FlowCliente>>
+    fun listFlowAltas(): Flow<List<TableAlta>>
 
     ///     Room Server
     suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento>

@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ActionsReceiver: BroadcastReceiver() {
+
     override fun onReceive(context: Context?, intent: Intent?) {
         //
     }

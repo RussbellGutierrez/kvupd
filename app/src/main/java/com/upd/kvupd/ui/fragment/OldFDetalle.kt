@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
@@ -25,7 +23,8 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFDetalle : Fragment(), GenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
+class OldFDetalle : Fragment(),
+    GenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFDetalleBinding? = null
@@ -114,10 +113,7 @@ class OldFDetalle : Fragment(), GenericoAdapter.OnGenericoListener/*,VisisuperAd
                 "array" to null,
                 "item" to generico
             )
-            findNavController().navigate(
-                R.id.action_FDetalle_to_DMiniDetalle,
-                bundle
-            )
+            //findNavController().navigate(R.id.action_FDetalle_to_DMiniDetalle,bundle)
         }
     }
 

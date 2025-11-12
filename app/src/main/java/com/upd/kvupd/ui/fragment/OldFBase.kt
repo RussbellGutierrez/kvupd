@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFBaseBinding
@@ -207,9 +205,9 @@ class OldFBase : Fragment(), OldOnGpsState, MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.sincronizar -> consume { sinchroData() }
-        R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_BDLogin) }
+        R.id.ajustes -> consume { }//findNavController().navigate(R.id.action_FBase_to_BDLogin) }
         R.id.encuesta -> consume { launchEncuesta() }
-        R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
+        R.id.incidencia -> consume { }//findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
         R.id.total -> consume { reSincAllData() }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
@@ -217,7 +215,7 @@ class OldFBase : Fragment(), OldOnGpsState, MenuProvider {
 
     override fun changeGPSstate(gps: Boolean) {
         val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
-        bind.fabGps.imageTintList = ColorStateList.valueOf(color)
+        //bind.fabGps.imageTintList = ColorStateList.valueOf(color)
     }
 
     /*private fun setParams(config: TConfiguracion) {

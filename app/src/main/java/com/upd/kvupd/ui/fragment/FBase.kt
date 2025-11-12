@@ -7,17 +7,24 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.colorSeguimiento
+import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
+import com.upd.kvupd.ui.sealed.TipoUsuario
+import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.OldInterface.closeListener
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isGPSDisabled
+import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.showDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.viewBinding
@@ -41,6 +48,33 @@ class FBase : Fragment(), MenuProvider {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        viewmodel.flowConfiguracion().observe(viewLifecycleOwner) {
+            it.firstOrNull()?.let { config ->
+                parametrosConfig(config)
+                showBotones(config)
+            }
+        }
+
+        viewmodel.flowRutas().observe(viewLifecycleOwner) { rutas ->
+            binding.txtRuta.text = rutas
+        }
+
+        binding.apply {
+            txtVersion.text = ExtraInfo.obtener(InfoDispositivo.VERSION_APP)
+
+            btnVendedor.setOnClickListener {
+                findNavController().navigate(R.id.action_FBase_to_FRastreo)
+            }
+            //btnCartera.setUI("v", false)
+            //btnCliente.setUI("v", true)
+            //btnConsulta.setUI("v", true)
+            //btnReporte.setUI("v", true)
+            //btnEncuesta.setUI("v", true)
+            //btnAlta.setUI("v", true)
+            //btnBaja.setUI("v", true)
+            //btnServidor.setUI("v", true)
+        }
 
         /*viewmodel.startUp.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { _ ->
@@ -181,10 +215,50 @@ class FBase : Fragment(), MenuProvider {
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }*/
         R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
         R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
-        R.id.encuesta -> consume {  }
-        R.id.incidencia -> consume {  }
+        R.id.encuesta -> consume { }
+        R.id.incidencia -> consume { }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
+    }
+
+    private fun parametrosConfig(config: TableConfiguracion) = with(binding) {
+        val tipo = TipoUsuario.nombreDesdeCodigo(config.tipo)
+        val usuarioTipo = "$tipo - ${config.codigo}"
+        txtUsuario.text = config.nombre
+        txtEmpresa.text = config.nombreEmpresa()
+        txtTipo.text = usuarioTipo
+        imgEmit.setColorFilter(
+            ContextCompat.getColor(requireContext(), config.colorSeguimiento())
+        )
+    }
+
+    private fun showBotones(config: TableConfiguracion) {
+        val tipo = TipoUsuario.inicialTipo(config.tipo)
+        when (tipo) {
+            TipoUsuario.Vendedor -> binding.apply {
+                btnVendedor.setUI("v", false)
+                btnCartera.setUI("v", false)
+                btnCliente.setUI("v", true)
+                btnConsulta.setUI("v", true)
+                btnReporte.setUI("v", true)
+                btnEncuesta.setUI("v", true)
+                btnAlta.setUI("v", true)
+                btnBaja.setUI("v", true)
+                btnServidor.setUI("v", true)
+            }
+
+            TipoUsuario.Supervisor -> binding.apply {
+                btnVendedor.setUI("v", true)
+                btnCartera.setUI("v", true)
+                btnCliente.setUI("v", false)
+                btnConsulta.setUI("v", true)
+                btnReporte.setUI("v", true)
+                btnEncuesta.setUI("v", true)
+                btnAlta.setUI("v", true)
+                btnBaja.setUI("v", true)
+                btnServidor.setUI("v", true)
+            }
+        }
     }
 
     /*override fun changeGPSstate(gps: Boolean) {
@@ -216,7 +290,7 @@ class FBase : Fragment(), MenuProvider {
         bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
     }*/
 
-    private fun setRuta(l: List<RowCliente>) {
+    /*private fun setRuta(l: List<RowCliente>) {
         var mensaje = ""
         val rutas = arrayListOf<String>()
         l.forEach { i ->
@@ -230,8 +304,8 @@ class FBase : Fragment(), MenuProvider {
                 mensaje += " - Ruta $i"
             }
         }
-        //bind.txtRuta.text = mensaje
-    }
+        bind.txtRuta.text = mensaje
+    }*/
 
     /*private fun getUsuario(item: TConfiguracion): String {
         return if (item.nombre == "") {

@@ -32,21 +32,24 @@ class DistritosWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
             val json = jsobFunctions.jsonObjectSimple(config)
-            serverFunctions.apiDownloadDistrito(json).first { resultado ->
+            serverFunctions.apiDownloadDistrito(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Iniciando descarga distritos..."))
-                        false // seguimos escuchando
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
                         setProgressAsync(workDataOf("estado" to "Almacenando distritos"))
+                        kotlinx.coroutines.delay(300)
+
                         roomFunctions.deleteDistritos()
                         roomFunctions.apiSaveDistritos(jobl)
+
                         setProgressAsync(workDataOf("estado" to "Registros de distritos: ${jobl.size}"))
-                        true // cortamos con first
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.ErrorHttp -> {

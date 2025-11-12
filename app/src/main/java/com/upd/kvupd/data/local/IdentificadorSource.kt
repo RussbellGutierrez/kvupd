@@ -3,7 +3,9 @@ package com.upd.kvupd.data.local
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.provider.Settings
+import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.FechaHoraUtil
@@ -29,6 +31,7 @@ class IdentificadorSource @Inject constructor(
 
     fun obtenerSharedKey(key: String): String? = preferences.getString(key, null)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun crearNodoFirebase(uuid: String): Map<String, String> {
         return mapOf(
             NODO_UUID to uuid,

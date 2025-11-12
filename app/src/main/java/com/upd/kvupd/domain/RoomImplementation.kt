@@ -213,15 +213,15 @@ class RoomImplementation @Inject constructor(
         return querySource.roomBajaEspecifica(cliente)
     }
 
-    override suspend fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
+    override fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
         return querySource.flowConfiguracion()
     }
 
-    override suspend fun listFlowClientes(): Flow<List<FlowCliente>> {
+    override fun listFlowClientes(): Flow<List<FlowCliente>> {
         return querySource.flowClientes()
     }
 
-    override suspend fun listFlowAltas(): Flow<List<TableAlta>> {
+    override fun listFlowAltas(): Flow<List<TableAlta>> {
         return querySource.flowAltas()
     }
 

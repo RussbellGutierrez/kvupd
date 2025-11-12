@@ -207,7 +207,7 @@ class OldHelperNotification @Inject constructor(
     fun userNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, USER_CHANNEL)
-            .setSmallIcon(R.drawable.notf_cliente)
+            .setSmallIcon(R.drawable.alzamano)
             .setContentTitle("KV Usuario")
             .setContentText(MSG_USER)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

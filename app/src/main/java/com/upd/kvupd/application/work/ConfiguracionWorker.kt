@@ -1,6 +1,7 @@
 package com.upd.kvupd.application.work
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -10,9 +11,10 @@ import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_FIN
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_INICIO
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class ConfiguracionWorker @AssistedInject constructor(
@@ -21,7 +23,8 @@ class ConfiguracionWorker @AssistedInject constructor(
     private val identityFunctions: IdentityFunctions,
     private val roomFunctions: RoomFunctions,
     private val serverFunctions: ServerFunctions,
-    private val jsobFunctions: JsObFunctions
+    private val jsobFunctions: JsObFunctions,
+    private val preferences: SharedPreferences
 ) : CoroutineWorker(appContext, workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -30,11 +33,11 @@ class ConfiguracionWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro UUID valido"))
 
             val json = jsobFunctions.jsonObjectConfiguracion(uuid)
-            serverFunctions.apiDownloadConfiguracion(json).first { resultado ->
+            serverFunctions.apiDownloadConfiguracion(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Descargando configuracion..."))
-                        false // seguimos escuchando
+                        kotlinx.coroutines.delay(300) // 👈 deja respirar el LiveData
                     }
 
                     is ResultadoApi.Exito -> {
@@ -42,10 +45,21 @@ class ConfiguracionWorker @AssistedInject constructor(
                             ?: throw Exception("No se encontro configuracion")
 
                         setProgressAsync(workDataOf("estado" to "Guardando configuracion"))
+                        kotlinx.coroutines.delay(300)
+
                         roomFunctions.deleteConfiguracion()
                         roomFunctions.apiSaveConfiguracion(jobl)
+
+                        // 🔹 Guardar horarios en SharedPreferences
+                        val inicio = jobl.first().horainicio
+                        val fin = jobl.first().horafin
+                        preferences.edit()
+                            .putString(KEY_HORA_INICIO, inicio)
+                            .putString(KEY_HORA_FIN, fin)
+                            .apply()
+
                         setProgressAsync(workDataOf("estado" to "Configuracion almacenada"))
-                        true // cortamos con first
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.ErrorHttp -> {

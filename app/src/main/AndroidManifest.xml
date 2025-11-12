@@ -27,6 +27,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- Permission Custom -->
+    <permission android:name="com.upd.kvupd.PERMISSION_GPS_NOTIF" android:protectionLevel="signature" />
+
     <application
         android:name="com.upd.kvupd.application.App"
         android:allowBackup="false"
@@ -79,7 +82,7 @@
             </intent-filter>
         </activity>
 
-        <service
+        <!--service
             android:name="com.upd.kvupd.service.ServiceSetup"
             android:directBootAware="true"
             android:enabled="true"
@@ -116,30 +119,46 @@
             <intent-filter>
                 <data android:scheme="package" />
             </intent-filter>
-        </receiver>
+        </receiver-->
+
+        <service
+            android:name="com.upd.kvupd.service.LocationServiceBackground"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:foregroundServiceType="location" />
 
         <receiver
             android:name=".application.receiver.WakeUpReceiver"
-            android:directBootAware="true"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:directBootAware="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 
         <receiver
             android:name=".application.receiver.ActionsReceiver"
-            android:directBootAware="true"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
+        <receiver
+            android:name=".application.receiver.GpsReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.upd.kvupd.PERMISSION_GPS_NOTIF">
+            <intent-filter>
+                <action android:name="com.upd.kvupd.OPEN_APP" />
+                <action android:name="com.upd.kvupd.RECREATE_NOTIFICATION" />
+                <action android:name="com.upd.kvupd.CHANGE_MODE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

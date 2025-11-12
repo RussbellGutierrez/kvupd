@@ -156,7 +156,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>) = Unit
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.altadatos_menu, menu)
+        menuInflater.inflate(R.menu.oldaltadatos_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {

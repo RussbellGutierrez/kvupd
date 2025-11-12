@@ -17,7 +17,7 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
 
         <action
             android:id="@+id/action_FBase_to_DSincronizarDiario"
@@ -25,7 +25,16 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_FBase_to_FRastreo"
+            app:destination="@id/FRastreo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <dialog
@@ -39,5 +48,11 @@
         android:name="com.upd.kvupd.ui.dialog.DSincronizarDiario"
         android:label="Sincronizacion"
         tools:layout="@layout/custom_dialog_progressbar" />
+
+    <fragment
+        android:id="@+id/FRastreo"
+        android:name="com.upd.kvupd.ui.fragment.FRastreo"
+        android:label="Pedimap"
+        tools:layout="@layout/fragment_f_rastreo"/>
 
 </navigation>

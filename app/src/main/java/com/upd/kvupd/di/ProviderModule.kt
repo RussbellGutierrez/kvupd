@@ -1,14 +1,17 @@
 package com.upd.kvupd.di
 
+import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.WorkManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.upd.kvupd.data.local.DataBaseInitializer
 import com.upd.kvupd.data.local.Crud
+import com.upd.kvupd.data.local.DataBaseInitializer
 import com.upd.kvupd.data.local.QueryList
 import com.upd.kvupd.data.local.TablesRoom
 import com.upd.kvupd.data.remote.FirebaseHelper
@@ -69,6 +72,16 @@ object ProviderModule {
         WorkManager.getInstance(context)
 
     @Provides
+    @Singleton
+    fun providerFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
+
+    @Provides
     fun providerNotificationManager(@ApplicationContext context: Context): NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    @Provides
+    @Singleton
+    fun providerAlarmManager(@ApplicationContext context: Context): AlarmManager =
+        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 }

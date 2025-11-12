@@ -11,7 +11,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFBajaBinding
@@ -63,11 +62,11 @@ class OldFBaja : Fragment(), MenuProvider{// BajaAdapter.OnBajaListener, MenuPro
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.baja_menu, menu)
+        menuInflater.inflate(R.menu.oldbaja_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when(menuItem.itemId) {
-        R.id.lista -> consume { findNavController().navigate(R.id.action_FBaja_to_FBajaDatos) }
+        R.id.lista -> consume { }//findNavController().navigate(R.id.action_FBaja_to_FBajaDatos) }
         else -> false
     }
 

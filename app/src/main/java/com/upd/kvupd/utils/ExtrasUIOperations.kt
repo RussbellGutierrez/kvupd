@@ -16,6 +16,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
@@ -32,6 +34,8 @@ import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.LocalTime
+import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -120,6 +124,26 @@ fun DialogFragment.setResume(isCompact: Boolean = true) {
     }
 }
 
+fun String.toLocalTime(): LocalTime = LocalTime.parse(this)
+
+fun DialogFragment.observeWorkersById(
+    workManager: WorkManager,
+    lifecycleOwner: LifecycleOwner,
+    ids: List<UUID>,
+    onUpdate: (id: UUID, workInfo: WorkInfo, progreso: Int, mensaje: String) -> Unit
+) {
+    ids.forEach { id ->
+        workManager.getWorkInfoByIdLiveData(id)
+            .observe(lifecycleOwner) { info ->
+                if (info != null) {
+                    val progreso = info.progress.getInt("progreso", 0)
+                    val mensaje = info.progress.getString("estado") ?: ""
+                    onUpdate(id, info, progreso, mensaje)
+                }
+            }
+    }
+}
+
 fun buildMaterialDialog(context: Context, dialogType: AppDialogType): MaterialDialog {
     return MaterialDialog(context).apply {
         cancelable(false)
@@ -138,7 +162,8 @@ fun buildMaterialDialog(context: Context, dialogType: AppDialogType): MaterialDi
                 title(null, dialogType.titulo.uppercase())
                 message(null, dialogType.mensaje)
 
-                val positiveText = if (dialogType.mostrarNegativo) TEXT_POSITIVO_B else TEXT_POSITIVO_A
+                val positiveText =
+                    if (dialogType.mostrarNegativo) TEXT_POSITIVO_B else TEXT_POSITIVO_A
                 positiveButton(null, positiveText) {
                     dismiss()
                     dialogType.onPositive()

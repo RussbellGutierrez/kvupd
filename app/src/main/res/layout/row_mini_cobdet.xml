@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@drawable/corner_top"
+            android:background="@drawable/corner_purple_top"
             android:textColor="@color/white"
             tools:text="P 6477682" />
 

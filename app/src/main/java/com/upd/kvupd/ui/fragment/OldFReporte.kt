@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
@@ -392,7 +391,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.reporte_menu, menu)
+        menuInflater.inflate(R.menu.oldreporte_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
@@ -416,10 +415,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
             "soles" to soles
         )
 
-        findNavController().navigate(
-            R.id.action_FReporte_to_FDetalle,
-            bundle
-        )
+        //findNavController().navigate(R.id.action_FReporte_to_FDetalle,bundle)
         /*findNavController().navigate(
             FReporteDirections.actionFReporteToFDetalle(null, soles, null)
         )*/
@@ -432,10 +428,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
                 "array" to null,
                 "item" to soles
             )
-            findNavController().navigate(
-                R.id.action_FReporte_to_DMiniDetalle,
-                bundle
-            )
+            //findNavController().navigate(R.id.action_FReporte_to_DMiniDetalle,bundle)
             /*findNavController().navigate(
                 FReporteDirections.actionFReporteToDMiniDetalle(
                     null,

@@ -11,6 +11,10 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.upd.kvupd.ui.sealed.GpsError
+import com.upd.kvupd.utils.GPSConstants.FRECUENCIA_METROS
+import com.upd.kvupd.utils.GPSConstants.TRACKER_INTERVALO_NORMAL
+import com.upd.kvupd.utils.GPSConstants.TRACKER_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.TRACKER_LAPSO_EXTENSO
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,9 +37,9 @@ class GpsTracker @Inject constructor(
     // Iniciamos con valores por defecto
     fun startTracking(
         id: String,
-        interval: Long = ConfiguracionFrecuenciaCoordenadas.TRACKER_INTERVALO_NORMAL,
-        fastest: Long = ConfiguracionFrecuenciaCoordenadas.TRACKER_INTERVALO_RAPIDO,
-        minDistance: Float = ConfiguracionFrecuenciaCoordenadas.FRECUENCIA_METROS,
+        interval: Long = TRACKER_INTERVALO_NORMAL,
+        fastest: Long = TRACKER_INTERVALO_RAPIDO,
+        minDistance: Float = FRECUENCIA_METROS,
         onLocation: (Location) -> Unit,
         onError: (GpsError) -> Unit = {}
     ) {
@@ -57,6 +61,8 @@ class GpsTracker @Inject constructor(
             }
         }
     }
+
+    fun isTracking(id: String): Boolean = trackers.containsKey(id)
 
     fun stopTracking(id: String) {
         trackers[id]?.cancel()
@@ -80,9 +86,9 @@ class GpsTracker @Inject constructor(
         if (modoExtenso) {
             startTracking(
                 id = id,
-                interval = ConfiguracionFrecuenciaCoordenadas.TRACKER_LAPSO_EXTENSO,
-                fastest = ConfiguracionFrecuenciaCoordenadas.TRACKER_LAPSO_EXTENSO,
-                minDistance = ConfiguracionFrecuenciaCoordenadas.FRECUENCIA_METROS,
+                interval = TRACKER_LAPSO_EXTENSO,
+                fastest = TRACKER_LAPSO_EXTENSO,
+                minDistance = FRECUENCIA_METROS,
                 onLocation = onLocation,
                 onError = onError
             )

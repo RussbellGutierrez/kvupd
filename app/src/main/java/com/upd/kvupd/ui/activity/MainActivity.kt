@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
     private fun observarEstadosEventosUUID() {
         collectFlow(localViewModel.uuidEstados) { state ->
             when (state) {

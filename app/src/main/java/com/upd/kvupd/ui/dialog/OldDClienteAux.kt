@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.upd.kvupd.databinding.DialogClienteAuxBinding
 import com.upd.kvupd.utils.OldConstant.PROCEDE
@@ -57,16 +56,12 @@ class OldDClienteAux : DialogFragment() {
             if (PROCEDE == "Mapa") {
                 toast("Ya se encuentra en el mapa")
             } else {
-                findNavController().navigate(
-                    OldDClienteAuxDirections.actionDClienteAuxToFMapa(arg.cliente)
-                )
+                //findNavController().navigate(OldDClienteAuxDirections.actionDClienteAuxToFMapa(arg.cliente))
                 dismiss()
             }
         }
         bind.btnBaja.setOnClickListener {
-            findNavController().navigate(
-                OldDClienteAuxDirections.actionDClienteAuxToDBaja(arg.cliente)
-            )
+            //findNavController().navigate(OldDClienteAuxDirections.actionDClienteAuxToDBaja(arg.cliente))
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.upd.kvupd.data.model
 
-import com.upd.kvupd.utils.OldConstant
-
 fun Configuracion.asTConfig(): TableConfiguracion =
     TableConfiguracion(
         this.codigo,
@@ -11,8 +9,8 @@ fun Configuracion.asTConfig(): TableConfiguracion =
         this.nombre,
         this.codsuper,
         this.supervisor,
-        this.hfin,
-        this.hini,
+        this.horafin,
+        this.horainicio,
         this.ipp,
         this.ips,
         this.seguimiento,

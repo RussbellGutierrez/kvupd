@@ -145,7 +145,7 @@ class OldFMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.mapa_menu, menu)
+        menuInflater.inflate(R.menu.oldmapa_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {

@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.RowBaja
@@ -120,7 +119,7 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.bajadatos_menu, menu)
+        menuInflater.inflate(R.menu.oldbajadatos_menu, menu)
         /*if (CONF.tipo == "V")
             menu.findItem(R.id.filtro).setUI("v", false)*/
     }
@@ -151,9 +150,7 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
 
     override fun onClickItem(baja: RowBaja) {
         val dato = "${baja.id}@${baja.fecha}"
-        findNavController().navigate(
-            OldFBajaDatosDirections.actionFBajaDatosToFValidar(dato)
-        )
+        //findNavController().navigate(OldFBajaDatosDirections.actionFBajaDatosToFValidar(dato))
     }
 
     private fun changeFilter(dia: Int) {

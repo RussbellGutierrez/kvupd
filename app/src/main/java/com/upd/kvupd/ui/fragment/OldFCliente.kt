@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.HeadCliente
@@ -109,17 +108,13 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.cliente_menu, menu)
+        menuInflater.inflate(R.menu.oldcliente_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { OldDSemana().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume {
-            findNavController().navigate(
-                OldFClienteDirections.actionFClienteToFMapa(null)
-            )
-        }
+        R.id.mapa -> consume { }//findNavController().navigate(OldFClienteDirections.actionFClienteToFMapa(null))}
         else -> false
     }
 
@@ -208,14 +203,14 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.O
             snack("Cliente con baja, revise lista de bajas")
         } else {
             val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
-            when (dialog) {
+            /*when (dialog) {
                 0 -> findNavController().navigate(
                     OldFClienteDirections.actionFClienteToBDObservacion(item)
                 )
                 1 -> findNavController().navigate(
                     OldFClienteDirections.actionFClienteToDClienteAux(item)
                 )
-            }
+            }*/
         }
     }
 

@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 class OldAltaDatoPWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val repository: OldRepository,
+    //private val repository: OldRepository,
     private val host: OldHostSelectionInterceptor
 ) : CoroutineWorker(appContext, workerParameters) {
     private val _tag by lazy { OldAltaDatoPWork::class.java.simpleName }

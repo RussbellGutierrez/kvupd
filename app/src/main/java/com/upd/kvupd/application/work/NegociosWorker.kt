@@ -32,21 +32,24 @@ class NegociosWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
             val json = jsobFunctions.jsonObjectSimple(config)
-            serverFunctions.apiDownloadNegocio(json).first { resultado ->
+            serverFunctions.apiDownloadNegocio(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Iniciando descarga negocios..."))
-                        false // seguimos escuchando
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
                         setProgressAsync(workDataOf("estado" to "Almacenando negocios"))
+                        kotlinx.coroutines.delay(300)
+
                         roomFunctions.deleteNegocios()
                         roomFunctions.apiSaveNegocios(jobl)
+
                         setProgressAsync(workDataOf("estado" to "Registros de negocios: ${jobl.size}"))
-                        true // cortamos con first
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.ErrorHttp -> {

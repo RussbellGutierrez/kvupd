@@ -257,7 +257,7 @@ fun String.daysBetween(today: String): String {
     return dias.toString()
 }
 
-fun GoogleMap.settingsMap() {
+/*fun GoogleMap.settingsMap() {
     isTrafficEnabled = false
     setMaxZoomPreference(20f)
     setMinZoomPreference(10f)
@@ -267,7 +267,7 @@ fun GoogleMap.settingsMap() {
     uiSettings.isRotateGesturesEnabled = false
     uiSettings.isZoomControlsEnabled = false
     uiSettings.isMyLocationButtonEnabled = false
-}
+}*/
 
 fun GoogleMap.addingMarker(item: MarkerMap, icon: Int): Marker {
     return this.addMarker(MarkerOptions().apply {

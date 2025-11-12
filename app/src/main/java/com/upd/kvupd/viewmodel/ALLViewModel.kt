@@ -1,28 +1,43 @@
 package com.upd.kvupd.viewmodel
 
+import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.upd.kvupd.data.remote.FirebaseHelper
 import com.upd.kvupd.domain.IdentityFunctions
+import com.upd.kvupd.domain.OperationsFunctions
+import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.ui.sealed.InitialState
+import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.PlayServicesChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ALLViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val identityFunctions: IdentityFunctions,
+    private val operationsFunctions: OperationsFunctions,
+    private val roomFunctions: RoomFunctions,
     private val playServicesChecker: PlayServicesChecker,
     private val firebaseHelper: FirebaseHelper
 ) : ViewModel() {
 
     private val _uuidEstados = MutableStateFlow<InitialState>(InitialState.Loading())
     val uuidEstados: StateFlow<InitialState> = _uuidEstados
+
+    private val _configMensaje = EventFlow<String>()
+    val configMensaje = _configMensaje.events
+
+    private val _remainingWorkersIds = EventFlow<List<UUID>>()
+    val remainingWorkersIds = _remainingWorkersIds.events
 
     fun obtenerUUID(): String? {
         return identityFunctions.obtenerIdentificador()
@@ -85,5 +100,36 @@ class ALLViewModel @Inject constructor(
                 _uuidEstados.value = InitialState.HasUUID
             }
         }
+    }
+
+    fun ejecutandoWorkerInicial(): UUID {
+        return operationsFunctions.initWorker()
+    }
+
+    fun ejecutandoWorkersRestantes() {
+        viewModelScope.launch {
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                if (config == null) {
+                    _configMensaje.emit("No se encontró configuración local")
+                    return@launch
+                }
+
+                val tipo = config.tipo
+                val ids = operationsFunctions.remainingWorkers(tipo)
+
+                if (ids.isEmpty()) {
+                    _configMensaje.emit("No se pudieron ejecutar los workers restantes")
+                } else {
+                    _remainingWorkersIds.emit(ids)
+                }
+            } catch (e: Exception) {
+                _configMensaje.emit("Error: ${e.message}")
+            }
+        }
+    }
+
+    fun ejecutarLocationService() {
+        operationsFunctions.syncModeAlarms()
     }
 }

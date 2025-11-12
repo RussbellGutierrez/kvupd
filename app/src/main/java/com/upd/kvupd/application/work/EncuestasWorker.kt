@@ -32,21 +32,24 @@ class EncuestasWorker @AssistedInject constructor(
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
             val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiDownloadEncuesta(json).first { resultado ->
+            serverFunctions.apiDownloadEncuesta(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Iniciando descarga encuestas..."))
-                        false // seguimos escuchando
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
                         setProgressAsync(workDataOf("estado" to "Almacenando encuestas"))
+                        kotlinx.coroutines.delay(300)
+
                         roomFunctions.deleteEncuesta()
                         roomFunctions.apiSaveEncuesta(jobl)
+
                         setProgressAsync(workDataOf("estado" to "Registros de encuestas: ${jobl.size}"))
-                        true // cortamos con first
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.ErrorHttp -> {
