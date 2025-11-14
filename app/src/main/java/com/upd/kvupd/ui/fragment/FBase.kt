@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,6 +23,7 @@ import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.OldInterface.closeListener
+import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isGPSDisabled
 import com.upd.kvupd.utils.setUI
@@ -49,14 +51,14 @@ class FBase : Fragment(), MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        viewmodel.flowConfiguracion().observe(viewLifecycleOwner) {
-            it.firstOrNull()?.let { config ->
+        collectFlow(viewmodel.flowConfiguracion) { list ->
+            list.firstOrNull()?.let { config ->
                 parametrosConfig(config)
                 showBotones(config)
             }
         }
 
-        viewmodel.flowRutas().observe(viewLifecycleOwner) { rutas ->
+        collectFlow(viewmodel.flowRutas) { rutas ->
             binding.txtRuta.text = rutas
         }
 
@@ -234,6 +236,7 @@ class FBase : Fragment(), MenuProvider {
 
     private fun showBotones(config: TableConfiguracion) {
         val tipo = TipoUsuario.inicialTipo(config.tipo)
+        Log.d(_tag,"User type ${tipo.nombre()}")
         when (tipo) {
             TipoUsuario.Vendedor -> binding.apply {
                 btnVendedor.setUI("v", false)

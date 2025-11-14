@@ -66,34 +66,32 @@ fun <T> ComponentActivity.collectFlow(
     }
 }
 
-// Función de extensión para Fragment que devuelve un delegado de sólo lectura
-// Te permite usar: val binding by viewBinding(Binding::bind)
 fun <T : ViewBinding> Fragment.viewBinding(bind: (View) -> T): ReadOnlyProperty<Fragment, T> =
-    object : ReadOnlyProperty<Fragment, T>, DefaultLifecycleObserver {
+    object : ReadOnlyProperty<Fragment, T> {
 
-        // Referencia interna al binding (nullable para poder limpiarlo en onDestroyView)
         private var binding: T? = null
 
-        // Se llama cuando el LifecycleOwner (el Fragment) se crea
-        // Registramos este delegado como observador del ciclo de vida
-        override fun onCreate(owner: LifecycleOwner) {
-            owner.lifecycle.addObserver(this)
-        }
-
-        // Se llama automáticamente cuando el Fragment entra en onDestroyView()
-        // Aquí limpiamos la referencia al binding para evitar memory leaks
-        override fun onDestroy(owner: LifecycleOwner) {
-            binding = null
-        }
-
-        // Devuelve el binding cuando se accede a la propiedad (ej: binding.txtTitulo.text = "...")
         override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
-            // Si la vista del fragment aún no está creada, lanzamos error
+            val viewLifecycle = thisRef.viewLifecycleOwner.lifecycle
+            val currentBinding = binding
+
+            if (currentBinding != null && viewLifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
+                return currentBinding
+            }
+
             val view = thisRef.view ?: error("View no inicializada")
-            // Si binding ya está creado lo devolvemos, si no, lo creamos con bind(view)
-            return binding ?: bind(view).also { binding = it }
+            return bind(view).also {
+                binding = it
+                // Limpiar binding automáticamente cuando la vista se destruya
+                thisRef.viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                    override fun onDestroy(owner: LifecycleOwner) {
+                        binding = null
+                    }
+                })
+            }
         }
     }
+
 
 fun View.setUI(ui: String, toggle: Boolean) {
     when (ui) {

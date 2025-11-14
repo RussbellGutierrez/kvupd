@@ -11,7 +11,9 @@ import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,23 +27,15 @@ class APIViewModel @Inject constructor(
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
 
-    fun flowConfiguracion() = roomFunctions.listFlowConfiguracion().asLiveData()
+    val flowConfiguracion = roomFunctions.listFlowConfiguracion()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    fun flowRutas(): LiveData<String> =
-        roomFunctions.listFlowClientes()
-            .map { list ->
-                // si la lista viene vacía, devolvemos string vacío
-                if (list.isEmpty()) return@map ""
+    val flowRutas = roomFunctions.listFlowClientes()
+        .map { list ->
+            if (list.isEmpty()) "" else list.map { it.ruta.toString() }.distinct().joinToString(" - ")
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
-                // obtener rutas en una lista de strings
-                val rutas = list.map { it.ruta.toString() }
-
-                // eliminar duplicados
-                val rutasDistintas = rutas.distinct()
-
-                // construir el mensaje final
-                rutasDistintas.joinToString(separator = " - ")
-            }.asLiveData()
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
         viewModelScope.launch {
