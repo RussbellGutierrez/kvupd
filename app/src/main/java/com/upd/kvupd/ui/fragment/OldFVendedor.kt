@@ -21,7 +21,7 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
 import com.upd.kvupd.databinding.FragmentFVendedorBinding
-import com.upd.kvupd.ui.adapter.ClienteAdapter
+import com.upd.kvupd.ui.adapter.OldClienteAdapter
 import com.upd.kvupd.ui.dialog.OldDListaEncuesta
 import com.upd.kvupd.ui.dialog.OldDVendedor
 import com.upd.kvupd.utils.OldConstant.CONF
@@ -38,7 +38,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.OnClienteListener,
+class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.OnClienteListener,
     MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
@@ -49,7 +49,7 @@ class OldFVendedor : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.
     private val _tag by lazy { OldFVendedor::class.java.simpleName }
 
     @Inject
-    lateinit var adapter: ClienteAdapter
+    lateinit var adapter: OldClienteAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

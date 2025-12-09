@@ -7,7 +7,6 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
 import com.upd.kvupd.data.model.JsonCoberturados
 import com.upd.kvupd.data.model.JsonConfiguracion
-import com.upd.kvupd.data.model.JsonConsulta
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
@@ -55,9 +54,6 @@ class DownloadSource @Inject constructor(
 
 
     // CONSULTA DE DATOS EN SERVIDOR
-    suspend fun queryConsulta(body: RequestBody): Response<JsonConsulta> =
-        api().queryConsulta(body)
-
     suspend fun queryPedimap(body: RequestBody): Response<JsonPedimap> =
         api().queryPedimap(body)
 

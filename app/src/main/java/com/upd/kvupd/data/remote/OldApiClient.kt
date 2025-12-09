@@ -7,7 +7,6 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
 import com.upd.kvupd.data.model.JsonCoberturados
 import com.upd.kvupd.data.model.JsonConfiguracion
-import com.upd.kvupd.data.model.JsonConsulta
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
@@ -81,8 +80,8 @@ interface OldApiClient {
     @POST(API_ENCUESTA)
     suspend fun getApiEncuesta(@Body body: RequestBody): Response<JsonEncuesta>//@param empleado,empresa
 
-    @POST(API_CONSULTA)
-    suspend fun getApiConsulta(@Body body: RequestBody): Response<JsonConsulta>//@param fecha,empresa
+    //@POST(API_CONSULTA)
+    //suspend fun getApiConsulta(@Body body: RequestBody): Response<JsonConsulta>//@param fecha,empresa
 
     @POST(API_PREVENTA)
     suspend fun getApiPreventa(@Body body: RequestBody): Response<JsonVolumen>//@param empleado,empresa

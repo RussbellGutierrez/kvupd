@@ -10,7 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.databinding.BottomDialogObservacionBinding
-import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,7 +30,7 @@ class OldBDObservacion : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
+        requireContext().stopService(Intent(requireContext(), OldServicePosicion::class.java))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

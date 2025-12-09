@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
-class ClienteAdapter @Inject constructor(
+class OldClienteAdapter @Inject constructor(
     @ApplicationContext private val ctx: Context,
     private val repository: OldRepository
 ) : RecyclerView.Adapter<OldBaseViewHolder<*>>() {

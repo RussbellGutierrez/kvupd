@@ -57,18 +57,27 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
-    fun jsonRequestBasico(dato: TableConfiguracion): RequestBody {
-        val empleado = if (dato.tipo == "S") 0 else dato.codigo
+    fun jsonRequestPedimap(dato: TableConfiguracion): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", dato.codigo)
+            put("empresa", dato.empresa)
+            put("esquema", dato.esquema)
+        }
+        return json.toReqBody()
+    }
 
-        val json = JSONObject()
-        json.put("empleado", empleado)
-        json.put("empresa", dato.empresa)
+    fun jsonRequestBasico(dato: TableConfiguracion): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", dato.codigo)
+            put("empresa", dato.empresa)
+        }
         return json.toReqBody()
     }
 
     fun jsonRequestSimple(dato: TableConfiguracion): RequestBody {
-        val json = JSONObject()
-        json.put("empresa", dato.empresa)
+        val json = JSONObject().apply {
+            put("empresa", dato.empresa)
+        }
         return json.toReqBody()
     }
 

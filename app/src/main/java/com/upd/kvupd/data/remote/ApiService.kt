@@ -7,7 +7,6 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
 import com.upd.kvupd.data.model.JsonCoberturados
 import com.upd.kvupd.data.model.JsonConfiguracion
-import com.upd.kvupd.data.model.JsonConsulta
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
@@ -63,9 +62,9 @@ interface ApiService {
     // DESCARGA INICIAL DE DATOS
     @POST(API_CONFIGURACION) // Parametros: imei (android_uid)
     suspend fun downloadConfiguracion(@Body body: RequestBody): Response<JsonConfiguracion>
-    @POST(API_CLIENTE) // Parametros: empleado,fecha,empresa
+    @POST(API_CLIENTE) // Parametros: empleado,fecha, empresa
     suspend fun downloadCliente(@Body body: RequestBody): Response<JsonCliente>
-    @POST(API_EMPLEADO) // Parametros: empleado,empresa
+    @POST(API_EMPLEADO) // Parametros: empleado, empresa
     suspend fun downloadEmpleado(@Body body: RequestBody): Response<JsonVendedor>
     @POST(API_RUTA) // Parametros: empleado, empresa
     suspend fun downloadRuta(@Body body: RequestBody): Response<JsonRuta>
@@ -73,14 +72,12 @@ interface ApiService {
     suspend fun downloadDistrito(@Body body: RequestBody): Response<JsonDistrito>
     @POST(API_NEGOCIO) // Parametros: empresa
     suspend fun downloadNegocio(@Body body: RequestBody): Response<JsonNegocio>
-    @POST(API_ENCUESTA) // Parametros: empleado,empresa
+    @POST(API_ENCUESTA) // Parametros: empleado, empresa
     suspend fun downloadEncuesta(@Body body: RequestBody): Response<JsonEncuesta>
 
 
     // CONSULTA DE DATOS EN SERVIDOR
-    @POST(FETCH_CONSULTA) // Parametros: fecha,empresa
-    suspend fun queryConsulta(@Body body: RequestBody): Response<JsonConsulta>
-    @POST(FETCH_PEDIMAP) // Parametros: empleado, empresa
+    @POST(FETCH_PEDIMAP) // Parametros: empleado, empresa, esquema
     suspend fun queryPedimap(@Body body: RequestBody): Response<JsonPedimap>
     @POST(FETCH_LISTA_BAJAS) // Parametros: empleado, empresa
     suspend fun querySupervisorBajas(@Body body: RequestBody): Response<JsonBajaSupervisor>
@@ -89,7 +86,7 @@ interface ApiService {
 
 
     // ENVIAR DATOS AL SERVIDOR
-    @POST(SEND_REGISTRO) // Parametros: imei (android_uid),modelo,version,empresa
+    @POST(SEND_REGISTRO) // Parametros: imei (android_uid), modelo, version, empresa
     suspend fun sendRegistro(@Body body: RequestBody): Response<JsonResponseAny>
     @POST(SEND_SEGUIMIENTO) // Parametros: empresa, fecha, empleado, longitud, latitud, precision, imei, bateria, sucursal, esquema
     suspend fun sendSeguimiento(@Body body: RequestBody): Response<JsonResponseAny>
@@ -112,26 +109,26 @@ interface ApiService {
 
 
     // SOLICITAR DATOS DE REPORTE
-    @POST(REPORT_PREVENTA) // Parametros: empleado,empresa
+    @POST(REPORT_PREVENTA) // Parametros: empleado, empresa
     suspend fun reportPreventa(@Body body: RequestBody): Response<JsonVolumen>
-    @POST(REPORT_COBERTURA) // Parametros: empleado,empresa
+    @POST(REPORT_COBERTURA) // Parametros: empleado, empresa
     suspend fun reportCobertura(@Body body: RequestBody): Response<JsonCoberturaCartera>
-    @POST(REPORT_COBERTURA_DETALLE) // Parametros: empleado,empresa
+    @POST(REPORT_COBERTURA_DETALLE) // Parametros: empleado, empresa
     suspend fun reportCoberturaDetalle(@Body body: RequestBody): Response<JsonDetalleCobertura>
-    @POST(REPORT_CARTERA) // Parametros: empleado,empresa
+    @POST(REPORT_CARTERA) // Parametros: empleado, empresa
     suspend fun reportCartera(@Body body: RequestBody): Response<JsonCoberturaCartera>
-    @POST(REPORT_GENERAL) // Parametros: empleado,empresa
+    @POST(REPORT_GENERAL) // Parametros: empleado, empresa
     suspend fun reportGeneral(@Body body: RequestBody): Response<JsonPedido>
-    @POST(REPORT_CLIENTE_CAMBIO) // Parametros: empleado,empresa
+    @POST(REPORT_CLIENTE_CAMBIO) // Parametros: empleado, empresa
     suspend fun reportClienteCambio(@Body body: RequestBody): Response<JsonCambio>
-    @POST(REPORT_EMPLEADO_CAMBIO) // Parametros: empleado,empresa
+    @POST(REPORT_EMPLEADO_CAMBIO) // Parametros: empleado, empresa
     suspend fun reportEmpleadoCambio(@Body body: RequestBody): Response<JsonCambio>
-    @POST(REPORT_SOLES) // Parametros: empleado,empresa
+    @POST(REPORT_SOLES) // Parametros: empleado, empresa
     suspend fun reportSoles(@Body body: RequestBody): Response<JsonSoles>
-    @POST(REPORT_SOLES_GENERICO) // Parametros: empleado,empresa,linea
+    @POST(REPORT_SOLES_GENERICO) // Parametros: empleado, empresa, linea
     suspend fun reportSolesGenerico(@Body body: RequestBody): Response<JsonGenerico>
-    @POST(REPORT_COBERTURA_PENDIENTE) // Parametros: empleado,empresa
+    @POST(REPORT_COBERTURA_PENDIENTE) // Parametros: empleado, empresa
     suspend fun reportCoberturaPendiente(@Body body: RequestBody): Response<JsonCoberturados>
-    @POST(REPORT_EMPLEADO) // Parametros: empleado,empresa
+    @POST(REPORT_EMPLEADO) // Parametros: empleado, empresa
     suspend fun reportEmpleado(@Body body: RequestBody): Response<JsonPedidoGeneral>
 }

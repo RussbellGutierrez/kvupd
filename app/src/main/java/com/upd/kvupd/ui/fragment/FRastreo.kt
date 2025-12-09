@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.fragment
 
+import MapHelper
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -16,37 +17,60 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.JsonPedimap
+import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
-import com.upd.kvupd.utils.OldConstant.CONF
+import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.ui.sealed.ResultadoApi
+import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
+import com.upd.kvupd.utils.GPSConstants.MODO_RAPIDO
+import com.upd.kvupd.utils.GpsTracker
+import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
+import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.awaitMap
+import com.upd.kvupd.utils.buildMaterialDialog
+import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.icono
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
+import java.lang.ref.WeakReference
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FRastreo : Fragment(), MenuProvider {
 
+    private val apiViewmodel by activityViewModels<APIViewModel>()
     private val binding by viewBinding(FragmentFRastreoBinding::bind)
-    private var _map: GoogleMap? = null
-    private val map get() = _map ?: error("Mapa aun no inicializado o ya destruido")
+
+    private lateinit var mapHelper: MapHelper
+    private var getLocation: Location? = null
+    private var movedOnce = false
     private val _tag by lazy { FRastreo::class.java.simpleName }
+
+    @Inject
+    lateinit var gpsTracker: GpsTracker
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _map = null
+        gpsTracker.stopTracking(MODO_RAPIDO)
+
+        mapHelper.clearMarkers()
+        mapHelper.clearPolygons()
     }
 
     override fun onCreateView(
@@ -60,64 +84,80 @@ class FRastreo : Fragment(), MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            val mapFragment = childFragmentManager.findFragmentById(binding.map.id)
-                    as SupportMapFragment
+        mapHelper = MapHelper(layoutInflater)
 
-            _map = mapFragment.awaitMap().apply {
-                settingsMap()
-                isMyLocationEnabled = true
-                //setOnMarkerClickListener(this@FRastreo)
-                //setInfoWindowAdapter(OldInfoWindow(LayoutInflater.from(requireContext())))
-            }
+        val mapFragment =
+            childFragmentManager.findFragmentById(binding.map.id) as SupportMapFragment
 
-            Log.d(_tag, "🗺️ Mapa inicializado correctamente (${_map.hashCode()})")
+        collectFlow(apiViewmodel.pedimapEvent) collect@{ resultado ->
+            when (resultado) {
+                is ResultadoApi.Loading -> mostrarDialog(
+                    AppDialogType.Progreso(
+                        mensaje = "Obteniendo posiciones de pedimap"
+                    )
+                )
 
-            //moveCamera(location)
-            //launchDownload()
-        }
+                is ResultadoApi.Exito -> {
+                    stateSuccess(resultado.data)
+                }
 
-        //val mapFragment = childFragmentManager.findFragmentById(binding.map.id) as SupportMapFragment
-        //mapFragment.getMapAsync(this)
+                is ResultadoApi.ErrorHttp -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                    )
+                )
 
-        /*if (!::sup.isInitialized) {
-            sup = childFragmentManager.findFragmentById(bind.map.id) as SupportMapFragment
-            sup.getMapAsync(this)
-        }*/
-
-        /*viewmodel.rutasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            rutas = it
-        }
-
-        viewmodel.lastLocation().distinctUntilChanged().observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                location.longitude = it[0].longitud
-                location.latitude = it[0].latitud
+                is ResultadoApi.Fallo -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "Fallo: ${resultado.mensaje}"
+                    )
+                )
             }
         }
 
-        viewmodel.pedimap.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is OldNetworkRetrofit.Success -> {
-                        if (y.data?.jobl.isNullOrEmpty()) {
-                            showDialog("Error", "No se obtuvieron vendedores") {}
-                        } else {
-                            showDialog("Correcto", "Se descargo vendedores") {}
-                            map.clear()
-                            pdmp = y.data!!.jobl
-                            markers = viewmodel.pedimapMarker(map, pdmp)
-                            drawRoutes()
-                        }
+        collectFlow(apiViewmodel.flowPolygon) { polygons ->
+            Log.d(_tag, "Poligonos $polygons")
+            mapHelper.clearPolygons()
+            polygons.forEach { ruta ->
+                val latLngs = ruta.corte.split(",")
+                    .mapNotNull { punto ->
+                        val parts = punto.trim().split(" ").filter { it.isNotBlank() }
+                        if (parts.size < 2) return@mapNotNull null
+
+                        val lng = parts[0].toDoubleOrNull()
+                        val lat = parts[1].toDoubleOrNull()
+
+                        if (lat != null && lng != null) LatLng(lat, lng) else null
                     }
 
-                    is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
-                }
+                // Este dibujado será guardado si el mapa no está listo
+                mapHelper.drawPolygon(latLngs)
             }
-        }*/
+        }
 
-        //bind.fabUbicacion.setOnClickListener { moveCamera(location) }
-        //bind.fabCentrar.setOnClickListener { centerMarkers() }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val gMap = mapFragment.awaitMap()
+
+            mapHelper.attachMap(gMap)
+            gMap.isMyLocationEnabled = true
+
+            launchGpsRastreo()
+            apiViewmodel.downloadPedimap()
+        }
+
+        binding.fabUbicacion.setOnClickListener {
+            getLocation?.let {
+                mapHelper.moveCamera(it)
+            }
+        }
+
+        binding.fabCentrar.setOnClickListener {
+            mapHelper.centerMarkers(
+                includeLocation = getLocation?.let { LatLng(it.latitude, it.longitude) }
+            )
+        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -125,129 +165,143 @@ class FRastreo : Fragment(), MenuProvider {
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.actualizar -> consume { launchDownload() }
+        R.id.actualizar -> consume { apiViewmodel.downloadPedimap() }
         R.id.voz -> consume { searchVoice() }
         else -> false
     }
 
-    /*@SuppressLint("MissingPermission")
-    override fun onMapReady(p0: GoogleMap) {
-        Log.d(_tag, "Iniciando mapa")
-        p0.also {
-            map = it
-            map.apply {
-                settingsMap()
-                isMyLocationEnabled = true
-                setOnMarkerClickListener(this@FRastreo)
-                setInfoWindowAdapter(OldInfoWindow(LayoutInflater.from(requireContext())))
+    private fun launchGpsRastreo() {
+        gpsTracker.startTracking(
+            id = MODO_RAPIDO,
+            interval = GPS_INTERVALO_NORMAL,
+            fastest = GPS_INTERVALO_RAPIDO,
+            minDistance = IGNORAR_METROS,
+            onLocation = { location ->
+                Log.d(_tag, "📍 Posición fragment: $location")
+
+                getLocation = location
+                if (!movedOnce) {
+                    mapHelper.moveCamera(location)
+                    movedOnce = true
+                }
+            },
+            onError = { error ->
+                Log.e(_tag, "Error de GPS rápido: $error")
             }
-            moveCamera(location)
-            launchDownload()
-        }
-    }*/
-
-    /*override fun onMarkerClick(p0: Marker): Boolean {
-        pedimapMarker(p0)
-        return true
-    }*/
-
-    /*private fun centerMarkers() {
-        val builder = LatLngBounds.Builder()
-        if (::markers.isInitialized && markers.isNotEmpty()) {
-
-            markers.forEach { i -> builder.include(i.position) }
-            builder.include(LatLng(location.latitude, location.longitude))
-            val bounds = builder.build()
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200))
-        } else {
-            snack("No se detectan marcadores")
-        }
-    }
-
-    private fun pedimapMarker(marker: Marker) {
-        IWP = pdmp.find { it.codigo.toString() == marker.snippet }!!
-        marker.showInfoWindow()
-        moveCamera(marker.position.toLocation())
-    }*/
-
-    private fun moveCamera(location: Location) {
-        map.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude, location.longitude), 15f
-            )
         )
     }
 
-    /*private fun showMarker(search: String) {
-        if (::markers.isInitialized) {
-            val vendedor = markers.find { it.snippet == search }
-            if (vendedor != null) {
-                pedimapMarker(vendedor)
-            } else {
-                snack("No se encontro vendedor")
-            }
+    private fun moveToMarkerByCode(codigo: String) {
+        val marker = mapHelper.markerList().find {
+            (it.tag as? Pedimap)?.codigo == codigo.toInt()
         }
-    }*/
+
+        if (marker != null) {
+            mapHelper.moveCameraLatLng(
+                lat = marker.position.latitude,
+                lng = marker.position.longitude,
+                zoom = 16f
+            )
+            marker.showInfoWindow()
+        } else {
+            snack("No se encontró el vendedor con código $codigo")
+        }
+    }
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                /*var codigo =
-                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-                codigo = codigo.replace("\\s".toRegex(), "")
-                showMarker(codigo)*/
+                val spokenText = result.data
+                    ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    ?.firstOrNull()
+                    ?.replace("\\s".toRegex(), "")
+
+                if (spokenText.isNullOrEmpty()) {
+                    snack("No se reconocio ninguna palabra")
+                    return@registerForActivityResult
+                }
+
+                moveToMarkerByCode(spokenText)
             } else {
-                snack("Error procesando codigo")
+                snack("Error procesando codigo de voz")
             }
         }
 
     private fun searchVoice() {
-        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).also { intent ->
-            intent.resolveActivity(requireActivity().packageManager).also {
-                intent.putExtra(
+        try {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
                     RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                     RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                 )
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-                intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione codigo del vendedor")
-                resultLauncher.launch(intent)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_PROMPT, "Mencione código del vendedor")
+            }
+            resultLauncher.launch(intent)
+        } catch (e: Exception) {
+            snack("El reconocimiento de voz no está disponible en este dispositivo")
+        }
+    }
+
+    private fun stateSuccess(pedimap: JsonPedimap?) {
+        when {
+            pedimap == null -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "No se obtuvo respuesta del servidor"
+                    )
+                )
+            }
+
+            pedimap.jobl.isEmpty() -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "No se encontraron posiciones en Pedimap"
+                    )
+                )
+            }
+
+            else -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_SUCCESS,
+                        mensaje = "Se descargaron ${pedimap.jobl.size} posiciones correctamente"
+                    )
+                )
+
+                drawMarkers(pedimap.jobl)
             }
         }
     }
 
-    private fun launchDownload() {
-        val p = JSONObject()
-        p.put("empleado", CONF.codigo)
-        p.put("empresa", CONF.empresa)
-        p.put("esquema", CONF.esquema)
-        println(p)
-        progress("Descargando vendedores")
-        //viewmodel.fetchPedimap(p.toReqBody())
+    private fun mostrarDialog(dialogType: AppDialogType) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Cerrar diálogo previo si existe
+            InstanciaDialog.cerrarDialogActual()
+
+            // Crear el dialog
+            val dialog = buildMaterialDialog(requireContext(), dialogType)
+
+            // Mostrarlo
+            dialog.show()
+
+            // Guardar referencia
+            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+        }
     }
 
-    private fun drawRoutes() {
-        /*val polygon = mutableListOf<LatLng>()
-        if (::rutas.isInitialized && rutas.isNotEmpty()) {
-            rutas.forEach { i ->
-                if (i.corte != "") {
-                    val coordenadas = i.corte.split(",")
-                    coordenadas.forEach { j ->
-                        val item = j.trim().split(" ")
-                        polygon.add(LatLng(item[1].toDouble(), item[0].toDouble()))
-                    }
-                    map.addPolygon(
-                        PolygonOptions()
-                            .addAll(polygon)
-                            .strokeWidth(2f)
-                            .strokeColor(Color.parseColor("#D01215"))
-                            .fillColor(Color.argb(102, 118, 131, 219))
-                    )
-                    polygon.clear()
-                }
-            }
-        } else {
-            snack("No se encontraron rutas")
-        }*/
-    }
+    private fun drawMarkers(vendedores: List<Pedimap>) {
+        mapHelper.clearMarkers()
 
+        vendedores.forEach { item ->
+            mapHelper.addMarker(
+                data = item,
+                lat = item.posicion.latitud,
+                lng = item.posicion.longitud,
+                icon = item.icono(requireContext())
+            )
+        }
+    }
 }

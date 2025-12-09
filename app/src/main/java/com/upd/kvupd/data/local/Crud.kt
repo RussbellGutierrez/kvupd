@@ -11,7 +11,6 @@ import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA
 import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_SUPERVISOR
 import com.upd.kvupd.data.model.CrudConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.CrudConstant.DEL_CONFIGURACION
-import com.upd.kvupd.data.model.CrudConstant.DEL_CONSULTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_DISTRITOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_ENCUESTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_ESTADO
@@ -27,7 +26,6 @@ import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.data.model.TableConsulta
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
 import com.upd.kvupd.data.model.TableEstado
@@ -61,9 +59,6 @@ interface Crud {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEncuestas(enc: List<TableEncuesta>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertConsulta(cons: List<TableConsulta>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSeguimiento(seg: TableSeguimiento)
@@ -126,9 +121,6 @@ interface Crud {
 
     @Query(DEL_ENCUESTA)
     suspend fun deleteEncuesta()
-
-    @Query(DEL_CONSULTA)
-    suspend fun deleteConsulta()
 
     @Query(DEL_SEGUIMIENTO)
     suspend fun deleteSeguimiento()

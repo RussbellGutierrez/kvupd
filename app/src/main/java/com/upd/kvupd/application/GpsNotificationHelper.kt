@@ -93,6 +93,7 @@ class GpsNotificationHelper @Inject constructor(
             .setContentText(texto)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setOngoing(true)
+            .setColor(Color.RED)
             .setContentIntent(pendingIntentAbrirApp())
             .setDeleteIntent(pendingIntentReactivar())
             .build()

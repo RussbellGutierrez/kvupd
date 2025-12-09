@@ -4,7 +4,7 @@ import androidx.lifecycle.LifecycleService
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ServiceFinish : LifecycleService() {
+class OldServiceFinish : LifecycleService() {
 
     /*@Inject
     lateinit var functions: OldFunctions

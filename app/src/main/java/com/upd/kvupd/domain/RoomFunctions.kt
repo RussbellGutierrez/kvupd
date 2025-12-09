@@ -3,7 +3,6 @@ package com.upd.kvupd.domain
 import com.upd.kvupd.data.model.BajaSupervisor
 import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
-import com.upd.kvupd.data.model.Consulta
 import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.FlowCliente
@@ -36,7 +35,6 @@ interface RoomFunctions {
     suspend fun apiSaveRutas(item: List<Ruta>)
     suspend fun apiSaveEncuesta(item: List<Encuesta>)
     suspend fun apiSaveBajaSupervisor(item: List<BajaSupervisor>)
-    suspend fun apiSaveConsulta(item: List<Consulta>)
 
     ///     Room Insert
     suspend fun saveSeguimiento(item: TableSeguimiento)
@@ -62,7 +60,6 @@ interface RoomFunctions {
     suspend fun deleteNegocios()
     suspend fun deleteRutas()
     suspend fun deleteEncuesta()
-    suspend fun deleteConsultas()
     suspend fun deleteSeguimiento()
     suspend fun deleteEstados()
     suspend fun deleteBajas()
@@ -86,6 +83,7 @@ interface RoomFunctions {
     fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
     fun listFlowClientes(): Flow<List<FlowCliente>>
     fun listFlowAltas(): Flow<List<TableAlta>>
+    fun listFlowPolygon(): Flow<List<TableRuta>>
 
     ///     Room Server
     suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento>

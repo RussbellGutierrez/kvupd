@@ -1,5 +1,6 @@
 package com.upd.kvupd.domain
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.upd.kvupd.data.local.IdentificadorSource
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_UID
@@ -30,6 +31,7 @@ class IdentityImplementation @Inject constructor(
         return androidSource.crearHashHibrido(context)
     }
 
+    @SuppressLint("NewApi")
     override fun obtenerNodoDatos(uuid: String): Map<String, String> {
         return androidSource.crearNodoFirebase(uuid)
     }

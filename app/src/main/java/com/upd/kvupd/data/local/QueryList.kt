@@ -71,6 +71,9 @@ interface QueryList {
     @Query(GET_ALTAS)
     fun flowAltas(): Flow<List<TableAlta>>
 
+    @Query(GET_RUTAS)
+    fun flowRutasPolygon(): Flow<List<TableRuta>>
+
     ////  SERVER
     @Query(SEGUIMIENTO_SERVER)
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento>

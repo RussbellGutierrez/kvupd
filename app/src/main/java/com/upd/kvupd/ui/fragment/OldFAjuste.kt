@@ -19,7 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import com.upd.kvupd.databinding.OldFragmentFAjusteBinding
-import com.upd.kvupd.service.ServiceSetup
+import com.upd.kvupd.service.OldServiceSetup
 import com.upd.kvupd.utils.OldConstant.IP_AUX
 import com.upd.kvupd.utils.OldConstant.IP_FILTER
 import com.upd.kvupd.utils.OldConstant.OPTURL
@@ -170,8 +170,8 @@ class OldFAjuste : Fragment(), MenuProvider {
         //viewmodel.deleteTables()
 
         requireActivity().let {
-            if (it.isServiceRunning(ServiceSetup::class.java))
-                it.stopService(Intent(it, ServiceSetup::class.java))
+            if (it.isServiceRunning(OldServiceSetup::class.java))
+                it.stopService(Intent(it, OldServiceSetup::class.java))
         }
     }
 

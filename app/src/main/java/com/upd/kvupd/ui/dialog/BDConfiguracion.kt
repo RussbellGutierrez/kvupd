@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.dialog
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -46,14 +47,19 @@ class BDConfiguracion : BottomSheetDialogFragment() {
 
         collectFlow(apiViewModel.registerEvent) collect@{ resultado ->
             when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(AppDialogType.Progreso("Registrando equipo en Pedimap"))
+                is ResultadoApi.Loading -> mostrarDialog(
+                    AppDialogType.Progreso(
+                        mensaje = "Registrando equipo en Pedimap"
+                    )
+                )
+
                 is ResultadoApi.Exito -> {
                     val mensaje = resultado.data?.obtenerMensajeListaJson("data", "message")
                     if (mensaje.isNullOrEmpty()) {
                         mostrarDialog(
                             AppDialogType.Informativo(
-                                T_SUCCESS,
-                                "Usuario registrado en el servidor",
+                                titulo = T_SUCCESS,
+                                mensaje = "Usuario registrado en el servidor",
                                 onPositive = { dismiss() }
                             )
                         )
@@ -62,31 +68,36 @@ class BDConfiguracion : BottomSheetDialogFragment() {
 
                     mostrarDialog(
                         AppDialogType.Informativo(
-                            T_WARNING,
-                            mensaje,
+                            titulo = T_WARNING,
+                            mensaje = mensaje,
                             onPositive = { dismiss() })
                     )
                 }
 
                 is ResultadoApi.ErrorHttp -> mostrarDialog(
                     AppDialogType.Informativo(
-                        T_ERROR,
-                        "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                        titulo = T_ERROR,
+                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
                     )
                 )
 
                 is ResultadoApi.Fallo -> mostrarDialog(
                     AppDialogType.Informativo(
-                        T_ERROR,
-                        "Fallo: ${resultado.mensaje}"
+                        titulo = T_ERROR,
+                        mensaje = "Fallo: ${resultado.mensaje}"
                     )
                 )
             }
         }
 
+        collectFlow(localViewModel.pedimapMensaje) collect@{ mensaje ->
+            enviarMensajeWhatsapp(mensaje)
+        }
+
         binding.apply {
             autoEmpresa.setOnClickListener { autoEmpresa.showDropDown() }
             btnRegistrar.setOnClickListener { registerAndroidMovil() }
+            btnEnviar.setOnClickListener{localViewModel.entregarRegistroPedimap()}
         }
 
         initUI()
@@ -126,6 +137,17 @@ class BDConfiguracion : BottomSheetDialogFragment() {
         }
 
         apiViewModel.registrarEquipoServidor(uuid, empresa)
+    }
+
+    private fun enviarMensajeWhatsapp(mensaje: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, mensaje)
+        }
+
+        requireContext().startActivity(
+            Intent.createChooser(intent, "Enviar mensaje por")
+        )
     }
 
     private fun mostrarDialog(dialogType: AppDialogType) {

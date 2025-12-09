@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.upd.kvupd.databinding.DialogBajaBinding
-import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.dismissAllDialogs
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
@@ -34,7 +34,7 @@ class OldDBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
+        requireContext().stopService(Intent(requireContext(), OldServicePosicion::class.java))
         dismissAllDialogs(parentFragmentManager)
     }
 

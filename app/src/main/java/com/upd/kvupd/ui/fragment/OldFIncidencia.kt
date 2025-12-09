@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.databinding.FragmentFIncidenciaBinding
-import com.upd.kvupd.ui.adapter.IncidenciaAdapter
+import com.upd.kvupd.ui.adapter.OldIncidenciaAdapter
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class OldFIncidencia : Fragment() {
     private val _tag by lazy { OldFIncidencia::class.java.simpleName }
 
     @Inject
-    lateinit var adapter: IncidenciaAdapter
+    lateinit var adapter: OldIncidenciaAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

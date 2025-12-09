@@ -219,21 +219,6 @@ data class TableIncidencia(
     var fecha: String
 )
 
-@Entity(primaryKeys = ["cliente", "documento"])
-data class TableConsulta(
-    val cliente: Int,
-    val nombre: String,
-    val domicilio: String,
-    val longitud: Double,
-    val latitud: Double,
-    val telefono: String,
-    val negocio: String,
-    val canal: String,
-    val anulado: Int,
-    val documento: String,
-    val ventas: Int
-)
-
 @Entity(primaryKeys = ["cliente", "fecha", "tipo"])
 data class TableEstado(
 

@@ -5,6 +5,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.upd.kvupd.utils.FirebaseKeys.NODO_DIRECCION
 import com.upd.kvupd.utils.FirebaseKeys.NODO_IP
 import com.upd.kvupd.utils.FirebaseKeys.NODO_KVENTAS
+import com.upd.kvupd.utils.FirebaseKeys.NODO_MENSAJE
+import com.upd.kvupd.utils.FirebaseKeys.NODO_PEDIMAP
 import com.upd.kvupd.utils.FirebaseKeys.NODO_UUID
 import com.upd.kvupd.utils.FirebaseKeys.NO_EXISTE
 import kotlinx.coroutines.tasks.await
@@ -71,6 +73,24 @@ class FirebaseHelper @Inject constructor(
             true
         } catch (e: Exception) {
             false
+        }
+    }
+
+    suspend fun obtenerMensajePedimap(): String {
+        return try {
+            val snapshot = firebaseDatabase
+                .getReference(NODO_PEDIMAP)
+                .child(NODO_MENSAJE)
+                .get()
+                .await()
+
+            //snapshot.getValue(String::class.java) ?: "0.0.0.0"
+            val mensaje = snapshot.getValue(String::class.java) ?: "No hay mensaje"
+            Log.d("FirebaseHelper", "Mensaje obtenido: $mensaje")
+            mensaje
+        } catch (e: Exception) {
+            Log.e("FirebaseHelper", "Error obteniendo mensaje", e)
+            "No se pudo obtener el mensaje"
         }
     }
 }

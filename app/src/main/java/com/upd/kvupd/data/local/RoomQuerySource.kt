@@ -55,6 +55,9 @@ class RoomQuerySource @Inject constructor(
     fun flowAltas(): Flow<List<TableAlta>> =
         query.flowAltas()
 
+    fun flowRutasPolygon(): Flow<List<TableRuta>> =
+        query.flowRutasPolygon()
+
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =
         query.serverSeguimiento(sync)

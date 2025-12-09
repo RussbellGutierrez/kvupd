@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
-import com.upd.kvupd.ui.adapter.GenericoAdapter
-import com.upd.kvupd.ui.adapter.VisisuperAdapter
+import com.upd.kvupd.ui.adapter.OldGenericoAdapter
+import com.upd.kvupd.ui.adapter.OldVisisuperAdapter
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.generListener
 import com.upd.kvupd.utils.progress
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OldFDetalle : Fragment(),
-    GenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
+    OldGenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFDetalleBinding? = null
@@ -33,10 +33,10 @@ class OldFDetalle : Fragment(),
     private val _tag by lazy { OldFDetalle::class.java.simpleName }
 
     @Inject
-    lateinit var generAdapter: GenericoAdapter
+    lateinit var generAdapter: OldGenericoAdapter
 
     @Inject
-    lateinit var visiAdapter: VisisuperAdapter
+    lateinit var visiAdapter: OldVisisuperAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

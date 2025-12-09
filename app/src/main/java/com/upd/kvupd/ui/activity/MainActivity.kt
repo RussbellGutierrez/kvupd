@@ -20,6 +20,7 @@ import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.ALLViewModel
+import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
             permissionManager.checkBasePermissions(),
             permissionManager.checkBackgroundLocationPermission()
         )
+
+        localViewModel.iniciarServiceSiHayConfiguracion()
     }
 
     override fun onSupportNavigateUp(): Boolean {

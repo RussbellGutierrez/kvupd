@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.utils.OldBaseViewHolder
 import javax.inject.Inject
 
-class AltaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldAltaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     /*private val diffCallback = (object : DiffUtil.ItemCallback<TAlta>() {
 

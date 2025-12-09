@@ -37,7 +37,7 @@ import org.json.JSONObject
 @AndroidEntryPoint
 class FBase : Fragment(), MenuProvider {
 
-    private val viewmodel by activityViewModels<APIViewModel>()
+    private val apiViewmodel by activityViewModels<APIViewModel>()
     private val binding by viewBinding(FragmentFBaseBinding::bind)
     private val _tag by lazy { FBase::class.java.simpleName }
 
@@ -51,14 +51,14 @@ class FBase : Fragment(), MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        collectFlow(viewmodel.flowConfiguracion) { list ->
+        collectFlow(apiViewmodel.flowConfiguracion) { list ->
             list.firstOrNull()?.let { config ->
                 parametrosConfig(config)
                 showBotones(config)
             }
         }
 
-        collectFlow(viewmodel.flowRutas) { rutas ->
+        collectFlow(apiViewmodel.flowRutas) { rutas ->
             binding.txtRuta.text = rutas
         }
 
@@ -68,9 +68,10 @@ class FBase : Fragment(), MenuProvider {
             btnVendedor.setOnClickListener {
                 findNavController().navigate(R.id.action_FBase_to_FRastreo)
             }
-            //btnCartera.setUI("v", false)
+            btnCartera.setOnClickListener {
+                //
+            }
             //btnCliente.setUI("v", true)
-            //btnConsulta.setUI("v", true)
             //btnReporte.setUI("v", true)
             //btnEncuesta.setUI("v", true)
             //btnAlta.setUI("v", true)
@@ -236,13 +237,12 @@ class FBase : Fragment(), MenuProvider {
 
     private fun showBotones(config: TableConfiguracion) {
         val tipo = TipoUsuario.inicialTipo(config.tipo)
-        Log.d(_tag,"User type ${tipo.nombre()}")
+        Log.d(_tag, "User type ${tipo.nombre()}")
         when (tipo) {
             TipoUsuario.Vendedor -> binding.apply {
                 btnVendedor.setUI("v", false)
                 btnCartera.setUI("v", false)
                 btnCliente.setUI("v", true)
-                btnConsulta.setUI("v", true)
                 btnReporte.setUI("v", true)
                 btnEncuesta.setUI("v", true)
                 btnAlta.setUI("v", true)
@@ -254,7 +254,6 @@ class FBase : Fragment(), MenuProvider {
                 btnVendedor.setUI("v", true)
                 btnCartera.setUI("v", true)
                 btnCliente.setUI("v", false)
-                btnConsulta.setUI("v", true)
                 btnReporte.setUI("v", true)
                 btnEncuesta.setUI("v", true)
                 btnAlta.setUI("v", true)

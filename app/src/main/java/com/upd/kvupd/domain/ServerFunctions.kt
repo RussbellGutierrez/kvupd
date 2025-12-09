@@ -7,7 +7,6 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
 import com.upd.kvupd.data.model.JsonCoberturados
 import com.upd.kvupd.data.model.JsonConfiguracion
-import com.upd.kvupd.data.model.JsonConsulta
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
@@ -34,7 +33,6 @@ interface ServerFunctions {
     fun apiDownloadNegocio(body: RequestBody): Flow<ResultadoApi<JsonNegocio>>
     fun apiDownloadEncuesta(body: RequestBody): Flow<ResultadoApi<JsonEncuesta>>
 
-    fun apiQueryConsulta(body: RequestBody): Flow<ResultadoApi<JsonConsulta>>
     fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>>
     fun apiQuerySupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>>
     fun apiQueryVendedorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaVendedor>>

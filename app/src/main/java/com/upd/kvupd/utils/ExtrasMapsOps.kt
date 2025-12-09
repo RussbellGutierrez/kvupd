@@ -1,7 +1,15 @@
 package com.upd.kvupd.utils
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.upd.kvupd.R
+import com.upd.kvupd.data.model.Pedimap
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -21,4 +29,26 @@ fun GoogleMap.settingsMap() {
     uiSettings.isZoomGesturesEnabled = true
     uiSettings.isRotateGesturesEnabled = false
     uiSettings.isMyLocationButtonEnabled = false
+}
+
+fun Pedimap.icono(context: Context): BitmapDescriptor {
+    val drawableId = when (emitiendo) {
+        1 -> R.drawable.pin_emite
+        else -> R.drawable.pin_noemite
+    }
+    return context.vectorToBitmapDescriptor(drawableId)
+}
+
+// Utilidad general para convertir un vector a BitmapDescriptor
+fun Context.vectorToBitmapDescriptor(drawableId: Int): BitmapDescriptor {
+    val drawable = ContextCompat.getDrawable(this, drawableId) ?: return BitmapDescriptorFactory.defaultMarker()
+    val bitmap = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return BitmapDescriptorFactory.fromBitmap(bitmap)
 }

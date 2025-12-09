@@ -15,7 +15,7 @@ import com.upd.kvupd.utils.daysBetween
 import java.util.*
 import javax.inject.Inject
 
-class BajaVendedorAdapter @Inject constructor(
+class OldBajaVendedorAdapter @Inject constructor(
     private val functions: OldFunctions
 ) : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 

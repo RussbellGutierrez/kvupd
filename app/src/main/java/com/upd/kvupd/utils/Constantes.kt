@@ -46,6 +46,7 @@ object NotificationHelper {
 object GPSConstants {
     const val MODO_NORMAL = "normal"
     const val MODO_EXTENSO = "extendido"
+    const val MODO_RAPIDO = "rapido"
     const val TRACKER_ID = "rastreogps"
 
     const val GPS_CHANNEL = "gps_channel"
@@ -117,6 +118,8 @@ object FirebaseKeys {
     const val NODO_MODELO = "Modelo"
     const val NODO_FABRICANTE = "Fabricante"
     const val NODO_FECHAHORA = "FechaHora"
+    const val NODO_PEDIMAP = "Pedimap"
+    const val NODO_MENSAJE = "Mensaje"
     const val NODO_TEMPORAL = "Temporal"
 }
 

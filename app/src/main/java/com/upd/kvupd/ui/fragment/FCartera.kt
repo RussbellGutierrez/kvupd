@@ -16,36 +16,37 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.RowCliente
-import com.upd.kvupd.databinding.FragmentFClienteBinding
+import com.upd.kvupd.databinding.FragmentFVendedorBinding
 import com.upd.kvupd.ui.adapter.OldClienteAdapter
-import com.upd.kvupd.ui.dialog.OldDSemana
+import com.upd.kvupd.ui.dialog.OldDListaEncuesta
+import com.upd.kvupd.ui.dialog.OldDVendedor
+import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldInterface.clienteListener
 import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.OnClienteListener,
+class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.OnClienteListener,
     MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFClienteBinding? = null
+    private var _bind: FragmentFVendedorBinding? = null
     private val bind get() = _bind!!
     private var row = listOf<RowCliente>()
     private var clienteBaja = false
-    private val _tag by lazy { OldFCliente::class.java.simpleName }
+    private val _tag by lazy { FCartera::class.java.simpleName }
 
     @Inject
     lateinit var adapter: OldClienteAdapter
@@ -62,14 +63,14 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
 
     override fun onResume() {
         super.onResume()
-        PROCEDE = "Cliente"
+        PROCEDE = "Vendedor"
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFClienteBinding.inflate(inflater, container, false)
+        _bind = FragmentFVendedorBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -83,14 +84,14 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
 
         bind.searchView.setOnQueryTextListener(this)
 
-        /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            row = result
-            setupList(result)
+        /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
+            row = it
+            setupList(it)
         }
 
-        viewmodel.fecha.observe(viewLifecycleOwner) {
+        viewmodel.vendedor.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { y ->
-                launchDownload(y)
+                launchDownload(y[0], y[1])
             }
         }
 
@@ -101,20 +102,36 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
                         "Correcto",
                         "Clientes descargados correctamente"
                     ) {}
-                    is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
+
+                    is OldNetworkRetrofit.Error -> showDialog("Error", "Clientes server ${y.message}") {}
+                }
+            }
+        }
+
+        viewmodel.rutas.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { y ->
+                when (y) {
+                    is OldNetworkRetrofit.Success -> showDialog(
+                        "Correcto",
+                        "Rutas descargadas correctamente"
+                    ) {}
+
+                    is OldNetworkRetrofit.Error -> showDialog("Error", "Rutas server ${y.message}") {}
                 }
             }
         }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.oldcliente_menu, menu)
+        menuInflater.inflate(R.menu.oldvendedor_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.voz -> consume { searchVoice() }
-        R.id.descargar -> consume { OldDSemana().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume { }//findNavController().navigate(OldFClienteDirections.actionFClienteToFMapa(null))}
+        R.id.descargar -> consume { OldDVendedor().show(parentFragmentManager, "dialog") }
+        R.id.encuesta -> consume { OldDListaEncuesta().show(parentFragmentManager, "dialog") }
+        R.id.mapa -> consume { }//findNavController().navigate(OldFVendedorDirections.actionFVendedorToFMapa(null))}
+
         else -> false
     }
 
@@ -137,17 +154,17 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
     }
 
     override fun onClienteClick(cliente: RowCliente) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            //clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+        /*viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(0, cliente)
-        }
+        }*/
     }
 
     override fun onPressCliente(cliente: RowCliente) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            //clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
+        /*viewLifecycleOwner.lifecycleScope.launch {
+            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(1, cliente)
-        }
+        }*/
     }
 
     private val resultLauncher =
@@ -157,7 +174,7 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
                     result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
                 bind.searchView.setQuery(codigo, true)
             } else {
-                snack("Error procesando busqueda")
+                snack("Error procesando codigo")
             }
         }
 
@@ -178,13 +195,21 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
         }
     }
 
-    private fun launchDownload(fecha: String) {
-        val json = JSONObject()
-        /*json.put("empleado", CONF.codigo)
-        json.put("fecha", fecha)
-        json.put("empresa", CONF.empresa)
-        progress("Descargando clientes")
-        viewmodel.fetchClientes(json.toReqBody())*/
+    private fun launchDownload(codigo: String, fecha: String) {
+        progress("Descargando clientes y rutas")
+
+        //viewmodel.cleanDataVendedor()
+
+        val clientes = JSONObject()
+        clientes.put("empleado", codigo)
+        clientes.put("fecha", fecha)
+        clientes.put("empresa", CONF.empresa)
+        //viewmodel.fetchClientes(clientes.toReqBody())
+
+        val rutas = JSONObject()
+        rutas.put("empleado", codigo)
+        rutas.put("empresa", CONF.empresa)
+        //viewmodel.fetchRutas(rutas.toReqBody())
     }
 
     private fun setupList(list: List<RowCliente>) {
@@ -204,14 +229,20 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
         } else {
             val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
             /*when (dialog) {
-                0 -> findNavController().navigate(
-                    OldFClienteDirections.actionFClienteToBDObservacion(item)
-                )
+                0 -> viewmodel.checkingEncuesta {
+                    if (it) {
+                        findNavController().navigate(
+                            OldFVendedorDirections.actionFVendedorToBDObservacion(item)
+                        )
+                    } else {
+                        snack("Debe elegir una encuesta primero")
+                    }
+                }
+
                 1 -> findNavController().navigate(
-                    OldFClienteDirections.actionFClienteToDClienteAux(item)
+                    OldFVendedorDirections.actionFVendedorToDClienteAux(item)
                 )
             }*/
         }
     }
-
 }

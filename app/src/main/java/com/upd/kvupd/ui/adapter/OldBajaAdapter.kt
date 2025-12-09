@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.utils.OldBaseViewHolder
 import javax.inject.Inject
 
-class BajaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldBajaAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     /*private val diffCallback = (object : DiffUtil.ItemCallback<TBaja>() {
 

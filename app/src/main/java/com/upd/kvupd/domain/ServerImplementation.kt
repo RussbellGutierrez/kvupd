@@ -7,7 +7,6 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
 import com.upd.kvupd.data.model.JsonCoberturados
 import com.upd.kvupd.data.model.JsonConfiguracion
-import com.upd.kvupd.data.model.JsonConsulta
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
@@ -74,12 +73,6 @@ class ServerImplementation @Inject constructor(
         remoteFlowCall(
             setupHolder = { downloadSource },
             block = { downloadEncuesta(body) }
-        )
-
-    override fun apiQueryConsulta(body: RequestBody): Flow<ResultadoApi<JsonConsulta>> =
-        remoteFlowCall(
-            setupHolder = { downloadSource },
-            block = { queryConsulta(body) }
         )
 
     override fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>> =

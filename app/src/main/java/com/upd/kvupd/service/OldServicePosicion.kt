@@ -21,11 +21,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
-class ServicePosicion : LifecycleService() {
+class OldServicePosicion : LifecycleService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: OldLocationClient
-    private val _tag by lazy { ServicePosicion::class.java.simpleName }
+    private val _tag by lazy { OldServicePosicion::class.java.simpleName }
 
     override fun onDestroy() {
         super.onDestroy()

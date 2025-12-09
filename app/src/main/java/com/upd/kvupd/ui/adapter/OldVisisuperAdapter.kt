@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.utils.OldBaseViewHolder
 import javax.inject.Inject
 
-class VisisuperAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldVisisuperAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     /*private val diffCallback = (object : DiffUtil.ItemCallback<Visisuper>() {
 

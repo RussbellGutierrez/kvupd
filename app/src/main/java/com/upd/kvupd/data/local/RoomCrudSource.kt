@@ -3,7 +3,6 @@ package com.upd.kvupd.data.local
 import com.upd.kvupd.data.model.BajaSupervisor
 import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
-import com.upd.kvupd.data.model.Consulta
 import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.Negocio
@@ -19,7 +18,6 @@ import com.upd.kvupd.data.model.Vendedor
 import com.upd.kvupd.data.model.asTBajaSuper
 import com.upd.kvupd.data.model.asTCliente
 import com.upd.kvupd.data.model.asTConfig
-import com.upd.kvupd.data.model.asTConsulta
 import com.upd.kvupd.data.model.asTDistrito
 import com.upd.kvupd.data.model.asTEncuesta
 import com.upd.kvupd.data.model.asTNegocio
@@ -61,10 +59,6 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun apiGuardarBajaSupervisor(item: List<BajaSupervisor>) {
         crud.insertBajaSupervisor(item.map { it.asTBajaSuper() })
-    }
-
-    suspend fun apiGuardarConsulta(item: List<Consulta>) {
-        crud.insertConsulta(item.map { it.asTConsulta() })
     }
 
     suspend fun guardarSeguimiento(item: TableSeguimiento) {
@@ -143,10 +137,6 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun borrarEncuesta(){
         crud.deleteEncuesta()
-    }
-
-    suspend fun borrarConsultas(){
-        crud.deleteConsulta()
     }
 
     suspend fun borrarSeguimiento(){

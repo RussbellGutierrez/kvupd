@@ -10,30 +10,30 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.Generico
+import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldInterface.generListener
+import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.percent
 import javax.inject.Inject
 
-class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldSolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<Generico>() {
+    private val diffCallback = (object : DiffUtil.ItemCallback<Soles>() {
 
-        override fun areItemsTheSame(oldItem: Generico, newItem: Generico): Boolean {
-            return oldItem.datos.codigo == newItem.datos.codigo
+        override fun areItemsTheSame(oldItem: Soles, newItem: Soles): Boolean {
+            return oldItem.linea.codigo == newItem.linea.codigo
         }
 
-        override fun areContentsTheSame(oldItem: Generico, newItem: Generico): Boolean {
+        override fun areContentsTheSame(oldItem: Soles, newItem: Soles): Boolean {
             return oldItem == newItem
         }
 
-        override fun getChangePayload(oldItem: Generico, newItem: Generico): Any? {
+        override fun getChangePayload(oldItem: Soles, newItem: Soles): Any? {
             val diff = Bundle()
             if (oldItem != newItem) {
-                diff.putInt("marca_codigo", newItem.datos.codigo)
-                diff.putString("marca_descripcion", newItem.datos.descripcion)
+                diff.putInt("linea_codigo", newItem.linea.codigo)
+                diff.putString("linea_descripcion", newItem.linea.descripcion)
                 diff.putDouble("cuota", newItem.cuota)
                 diff.putDouble("avance", newItem.avance)
             }
@@ -44,7 +44,7 @@ class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHo
         }
     })
 
-    var mDiffer: AsyncListDiffer<Generico> = AsyncListDiffer(this, diffCallback)
+    var mDiffer: AsyncListDiffer<Soles> = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowReporteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -63,10 +63,10 @@ class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHo
 
     private inner class ViewHolder(
         private val bind: RowReporteBinding
-    ) : OldBaseViewHolder<Generico>(bind.root) {
+    ) : OldBaseViewHolder<Soles>(bind.root) {
 
-        override fun bind(item: Generico) {
-            val titulo = item.datos.descripcion
+        override fun bind(item: Soles) {
+            val titulo = item.linea.descripcion
             val cuota = "Cuota: ${item.cuota}"
             val avance = "Avance: ${item.avance}"
             val percent = percent(item.avance,item.cuota)
@@ -90,13 +90,18 @@ class GenericoAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHo
             bind.txtCuota.text = cuota
             bind.txtAvance.text = avance
             bind.txtPorcentaje.text = porcentaje
-            bind.imgCerrar.setOnClickListener { generListener.onCloseItem(item) }
-            bind.cardReporte.setOnClickListener { generListener.onItemClick(item) }
+            bind.imgCerrar.setOnClickListener { solesListener.onCloseItem(item) }
+            bind.cardReporte.setOnClickListener { solesListener.onItemClick(item) }
+            bind.cardReporte.setOnLongClickListener {
+                solesListener.onItemPress(item)
+                return@setOnLongClickListener true
+            }
         }
     }
 
-    interface OnGenericoListener {
-        fun onItemClick(generico: Generico)
-        fun onCloseItem(generico: Generico)
+    interface OnSolesListener {
+        fun onItemClick(soles: Soles)
+        fun onItemPress(soles: Soles)
+        fun onCloseItem(soles: Soles)
     }
 }

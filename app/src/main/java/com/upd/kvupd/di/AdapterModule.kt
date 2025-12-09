@@ -3,17 +3,17 @@ package com.upd.kvupd.di
 import android.content.Context
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.domain.OldRepository
-import com.upd.kvupd.ui.adapter.AltaAdapter
-import com.upd.kvupd.ui.adapter.BajaAdapter
-import com.upd.kvupd.ui.adapter.BajaSupervisorAdapter
-import com.upd.kvupd.ui.adapter.BajaVendedorAdapter
-import com.upd.kvupd.ui.adapter.BuscarAdapter
-import com.upd.kvupd.ui.adapter.ClienteAdapter
-import com.upd.kvupd.ui.adapter.GenericoAdapter
-import com.upd.kvupd.ui.adapter.IncidenciaAdapter
-import com.upd.kvupd.ui.adapter.SolesAdapter
+import com.upd.kvupd.ui.adapter.OldAltaAdapter
+import com.upd.kvupd.ui.adapter.OldBajaAdapter
+import com.upd.kvupd.ui.adapter.OldBajaSupervisorAdapter
+import com.upd.kvupd.ui.adapter.OldBajaVendedorAdapter
+import com.upd.kvupd.ui.adapter.OldBuscarAdapter
+import com.upd.kvupd.ui.adapter.OldClienteAdapter
+import com.upd.kvupd.ui.adapter.OldGenericoAdapter
+import com.upd.kvupd.ui.adapter.OldIncidenciaAdapter
+import com.upd.kvupd.ui.adapter.OldSolesAdapter
 import com.upd.kvupd.ui.adapter.OldUmesAdapter
-import com.upd.kvupd.ui.adapter.VisisuperAdapter
+import com.upd.kvupd.ui.adapter.OldVisisuperAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,38 +28,38 @@ object AdapterModule {
     fun prodiverClienteAdapter(
         @ApplicationContext ctx: Context,
         repository: OldRepository
-    ) = ClienteAdapter(ctx, repository)
+    ) = OldClienteAdapter(ctx, repository)
 
     @Provides
     fun prodiverUmeAdapter() = OldUmesAdapter()
 
     @Provides
-    fun prodiverSolesAdapter() = SolesAdapter()
+    fun prodiverSolesAdapter() = OldSolesAdapter()
 
     @Provides
-    fun prodiverGenericoAdapter() = GenericoAdapter()
+    fun prodiverGenericoAdapter() = OldGenericoAdapter()
 
     @Provides
-    fun prodiverVisisuperAdapter() = VisisuperAdapter()
+    fun prodiverVisisuperAdapter() = OldVisisuperAdapter()
 
     @Provides
-    fun prodiverAltaAdapter() = AltaAdapter()
+    fun prodiverAltaAdapter() = OldAltaAdapter()
 
     @Provides
-    fun providerBajaAdapter() = BajaAdapter()
+    fun providerBajaAdapter() = OldBajaAdapter()
 
     @Provides
-    fun providerBajaSupervisorAdapter() = BajaSupervisorAdapter()
+    fun providerBajaSupervisorAdapter() = OldBajaSupervisorAdapter()
 
     @Provides
     fun providerBajaVendedorAdapter(
         functions: OldFunctions
-    ) = BajaVendedorAdapter(functions)
+    ) = OldBajaVendedorAdapter(functions)
 
     @Provides
-    fun providerIncidenciaAdapter() = IncidenciaAdapter()
+    fun providerIncidenciaAdapter() = OldIncidenciaAdapter()
 
     @Provides
-    fun providerBuscarAdapter() = BuscarAdapter()
+    fun providerBuscarAdapter() = OldBuscarAdapter()
 
 }

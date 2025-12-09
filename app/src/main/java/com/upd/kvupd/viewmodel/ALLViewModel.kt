@@ -1,6 +1,7 @@
 package com.upd.kvupd.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +9,10 @@ import com.upd.kvupd.data.remote.FirebaseHelper
 import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.OperationsFunctions
 import com.upd.kvupd.domain.RoomFunctions
+import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.ui.sealed.InitialState
 import com.upd.kvupd.utils.EventFlow
+import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
 import com.upd.kvupd.utils.PlayServicesChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,6 +38,9 @@ class ALLViewModel @Inject constructor(
 
     private val _configMensaje = EventFlow<String>()
     val configMensaje = _configMensaje.events
+
+    private val _pedimapMensaje = EventFlow<String>()
+    val pedimapMensaje = _pedimapMensaje.events
 
     private val _remainingWorkersIds = EventFlow<List<UUID>>()
     val remainingWorkersIds = _remainingWorkersIds.events
@@ -131,5 +137,23 @@ class ALLViewModel @Inject constructor(
 
     fun ejecutarLocationService() {
         operationsFunctions.syncModeAlarms()
+    }
+
+    fun iniciarServiceSiHayConfiguracion() {
+        viewModelScope.launch {
+            roomFunctions.queryConfiguracion()?.let {
+                operationsFunctions.syncModeAlarms()
+            }
+        }
+    }
+
+    fun entregarRegistroPedimap() {
+        viewModelScope.launch {
+            identityFunctions.obtenerIdentificador()?.let { uuid ->
+                val mensaje = firebaseHelper.obtenerMensajePedimap()
+                val completo = "$mensaje:\n$uuid"
+                _pedimapMensaje.emit(completo)
+            }
+        }
     }
 }

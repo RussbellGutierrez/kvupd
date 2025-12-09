@@ -14,7 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFBajaBinding
-import com.upd.kvupd.ui.adapter.BajaAdapter
+import com.upd.kvupd.ui.adapter.OldBajaAdapter
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +28,7 @@ class OldFBaja : Fragment(), MenuProvider{// BajaAdapter.OnBajaListener, MenuPro
     private val bind get() = _bind!!
 
     @Inject
-    lateinit var adapter: BajaAdapter
+    lateinit var adapter: OldBajaAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

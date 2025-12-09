@@ -1,17 +1,21 @@
 package com.upd.kvupd.data.local
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.receiver.GpsReceiver
+import com.upd.kvupd.application.work.BootStartWorker
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
 import com.upd.kvupd.application.work.DistritosWorker
@@ -45,6 +49,10 @@ class OperationSource @Inject constructor(
     private val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
+
+    fun lanzarWorkerReinicio() {
+        workManager.enqueue(bootWorker())
+    }
 
     fun lanzarWorkerInicial(): UUID {
         val configuracion = workerConfiguracion()
@@ -118,10 +126,16 @@ class OperationSource @Inject constructor(
             .setConstraints(constraints)
             .build()
 
+    private fun bootWorker() =
+        OneTimeWorkRequestBuilder<BootStartWorker>()
+            .setConstraints(constraints)
+            .build()
+
+    @SuppressLint("NewApi")
     fun sincronizarModoYAlarmas() {
         val ahora = LocalTime.now()
-        val horaInicio = preferences.getString(KEY_HORA_INICIO,"07:00:00")!!.toLocalTime()
-        val horaFin = preferences.getString(KEY_HORA_FIN,"22:00:00")!!.toLocalTime()
+        val horaInicio = preferences.getString(KEY_HORA_INICIO, "07:00:00")!!.toLocalTime()
+        val horaFin = preferences.getString(KEY_HORA_FIN, "22:00:00")!!.toLocalTime()
 
         val dentroHorario = ahora.isAfter(horaInicio) && ahora.isBefore(horaFin)
         val modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
@@ -131,9 +145,6 @@ class OperationSource @Inject constructor(
         if (!serviceActivo || modoNuevo != modoActual) {
             LocationServiceBackground.reiniciar(context, modoNuevo)
         }
-        /*if (modoNuevo != modoActual) {
-            LocationServiceBackground.reiniciar(context, modoNuevo)
-        }*/
 
         if (!dentroHorario) {
             reprogramarAlarmas(horaInicio, horaFin)
@@ -161,6 +172,7 @@ class OperationSource @Inject constructor(
         programarAlarma(intentFin, horaFin, requestCode = 1002)
     }
 
+    @SuppressLint("MissingPermission", "NewApi")
     private fun programarAlarma(
         intent: Intent,
         hora: LocalTime,

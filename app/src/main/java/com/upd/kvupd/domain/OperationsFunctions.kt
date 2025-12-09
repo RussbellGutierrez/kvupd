@@ -7,4 +7,5 @@ interface OperationsFunctions {
     fun initWorker(): UUID
     fun remainingWorkers(usuarioTipo: String): List<UUID>
     fun syncModeAlarms()
+    fun initBootWorker()
 }

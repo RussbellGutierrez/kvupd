@@ -1,9 +1,8 @@
 package com.upd.kvupd.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
@@ -27,6 +26,9 @@ class APIViewModel @Inject constructor(
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
 
+    private val _pedimapEvent = EventFlow<ResultadoApi<JsonPedimap>>()
+    val pedimapEvent = _pedimapEvent.events
+
     val flowConfiguracion = roomFunctions.listFlowConfiguracion()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -36,12 +38,25 @@ class APIViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
+    val flowPolygon = roomFunctions.listFlowPolygon()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
         viewModelScope.launch {
             val json = jsobFunctions.jsonRegistrarEquipo(identificador, empresa)
             serverFunctions.apiSendRegistro(json).collect {
                 _registerEvent.emit(it)
+            }
+        }
+    }
+
+    fun downloadPedimap() {
+        viewModelScope.launch {
+            roomFunctions.queryConfiguracion()?.let { config ->
+                val json = jsobFunctions.jsonObjectPedimap(config)
+                serverFunctions.apiQueryPedimap(json).collect {
+                    _pedimapEvent.emit(it)
+                }
             }
         }
     }

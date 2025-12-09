@@ -5,7 +5,7 @@ import com.upd.kvupd.domain.OldOnInterSetup
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ServiceSetup : LifecycleService(), OldOnInterSetup {
+class OldServiceSetup : LifecycleService(), OldOnInterSetup {
 
     /*@Inject
     lateinit var workManager: WorkManager

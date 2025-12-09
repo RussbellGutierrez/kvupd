@@ -15,8 +15,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFAltaBinding
-import com.upd.kvupd.service.ServicePosicion
-import com.upd.kvupd.ui.adapter.AltaAdapter
+import com.upd.kvupd.service.OldServicePosicion
+import com.upd.kvupd.ui.adapter.OldAltaAdapter
 import com.upd.kvupd.utils.OldConstant.ALTADATOS
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -32,12 +32,12 @@ class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuP
     private val _tag by lazy { OldFAlta::class.java.simpleName }
 
     @Inject
-    lateinit var adapter: AltaAdapter
+    lateinit var adapter: OldAltaAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()
         _bind = null
-        requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
+        requireContext().stopService(Intent(requireContext(), OldServicePosicion::class.java))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

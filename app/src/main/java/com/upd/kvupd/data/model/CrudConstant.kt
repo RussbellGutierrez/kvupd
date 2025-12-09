@@ -9,7 +9,6 @@ object CrudConstant {
     const val DEL_NEGOCIOS = "DELETE FROM TableNegocio"
     const val DEL_RUTAS = "DELETE FROM TableRuta"
     const val DEL_ENCUESTA = "DELETE FROM TableEncuesta"
-    const val DEL_CONSULTA = "DELETE FROM TableConsulta"
     const val DEL_SEGUIMIENTO = "DELETE FROM TableSeguimiento"
     const val DEL_ESTADO = "DELETE FROM TableEstado"
     const val DEL_BAJA = "DELETE FROM TableBaja"

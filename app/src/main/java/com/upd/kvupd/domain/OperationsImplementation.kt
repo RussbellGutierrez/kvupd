@@ -22,4 +22,8 @@ class OperationsImplementation @Inject constructor(
     override fun syncModeAlarms() {
         operationSource.sincronizarModoYAlarmas()
     }
+
+    override fun initBootWorker() {
+        operationSource.lanzarWorkerReinicio()
+    }
 }

@@ -16,8 +16,8 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.RowBaja
 import com.upd.kvupd.databinding.FragmentFBajaDatosBinding
-import com.upd.kvupd.ui.adapter.BajaSupervisorAdapter
-import com.upd.kvupd.ui.adapter.BajaVendedorAdapter
+import com.upd.kvupd.ui.adapter.OldBajaSupervisorAdapter
+import com.upd.kvupd.ui.adapter.OldBajaVendedorAdapter
 import com.upd.kvupd.ui.dialog.OldDFiltro
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.bajaSuperListener
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
-    BajaSupervisorAdapter.OnBajaSuperListener, MenuProvider {
+    OldBajaSupervisorAdapter.OnBajaSuperListener, MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFBajaDatosBinding? = null
@@ -42,10 +42,10 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     private val _tag by lazy { OldFBajaDatos::class.java.simpleName }
 
     @Inject
-    lateinit var vendedor: BajaVendedorAdapter
+    lateinit var vendedor: OldBajaVendedorAdapter
 
     @Inject
-    lateinit var supervisor: BajaSupervisorAdapter
+    lateinit var supervisor: OldBajaSupervisorAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

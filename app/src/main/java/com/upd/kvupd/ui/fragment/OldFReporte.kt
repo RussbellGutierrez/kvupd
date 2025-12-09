@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFReporteBinding
-import com.upd.kvupd.ui.adapter.SolesAdapter
+import com.upd.kvupd.ui.adapter.OldSolesAdapter
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.consume
@@ -30,7 +30,7 @@ import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
+class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
     MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
@@ -40,7 +40,7 @@ class OldFReporte : Fragment(), SolesAdapter.OnSolesListener,
     private val _tag by lazy { OldFReporte::class.java.simpleName }
 
     @Inject
-    lateinit var solesAdapter: SolesAdapter
+    lateinit var solesAdapter: OldSolesAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()

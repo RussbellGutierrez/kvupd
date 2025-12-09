@@ -12,7 +12,7 @@ import com.upd.kvupd.utils.OldBaseViewHolder
 import com.upd.kvupd.utils.OldInterface.bajaSuperListener
 import javax.inject.Inject
 
-class BajaSupervisorAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldBajaSupervisorAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<RowBaja>() {
 

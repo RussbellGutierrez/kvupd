@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.databinding.DialogBusquedaBinding
-import com.upd.kvupd.ui.adapter.BuscarAdapter
+import com.upd.kvupd.ui.adapter.OldBuscarAdapter
 import com.upd.kvupd.utils.OldInterface.buscarListener
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldDBuscar : DialogFragment(), SearchView.OnQueryTextListener, BuscarAdapter.OnBuscarListener {
+class OldDBuscar : DialogFragment(), SearchView.OnQueryTextListener, OldBuscarAdapter.OnBuscarListener {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: DialogBusquedaBinding? = null
@@ -31,7 +31,7 @@ class OldDBuscar : DialogFragment(), SearchView.OnQueryTextListener, BuscarAdapt
     private val _tag by lazy { OldDBuscar::class.java.simpleName }
 
     @Inject
-    lateinit var adapter: BuscarAdapter
+    lateinit var adapter: OldBuscarAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

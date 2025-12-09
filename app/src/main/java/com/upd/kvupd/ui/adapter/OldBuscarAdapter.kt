@@ -13,7 +13,7 @@ import com.upd.kvupd.utils.OldBaseViewHolder
 import com.upd.kvupd.utils.OldInterface.buscarListener
 import javax.inject.Inject
 
-class BuscarAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
+class OldBuscarAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
     private val diffCallback = (object : DiffUtil.ItemCallback<DataCliente>() {
 

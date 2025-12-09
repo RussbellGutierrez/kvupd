@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFConsultaBinding
-import com.upd.kvupd.service.ServicePosicion
+import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.consume
@@ -55,7 +55,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
         _bind = null
         /*POS_LOC.longitude = 0.0
         POS_LOC.latitude = 0.0*/
-        requireContext().stopService(Intent(requireContext(), ServicePosicion::class.java))
+        requireContext().stopService(Intent(requireContext(), OldServicePosicion::class.java))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

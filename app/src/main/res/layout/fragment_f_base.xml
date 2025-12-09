@@ -85,20 +85,6 @@
                 app:strokeWidth="1dp" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_consulta"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginVertical="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="Consulta"
-                android:visibility="gone"
-                app:icon="@drawable/buscar"
-                app:strokeWidth="1dp" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_reporte"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"

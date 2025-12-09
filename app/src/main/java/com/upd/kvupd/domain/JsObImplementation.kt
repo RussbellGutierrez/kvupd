@@ -23,6 +23,9 @@ class JsObImplementation @Inject constructor(
     override fun jsonObjectClientes(item: TableConfiguracion, fecha: String?): RequestBody =
         jsonObjectDataSource.jsonRequestClientes(item, fecha)
 
+    override fun jsonObjectPedimap(item: TableConfiguracion): RequestBody =
+        jsonObjectDataSource.jsonRequestPedimap(item)
+
     override fun jsonObjectBasico(item: TableConfiguracion): RequestBody =
         jsonObjectDataSource.jsonRequestBasico(item)
 

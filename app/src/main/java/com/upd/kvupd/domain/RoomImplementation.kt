@@ -5,7 +5,6 @@ import com.upd.kvupd.data.local.RoomQuerySource
 import com.upd.kvupd.data.model.BajaSupervisor
 import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
-import com.upd.kvupd.data.model.Consulta
 import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.FlowCliente
@@ -63,10 +62,6 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun apiSaveBajaSupervisor(item: List<BajaSupervisor>) {
         crudSource.apiGuardarBajaSupervisor(item)
-    }
-
-    override suspend fun apiSaveConsulta(item: List<Consulta>) {
-        crudSource.apiGuardarConsulta(item)
     }
 
     override suspend fun saveSeguimiento(item: TableSeguimiento) {
@@ -145,10 +140,6 @@ class RoomImplementation @Inject constructor(
         crudSource.borrarEncuesta()
     }
 
-    override suspend fun deleteConsultas() {
-        crudSource.borrarConsultas()
-    }
-
     override suspend fun deleteSeguimiento() {
         crudSource.borrarSeguimiento()
     }
@@ -223,6 +214,10 @@ class RoomImplementation @Inject constructor(
 
     override fun listFlowAltas(): Flow<List<TableAlta>> {
         return querySource.flowAltas()
+    }
+
+    override fun listFlowPolygon(): Flow<List<TableRuta>> {
+        return querySource.flowRutasPolygon()
     }
 
     override suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento> {

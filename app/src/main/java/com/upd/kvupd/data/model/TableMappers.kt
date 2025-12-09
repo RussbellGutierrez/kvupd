@@ -100,18 +100,3 @@ fun BajaSupervisor.asTBajaSuper(): TableBajaSupervisor =
         this.latitud,
         this.compra
     )
-
-fun Consulta.asTConsulta(): TableConsulta =
-    TableConsulta(
-        this.cliente,
-        this.nombre,
-        this.domicilio,
-        this.longitud,
-        this.latitud,
-        this.telefono,
-        this.negocio,
-        this.canal,
-        this.anulado,
-        this.documento,
-        this.ventas
-    )
