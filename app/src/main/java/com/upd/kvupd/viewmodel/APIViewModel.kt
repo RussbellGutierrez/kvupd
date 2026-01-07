@@ -2,12 +2,14 @@ package com.upd.kvupd.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
+import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.EventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +31,13 @@ class APIViewModel @Inject constructor(
     private val _pedimapEvent = EventFlow<ResultadoApi<JsonPedimap>>()
     val pedimapEvent = _pedimapEvent.events
 
+    private val _clienteEvent = EventFlow<ResultadoApi<JsonCliente>>()
+    val clienteEvent = _clienteEvent.events
+
     val flowConfiguracion = roomFunctions.listFlowConfiguracion()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val flowClientes = roomFunctions.listFlowClientes()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val flowRutas = roomFunctions.listFlowClientes()
@@ -56,6 +64,17 @@ class APIViewModel @Inject constructor(
                 val json = jsobFunctions.jsonObjectPedimap(config)
                 serverFunctions.apiQueryPedimap(json).collect {
                     _pedimapEvent.emit(it)
+                }
+            }
+        }
+    }
+
+    fun downloadClientes(vendedor: Int? = null, fecha: String? = null) {
+        viewModelScope.launch {
+            roomFunctions.queryConfiguracion()?.let { config ->
+                val json = jsobFunctions.jsonObjectClientes(config,vendedor,fecha)
+                serverFunctions.apiDownloadCliente(json).collect {
+                    _clienteEvent.emit(it)
                 }
             }
         }

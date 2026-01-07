@@ -107,6 +107,16 @@ object FechaHoraUtil {
     fun ahora(): String = LocalDateTime.now().format(dateTimeFormatter)
 
     fun dia(): String = LocalDate.now().format(dateFormatter)
+
+    fun castApi(fecha: String): String {
+        return try {
+            val inFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+            val localDate = LocalDate.parse(fecha, inFmt)
+            localDate.format(dateFormatter)
+        } catch (e: Exception) {
+            fecha
+        }
+    }
 }
 
 object FirebaseKeys {

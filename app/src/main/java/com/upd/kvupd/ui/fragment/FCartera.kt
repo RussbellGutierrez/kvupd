@@ -1,9 +1,14 @@
 package com.upd.kvupd.ui.fragment
 
+import MapHelper
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -12,77 +17,164 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.SupportMapFragment
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.HeadCliente
+import com.upd.kvupd.data.model.JsonCliente
+import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.databinding.FragmentFCarteraBinding
+import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.databinding.FragmentFVendedorBinding
+import com.upd.kvupd.ui.adapter.ClienteAdapter
+import com.upd.kvupd.ui.adapter.ClienteAdapterFactory
 import com.upd.kvupd.ui.adapter.OldClienteAdapter
 import com.upd.kvupd.ui.dialog.OldDListaEncuesta
 import com.upd.kvupd.ui.dialog.OldDVendedor
+import com.upd.kvupd.ui.fragment.enumClass.Vista
+import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.ui.sealed.ResultadoApi
+import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.GPSConstants
+import com.upd.kvupd.utils.GPSConstants.MODO_RAPIDO
+import com.upd.kvupd.utils.GpsTracker
+import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.MaterialDialogTexto
+import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
+import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldInterface.clienteListener
+import com.upd.kvupd.utils.awaitMap
+import com.upd.kvupd.utils.buildMaterialDialog
+import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.viewmodel.APIViewModel
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.OnClienteListener,
+class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.Listener,
     MenuProvider {
 
-    private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFVendedorBinding? = null
-    private val bind get() = _bind!!
-    private var row = listOf<RowCliente>()
-    private var clienteBaja = false
+    private val apiViewModel by activityViewModels<APIViewModel>()
+    private val binding by viewBinding(FragmentFCarteraBinding::bind)
+
+    private lateinit var adapter: ClienteAdapter
+    private lateinit var mapHelper: MapHelper
+    private var vistaActual: Vista = Vista.LISTA
+    private var getLocation: Location? = null
+    private var movedOnce = false
+    private var mapaInicializado = false
     private val _tag by lazy { FCartera::class.java.simpleName }
 
     @Inject
-    lateinit var adapter: OldClienteAdapter
+    lateinit var adapterFactory: ClienteAdapterFactory
+
+    @Inject
+    lateinit var gpsTracker: GpsTracker
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _bind = null
-    }
+        stopGps()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        clienteListener = this
-    }
-
-    override fun onResume() {
-        super.onResume()
-        PROCEDE = "Vendedor"
+        mapHelper.clearMarkers()
+        mapHelper.clearPolygons()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _bind = FragmentFVendedorBinding.inflate(inflater, container, false)
-        return bind.root
-    }
+    ): View = FragmentFCarteraBinding.inflate(inflater, container, false).root
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
-        bind.rcvClientes.adapter = adapter
+        mapHelper = MapHelper(layoutInflater)
 
-        bind.searchView.setOnQueryTextListener(this)
+        adapter = adapterFactory.create(
+            listener = this,
+            hoy = FechaHoraUtil.dia()
+        )
+
+        binding.rcvCartera.adapter = adapter
+
+        binding.fabLista.setOnClickListener {
+            //
+        }
+        binding.fabCentrar.setOnClickListener {
+            //
+        }
+        binding.fabUbicacion.setOnClickListener {
+            //
+        }
+
+        collectFlow(apiViewModel.clienteEvent) collect@{ resultado ->
+            when (resultado) {
+                is ResultadoApi.Loading -> mostrarDialog(
+                    AppDialogType.Progreso(
+                        mensaje = "Obteniendo posiciones de pedimap"
+                    )
+                )
+
+                is ResultadoApi.Exito -> {
+                    stateSuccess(resultado.data)
+                }
+
+                is ResultadoApi.ErrorHttp -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                    )
+                )
+
+                is ResultadoApi.Fallo -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "Fallo: ${resultado.mensaje}"
+                    )
+                )
+            }
+        }
+
+        /*val mapFragment =
+            childFragmentManager.findFragmentById(binding.rltMapa.id) as SupportMapFragment
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val gMap = mapFragment.awaitMap()
+
+            mapHelper.attachMap(gMap)
+            gMap.isMyLocationEnabled = true
+
+            launchGpsRastreo()
+        }*/
+
+        //bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
+        //bind.rcvClientes.adapter = adapter
+
+        //bind.searchView.setOnQueryTextListener(this)
 
         /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
             row = it
@@ -123,22 +215,25 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.O
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.oldvendedor_menu, menu)
+        menuInflater.inflate(R.menu.n_cartera_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.voz -> consume { searchVoice() }
+        R.id.descargar -> consume {  }
+        R.id.voz -> consume {  }
+        R.id.cambiar -> consume { toggleVista() }
+        else -> false
+        /*R.id.voz -> consume { searchVoice() }
         R.id.descargar -> consume { OldDVendedor().show(parentFragmentManager, "dialog") }
         R.id.encuesta -> consume { OldDListaEncuesta().show(parentFragmentManager, "dialog") }
         R.id.mapa -> consume { }//findNavController().navigate(OldFVendedorDirections.actionFVendedorToFMapa(null))}
-
-        else -> false
+        else -> false*/
     }
 
     override fun onQueryTextSubmit(p0: String) = false
 
     override fun onQueryTextChange(p0: String): Boolean {
-        val search = mutableListOf<RowCliente>()
+        val search = mutableListOf<FlowCliente>()
         row.forEach { i ->
             if ((i.id.toString().contains(p0.lowercase())) ||
                 (i.nombre.lowercase().contains(p0.lowercase()))
@@ -153,7 +248,7 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.O
         return false
     }
 
-    override fun onClienteClick(cliente: RowCliente) {
+    /*override fun onClienteClick(cliente: RowCliente) {
         /*viewLifecycleOwner.lifecycleScope.launch {
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(0, cliente)
@@ -165,14 +260,43 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.O
             clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
             navigateToDialog(1, cliente)
         }*/
+    }*/
+
+    override fun onClick(cliente: FlowCliente) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onLongClick(cliente: FlowCliente) {
+        TODO("Not yet implemented")
+    }
+
+    private fun launchGpsRastreo() {
+        gpsTracker.startTracking(
+            id = MODO_RAPIDO,
+            interval = GPSConstants.GPS_INTERVALO_NORMAL,
+            fastest = GPSConstants.GPS_INTERVALO_RAPIDO,
+            minDistance = GPSConstants.IGNORAR_METROS,
+            onLocation = { location ->
+                Log.d(_tag, "📍 Posición fragment: $location")
+
+                getLocation = location
+                if (!movedOnce) {
+                    mapHelper.moveCamera(location)
+                    movedOnce = true
+                }
+            },
+            onError = { error ->
+                Log.e(_tag, "Error de GPS rápido: $error")
+            }
+        )
     }
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                val codigo =
-                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-                bind.searchView.setQuery(codigo, true)
+                val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
+                //identificar si esta el mapa o la lista activos
+                //binding.searchview.setQuery(codigo,true)
             } else {
                 snack("Error procesando codigo")
             }
@@ -195,7 +319,7 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.O
         }
     }
 
-    private fun launchDownload(codigo: String, fecha: String) {
+    /*private fun launchDownload(codigo: String, fecha: String) {
         progress("Descargando clientes y rutas")
 
         //viewmodel.cleanDataVendedor()
@@ -210,39 +334,134 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapter.O
         rutas.put("empleado", codigo)
         rutas.put("empresa", CONF.empresa)
         //viewmodel.fetchRutas(rutas.toReqBody())
-    }
+    }*/
 
-    private fun setupList(list: List<RowCliente>) {
+    /*private fun setupList(list: List<RowCliente>) {
         if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
-            bind.rcvClientes.setUI("v", false)
+            //ind.rcvClientes.setUI("v", false)
         } else {
             bind.emptyContainer.root.setUI("v", false)
-            bind.rcvClientes.setUI("v", true)
+            //bind.rcvClientes.setUI("v", true)
             adapter.mDiffer.submitList(list)
+        }
+    }*/
+
+    override fun onResume() {
+        super.onResume()
+        if (vistaActual == Vista.MAPA) {
+            startGps()
         }
     }
 
-    private fun navigateToDialog(dialog: Int, cliente: RowCliente) {
-        if (clienteBaja) {
-            snack("Cliente con baja, revise lista de bajas")
-        } else {
-            val item = HeadCliente(cliente.id, cliente.nombre, cliente.ruta)
-            /*when (dialog) {
-                0 -> viewmodel.checkingEncuesta {
-                    if (it) {
-                        findNavController().navigate(
-                            OldFVendedorDirections.actionFVendedorToBDObservacion(item)
-                        )
-                    } else {
-                        snack("Debe elegir una encuesta primero")
-                    }
-                }
+    override fun onPause() {
+        if (vistaActual == Vista.MAPA) {
+            stopGps()
+        }
+        super.onPause()
+    }
 
-                1 -> findNavController().navigate(
-                    OldFVendedorDirections.actionFVendedorToDClienteAux(item)
+    private fun toggleVista() {
+        val siguiente = when (vistaActual) {
+            Vista.LISTA -> Vista.MAPA
+            Vista.MAPA -> Vista.LISTA
+        }
+        cambiarVista(siguiente)
+    }
+
+    private fun cambiarVista(nuevaVista: Vista) {
+        if (vistaActual == nuevaVista) return
+
+        vistaActual = nuevaVista
+
+        when (nuevaVista) {
+            Vista.LISTA -> mostrarLista()
+            Vista.MAPA -> mostrarMapa()
+        }
+    }
+
+    private fun mostrarLista() {
+        binding.rcvCartera.setUI("v", true)
+        binding.rltMapa.setUI("v", false)
+
+        stopGps()
+    }
+
+    private fun mostrarMapa() {
+        binding.rltMapa.setUI("v", true)
+        binding.rcvCartera.setUI("v", false)
+
+        initMapaSiEsNecesario()
+        startGps()
+    }
+
+    private fun startGps() {
+        mapHelper.enableMyLocation()
+        launchGpsRastreo()
+    }
+
+    private fun stopGps() {
+        gpsTracker.stopTracking(MODO_RAPIDO)
+        mapHelper.disableMyLocation()
+    }
+
+    private fun initMapaSiEsNecesario() {
+        if (mapaInicializado) return
+
+        val mapFragment =
+            childFragmentManager.findFragmentById(binding.rltMapa.id) as SupportMapFragment
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val gMap = mapFragment.awaitMap()
+            mapHelper.attachMap(gMap)
+            mapaInicializado = true
+        }
+    }
+
+    private fun mostrarDialog(dialogType: AppDialogType) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Cerrar diálogo previo si existe
+            InstanciaDialog.cerrarDialogActual()
+
+            // Crear el dialog
+            val dialog = buildMaterialDialog(requireContext(), dialogType)
+
+            // Mostrarlo
+            dialog.show()
+
+            // Guardar referencia
+            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+        }
+    }
+
+    private fun stateSuccess(clientes: JsonCliente?) {
+        when {
+            clientes == null -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "No se obtuvo respuesta del servidor"
+                    )
                 )
-            }*/
+            }
+
+            clientes.jobl.isEmpty() -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_ERROR,
+                        mensaje = "No se encontraron clientes"
+                    )
+                )
+            }
+
+            else -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_SUCCESS,
+                        mensaje = "Se descargaron ${clientes.jobl.size} clientes correctamente"
+                    )
+                )
+            }
         }
     }
 }

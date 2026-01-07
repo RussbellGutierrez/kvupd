@@ -1,5 +1,9 @@
 package com.upd.kvupd.data.model
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.upd.kvupd.utils.FechaHoraUtil
+
 fun Configuracion.asTConfig(): TableConfiguracion =
     TableConfiguracion(
         this.codigo,
@@ -18,6 +22,7 @@ fun Configuracion.asTConfig(): TableConfiguracion =
         this.tipo
     )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Cliente.asTCliente(): TableCliente =
     TableCliente(
         this.codigo,
@@ -29,7 +34,7 @@ fun Cliente.asTCliente(): TableCliente =
         this.latitud,
         this.telefono,
         this.negocio,
-        this.fecha,
+        FechaHoraUtil.castApi(this.fecha),
         this.secuencia,
         this.numcuit,
         this.encuestas,

@@ -233,7 +233,7 @@ data class TableEstado(
     val atendido: Int? = null,    // 0 = no atendido, 1 = atendido
 
     // ----------- Datos de BAJA (antes en TableBajaEstado) -----------
-    val procede: Int? = null,         // 1 = procede, 0 = no procede
+    val bajaestado: Int? = null,         // 0 = anulado, 1 = pendiente, 2 = confirmado, 3 = no procede, 4 = registrado
     val observacion: String? = null,  // Comentarios u observaciones
     val fechaconf: String? = null,    // Fecha de confirmación (si aplica)
 

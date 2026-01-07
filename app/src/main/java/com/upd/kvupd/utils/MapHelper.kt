@@ -22,6 +22,7 @@ class MapHelper(
 ) {
 
     private var googleMap: GoogleMap? = null
+    private var myLocationEnabled = false
 
     private val markers = mutableListOf<Marker>()
     private val polygons = mutableListOf<Polygon>()
@@ -42,6 +43,30 @@ class MapHelper(
         // procesar movimientos de cámara pendientes
         pendingCamera.forEach { it.invoke() }
         pendingCamera.clear()
+    }
+
+    fun enableMyLocation() {
+        val map = googleMap ?: return
+        if (myLocationEnabled) return
+
+        try {
+            map.isMyLocationEnabled = true
+            myLocationEnabled = true
+        } catch (e: SecurityException) {
+            // permiso no otorgado
+        }
+    }
+
+    fun disableMyLocation() {
+        val map = googleMap ?: return
+        if (!myLocationEnabled) return
+
+        try {
+            map.isMyLocationEnabled = false
+            myLocationEnabled = false
+        } catch (e: SecurityException) {
+            // ignore
+        }
     }
 
     // -------- MARKERS -------- //

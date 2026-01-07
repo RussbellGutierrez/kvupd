@@ -27,7 +27,7 @@ class ClientesWorker @AssistedInject constructor(
             val config = roomFunctions.queryConfiguracion()
                 ?: return Result.failure(workDataOf("error" to "No se encontro configuracion"))
 
-            val json = jsobFunctions.jsonObjectClientes(config, null)
+            val json = jsobFunctions.jsonObjectClientes(config)
             serverFunctions.apiDownloadCliente(json).collect { resultado ->
                 when (resultado) {
                     is ResultadoApi.Loading -> {

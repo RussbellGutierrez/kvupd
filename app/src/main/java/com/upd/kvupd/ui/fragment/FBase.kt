@@ -69,7 +69,7 @@ class FBase : Fragment(), MenuProvider {
                 findNavController().navigate(R.id.action_FBase_to_FRastreo)
             }
             btnCartera.setOnClickListener {
-                //
+                findNavController().navigate(R.id.action_FBase_to_FCartera)
             }
             //btnCliente.setUI("v", true)
             //btnReporte.setUI("v", true)
@@ -77,6 +77,7 @@ class FBase : Fragment(), MenuProvider {
             //btnAlta.setUI("v", true)
             //btnBaja.setUI("v", true)
             //btnServidor.setUI("v", true)
+            //agregar un fragment para enviar solicitudes de promociones
         }
 
         /*viewmodel.startUp.observe(viewLifecycleOwner) {

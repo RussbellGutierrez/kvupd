@@ -22,13 +22,12 @@ object QueryConstant {
     const val GET_ALTAS = "SELECT * FROM TableAlta ORDER BY fecha DESC"
 
     const val GET_RECYCLER_CLIENTE = """
-        SELECT c.idcliente, c.nomcli, c.empleado, IFNULL(v.descripcion,'null') as descripcion, 
-               c.fecha, c.encuestas, IFNULL(r.encuesta,0) as resuelto, c.secuencia, c.ruta 
+        SELECT c.idcliente as cliente, c.nomcli, c.empleado as vendedor, IFNULL(v.descripcion,'null') as nomemp, 
+               c.secuencia, c.ruta, 0 as baja, c.fecha 
         FROM TableCliente c
         LEFT JOIN TableVendedor v on c.empleado=v.codigo 
-        LEFT JOIN TableRespuesta r on c.idcliente=r.cliente 
-        GROUP BY c.idcliente 
-        ORDER BY DATE(substr(c.fecha,7,4)||substr(c.fecha,4,2)||substr(c.fecha,1,2)) ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC
+        GROUP BY c.idcliente, c.nomcli, c.empleado, v.descripcion, c.secuencia, c.ruta, c.fecha  
+        ORDER BY c.fecha ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC
     """
 
     ////  SERVER

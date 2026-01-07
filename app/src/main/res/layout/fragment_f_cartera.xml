@@ -44,9 +44,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcv_cartera"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:visibility="gone" />
+            android:layout_height="0dp"
+            android:layout_marginVertical="10dp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            tools:listitem="@layout/flow_row_cliente" />
 
     </LinearLayout>
 
@@ -61,6 +63,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map_cartera"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
@@ -71,15 +74,31 @@
             android:elevation="3dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_lista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fab_centrar"
+                android:layout_alignStart="@+id/fab_ubicacion"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/lista"
+                app:backgroundTint="@color/white"
+                app:elevation="1dp"
+                app:fabSize="mini"
+                app:rippleColor="@color/lightgray"
+                app:tint="@color/primaryDarkColor"
+                app:useCompatPadding="true" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_centrar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/fab_ubicacion"
                 android:layout_alignStart="@+id/fab_ubicacion"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:src="@drawable/centrar"
                 app:backgroundTint="@color/white"
                 app:elevation="1dp"
+                app:fabSize="mini"
                 app:rippleColor="@color/lightgray"
                 app:tint="@color/primaryDarkColor"
                 app:useCompatPadding="true" />
@@ -90,10 +109,12 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
+                android:layout_marginEnd="10dp"
                 android:layout_marginBottom="60dp"
                 android:src="@drawable/gps"
                 app:backgroundTint="@color/white"
                 app:elevation="1dp"
+                app:fabSize="mini"
                 app:rippleColor="@color/lightgray"
                 app:tint="@color/primaryDarkColor"
                 app:useCompatPadding="true" />

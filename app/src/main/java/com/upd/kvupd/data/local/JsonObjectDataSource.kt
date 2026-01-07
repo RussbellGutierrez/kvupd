@@ -48,9 +48,9 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
-    fun jsonRequestClientes(dato: TableConfiguracion, fecha: String? = null): RequestBody {
+    fun jsonRequestClientes(dato: TableConfiguracion, vendedor: Int? = null, fecha: String? = null): RequestBody {
         val json = JSONObject().apply {
-            put("empleado", dato.codigo)
+            put("empleado", vendedor ?: dato.codigo)
             put("empresa", dato.empresa)
             put("fecha", fecha ?: dato.fecha)
         }

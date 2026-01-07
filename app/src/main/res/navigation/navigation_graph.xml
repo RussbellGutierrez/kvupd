@@ -34,6 +34,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_FBase_to_FCartera"
+            app:destination="@id/FCartera"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
     </fragment>
 
@@ -54,5 +61,11 @@
         android:name="com.upd.kvupd.ui.fragment.FRastreo"
         android:label="Pedimap"
         tools:layout="@layout/fragment_f_rastreo"/>
+
+    <fragment
+        android:id="@+id/FCartera"
+        android:name="com.upd.kvupd.ui.fragment.FCartera"
+        android:label="Cartera"
+        tools:layout="@layout/fragment_f_cartera"/>
 
 </navigation>

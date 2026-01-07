@@ -1,5 +1,7 @@
 package com.upd.kvupd.domain
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.RoomCrudSource
 import com.upd.kvupd.data.local.RoomQuerySource
 import com.upd.kvupd.data.model.BajaSupervisor
@@ -36,6 +38,7 @@ class RoomImplementation @Inject constructor(
         crudSource.apiGuardarConfiguracion(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun apiSaveClientes(item: List<Cliente>) {
         crudSource.apiGuardarClientes(item)
     }

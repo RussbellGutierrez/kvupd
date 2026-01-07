@@ -1,5 +1,7 @@
 package com.upd.kvupd.data.local
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.model.BajaSupervisor
 import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
@@ -33,6 +35,7 @@ class RoomCrudSource @Inject constructor(
         crud.insertConfiguracion(item.map { it.asTConfig() })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun apiGuardarClientes(item: List<Cliente>) {
         crud.insertClientes(item.map { it.asTCliente() })
     }

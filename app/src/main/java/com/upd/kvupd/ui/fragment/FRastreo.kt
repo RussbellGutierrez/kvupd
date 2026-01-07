@@ -69,6 +69,7 @@ class FRastreo : Fragment(), MenuProvider {
         super.onDestroyView()
         gpsTracker.stopTracking(MODO_RAPIDO)
 
+        mapHelper.disableMyLocation()
         mapHelper.clearMarkers()
         mapHelper.clearPolygons()
     }
@@ -141,7 +142,7 @@ class FRastreo : Fragment(), MenuProvider {
             val gMap = mapFragment.awaitMap()
 
             mapHelper.attachMap(gMap)
-            gMap.isMyLocationEnabled = true
+            mapHelper.enableMyLocation()
 
             launchGpsRastreo()
             apiViewmodel.downloadPedimap()

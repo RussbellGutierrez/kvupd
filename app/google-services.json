@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "969126483427",
-    "firebase_url": "https://kservidor-7dab7-default-rtdb.firebaseio.com",
-    "project_id": "kservidor-7dab7",
-    "storage_bucket": "kservidor-7dab7.firebasestorage.app"
+    "project_number": "974024668432",
+    "project_id": "kservidor-7bd93",
+    "storage_bucket": "kservidor-7bd93.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:969126483427:android:3178b8f6d7d37752de3cd6",
+        "mobilesdk_app_id": "1:974024668432:android:9e4726ece8aab38ce6a195",
         "android_client_info": {
           "package_name": "com.upd.kvupd"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyABgkThL0mUreE-sGHdsGIvL54M7803x8s"
+          "current_key": "AIzaSyDtnZ1UajNNPm3kwmmbxg_wPlaTJ0idqFk"
         }
       ],
       "services": {

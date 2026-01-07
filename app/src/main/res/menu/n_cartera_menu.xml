@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/descargar"
+        android:icon="@drawable/descargar_cliente"
+        android:title="Descargar cliente"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/voz"
+        android:icon="@drawable/microfono"
+        android:title="Busqueda por voz"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/cambiar"
+        android:icon="@drawable/intercambiar"
+        android:title="Cambiar mapa/lista"
+        app:showAsAction="always" />
+
+</menu>
