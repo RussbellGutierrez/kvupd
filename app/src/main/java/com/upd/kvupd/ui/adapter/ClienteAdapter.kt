@@ -42,8 +42,8 @@ class ClienteAdapter @AssistedInject constructor(
 
         @SuppressLint("SetTextI18n")
         fun bind(item: FlowCliente, hoy: String, listener: Listener) {
-            bind.txtVendedor.text = "${item.vendedor}-${item.nomemp}"
-            bind.txtCliente.text = "${item.cliente}-${item.nomcli}"
+            bind.txtVendedor.text = item.nomemp
+            bind.txtCliente.text = "${item.cliente} - ${item.nomcli}"
             bind.txtFecha.text = item.fecha
 
             val color = if (item.fecha == hoy)

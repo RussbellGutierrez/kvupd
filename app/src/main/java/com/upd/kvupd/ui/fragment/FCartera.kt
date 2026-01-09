@@ -15,9 +15,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -27,18 +27,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.SupportMapFragment
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowCliente
-import com.upd.kvupd.data.model.HeadCliente
 import com.upd.kvupd.data.model.JsonCliente
-import com.upd.kvupd.data.model.JsonPedimap
-import com.upd.kvupd.data.model.RowCliente
+import com.upd.kvupd.data.model.TableVendedor
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
-import com.upd.kvupd.databinding.FragmentFRastreoBinding
-import com.upd.kvupd.databinding.FragmentFVendedorBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.adapter.ClienteAdapterFactory
-import com.upd.kvupd.ui.adapter.OldClienteAdapter
-import com.upd.kvupd.ui.dialog.OldDListaEncuesta
-import com.upd.kvupd.ui.dialog.OldDVendedor
+import com.upd.kvupd.ui.dialog.CarteraVendedor
 import com.upd.kvupd.ui.fragment.enumClass.Vista
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
@@ -47,32 +41,25 @@ import com.upd.kvupd.utils.GPSConstants
 import com.upd.kvupd.utils.GPSConstants.MODO_RAPIDO
 import com.upd.kvupd.utils.GpsTracker
 import com.upd.kvupd.utils.InstanciaDialog
-import com.upd.kvupd.utils.MaterialDialogTexto
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldConstant.PROCEDE
-import com.upd.kvupd.utils.OldInterface.clienteListener
 import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
-import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.Listener,
+class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     MenuProvider {
 
     private val apiViewModel by activityViewModels<APIViewModel>()
@@ -82,6 +69,7 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
     private lateinit var mapHelper: MapHelper
     private var vistaActual: Vista = Vista.LISTA
     private var getLocation: Location? = null
+    private val vendedorList = mutableListOf<TableVendedor>()
     private var movedOnce = false
     private var mapaInicializado = false
     private val _tag by lazy { FCartera::class.java.simpleName }
@@ -119,7 +107,9 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
             hoy = FechaHoraUtil.dia()
         )
 
+        binding.rcvCartera.layoutManager = LinearLayoutManager(requireContext())
         binding.rcvCartera.adapter = adapter
+        binding.searchview.setOnQueryTextListener(this)
 
         binding.fabLista.setOnClickListener {
             //
@@ -135,7 +125,7 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
             when (resultado) {
                 is ResultadoApi.Loading -> mostrarDialog(
                     AppDialogType.Progreso(
-                        mensaje = "Obteniendo posiciones de pedimap"
+                        mensaje = "Obteniendo lista de clientes"
                     )
                 )
 
@@ -157,6 +147,14 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
                     )
                 )
             }
+        }
+
+        collectFlow(apiViewModel.flowClientesFiltrados) collect@{ lista ->
+            renderLista(lista)
+        }
+
+        collectFlow(apiViewModel.flowVendedores) collect@{ lista ->
+            vendedorList.addAll(lista)
         }
 
         /*val mapFragment =
@@ -218,33 +216,18 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
         menuInflater.inflate(R.menu.n_cartera_menu, menu)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.descargar -> consume {  }
-        R.id.voz -> consume {  }
+        R.id.descargar -> consume { carteraPorVendedor() }
+        R.id.voz -> consume { searchVoice() }
         R.id.cambiar -> consume { toggleVista() }
         else -> false
-        /*R.id.voz -> consume { searchVoice() }
-        R.id.descargar -> consume { OldDVendedor().show(parentFragmentManager, "dialog") }
-        R.id.encuesta -> consume { OldDListaEncuesta().show(parentFragmentManager, "dialog") }
-        R.id.mapa -> consume { }//findNavController().navigate(OldFVendedorDirections.actionFVendedorToFMapa(null))}
-        else -> false*/
     }
 
     override fun onQueryTextSubmit(p0: String) = false
 
     override fun onQueryTextChange(p0: String): Boolean {
-        val search = mutableListOf<FlowCliente>()
-        row.forEach { i ->
-            if ((i.id.toString().contains(p0.lowercase())) ||
-                (i.nombre.lowercase().contains(p0.lowercase()))
-            )
-                search.add(i)
-        }
-        if (search.isEmpty()) {
-            snack("No encontramos clientes")
-        } else {
-            adapter.mDiffer.submitList(search)
-        }
+        apiViewModel.setQuery(p0)
         return false
     }
 
@@ -268,6 +251,26 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
 
     override fun onLongClick(cliente: FlowCliente) {
         TODO("Not yet implemented")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun carteraPorVendedor() {
+        if (vendedorList.isEmpty()) {
+            snack("No hay vendedores disponibles")
+            return
+        }
+
+        val lista = vendedorList.map { it.descripcion }
+
+        CarteraVendedor(
+            context = requireContext(),
+            vendedores = lista
+        ) { codigo, fecha ->
+            apiViewModel.downloadClientes(
+                vendedor = codigo.toInt(),
+                fecha = fecha
+            )
+        }.show()
     }
 
     private fun launchGpsRastreo() {
@@ -294,9 +297,9 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                val codigo = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-                //identificar si esta el mapa o la lista activos
-                //binding.searchview.setQuery(codigo,true)
+                val codigo =
+                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
+                buscarClienteVoz(codigo)
             } else {
                 snack("Error procesando codigo")
             }
@@ -336,17 +339,6 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
         //viewmodel.fetchRutas(rutas.toReqBody())
     }*/
 
-    /*private fun setupList(list: List<RowCliente>) {
-        if (list.isEmpty()) {
-            bind.emptyContainer.root.setUI("v", true)
-            //ind.rcvClientes.setUI("v", false)
-        } else {
-            bind.emptyContainer.root.setUI("v", false)
-            //bind.rcvClientes.setUI("v", true)
-            adapter.mDiffer.submitList(list)
-        }
-    }*/
-
     override fun onResume() {
         super.onResume()
         if (vistaActual == Vista.MAPA) {
@@ -359,6 +351,22 @@ class FCartera : Fragment(), SearchView.OnQueryTextListener, ClienteAdapter.List
             stopGps()
         }
         super.onPause()
+    }
+
+    private fun renderLista(lista: List<FlowCliente>) {
+        val hayDatos = lista.isNotEmpty()
+
+        binding.rcvCartera.setUI("v", hayDatos)
+        binding.emptyContainer.root.setUI("v", !hayDatos)
+
+        adapter.submitList(lista)
+    }
+
+    private fun buscarClienteVoz(codigo: String) {
+        when (vistaActual) {
+            Vista.LISTA -> binding.searchview.setQuery(codigo, true)
+            Vista.MAPA -> {}
+        }
     }
 
     private fun toggleVista() {

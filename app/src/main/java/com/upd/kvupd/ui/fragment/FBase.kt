@@ -211,12 +211,6 @@ class FBase : Fragment(), MenuProvider {
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        /*R.id.sincronizar -> consume { sinchroData() }
-        R.id.ajustes -> consume { findNavController().navigate(R.id.action_FBase_to_BDLogin) }
-        R.id.encuesta -> consume { launchEncuesta() }
-        R.id.incidencia -> consume { findNavController().navigate(R.id.action_FBase_to_FIncidencia) }
-        R.id.total -> consume { reSincAllData() }
-        R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }*/
         R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
         R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
         R.id.encuesta -> consume { }

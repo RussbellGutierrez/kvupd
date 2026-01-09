@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "26e920ef676e2e4586f2c59f713f85fb",
+    "identityHash": "35ae76ec501dc37c0d48a3d5b1f2e680",
     "entities": [
       {
         "tableName": "TableConfiguracion",
@@ -502,7 +502,7 @@
       },
       {
         "tableName": "TableEstado",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `fecha` TEXT NOT NULL, `ruta` INTEGER, `atendido` INTEGER, `procede` INTEGER, `observacion` TEXT, `fechaconf` TEXT, `longitud` REAL, `latitud` REAL, `precision` REAL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `fecha`, `tipo`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `fecha` TEXT NOT NULL, `ruta` INTEGER, `atendido` INTEGER, `bajaestado` INTEGER, `observacion` TEXT, `fechaconf` TEXT, `longitud` REAL, `latitud` REAL, `precision` REAL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `fecha`, `tipo`))",
         "fields": [
           {
             "fieldPath": "cliente",
@@ -539,8 +539,8 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "procede",
-            "columnName": "procede",
+            "fieldPath": "bajaestado",
+            "columnName": "bajaestado",
             "affinity": "INTEGER"
           },
           {
@@ -1160,7 +1160,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '26e920ef676e2e4586f2c59f713f85fb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '35ae76ec501dc37c0d48a3d5b1f2e680')"
     ]
   }
 }

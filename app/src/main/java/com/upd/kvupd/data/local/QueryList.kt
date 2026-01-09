@@ -43,9 +43,6 @@ interface QueryList {
     @Query(GET_CLIENTES)
     suspend fun getClientes(): List<TableCliente>
 
-    @Query(GET_VENDEDORES)
-    suspend fun getVendedores(): List<TableVendedor>
-
     @Query(GET_DISTRITOS)
     suspend fun getDistritos(): List<TableDistrito>
 
@@ -73,6 +70,9 @@ interface QueryList {
 
     @Query(GET_RUTAS)
     fun flowRutasPolygon(): Flow<List<TableRuta>>
+
+    @Query(GET_VENDEDORES)
+    fun flowVendedores(): Flow<List<TableVendedor>>
 
     ////  SERVER
     @Query(SEGUIMIENTO_SERVER)

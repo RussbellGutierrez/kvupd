@@ -183,10 +183,6 @@ class RoomImplementation @Inject constructor(
         return querySource.roomClientes()
     }
 
-    override suspend fun queryVendedores(): List<TableVendedor> {
-        return querySource.roomVendedores()
-    }
-
     override suspend fun queryDistritos(): List<TableDistrito> {
         return querySource.roomDistritos()
     }
@@ -221,6 +217,10 @@ class RoomImplementation @Inject constructor(
 
     override fun listFlowPolygon(): Flow<List<TableRuta>> {
         return querySource.flowRutasPolygon()
+    }
+
+    override fun listFlowVendedores(): Flow<List<TableVendedor>> {
+        return querySource.flowVendedores()
     }
 
     override suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento> {

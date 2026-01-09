@@ -72,7 +72,6 @@ interface RoomFunctions {
     ///     Room Query
     suspend fun queryConfiguracion(): TableConfiguracion?
     suspend fun queryClientes(): List<TableCliente>
-    suspend fun queryVendedores(): List<TableVendedor>
     suspend fun queryDistritos(): List<TableDistrito>
     suspend fun queryNegocios(): List<TableNegocio>
     suspend fun queryRutas(): List<TableRuta>
@@ -84,6 +83,7 @@ interface RoomFunctions {
     fun listFlowClientes(): Flow<List<FlowCliente>>
     fun listFlowAltas(): Flow<List<TableAlta>>
     fun listFlowPolygon(): Flow<List<TableRuta>>
+    fun listFlowVendedores(): Flow<List<TableVendedor>>
 
     ///     Room Server
     suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento>

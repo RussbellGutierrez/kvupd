@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.data.model.RowCliente
-import com.upd.kvupd.databinding.RowClienteBinding
 import com.upd.kvupd.domain.OldRepository
 import com.upd.kvupd.utils.OldBaseViewHolder
 import com.upd.kvupd.utils.OldInterface.clienteListener
@@ -62,22 +61,29 @@ class OldClienteAdapter @Inject constructor(
 
     var mDiffer: AsyncListDiffer<RowCliente> = AsyncListDiffer(this, diffCallback)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+    /*override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
         val bind = RowClienteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
-    }
+    }*/
 
-    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+    /*override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(mDiffer.currentList[position])
         }
-    }
+    }*/
 
     override fun getItemCount() = mDiffer.currentList.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
+    }
 
     override fun getItemViewType(position: Int) = position
 
-    private inner class ViewHolder(
+    /*private inner class ViewHolder(
         private val bind: RowClienteBinding
     ) : OldBaseViewHolder<RowCliente>(bind.root) {
 
@@ -152,7 +158,7 @@ class OldClienteAdapter @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
     interface OnClienteListener {
         fun onClienteClick(cliente: RowCliente)

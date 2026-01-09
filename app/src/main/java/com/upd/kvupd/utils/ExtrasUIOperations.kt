@@ -3,10 +3,12 @@ package com.upd.kvupd.utils
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.DialogFragment.STYLE_NO_FRAME
 import androidx.fragment.app.Fragment
@@ -122,6 +124,7 @@ fun DialogFragment.setResume(isCompact: Boolean = true) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun String.toLocalTime(): LocalTime = LocalTime.parse(this)
 
 fun DialogFragment.observeWorkersById(

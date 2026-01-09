@@ -27,9 +27,6 @@ class RoomQuerySource @Inject constructor(
     suspend fun roomClientes(): List<TableCliente> =
         query.getClientes()
 
-    suspend fun roomVendedores(): List<TableVendedor> =
-        query.getVendedores()
-
     suspend fun roomDistritos(): List<TableDistrito> =
         query.getDistritos()
 
@@ -57,6 +54,9 @@ class RoomQuerySource @Inject constructor(
 
     fun flowRutasPolygon(): Flow<List<TableRuta>> =
         query.flowRutasPolygon()
+
+    fun flowVendedores(): Flow<List<TableVendedor>> =
+        query.flowVendedores()
 
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =
