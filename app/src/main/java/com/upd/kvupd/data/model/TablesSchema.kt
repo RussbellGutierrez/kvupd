@@ -119,7 +119,7 @@ data class TableSeguimiento(
 
 @Entity(primaryKeys = ["cliente"])
 data class TableBaja(
-    val cliente: Int,
+    val cliente: String,
     val nombre: String,
     val motivo: Int,
     val comentario: String,
@@ -135,7 +135,7 @@ data class TableBaja(
 
 @Entity(primaryKeys = ["idaux"])
 data class TableAlta(
-    val idaux: Int,             // Codigo usuario + dia + hora
+    val idaux: String,             // Codigo usuario + dia + hora
     val empleado: Int,          // empleado que generó el alta
     val fecha: String,
     val longitud: Double,

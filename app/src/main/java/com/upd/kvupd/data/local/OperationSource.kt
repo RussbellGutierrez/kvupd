@@ -6,12 +6,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.work.Constraints
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.receiver.GpsReceiver
@@ -23,10 +20,12 @@ import com.upd.kvupd.application.work.EmpleadosWorker
 import com.upd.kvupd.application.work.EncuestasWorker
 import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
+import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
+import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.MODO_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_FIN
@@ -63,32 +62,32 @@ class OperationSource @Inject constructor(
     fun lanzarWorkersRestantes(usuarioTipo: String): List<UUID> {
         val tipo = TipoUsuario.inicialTipo(usuarioTipo)
 
-        val lista: List<OneTimeWorkRequest> = when (tipo) {
-            TipoUsuario.Vendedor -> listOf(
-                workerClientes(),
-                workerDistritos(),
-                workerNegocios(),
-                workerRutas()
-            )
+        val comunes = listOf(
+            workerDistritos(),
+            workerNegocios(),
+            workerRutas()
+        )
 
-            TipoUsuario.Supervisor -> listOf(
-                workerEmpleados(),
-                workerDistritos(),
-                workerNegocios(),
-                workerRutas()
-            )
+        val especificos = when (tipo) {
+            TipoUsuario.Vendedor -> listOf(workerClientes())
+            TipoUsuario.Supervisor -> listOf(workerEmpleados())
+            TipoUsuario.JefeVentas -> emptyList()
         }
 
+        val lista = especificos + comunes
         val encuestas = workerEncuestas()
 
-        // 🔹 Encola la cadena: (clientes/empleados + distritos + negocios + rutas) → encuestas
-        workManager
-            .beginWith(lista)
-            .then(encuestas)
-            .enqueue()
+        return if (lista.isEmpty()) {
+            workManager.enqueue(encuestas)
+            listOf(encuestas.id)
+        } else {
+            workManager
+                .beginWith(lista)
+                .then(encuestas)
+                .enqueue()
 
-        // 🔹 Devuelve todos los IDs de los workers recién encolados
-        return lista.map { it.id } + encuestas.id
+            lista.map { it.id } + encuestas.id
+        }
     }
 
     private fun workerConfiguracion() =
@@ -227,5 +226,10 @@ class OperationSource @Inject constructor(
             pendingIntent.cancel()
             Log.i("AlarmasGPS", "❌ Alarma cancelada ($tipo)")
         }
+    }
+
+    fun sesionActual(config: TableConfiguracion): Boolean {
+        val fecha = config.fecha
+        return FechaHoraUtil.esHoy(fecha)
     }
 }

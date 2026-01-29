@@ -37,7 +37,7 @@ import com.upd.kvupd.utils.checkEmail
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.hideprogress
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -419,86 +419,86 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         val secuencia = bind.edtSecuencia.text.toString().trim()
 
         when {
-            tipo == "PJ" && razon == "" -> showDialog("Advertencia", "Ingrese una razon social") {}
-            tipo == "PN" && (paterno == "" || materno == "" || nombre == "") -> showDialog(
+            tipo == "PJ" && razon == "" -> oldShowDialog("Advertencia", "Ingrese una razon social") {}
+            tipo == "PN" && (paterno == "" || materno == "" || nombre == "") -> oldShowDialog(
                 "Advertencia",
                 "Ingrese nombre y apellidos del cliente"
             ) {}
 
-            tipo == "PJ" && ruc == "" -> showDialog(
+            tipo == "PJ" && ruc == "" -> oldShowDialog(
                 "Advertencia",
                 "Debe ingresar el RUC de la empresa"
             ) {}
 
-            tipo == "PN" && ruc == "" && dnice == "" -> showDialog(
+            tipo == "PN" && ruc == "" && dnice == "" -> oldShowDialog(
                 "Advertencia", "Debe ingresar un documento"
             ) {}
 
-            movil1 == "" && movil2 == "" -> showDialog(
+            movil1 == "" && movil2 == "" -> oldShowDialog(
                 "Advertencia",
                 "Ingrese un numero de celular"
             ) {}
 
-            movil1 != "" && !movil1.startsWith("9") -> showDialog(
+            movil1 != "" && !movil1.startsWith("9") -> oldShowDialog(
                 "Advertencia",
                 "Los numero de celular deben comenzar con 9"
             ) {}
 
-            movil2 != "" && !movil2.startsWith("9") -> showDialog(
+            movil2 != "" && !movil2.startsWith("9") -> oldShowDialog(
                 "Advertencia",
                 "Los numero de celular deben comenzar con 9"
             ) {}
 
-            movil1 != "" && movil1.length != 9 -> showDialog(
+            movil1 != "" && movil1.length != 9 -> oldShowDialog(
                 "Advertencia",
                 "Los celulares deben tener 9 digitos"
             ) {}
 
-            movil2 != "" && movil2.length != 9 -> showDialog(
+            movil2 != "" && movil2.length != 9 -> oldShowDialog(
                 "Advertencia",
                 "Los celulares deben tener 9 digitos"
             ) {}
 
-            correo != "" && !correo.checkEmail() -> showDialog(
+            correo != "" && !correo.checkEmail() -> oldShowDialog(
                 "Advertencia",
                 "Ingrese un correo valido"
             ) {}
 
-            tipodoc == "Ninguno" -> showDialog(
+            tipodoc == "Ninguno" -> oldShowDialog(
                 "Advertencia",
                 "Seleccione el documento a registrar"
             ) {}
 
-            tipodoc == "RUC" && ruc == "" -> showDialog(
+            tipodoc == "RUC" && ruc == "" -> oldShowDialog(
                 "Advertencia",
                 "Si eligio RUC, debe completar el campo"
             ) {}
 
-            tipodoc == "DNI" && dnice == "" -> showDialog(
+            tipodoc == "DNI" && dnice == "" -> oldShowDialog(
                 "Advertencia",
                 "Si eligio DNI, debe completar el campo"
             ) {}
 
-            tipodoc == "CE" && dnice == "" -> showDialog(
+            tipodoc == "CE" && dnice == "" -> oldShowDialog(
                 "Advertencia",
                 "Si eligio CARNET EXTRANJERIA, debe completar el campo"
             ) {}
 
-            numero == "" -> showDialog("Advertencia", "Ingrese el numero de calle") {}
-            secuencia == "" -> showDialog("Advertencia", "Ingrese la secuencia") {}
-            numero.toInt() == 0 -> showDialog(
+            numero == "" -> oldShowDialog("Advertencia", "Ingrese el numero de calle") {}
+            secuencia == "" -> oldShowDialog("Advertencia", "Ingrese la secuencia") {}
+            numero.toInt() == 0 -> oldShowDialog(
                 "Advertencia",
                 "Ingrese un numero valido para calle"
             ) {}
 
-            secuencia.toInt() == 0 -> showDialog("Advertencia", "Ingrese una secuencia valida") {}
-            subgiro == "" -> showDialog("Advertencia", "Debe seleccionar un subgiro") {}
-            ruc != "" && !ruc.checkDocumento(tipo) -> showDialog(
+            secuencia.toInt() == 0 -> oldShowDialog("Advertencia", "Ingrese una secuencia valida") {}
+            subgiro == "" -> oldShowDialog("Advertencia", "Debe seleccionar un subgiro") {}
+            ruc != "" && !ruc.checkDocumento(tipo) -> oldShowDialog(
                 "Advertencia",
                 "-RUC -> 11 dígitos\n-RUC jurídico inicia con 20 (solo empresas)\n-RUC natural inicia con 10 o 15 (solo personas naturales)"
             ) {}
 
-            dnice != "" && !dnice.checkDocumento(tipo) -> showDialog(
+            dnice != "" && !dnice.checkDocumento(tipo) -> oldShowDialog(
                 "Advertencia",
                 "-DNI -> 8 dígitos\n-EXTRANJERIA -> 9 dígitos"
             ) {}

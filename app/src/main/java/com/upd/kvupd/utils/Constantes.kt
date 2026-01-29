@@ -99,7 +99,6 @@ object ExtraInfo {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 object FechaHoraUtil {
     private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
@@ -107,6 +106,8 @@ object FechaHoraUtil {
     fun ahora(): String = LocalDateTime.now().format(dateTimeFormatter)
 
     fun dia(): String = LocalDate.now().format(dateFormatter)
+
+    fun esHoy(fecha: String): Boolean = LocalDate.parse(fecha) == LocalDate.now()
 
     fun castApi(fecha: String): String {
         return try {

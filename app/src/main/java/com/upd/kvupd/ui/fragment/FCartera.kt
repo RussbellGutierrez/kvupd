@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
@@ -16,23 +15,28 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.BajaAux
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
+import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableVendedor
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.adapter.ClienteAdapterFactory
 import com.upd.kvupd.ui.dialog.CarteraVendedor
+import com.upd.kvupd.ui.dialog.ListaClientesMapa
 import com.upd.kvupd.ui.fragment.enumClass.Vista
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
@@ -47,8 +51,11 @@ import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.getParcelableCompat
+import com.upd.kvupd.utils.icono
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,7 +76,8 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     private lateinit var mapHelper: MapHelper
     private var vistaActual: Vista = Vista.LISTA
     private var getLocation: Location? = null
-    private val vendedorList = mutableListOf<TableVendedor>()
+    private var clientesCache: List<FlowCliente> = emptyList()
+    private var vendedorList: List<TableVendedor> = emptyList()
     private var movedOnce = false
     private var mapaInicializado = false
     private val _tag by lazy { FCartera::class.java.simpleName }
@@ -83,7 +91,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     override fun onDestroyView() {
         super.onDestroyView()
         stopGps()
-
         mapHelper.clearMarkers()
         mapHelper.clearPolygons()
     }
@@ -93,7 +100,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         savedInstanceState: Bundle?
     ): View = FragmentFCarteraBinding.inflate(inflater, container, false).root
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -102,121 +108,21 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
         mapHelper = MapHelper(layoutInflater)
 
-        adapter = adapterFactory.create(
-            listener = this,
-            hoy = FechaHoraUtil.dia()
-        )
-
+        adapter = adapterFactory.create(listener = this, hoy = FechaHoraUtil.dia())
         binding.rcvCartera.layoutManager = LinearLayoutManager(requireContext())
         binding.rcvCartera.adapter = adapter
         binding.searchview.setOnQueryTextListener(this)
 
-        binding.fabLista.setOnClickListener {
-            //
-        }
-        binding.fabCentrar.setOnClickListener {
-            //
-        }
-        binding.fabUbicacion.setOnClickListener {
-            //
-        }
+        setupButtons()
+        collectFlows()
 
-        collectFlow(apiViewModel.clienteEvent) collect@{ resultado ->
-            when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(
-                    AppDialogType.Progreso(
-                        mensaje = "Obteniendo lista de clientes"
-                    )
-                )
-
-                is ResultadoApi.Exito -> {
-                    stateSuccess(resultado.data)
-                }
-
-                is ResultadoApi.ErrorHttp -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
-                    )
-                )
-
-                is ResultadoApi.Fallo -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Fallo: ${resultado.mensaje}"
-                    )
-                )
-            }
-        }
-
-        collectFlow(apiViewModel.flowClientesFiltrados) collect@{ lista ->
-            renderLista(lista)
-        }
-
-        collectFlow(apiViewModel.flowVendedores) collect@{ lista ->
-            vendedorList.addAll(lista)
-        }
-
-        /*val mapFragment =
-            childFragmentManager.findFragmentById(binding.rltMapa.id) as SupportMapFragment
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val gMap = mapFragment.awaitMap()
-
-            mapHelper.attachMap(gMap)
-            gMap.isMyLocationEnabled = true
-
-            launchGpsRastreo()
-        }*/
-
-        //bind.rcvClientes.layoutManager = LinearLayoutManager(requireContext())
-        //bind.rcvClientes.adapter = adapter
-
-        //bind.searchView.setOnQueryTextListener(this)
-
-        /*viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) {
-            row = it
-            setupList(it)
-        }
-
-        viewmodel.vendedor.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                launchDownload(y[0], y[1])
-            }
-        }
-
-        viewmodel.cliente.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is OldNetworkRetrofit.Success -> showDialog(
-                        "Correcto",
-                        "Clientes descargados correctamente"
-                    ) {}
-
-                    is OldNetworkRetrofit.Error -> showDialog("Error", "Clientes server ${y.message}") {}
-                }
-            }
-        }
-
-        viewmodel.rutas.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is OldNetworkRetrofit.Success -> showDialog(
-                        "Correcto",
-                        "Rutas descargadas correctamente"
-                    ) {}
-
-                    is OldNetworkRetrofit.Error -> showDialog("Error", "Rutas server ${y.message}") {}
-                }
-            }
-        }*/
+        resultBottomDialog()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.n_cartera_menu, menu)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.descargar -> consume { carteraPorVendedor() }
         R.id.voz -> consume { searchVoice() }
@@ -225,182 +131,174 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     }
 
     override fun onQueryTextSubmit(p0: String) = false
-
     override fun onQueryTextChange(p0: String): Boolean {
         apiViewModel.setQuery(p0)
-        return false
+        return true
     }
-
-    /*override fun onClienteClick(cliente: RowCliente) {
-        /*viewLifecycleOwner.lifecycleScope.launch {
-            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
-            navigateToDialog(0, cliente)
-        }*/
-    }
-
-    override fun onPressCliente(cliente: RowCliente) {
-        /*viewLifecycleOwner.lifecycleScope.launch {
-            clienteBaja = viewmodel.isClienteBaja(cliente.id.toString())
-            navigateToDialog(1, cliente)
-        }*/
-    }*/
 
     override fun onClick(cliente: FlowCliente) {
-        TODO("Not yet implemented")
+        mostrarDialog(AppDialogType.Informativo(
+            titulo = "Ubicar en mapa",
+            mensaje = "¿Desea ubicar el cliente en el mapa?",
+            mostrarNegativo = true,
+            onPositive = {
+                toggleVista()
+                mapHelper.focus(cliente)
+            }
+        ))
     }
 
     override fun onLongClick(cliente: FlowCliente) {
-        TODO("Not yet implemented")
+        val action = FCarteraDirections.actionFCarteraToBDBajaCliente(cliente)
+        findNavController().navigate(action)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun carteraPorVendedor() {
-        if (vendedorList.isEmpty()) {
-            snack("No hay vendedores disponibles")
-            return
+    private fun setupButtons() {
+        binding.fabLista.setOnClickListener {
+            focusClienteEnMapa()
         }
 
-        val lista = vendedorList.map { it.descripcion }
-
-        CarteraVendedor(
-            context = requireContext(),
-            vendedores = lista
-        ) { codigo, fecha ->
-            apiViewModel.downloadClientes(
-                vendedor = codigo.toInt(),
-                fecha = fecha
+        binding.fabCentrar.setOnClickListener {
+            mapHelper.centerMarkers(
+                includeLocation = getLocation?.let { LatLng(it.latitude, it.longitude) }
             )
-        }.show()
-    }
+        }
 
-    private fun launchGpsRastreo() {
-        gpsTracker.startTracking(
-            id = MODO_RAPIDO,
-            interval = GPSConstants.GPS_INTERVALO_NORMAL,
-            fastest = GPSConstants.GPS_INTERVALO_RAPIDO,
-            minDistance = GPSConstants.IGNORAR_METROS,
-            onLocation = { location ->
-                Log.d(_tag, "📍 Posición fragment: $location")
+        binding.fabUbicacion.setOnClickListener {
+            getLocation?.let {
+                mapHelper.moveCamera(it)
+            }
+        }
 
-                getLocation = location
-                if (!movedOnce) {
-                    mapHelper.moveCamera(location)
-                    movedOnce = true
+        mapHelper.setOnInfoWindowClickListener(
+            FlowCliente::class.java,
+            object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
+                override fun onClick(data: FlowCliente) {
+                    val action = FCarteraDirections.actionFCarteraToBDBajaCliente(data)
+                    findNavController().navigate(action)
                 }
-            },
-            onError = { error ->
-                Log.e(_tag, "Error de GPS rápido: $error")
             }
         )
     }
 
-    private val resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                val codigo =
-                    result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)!![0]
-                buscarClienteVoz(codigo)
-            } else {
-                snack("Error procesando codigo")
+    private fun collectFlows() {
+        collectFlow(apiViewModel.clienteEvent) { resultado ->
+            when (resultado) {
+                is ResultadoApi.Loading -> mostrarDialog(AppDialogType.Progreso("Obteniendo lista de clientes"))
+                is ResultadoApi.Exito -> stateSuccess(resultado.data)
+                is ResultadoApi.ErrorHttp -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        T_ERROR,
+                        "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                    )
+                )
+
+                is ResultadoApi.Fallo -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        T_ERROR,
+                        "Fallo: ${resultado.mensaje}"
+                    )
+                )
             }
         }
 
-    private fun searchVoice() {
-        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).also { intent ->
-            intent.resolveActivity(requireActivity().packageManager).also {
-                intent.putExtra(
-                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                )
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-                intent.putExtra(
-                    RecognizerIntent.EXTRA_PROMPT,
-                    "Mencione el codigo o nombre del cliente"
-                )
-                resultLauncher.launch(intent)
+        collectFlow(apiViewModel.flowClientesFiltrados) { lista ->
+            clientesCache = lista
+            renderCurrentView()
+        }
+
+        collectFlow(apiViewModel.flowVendedores) { lista ->
+            vendedorList = lista
+        }
+    }
+
+    private fun resultBottomDialog() {
+        parentFragmentManager.setFragmentResultListener(
+            "baja_result",
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val baja = bundle.getParcelableCompat<BajaAux>("baja")
+                ?: return@setFragmentResultListener
+
+            val location = getLocation ?: run {
+                snack("No se pudo obtener ubicación")
+                return@setFragmentResultListener
             }
+
+            val getCliente = baja.cliente
+
+            val item = TableBaja(
+                cliente = getCliente.cliente,
+                nombre = getCliente.nomcli,
+                motivo = baja.motivo,
+                comentario = baja.comentario,
+                longitud = location.longitude,
+                latitud = location.latitude,
+                precision = location.accuracy.toDouble().to2Decimals(),
+                fecha = baja.fecha,
+                anulado = 0
+            )
+
+            Log.d(_tag, "Baja $item")
+
+            /*val bajaFinal = baja.copy(
+                latitud = location.latitude,
+                longitud = location.longitude
+            )
+
+            apiViewModel.guardarBaja(bajaFinal)*/
         }
     }
 
-    /*private fun launchDownload(codigo: String, fecha: String) {
-        progress("Descargando clientes y rutas")
-
-        //viewmodel.cleanDataVendedor()
-
-        val clientes = JSONObject()
-        clientes.put("empleado", codigo)
-        clientes.put("fecha", fecha)
-        clientes.put("empresa", CONF.empresa)
-        //viewmodel.fetchClientes(clientes.toReqBody())
-
-        val rutas = JSONObject()
-        rutas.put("empleado", codigo)
-        rutas.put("empresa", CONF.empresa)
-        //viewmodel.fetchRutas(rutas.toReqBody())
-    }*/
-
-    override fun onResume() {
-        super.onResume()
-        if (vistaActual == Vista.MAPA) {
-            startGps()
+    private fun renderCurrentView() {
+        when (vistaActual) {
+            Vista.LISTA -> renderLista()
+            Vista.MAPA -> drawMarkers()
         }
     }
 
-    override fun onPause() {
-        if (vistaActual == Vista.MAPA) {
-            stopGps()
-        }
-        super.onPause()
-    }
-
-    private fun renderLista(lista: List<FlowCliente>) {
-        val hayDatos = lista.isNotEmpty()
-
+    private fun renderLista() {
+        val hayDatos = clientesCache.isNotEmpty()
         binding.rcvCartera.setUI("v", hayDatos)
         binding.emptyContainer.root.setUI("v", !hayDatos)
-
-        adapter.submitList(lista)
+        adapter.submitList(clientesCache)
     }
 
-    private fun buscarClienteVoz(codigo: String) {
-        when (vistaActual) {
-            Vista.LISTA -> binding.searchview.setQuery(codigo, true)
-            Vista.MAPA -> {}
+    private fun drawMarkers() {
+        initMapaSiEsNecesario { _ ->
+            mapHelper.clearMarkers()
+            clientesCache.forEach { item ->
+                mapHelper.addMarker(item, item.latitud, item.longitud, item.icono(requireContext()))
+            }
+            startGps() // activa MyLocation y lanza rastreo
         }
     }
 
     private fun toggleVista() {
-        val siguiente = when (vistaActual) {
-            Vista.LISTA -> Vista.MAPA
-            Vista.MAPA -> Vista.LISTA
-        }
+        val siguiente = if (vistaActual == Vista.LISTA) Vista.MAPA else Vista.LISTA
         cambiarVista(siguiente)
     }
 
     private fun cambiarVista(nuevaVista: Vista) {
         if (vistaActual == nuevaVista) return
-
         vistaActual = nuevaVista
 
         when (nuevaVista) {
-            Vista.LISTA -> mostrarLista()
-            Vista.MAPA -> mostrarMapa()
+            Vista.LISTA -> {
+                binding.rcvCartera.setUI("v", true)
+                binding.rltMapa.setUI("v", false)
+                stopGps()
+                renderLista()
+            }
+
+            Vista.MAPA -> {
+                apiViewModel.clearQuery() // limpia filtro
+                binding.searchview.setQuery("", true)
+                binding.rltMapa.setUI("v", true)
+                binding.rcvCartera.setUI("v", false)
+                drawMarkers()
+            }
         }
-    }
-
-    private fun mostrarLista() {
-        binding.rcvCartera.setUI("v", true)
-        binding.rltMapa.setUI("v", false)
-
-        stopGps()
-    }
-
-    private fun mostrarMapa() {
-        binding.rltMapa.setUI("v", true)
-        binding.rcvCartera.setUI("v", false)
-
-        initMapaSiEsNecesario()
-        startGps()
     }
 
     private fun startGps() {
@@ -413,62 +311,164 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         mapHelper.disableMyLocation()
     }
 
-    private fun initMapaSiEsNecesario() {
-        if (mapaInicializado) return
+    private fun launchGpsRastreo() {
+        gpsTracker.startTracking(
+            id = MODO_RAPIDO,
+            interval = GPSConstants.GPS_INTERVALO_NORMAL,
+            fastest = GPSConstants.GPS_INTERVALO_RAPIDO,
+            minDistance = GPSConstants.IGNORAR_METROS,
+            onLocation = { location ->
+                getLocation = location
+                if (!movedOnce) mapHelper.moveCamera(location).also { movedOnce = true }
+            },
+            onError = { error -> Log.e(_tag, "Error GPS: $error") }
+        )
+    }
 
-        val mapFragment =
-            childFragmentManager.findFragmentById(binding.rltMapa.id) as SupportMapFragment
+    private fun initMapaSiEsNecesario(onReady: (GoogleMap) -> Unit = {}) {
+        val fragment =
+            childFragmentManager.findFragmentById(R.id.map_cartera) as? SupportMapFragment ?: return
+
+        if (mapaInicializado) {
+            mapHelper.getMap()?.let { onReady(it) }
+            return
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val gMap = mapFragment.awaitMap()
+            val gMap = fragment.awaitMap()
             mapHelper.attachMap(gMap)
             mapaInicializado = true
+            onReady(gMap)
+        }
+    }
+
+    private fun carteraPorVendedor() {
+        if (vendedorList.isEmpty()) {
+            snack("No hay vendedores disponibles"); return
+        }
+        val lista = vendedorList.map { it.descripcion }
+        CarteraVendedor(requireContext(), lista) { codigo, fecha ->
+            apiViewModel.downloadClientes(codigo.toInt(), fecha)
+        }.show()
+    }
+
+    private fun searchVoice() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE,
+                Locale.getDefault()
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_PROMPT,
+                "Mencione el codigo o nombre del cliente"
+            )
+        }
+
+        try {
+            resultLauncher.launch(intent)
+        } catch (e: Exception) {
+            snack("Reconocimiento de voz no disponible")
+        }
+    }
+
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val spokenText = result.data
+                    ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    ?.firstOrNull()
+                    ?.replace("\\s".toRegex(), "")
+
+                if (spokenText.isNullOrEmpty()) {
+                    snack("No se reconocio ninguna palabra")
+                    return@registerForActivityResult
+                }
+
+                buscarClienteVoz(spokenText)
+            } else {
+                snack("Error procesando código")
+            }
+        }
+
+    private fun buscarClienteVoz(codigo: String) {
+        when (vistaActual) {
+            Vista.LISTA -> binding.searchview.setQuery(codigo, true)
+            Vista.MAPA -> focusClienteEnMapa(
+                filtro = codigo,
+                forzadoDirecto = true
+            )
         }
     }
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         lifecycleScope.launch(Dispatchers.Main) {
-            // Cerrar diálogo previo si existe
             InstanciaDialog.cerrarDialogActual()
-
-            // Crear el dialog
             val dialog = buildMaterialDialog(requireContext(), dialogType)
-
-            // Mostrarlo
             dialog.show()
-
-            // Guardar referencia
             InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }
 
     private fun stateSuccess(clientes: JsonCliente?) {
         when {
-            clientes == null -> {
-                mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "No se obtuvo respuesta del servidor"
-                    )
+            clientes == null -> mostrarDialog(
+                AppDialogType.Informativo(
+                    T_ERROR,
+                    "No se obtuvo respuesta del servidor"
                 )
+            )
+
+            clientes.jobl.isEmpty() -> mostrarDialog(
+                AppDialogType.Informativo(
+                    T_ERROR,
+                    "No se encontraron clientes"
+                )
+            )
+
+            else -> mostrarDialog(
+                AppDialogType.Informativo(
+                    T_SUCCESS,
+                    "Se descargaron ${clientes.jobl.size} clientes correctamente"
+                )
+            )
+        }
+    }
+
+    private fun focusClienteEnMapa(
+        filtro: String? = null,
+        forzadoDirecto: Boolean = false
+    ) {
+        val clientesMapa = mapHelper
+            .getMarkerData(FlowCliente::class.java)
+            .sortedBy { it.nomcli }
+
+        val lista = filtro?.let { q ->
+            clientesMapa.filter {
+                it.cliente.contains(q, true) ||
+                        it.nomcli.contains(q, true)
+            }
+        } ?: clientesMapa
+
+        when {
+            lista.isEmpty() -> {
+                snack("No se encontraron clientes en el mapa")
             }
 
-            clientes.jobl.isEmpty() -> {
-                mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "No se encontraron clientes"
-                    )
-                )
+            lista.size == 1 || forzadoDirecto -> {
+                mapHelper.focus(lista.first())
             }
 
             else -> {
-                mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_SUCCESS,
-                        mensaje = "Se descargaron ${clientes.jobl.size} clientes correctamente"
-                    )
-                )
+                ListaClientesMapa(
+                    requireContext(),
+                    lista
+                ) { cliente ->
+                    mapHelper.focus(cliente)
+                }.show()
             }
         }
     }

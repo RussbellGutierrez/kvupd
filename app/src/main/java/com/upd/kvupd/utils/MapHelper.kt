@@ -1,10 +1,8 @@
-import android.content.Context
 import android.graphics.Color
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import androidx.fragment.app.FragmentManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -14,12 +12,18 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
+import com.upd.kvupd.ui.fragment.type.MapData
 import com.upd.kvupd.utils.ALLInfoWindow
 import com.upd.kvupd.utils.settingsMap
 
 class MapHelper(
     private val inflater: LayoutInflater
 ) {
+    interface OnInfoWindowClickListener<T : MapData> {
+        fun onClick(data: T)
+    }
+
+    private var infoWindowClickListener: ((MapData) -> Unit)? = null
 
     private var googleMap: GoogleMap? = null
     private var myLocationEnabled = false
@@ -36,6 +40,16 @@ class MapHelper(
         map.settingsMap()
         map.setInfoWindowAdapter(ALLInfoWindow(inflater))
 
+        map.setOnMarkerClickListener { marker ->
+            focus(marker.tag ?: return@setOnMarkerClickListener false)
+            true
+        }
+
+        map.setOnInfoWindowClickListener { marker ->
+            val data = marker.tag as? MapData ?: return@setOnInfoWindowClickListener
+            infoWindowClickListener?.invoke(data)
+        }
+
         // procesar polígonos pendientes
         pendingPolygons.forEach { drawPolygon(it) }
         pendingPolygons.clear()
@@ -43,6 +57,18 @@ class MapHelper(
         // procesar movimientos de cámara pendientes
         pendingCamera.forEach { it.invoke() }
         pendingCamera.clear()
+    }
+
+    fun <T : MapData> setOnInfoWindowClickListener(
+        clazz: Class<T>,
+        listener: OnInfoWindowClickListener<T>
+    ) {
+        infoWindowClickListener = { data ->
+            if (clazz.isInstance(data)) {
+                @Suppress("UNCHECKED_CAST")
+                listener.onClick(data as T)
+            }
+        }
     }
 
     fun enableMyLocation() {
@@ -75,10 +101,8 @@ class MapHelper(
         markers.clear()
     }
 
-    fun markerList(): List<Marker> = markers
-
     fun addMarker(
-        data: Any,
+        data: MapData,
         lat: Double,
         lng: Double,
         icon: BitmapDescriptor
@@ -128,7 +152,7 @@ class MapHelper(
     }
 
     // -------- CAMERA -------- //
-    fun moveCameraLatLng(lat: Double, lng: Double, zoom: Float = 15f) {
+    private fun moveCameraLatLng(lat: Double, lng: Double, zoom: Float = 15f) {
         val map = googleMap
 
         if (map == null) {
@@ -175,4 +199,27 @@ class MapHelper(
             CameraUpdateFactory.newLatLngBounds(bounds, 200)
         )
     }
+
+    fun <T> getMarkerData(clazz: Class<T>): List<T> =
+        markers.mapNotNull { clazz.cast(it.tag) }
+
+    fun focus(
+        data: Any,
+        zoom: Float = 16f,
+        showInfo: Boolean = true
+    ) {
+        val map = googleMap ?: return
+
+        val marker = markers.firstOrNull { it.tag == data } ?: return
+
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(marker.position, zoom)
+        )
+
+        if (showInfo) {
+            marker.showInfoWindow()
+        }
+    }
+
+    fun getMap(): GoogleMap? = googleMap
 }

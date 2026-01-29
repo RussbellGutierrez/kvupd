@@ -23,11 +23,11 @@ object QueryConstant {
 
     const val GET_RECYCLER_CLIENTE = """
         SELECT c.idcliente as cliente, c.nomcli, c.empleado as vendedor, IFNULL(v.descripcion,'null') as nomemp, 
-               c.secuencia, c.ruta, 0 as baja, c.fecha 
+               c.domicli, c.longitud, c.latitud, c.ruta, 0 as baja, c.ventas, c.ventanio, c.fecha, c.negocio 
         FROM TableCliente c
         LEFT JOIN TableVendedor v on c.empleado=v.codigo 
         GROUP BY c.idcliente, c.nomcli, c.empleado, v.descripcion, c.secuencia, c.ruta, c.fecha  
-        ORDER BY c.fecha ASC, c.ruta ASC, c.secuencia ASC, c.idcliente ASC
+        ORDER BY c.fecha ASC, c.nomcli ASC
     """
 
     ////  SERVER

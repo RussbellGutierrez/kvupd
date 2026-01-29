@@ -193,17 +193,12 @@ class FRastreo : Fragment(), MenuProvider {
     }
 
     private fun moveToMarkerByCode(codigo: String) {
-        val marker = mapHelper.markerList().find {
-            (it.tag as? Pedimap)?.codigo == codigo.toInt()
-        }
+        val pedimap = mapHelper
+            .getMarkerData(Pedimap::class.java)
+            .firstOrNull { it.codigo == codigo.toInt() }
 
-        if (marker != null) {
-            mapHelper.moveCameraLatLng(
-                lat = marker.position.latitude,
-                lng = marker.position.longitude,
-                zoom = 16f
-            )
-            marker.showInfoWindow()
+        if (pedimap != null) {
+            mapHelper.focus(pedimap)
         } else {
             snack("No se encontró el vendedor con código $codigo")
         }

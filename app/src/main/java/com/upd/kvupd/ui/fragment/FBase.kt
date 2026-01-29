@@ -13,30 +13,37 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.data.model.BotonesConfig
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.colorSeguimiento
 import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
+import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
-import com.upd.kvupd.utils.OldInterface.closeListener
+import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
+import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.isGPSDisabled
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
-import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
 class FBase : Fragment(), MenuProvider {
 
+    private val localViewmodel by activityViewModels<ALLViewModel>()
     private val apiViewmodel by activityViewModels<APIViewModel>()
     private val binding by viewBinding(FragmentFBaseBinding::bind)
     private val _tag by lazy { FBase::class.java.simpleName }
@@ -66,10 +73,14 @@ class FBase : Fragment(), MenuProvider {
             txtVersion.text = ExtraInfo.obtener(InfoDispositivo.VERSION_APP)
 
             btnVendedor.setOnClickListener {
-                findNavController().navigate(R.id.action_FBase_to_FRastreo)
+                verificarSesionVigente {
+                    findNavController().navigate(R.id.action_FBase_to_FRastreo)
+                }
             }
             btnCartera.setOnClickListener {
-                findNavController().navigate(R.id.action_FBase_to_FCartera)
+                verificarSesionVigente {
+                    findNavController().navigate(R.id.action_FBase_to_FCartera)
+                }
             }
             //btnCliente.setUI("v", true)
             //btnReporte.setUI("v", true)
@@ -79,131 +90,6 @@ class FBase : Fragment(), MenuProvider {
             //btnServidor.setUI("v", true)
             //agregar un fragment para enviar solicitudes de promociones
         }
-
-        /*viewmodel.startUp.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { _ ->
-                viewmodel.checkHoursAndLaunch { findNavController().navigate(R.id.action_FBase_to_FAjuste) }
-            }
-        }
-
-        bind.fabVendedor.setOnClickListener {
-            checkingGPS {
-                opt = 1
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabCliente.setOnClickListener {
-            checkingGPS {
-                opt = 2
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabReporte.setOnClickListener {
-            checkingGPS {
-                opt = 3
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabAltas.setOnClickListener {
-            checkingGPS {
-                opt = 4
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabBajas.setOnClickListener {
-            checkingGPS {
-                opt = 5
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabServidor.setOnClickListener {
-            checkingGPS {
-                opt = 6
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabConsulta.setOnClickListener {
-            checkingGPS {
-                opt = 7
-                viewmodel.dataDownloaded()
-            }
-        }
-        bind.fabEncuesta.setOnClickListener {
-            checkingGPS {
-                opt = 8
-                viewmodel.dataDownloaded()
-            }
-        }
-
-        viewmodel.inicio.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                if (y) {
-                    when (opt) {
-                        1 -> findNavController().navigate(R.id.action_FBase_to_FRastreo)
-                        2 -> {
-                            if (CONF.tipo == "V") {
-                                findNavController().navigate(R.id.action_FBase_to_FCliente)
-                            } else {
-                                findNavController().navigate(R.id.action_FBase_to_FVendedor)
-                            }
-                        }
-
-                        3 -> findNavController().navigate(R.id.action_FBase_to_FReporte)
-                        4 -> findNavController().navigate(R.id.action_FBase_to_FAlta)
-                        5 -> findNavController().navigate(R.id.action_FBase_to_FBaja)
-                        6 -> findNavController().navigate(R.id.action_FBase_to_FServidor)
-                        7 -> findNavController().navigate(R.id.action_FBase_to_FConsulta)
-                        8 -> checkEncuestaSelect()
-                    }
-                } else {
-                    snack("Los datos no se han descargado")
-                }
-            }
-        }
-        viewmodel.configObserver().observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                setParams(it[0])
-            }
-        }
-        viewmodel.encuesta.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { y ->
-                when (y) {
-                    is OldNetworkRetrofit.Success -> if (y.data?.jobl.isNullOrEmpty()) {
-                        showDialog(
-                            "Advertencia",
-                            "No tiene encuesta programada"
-                        ) {}
-                    } else {
-                        showDialog(
-                            "Correcto",
-                            "Encuesta descargada correctamente"
-                        ) {}
-                    }
-
-                    is OldNetworkRetrofit.Error -> showDialog("Error", "Server ${y.message}") {}
-                }
-            }
-        }
-        viewmodel.sincro.observe(viewLifecycleOwner) {
-            hideprogress()
-            it.getContentIfNotHandled()?.let { y ->
-                sincro += y
-                when (sincro) {
-                    4 -> {
-                        sincro = 0
-                        showDialog("Correcto", "Sincronizacion completa") {}
-                    }
-
-                    90 -> {
-                        sincro = 0
-                        showDialog("Error", "Archivo de configuracion no encontrado") {}
-                    }
-                }
-            }
-        }
-        viewmodel.rowClienteObs().distinctUntilChanged().observe(viewLifecycleOwner) { result ->
-            setRuta(result)
-        }*/
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -233,30 +119,49 @@ class FBase : Fragment(), MenuProvider {
     private fun showBotones(config: TableConfiguracion) {
         val tipo = TipoUsuario.inicialTipo(config.tipo)
         Log.d(_tag, "User type ${tipo.nombre()}")
-        when (tipo) {
-            TipoUsuario.Vendedor -> binding.apply {
-                btnVendedor.setUI("v", false)
-                btnCartera.setUI("v", false)
-                btnCliente.setUI("v", true)
-                btnReporte.setUI("v", true)
-                btnEncuesta.setUI("v", true)
-                btnAlta.setUI("v", true)
-                btnBaja.setUI("v", true)
-                btnServidor.setUI("v", true)
-            }
 
-            TipoUsuario.Supervisor -> binding.apply {
-                btnVendedor.setUI("v", true)
-                btnCartera.setUI("v", true)
-                btnCliente.setUI("v", false)
-                btnReporte.setUI("v", true)
-                btnEncuesta.setUI("v", true)
-                btnAlta.setUI("v", true)
-                btnBaja.setUI("v", true)
-                btnServidor.setUI("v", true)
-            }
+        val cfg = configPorTipo(tipo)
+
+        binding.apply {
+            btnVendedor.setUI("v", cfg.vendedor)
+            btnCartera.setUI("v", cfg.cartera)
+            btnCliente.setUI("v", cfg.cliente)
+            btnReporte.setUI("v", cfg.reporte)
+            btnEncuesta.setUI("v", cfg.encuesta)
+            btnAlta.setUI("v", cfg.alta)
+            btnBaja.setUI("v", cfg.baja)
+            btnServidor.setUI("v", cfg.servidor)
         }
     }
+
+    private fun configPorTipo(tipo: TipoUsuario): BotonesConfig =
+        when (tipo) {
+            TipoUsuario.Vendedor -> BotonesConfig(
+                cliente = true,
+                reporte = true,
+                encuesta = true,
+                alta = true,
+                baja = true,
+                servidor = true
+            )
+
+            TipoUsuario.Supervisor -> BotonesConfig(
+                vendedor = true,
+                cartera = true,
+                reporte = true,
+                encuesta = true,
+                alta = true,
+                baja = true,
+                servidor = true
+            )
+
+            TipoUsuario.JefeVentas -> BotonesConfig(
+                reporte = true,
+                encuesta = true,
+                alta = true,
+                servidor = true
+            )
+        }
 
     /*override fun changeGPSstate(gps: Boolean) {
         val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
@@ -332,30 +237,6 @@ class FBase : Fragment(), MenuProvider {
         }
     }*/
 
-    private fun checkingGPS(T: () -> Unit) {
-        if (requireContext().isGPSDisabled()) {
-            snack("Habilite el GPS primero")
-        } else {
-            T()
-        }
-    }
-
-    private fun reSincAllData() {
-        showDialog(
-            "Advertencia",
-            "Esta opcion va a eliminar todos los datos de kventas, solo se debe usar en caso sea necesario. ¿Desea continuar?",
-            true
-        ) {
-            //viewmodel.cleanSomeTables()
-            showDialog(
-                "Correcto",
-                "Vamos a cerrar la aplicacion, vuelva a ejecutarlo por favor"
-            ) {
-                closeListener?.closingActivity()
-                closeListener?.closeServiceSetup()
-            }
-        }
-    }
 
     /*private fun checkEncuestaSelect() {
         lifecycleScope.launch {
@@ -381,4 +262,31 @@ class FBase : Fragment(), MenuProvider {
             }
         }
     }*/
+
+    private fun verificarSesionVigente(f: () -> Unit) {
+        if (localViewmodel.sesionActual.value) {
+            f()
+        }else {
+            mostrarDialog(AppDialogType.Informativo(
+                titulo = T_WARNING,
+                mensaje = "Debe sincronizar primero la aplicacion"
+            ))
+        }
+    }
+
+    private fun mostrarDialog(dialogType: AppDialogType) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Cerrar diálogo previo si existe
+            InstanciaDialog.cerrarDialogActual()
+
+            // Crear el dialog
+            val dialog = buildMaterialDialog(requireContext(), dialogType)
+
+            // Mostrarlo
+            dialog.show()
+
+            // Guardar referencia
+            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+        }
+    }
 }

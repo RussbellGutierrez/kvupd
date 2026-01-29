@@ -31,7 +31,6 @@ class IdentificadorSource @Inject constructor(
 
     fun obtenerSharedKey(key: String): String? = preferences.getString(key, null)
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun crearNodoFirebase(uuid: String): Map<String, String> {
         return mapOf(
             NODO_UUID to uuid,

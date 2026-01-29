@@ -60,7 +60,7 @@ class ClienteAdapter @AssistedInject constructor(
                 listener.onClick(item)
             }
             bind.lnrCliente.setOnLongClickListener {
-                listener.onClick(item)
+                listener.onLongClick(item)
                 true
             }
         }

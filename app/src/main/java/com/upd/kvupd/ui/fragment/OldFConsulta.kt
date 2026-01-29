@@ -31,7 +31,7 @@ import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.settingsMap
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -188,7 +188,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
             "*$nombre*"
         }
         if (numero == "0" && nombre == "NOT") {
-            showDialog("Advertencia", "Debe completar uno de los 2 campos para la busqueda") {}
+            oldShowDialog("Advertencia", "Debe completar uno de los 2 campos para la busqueda") {}
         } else {
             if (numero != "0") {
                 nombre = "NOT"

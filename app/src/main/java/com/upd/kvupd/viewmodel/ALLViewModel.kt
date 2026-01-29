@@ -42,6 +42,9 @@ class ALLViewModel @Inject constructor(
     private val _pedimapMensaje = EventFlow<String>()
     val pedimapMensaje = _pedimapMensaje.events
 
+    private val _sesionActual = MutableStateFlow (false)
+    val sesionActual: StateFlow<Boolean> = _sesionActual
+
     private val _remainingWorkersIds = EventFlow<List<UUID>>()
     val remainingWorkersIds = _remainingWorkersIds.events
 
@@ -153,6 +156,15 @@ class ALLViewModel @Inject constructor(
                 val mensaje = firebaseHelper.obtenerMensajePedimap()
                 val completo = "$mensaje:\n$uuid"
                 _pedimapMensaje.emit(completo)
+            }
+        }
+    }
+
+    fun verificarFechaSesion() {
+        viewModelScope.launch {
+            roomFunctions.queryConfiguracion()?.let {
+                val respuesta = operationsFunctions.checkTodaySesion(it)
+                _sesionActual.value = respuesta
             }
         }
     }

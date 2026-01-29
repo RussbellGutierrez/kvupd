@@ -1,5 +1,6 @@
 package com.upd.kvupd.domain
 
+import com.upd.kvupd.data.model.TableConfiguracion
 import java.util.UUID
 
 interface OperationsFunctions {
@@ -8,4 +9,5 @@ interface OperationsFunctions {
     fun remainingWorkers(usuarioTipo: String): List<UUID>
     fun syncModeAlarms()
     fun initBootWorker()
+    fun checkTodaySesion(config: TableConfiguracion): Boolean
 }

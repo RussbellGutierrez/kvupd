@@ -9,6 +9,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class ActionsReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        //
+        if (context == null || intent == null) return
+
+        when (intent.action) {
+            Intent.ACTION_TIME_CHANGED -> {}
+            Intent.ACTION_BATTERY_CHANGED -> {}
+        }
     }
 }

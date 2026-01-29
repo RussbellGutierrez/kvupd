@@ -28,7 +28,7 @@ import com.upd.kvupd.utils.OldRegexMaskTextWatcher
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isServiceRunning
 import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -98,7 +98,7 @@ class OldFAjuste : Fragment(), MenuProvider {
 
         bind.btnRegistrar.setOnClickListener {
             if (reinsert) {
-                showDialog(
+                oldShowDialog(
                     "advertencia",
                     "¿Está seguro de querer cambiar la empresa del celular?"
                 ) {
@@ -144,7 +144,7 @@ class OldFAjuste : Fragment(), MenuProvider {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    showDialog(
+                    oldShowDialog(
                         "Advertencia",
                         "Cerraremos kventas para aplicar los cambios"
                     ) { requireActivity().finishAndRemoveTask() }
@@ -158,7 +158,7 @@ class OldFAjuste : Fragment(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         android.R.id.home -> consume {
-            showDialog(
+            oldShowDialog(
                 "Advertencia",
                 "Cerraremos kventas para aplicar los cambios"
             ) { requireActivity().finishAndRemoveTask() }

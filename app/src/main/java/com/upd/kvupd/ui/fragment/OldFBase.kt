@@ -21,7 +21,7 @@ import com.upd.kvupd.utils.OldInterface.closeListener
 import com.upd.kvupd.utils.OldInterface.gpsListener
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.isGPSDisabled
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -296,13 +296,13 @@ class OldFBase : Fragment(), OldOnGpsState, MenuProvider {
     }
 
     private fun reSincAllData() {
-        showDialog(
+        oldShowDialog(
             "Advertencia",
             "Esta opcion va a eliminar todos los datos de kventas, solo se debe usar en caso sea necesario. ¿Desea continuar?",
             true
         ) {
             //viewmodel.cleanSomeTables()
-            showDialog(
+            oldShowDialog(
                 "Correcto",
                 "Vamos a cerrar la aplicacion, vuelva a ejecutarlo por favor"
             ) {

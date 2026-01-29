@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="width_infowindow">300dp</dimen>
+    <dimen name="width_moredetail">150dp</dimen>
+    <dimen name="width_detail">100dp</dimen>
+    <dimen name="width_lessdetail">50dp</dimen>
+    <dimen name="separation_5">5dp</dimen>
+    <dimen name="separation_10">10dp</dimen>
+    <dimen name="separation_15">15dp</dimen>
+    <dimen name="text_big">20sp</dimen>
+    <dimen name="text_medium">17sp</dimen>
+    <dimen name="text_small">10sp</dimen>
+</resources>

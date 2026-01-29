@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +21,6 @@ import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.ALLViewModel
-import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val localViewModel by viewModels<ALLViewModel>()
+    private val localViewmodel by viewModels<ALLViewModel>()
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var navController: NavController
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         val baseOk = permissionManager.checkBasePermissions()
         val backgroundOk = permissionManager.checkBackgroundLocationPermission()
-        localViewModel.iniciarFlujo(this, baseOk, backgroundOk)
+        localViewmodel.iniciarFlujo(this, baseOk, backgroundOk)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,21 +53,37 @@ class MainActivity : AppCompatActivity() {
         observarEstadosEventosUUID()
         configurarNavegacion()
 
-        localViewModel.iniciarFlujo(
+        localViewmodel.iniciarFlujo(
             this,
             permissionManager.checkBasePermissions(),
             permissionManager.checkBackgroundLocationPermission()
         )
 
-        localViewModel.iniciarServiceSiHayConfiguracion()
+        localViewmodel.iniciarServiceSiHayConfiguracion()
+
+        collectFlow(localViewmodel.sesionActual) { sesionVigente ->
+            if (sesionVigente) return@collectFlow
+
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_WARNING,
+                    mensaje = "Necesita realizar la sincronizacion diaria"
+                )
+            )
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
+    override fun onResume() {
+        super.onResume()
+        localViewmodel.verificarFechaSesion()
+    }
+
     private fun observarEstadosEventosUUID() {
-        collectFlow(localViewModel.uuidEstados) { state ->
+        collectFlow(localViewmodel.uuidEstados) { state ->
             when (state) {
                 is InitialState.Loading -> {
                     if (state.mensaje.isNotEmpty()) {
@@ -101,7 +117,7 @@ class MainActivity : AppCompatActivity() {
                         AppDialogType.Informativo(
                             titulo = T_WARNING,
                             mensaje = "El equipo no cuenta con un identificador, necesitamos crearlo.",
-                            onPositive = { localViewModel.procesandoHashFirebase() }
+                            onPositive = { localViewmodel.procesandoHashFirebase() }
                         )
                     )
 
@@ -119,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                             titulo = T_ERROR,
                             mensaje = "Ocurrio un error procesando el identificador. Desea intentarlo nuevamente?",
                             mostrarNegativo = true,
-                            onPositive = { localViewModel.procesandoHashFirebase() },
+                            onPositive = { localViewmodel.procesandoHashFirebase() },
                             onNegative = null
                         )
                     )

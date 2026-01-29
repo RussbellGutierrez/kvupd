@@ -8,7 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WakeUpReceiver: BroadcastReceiver() {
+class WakeUpReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var operationsFunctions: OperationsFunctions
@@ -16,9 +16,9 @@ class WakeUpReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        when(intent.action) {
-            Intent.ACTION_BOOT_COMPLETED -> operationsFunctions.initBootWorker()
-            Intent.ACTION_MY_PACKAGE_REPLACED -> {}
+        when (intent.action) {
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_MY_PACKAGE_REPLACED -> operationsFunctions.initBootWorker()
         }
     }
 }

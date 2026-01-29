@@ -12,13 +12,13 @@ plugins {
 
 android {
     namespace = "com.upd.kvupd"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.upd.kvupd"
-        minSdk = 24
-        targetSdk = 35
-        versionCode = 240010600
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 260010600
         versionName = "1.6.0"
 
         vectorDrawables.useSupportLibrary = true

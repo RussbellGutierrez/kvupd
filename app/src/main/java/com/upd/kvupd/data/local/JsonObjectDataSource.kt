@@ -2,12 +2,12 @@ package com.upd.kvupd.data.local
 
 import android.content.Context
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.FechaHoraUtil
-import com.upd.kvupd.utils.OldConstant
 import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
@@ -33,7 +33,6 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun jsonRequestConfiguracion(identificador: String): RequestBody {
         val fabricante = ExtraInfo.obtener(InfoDispositivo.FABRICANTE).uppercase()
         val modelo = ExtraInfo.obtener(InfoDispositivo.MODELO).uppercase()
@@ -48,7 +47,11 @@ class JsonObjectDataSource @Inject constructor(
         return json.toReqBody()
     }
 
-    fun jsonRequestClientes(dato: TableConfiguracion, vendedor: Int? = null, fecha: String? = null): RequestBody {
+    fun jsonRequestClientes(
+        dato: TableConfiguracion,
+        vendedor: Int? = null,
+        fecha: String? = null
+    ): RequestBody {
         val json = JSONObject().apply {
             put("empleado", vendedor ?: dato.codigo)
             put("empresa", dato.empresa)
@@ -80,6 +83,37 @@ class JsonObjectDataSource @Inject constructor(
         }
         return json.toReqBody()
     }
+
+    fun jsonRequestBajas(dato: TableConfiguracion, baja: TableBaja): RequestBody {
+        val tipoUsuario = TipoUsuario.inicialTipo(dato.tipo)
+        when (tipoUsuario) {
+            TipoUsuario.Vendedor ->
+            TipoUsuario.Supervisor -> {}
+            TipoUsuario.JefeVentas -> {}
+        }
+        val json = JSONObject().apply {
+            put("empleado", dato.codigo)
+            put("empresa", dato.empresa)
+        }
+        return json.toReqBody()
+    }
+    /*private fun requestBody(j: TBaja): RequestBody {
+        val p = JSONObject()
+                p.put("empleado", CONF.codigo)
+        p.put("fecha", j.fecha)
+        p.put("cliente", j.cliente)
+        p.put("motivo", j.motivo)
+        p.put("observacion", j.comentario)
+        p.put("xcoord", j.longitud)
+        p.put("ycoord", j.latitud)
+        p.put("precision", j.precision)
+        p.put("anulado", j.anulado)
+                p.put("empresa", CONF.empresa)
+        if (CONF.tipo == "S") {
+            p.put("estado",2)
+        }
+        return p.toReqBody()
+    }*/
 
     private fun obtenerSistemaOperativo(): String {
         val sdkInt = ExtraInfo.obtener(InfoDispositivo.SDK_INT).toInt()

@@ -21,7 +21,7 @@ import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Socket
@@ -647,7 +647,7 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
         socket.disconnect()
         socket.off()
         requireActivity().runOnUiThread {
-            showDialog("correcto", "Reporte actualizado") {}
+            oldShowDialog("correcto", "Reporte actualizado") {}
             launchFetchs()
         }
     }

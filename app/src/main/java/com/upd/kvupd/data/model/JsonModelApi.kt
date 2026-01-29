@@ -3,6 +3,7 @@ package com.upd.kvupd.data.model
 import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import com.upd.kvupd.ui.fragment.type.MapData
 import kotlinx.parcelize.Parcelize
 
 typealias JsonResponseAny = Map<String, Any?>
@@ -276,7 +277,7 @@ data class Pedimap(
     @Json(name = "hora") val hora: String,
     @Json(name = "estado") val emitiendo: Int,
     @Json(name = "position") val posicion: Position
-)
+): MapData
 
 @JsonClass(generateAdapter = true)
 data class JsonBajaVendedor(

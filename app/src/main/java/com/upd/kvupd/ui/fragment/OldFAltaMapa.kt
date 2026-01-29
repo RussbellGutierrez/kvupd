@@ -29,7 +29,7 @@ import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldConstant.isGPSLOCinitialized
 import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.settingsMap
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -139,7 +139,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     }
 
     override fun onMapLongClick(p0: LatLng) {
-        showDialog("Advertencia", "¿Poner un alta en la ubicacion marcada?") {
+        oldShowDialog("Advertencia", "¿Poner un alta en la ubicacion marcada?") {
             /*viewmodel.addingAlta(
                 p0.toLocation()
             )*/

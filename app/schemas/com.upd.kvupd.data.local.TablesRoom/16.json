@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 16,
-    "identityHash": "35ae76ec501dc37c0d48a3d5b1f2e680",
+    "identityHash": "ce35270bd4b061cd685a9de2889c1d58",
     "entities": [
       {
         "tableName": "TableConfiguracion",
@@ -642,12 +642,12 @@
       },
       {
         "tableName": "TableBaja",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` INTEGER NOT NULL, `nombre` TEXT NOT NULL, `motivo` INTEGER NOT NULL, `comentario` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `fecha` TEXT NOT NULL, `anulado` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `nombre` TEXT NOT NULL, `motivo` INTEGER NOT NULL, `comentario` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `fecha` TEXT NOT NULL, `anulado` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`))",
         "fields": [
           {
             "fieldPath": "cliente",
             "columnName": "cliente",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -714,12 +714,12 @@
       },
       {
         "tableName": "TableAlta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` INTEGER NOT NULL, `empleado` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, `datos` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` TEXT NOT NULL, `empleado` INTEGER NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, `datos` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`idaux`))",
         "fields": [
           {
             "fieldPath": "idaux",
             "columnName": "idaux",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -1160,7 +1160,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '35ae76ec501dc37c0d48a3d5b1f2e680')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce35270bd4b061cd685a9de2889c1d58')"
     ]
   }
 }

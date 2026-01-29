@@ -1,10 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/width_infowindow"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@drawable/old_bubble">
+    android:orientation="vertical"
+    android:paddingHorizontal="5dp"
+    android:paddingVertical="10dp">
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/txt_codigo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/separation_5"
+        android:gravity="center"
+        android:textColor="@color/teal"
+        android:textStyle="bold"
+        tools:text="CODIGO" />
+
+    <TextView
+        android:id="@+id/txt_cliente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/separation_5"
+        android:gravity="center"
+        android:textColor="@color/teal"
+        android:textStyle="bold"
+        tools:text="NOMBRE CLIENTE" />
+
+    <TextView
+        android:id="@+id/txt_direccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="Direccion" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="@dimen/width_infowindow"
+        android:layout_height="1dp"
+        android:layout_marginVertical="@dimen/separation_5"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="@dimen/width_moredetail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Negocio"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/text2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="@dimen/width_lessdetail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Ruta"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintLeft_toRightOf="@id/text1"
+            app:layout_constraintRight_toLeftOf="@id/text3"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <TextView
+            android:id="@+id/text3"
+            android:layout_width="@dimen/width_detail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Vendedor"
+            android:textColor="@color/primaryColor"
+            app:layout_constraintLeft_toRightOf="@id/text2"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_negocio"
+            android:layout_width="@dimen/width_moredetail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/txt_ruta"
+            app:layout_constraintTop_toBottomOf="@id/text1"
+            tools:text="Negocio" />
+
+        <TextView
+            android:id="@+id/txt_ruta"
+            android:layout_width="@dimen/width_lessdetail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintLeft_toRightOf="@id/txt_negocio"
+            app:layout_constraintRight_toLeftOf="@id/txt_vendedor"
+            app:layout_constraintTop_toBottomOf="@id/text2"
+            tools:text="Ruta" />
+
+        <TextView
+            android:id="@+id/txt_vendedor"
+            android:layout_width="@dimen/width_detail"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintLeft_toRightOf="@id/txt_ruta"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text2"
+            tools:text="V - 00" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/txt_estado"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/separation_5"
+        android:background="@color/black"
+        android:gravity="center"
+        android:padding="@dimen/separation_5"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        tools:text="ESTADO DEL CLIENTE" />
+
+</LinearLayout>

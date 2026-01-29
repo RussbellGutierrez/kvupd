@@ -9,6 +9,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Pedimap
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -35,6 +36,16 @@ fun Pedimap.icono(context: Context): BitmapDescriptor {
     val drawableId = when (emitiendo) {
         1 -> R.drawable.pin_emite
         else -> R.drawable.pin_noemite
+    }
+    return context.vectorToBitmapDescriptor(drawableId)
+}
+
+fun FlowCliente.icono(context: Context): BitmapDescriptor {
+    val drawableId = when {
+        baja == 1 -> R.drawable.pin_otros
+        compras == 1 -> R.drawable.pin_peligro
+        ventas == 0 -> R.drawable.pin_venta
+        else -> R.drawable.pin_chess
     }
     return context.vectorToBitmapDescriptor(drawableId)
 }

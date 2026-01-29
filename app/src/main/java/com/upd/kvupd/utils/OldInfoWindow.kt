@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.databinding.InfoWindowModelBinding
+import com.upd.kvupd.databinding.OldInfoWindowModelBinding
 import com.upd.kvupd.utils.OldConstant.IWAM
 import com.upd.kvupd.utils.OldConstant.IWDA
 import com.upd.kvupd.utils.OldConstant.IWP
@@ -21,7 +21,7 @@ import com.upd.kvupd.utils.OldConstant.PROCEDE
 class OldInfoWindow(private val inflater: LayoutInflater) :
     InfoWindowAdapter {
 
-    private var _bind: InfoWindowModelBinding? = null
+    private var _bind: OldInfoWindowModelBinding? = null
     private val bind get() = _bind!!
 
     override fun getInfoContents(p0: Marker): View? = null
@@ -29,7 +29,7 @@ class OldInfoWindow(private val inflater: LayoutInflater) :
     override fun getInfoWindow(p0: Marker): View = createIW(p0)
 
     private fun createIW(m: Marker): View {
-        _bind = InfoWindowModelBinding.inflate(inflater)
+        _bind = OldInfoWindowModelBinding.inflate(inflater)
         when (m.title?.toInt()) {
             in 0..10 -> setData(m)
             20 -> dataPedimap(m)

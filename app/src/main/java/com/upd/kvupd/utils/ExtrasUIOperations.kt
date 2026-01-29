@@ -4,11 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.DialogFragment.STYLE_NO_FRAME
 import androidx.fragment.app.Fragment
@@ -40,6 +41,15 @@ import java.time.LocalTime
 import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+@Suppress("DEPRECATION")
+inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelable(key, T::class.java)
+    } else {
+        getParcelable(key)
+    }
+}
 
 inline fun consume(f: () -> Unit): Boolean {
     f()
@@ -124,8 +134,9 @@ fun DialogFragment.setResume(isCompact: Boolean = true) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun String.toLocalTime(): LocalTime = LocalTime.parse(this)
+
+fun Double.to2Decimals(): Double = kotlin.math.round(this * 100) / 100
 
 fun DialogFragment.observeWorkersById(
     workManager: WorkManager,

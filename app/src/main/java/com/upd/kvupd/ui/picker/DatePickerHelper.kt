@@ -9,10 +9,8 @@ import java.time.format.DateTimeFormatter
 
 object DatePickerHelper {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private val formatter = DateTimeFormatter.ISO_DATE // yyyy-MM-dd
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun show(
         context: Context,
         initial: LocalDate = LocalDate.now(),

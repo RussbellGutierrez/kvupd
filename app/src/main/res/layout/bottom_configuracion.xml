@@ -8,7 +8,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".ui.dialog.BDConfiguracion">
+    tools:context=".ui.dialog.BDBajaCliente">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card1"
@@ -24,7 +24,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="15dp"
@@ -36,17 +35,17 @@
                 android:layout_height="wrap_content"
                 android:text="REGISTRAR EQUIPO"
                 android:textColor="@color/lightgreen"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toTopOf="@+id/constraint1" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="3dp"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text1" />
 
             <TextView
@@ -55,9 +54,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Codigo Android"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/divider1" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider1" />
 
             <TextView
                 android:id="@+id/txt_uuid"
@@ -68,9 +67,9 @@
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/text2"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text2"
                 tools:text="abcdefg-123456-hijklmn-7890" />
 
             <TextView
@@ -82,9 +81,9 @@
                 android:text="Luego de registrar el equipo, búsquelo por su código en Pedimap"
                 android:textColor="@color/lightcrimson"
                 android:textSize="15sp"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/txt_uuid" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_uuid" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textinput1"
@@ -93,9 +92,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="Seleccione la empresa"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/text3">
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text3">
 
                 <AutoCompleteTextView
                     android:id="@+id/auto_empresa"
@@ -128,9 +127,9 @@
                 android:layout_marginTop="4dp"
                 android:text="Registrar"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintLeft_toLeftOf="@+id/constraint1"
-                app:layout_constraintRight_toRightOf="@+id/constraint1"
-                app:layout_constraintTop_toBottomOf="@+id/textinput1" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textinput1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

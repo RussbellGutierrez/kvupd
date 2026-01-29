@@ -17,7 +17,7 @@ import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.showDialog
+import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -844,7 +844,7 @@ class OldFServidor : Fragment(), MenuProvider {
 
     private fun retryUploadData() {
         if (errorResponse > 0) {
-            showDialog(
+            oldShowDialog(
                 "Advertencia", "Use esta opcion en caso presente problemas para subir los datos, " +
                         "en cada intento se van modificando las direcciones IP, si no es posible enviar datos utilice la opcion " +
                         "alternativa, se encuentra a la derecha en la parte superior.", true
@@ -853,7 +853,7 @@ class OldFServidor : Fragment(), MenuProvider {
                 //viewmodel.changeURLserver()
             }
         } else {
-            showDialog("Correcto", "No es necesario, no hubo errores al subir los datos") {}
+            oldShowDialog("Correcto", "No es necesario, no hubo errores al subir los datos") {}
         }
     }
 }

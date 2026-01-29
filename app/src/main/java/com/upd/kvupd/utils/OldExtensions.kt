@@ -151,7 +151,7 @@ fun Fragment.progress(mensaje: String) {
     dlg.show(parentFragmentManager, "dialog")
 }
 
-fun Fragment.showDialog(
+fun Fragment.oldShowDialog(
     titulo: String,
     mensaje: String,
     showNegativo: Boolean = false,
@@ -184,7 +184,7 @@ fun Fragment.showDialog(
     }
 }
 
-fun Activity.showDialog(
+fun Activity.oldShowDialog(
     titulo: String,
     mensaje: String,
     showNegativo: Boolean = false,

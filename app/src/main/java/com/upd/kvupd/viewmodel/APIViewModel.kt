@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
+import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
@@ -104,5 +105,19 @@ class APIViewModel @Inject constructor(
 
     fun setQuery(text: String) {
         _query.value = text
+    }
+
+    fun clearQuery() {
+        _query.value = ""
+    }
+
+    fun saveAndSendBaja(item: TableBaja) {
+        viewModelScope.launch {
+            roomFunctions.saveBaja(item)
+            /*val json = jsobFunctions.jsonRegistrarEquipo(identificador, empresa)
+            serverFunctions.apiSendRegistro(json).collect {
+                _registerEvent.emit(it)
+            }*/
+        }
     }
 }

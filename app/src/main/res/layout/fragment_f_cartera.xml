@@ -83,7 +83,6 @@
                 android:src="@drawable/lista"
                 app:backgroundTint="@color/white"
                 app:elevation="1dp"
-                app:fabSize="mini"
                 app:rippleColor="@color/lightgray"
                 app:tint="@color/primaryDarkColor"
                 app:useCompatPadding="true" />
@@ -98,7 +97,6 @@
                 android:src="@drawable/centrar"
                 app:backgroundTint="@color/white"
                 app:elevation="1dp"
-                app:fabSize="mini"
                 app:rippleColor="@color/lightgray"
                 app:tint="@color/primaryDarkColor"
                 app:useCompatPadding="true" />
@@ -114,7 +112,6 @@
                 android:src="@drawable/gps"
                 app:backgroundTint="@color/white"
                 app:elevation="1dp"
-                app:fabSize="mini"
                 app:rippleColor="@color/lightgray"
                 app:tint="@color/primaryDarkColor"
                 app:useCompatPadding="true" />
