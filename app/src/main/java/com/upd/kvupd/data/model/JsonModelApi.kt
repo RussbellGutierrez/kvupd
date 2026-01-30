@@ -327,7 +327,7 @@ data class BajaSupervisor(
 
 @JsonClass(generateAdapter = true)
 data class ClienteBaja(
-    @Json(name = "ID") val codigo: Int,
+    @Json(name = "ID") val codigo: String,
     @Json(name = "NOMBRE") val nombre: String,
     @Json(name = "DOCUMENTO") val documento: String,
     @Json(name = "DIRECCION") val direccion: String,
