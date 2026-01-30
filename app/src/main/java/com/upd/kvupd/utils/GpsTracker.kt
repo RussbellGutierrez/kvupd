@@ -11,10 +11,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.upd.kvupd.ui.sealed.GpsError
-import com.upd.kvupd.utils.GPSConstants.FRECUENCIA_METROS
-import com.upd.kvupd.utils.GPSConstants.TRACKER_INTERVALO_NORMAL
-import com.upd.kvupd.utils.GPSConstants.TRACKER_INTERVALO_RAPIDO
-import com.upd.kvupd.utils.GPSConstants.TRACKER_LAPSO_EXTENSO
+import com.upd.kvupd.utils.GPSConstants.DISTANCIA_EXTENSO
+import com.upd.kvupd.utils.GPSConstants.DISTANCIA_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.GPT_LAPSO_EXTENSO
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +38,9 @@ class GpsTracker @Inject constructor(
     // Iniciamos con valores por defecto
     fun startTracking(
         id: String,
-        interval: Long = TRACKER_INTERVALO_NORMAL,
-        fastest: Long = TRACKER_INTERVALO_RAPIDO,
-        minDistance: Float = FRECUENCIA_METROS,
+        interval: Long = GPT_INTERVALO_NORMAL,
+        fastest: Long = GPT_INTERVALO_RAPIDO,
+        minDistance: Float = DISTANCIA_NORMAL,
         onLocation: (Location) -> Unit,
         onError: (GpsError) -> Unit = {}
     ) {
@@ -86,9 +87,9 @@ class GpsTracker @Inject constructor(
         if (modoExtenso) {
             startTracking(
                 id = id,
-                interval = TRACKER_LAPSO_EXTENSO,
-                fastest = TRACKER_LAPSO_EXTENSO,
-                minDistance = FRECUENCIA_METROS,
+                interval = GPT_LAPSO_EXTENSO,
+                fastest = GPT_LAPSO_EXTENSO,
+                minDistance = DISTANCIA_EXTENSO,
                 onLocation = onLocation,
                 onError = onError
             )

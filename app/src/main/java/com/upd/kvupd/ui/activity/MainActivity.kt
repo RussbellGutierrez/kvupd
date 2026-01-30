@@ -1,7 +1,6 @@
 package com.upd.kvupd.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +11,7 @@ import androidx.navigation.ui.NavigationUI
 import com.upd.kvupd.databinding.ActivityMainBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.InitialState
+import com.upd.kvupd.ui.sealed.EstadoSesion
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
@@ -61,15 +61,19 @@ class MainActivity : AppCompatActivity() {
 
         localViewmodel.iniciarServiceSiHayConfiguracion()
 
-        collectFlow(localViewmodel.sesionActual) { sesionVigente ->
-            if (sesionVigente) return@collectFlow
-
-            mostrarDialog(
-                AppDialogType.Informativo(
-                    titulo = T_WARNING,
-                    mensaje = "Necesita realizar la sincronizacion diaria"
-                )
-            )
+        collectFlow(localViewmodel.sesionEstado) { estado ->
+            when (estado) {
+                EstadoSesion.Loading -> Unit
+                EstadoSesion.Valida -> Unit
+                EstadoSesion.Invalida -> {
+                    mostrarDialog(
+                        AppDialogType.Informativo(
+                            titulo = T_WARNING,
+                            mensaje = "Necesita realizar la sincronizacion diaria"
+                        )
+                    )
+                }
+            }
         }
     }
 

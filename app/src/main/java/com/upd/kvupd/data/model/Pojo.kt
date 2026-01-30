@@ -3,6 +3,7 @@ package com.upd.kvupd.data.model
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import com.upd.kvupd.ui.fragment.type.MapData
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -20,7 +21,11 @@ data class FlowCliente(
     @ColumnInfo(name = "ventanio") val compras: Int,
     @ColumnInfo(name = "fecha") val fecha: String,
     @ColumnInfo(name = "negocio") val negocio: String
-): MapData, Parcelable
+): Parcelable, MapData {
+    @IgnoredOnParcel
+    override val mapId: String
+        get() = cliente
+}
 
 @Parcelize
 data class BajaAux(

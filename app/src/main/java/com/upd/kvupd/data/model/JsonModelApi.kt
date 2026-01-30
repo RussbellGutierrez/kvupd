@@ -15,7 +15,7 @@ data class JsonConfiguracion(
 
 @JsonClass(generateAdapter = true)
 data class Configuracion(
-    @Json(name = "codigo") val codigo: Int,
+    @Json(name = "codigo") val codigo: String,
     @Json(name = "empresa") val empresa: Int,
     @Json(name = "esquema") val esquema: Int,
     @Json(name = "fecha") val fecha: String,
@@ -38,10 +38,10 @@ data class JsonCliente(
 
 @JsonClass(generateAdapter = true)
 data class Cliente(
-    @Json(name = "idcliente") val codigo: Int,
+    @Json(name = "idcliente") val codigo: String,
     @Json(name = "nomcli") val cliente: String,
     @Json(name = "ruta") val ruta: Int,
-    @Json(name = "c_perso") val vendedor: Int,
+    @Json(name = "c_perso") val vendedor: String,
     @Json(name = "domicli") val domicilio: String,
     @Json(name = "XCoord") val longitud: Double,
     @Json(name = "YCoord") val latitud: Double,
@@ -62,7 +62,7 @@ data class JsonVendedor(
 
 @JsonClass(generateAdapter = true)
 data class Vendedor(
-    @Json(name = "value") val codigo: Int,
+    @Json(name = "value") val codigo: String,
     @Json(name = "name") val descripcion: String,
     @Json(name = "type") val cargo: String
 )
@@ -98,7 +98,7 @@ data class JsonEncuesta(
 
 @JsonClass(generateAdapter = true)
 data class Encuesta(
-    @Json(name = "ENCUESTA_ID") val id: Int,
+    @Json(name = "ENCUESTA_ID") val id: String,
     @Json(name = "ENCUESTA_NOMBRE") val nombre: String,
     @Json(name = "FOTO") val foto: Boolean,
     @Json(name = "PREGUNTA_ID") val pregunta: Int,
@@ -119,7 +119,7 @@ data class JsonRuta(
 
 @JsonClass(generateAdapter = true)
 data class Ruta(
-    @Json(name = "ruta") val ruta: Int,
+    @Json(name = "ruta") val ruta: String,
     @Json(name = "coords") val coords: String,
     @Json(name = "XCoord") val longitud: Double,
     @Json(name = "YCoord") val latitud: Double,
@@ -269,7 +269,7 @@ data class JsonPedimap(
 
 @JsonClass(generateAdapter = true)
 data class Pedimap(
-    @Json(name = "codigo") val codigo: Int,
+    @Json(name = "codigo") val codigo: String,
     @Json(name = "nombre") val nombre: String,
     @Json(name = "precision") val precision: Double,
     @Json(name = "bateria") val bateria: String,
@@ -277,7 +277,10 @@ data class Pedimap(
     @Json(name = "hora") val hora: String,
     @Json(name = "estado") val emitiendo: Int,
     @Json(name = "position") val posicion: Position
-): MapData
+): MapData {
+    override val mapId: String
+        get() = codigo
+}
 
 @JsonClass(generateAdapter = true)
 data class JsonBajaVendedor(
@@ -305,7 +308,7 @@ data class JsonBajaSupervisor(
 @JsonClass(generateAdapter = true)
 data class BajaSupervisor(
     @Json(name = "SUCURSAL_ID") val sucursal: Int,
-    @Json(name = "EMPLEADO_ID") val empleado: Int,
+    @Json(name = "EMPLEADO_ID") val empleado: String,
     @Json(name = "EMPLEADO_NOMBRE") val nombre: String,
     @Json(name = "FECHA") val creado: String,
     @Json(name = "DIA_SEMANA") val dia: String,

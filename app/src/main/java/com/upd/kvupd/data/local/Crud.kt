@@ -29,7 +29,6 @@ import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
 import com.upd.kvupd.data.model.TableEstado
-import com.upd.kvupd.data.model.TableIncidencia
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -80,9 +79,6 @@ interface Crud {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRespuesta(rsp: List<TableRespuesta>)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertIncidencia(rsp: TableIncidencia)
 
     //// UPDATES
     @Update(entity = TableSeguimiento::class)
@@ -142,7 +138,4 @@ interface Crud {
 
     @Query(DEL_RESPUESTA)
     suspend fun deleteRespuesta()
-
-    @Query(DEL_INCIDENCIA)
-    suspend fun deleteIncidencia()
 }

@@ -25,12 +25,16 @@ import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
+import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
 import com.upd.kvupd.utils.GPSConstants.MODO_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
+import com.upd.kvupd.utils.NotificationHelper.ACTION_CHANGE_MODE
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_FIN
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_INICIO
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_SYNC_INIT
 import com.upd.kvupd.utils.toLocalTime
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalTime
@@ -131,23 +135,43 @@ class OperationSource @Inject constructor(
             .build()
 
     @SuppressLint("NewApi")
-    fun sincronizarModoYAlarmas() {
+    fun syncInicial() {
+        Log.e(GPS_FLOW, "[SYNC] syncInicial ejecutado")
+
         val ahora = LocalTime.now()
         val horaInicio = preferences.getString(KEY_HORA_INICIO, "07:00:00")!!.toLocalTime()
         val horaFin = preferences.getString(KEY_HORA_FIN, "22:00:00")!!.toLocalTime()
 
-        val dentroHorario = ahora.isAfter(horaInicio) && ahora.isBefore(horaFin)
+        val dentroHorario = if (horaInicio.isBefore(horaFin)) {
+            !ahora.isBefore(horaInicio) && ahora.isBefore(horaFin)
+        } else {
+            !ahora.isBefore(horaInicio) || ahora.isBefore(horaFin)
+        }
+
         val modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
-        val modoActual = preferences.getString(KEY_MODO_GPS, MODO_NORMAL)
 
-        val serviceActivo = LocationServiceBackground.isRunning()
-        if (!serviceActivo || modoNuevo != modoActual) {
-            LocationServiceBackground.reiniciar(context, modoNuevo)
-        }
+        // 🔴 ARRANQUE SIEMPRE
+        preferences.edit()
+            .putString(KEY_MODO_GPS, modoNuevo)
+            .putBoolean(KEY_SYNC_INIT, true)
+            .apply()
 
-        if (!dentroHorario) {
-            reprogramarAlarmas(horaInicio, horaFin)
-        }
+        Log.e(GPS_FLOW, "[SYNC] forzando inicio de service → modo=$modoNuevo")
+
+        LocationServiceBackground.reiniciar(context, modoNuevo)
+
+        // Alarmas siempre
+        reprogramarAlarmas(horaInicio, horaFin)
+    }
+
+    @SuppressLint("NewApi")
+    fun reprogramarPorNuevaConfig() {
+        Log.e(GPS_FLOW, "[SYNC] reprogramarPorNuevaConfig ejecutado")
+
+        val horaInicio = preferences.getString(KEY_HORA_INICIO, "07:00:00")!!.toLocalTime()
+        val horaFin = preferences.getString(KEY_HORA_FIN, "22:00:00")!!.toLocalTime()
+
+        reprogramarAlarmas(horaInicio, horaFin)
     }
 
     private fun reprogramarAlarmas(horaInicio: LocalTime, horaFin: LocalTime) {
@@ -158,15 +182,15 @@ class OperationSource @Inject constructor(
 
         // 🔹 Crear Intent para activar modo normal
         val intentInicio = Intent(context, GpsReceiver::class.java).apply {
-            action = "com.upd.kvupd.CHANGE_MODE"
-            putExtra("modo", MODO_NORMAL)
+            action = ACTION_CHANGE_MODE
+            putExtra(INTENT_EXTRA_GPS, MODO_NORMAL)
         }
         programarAlarma(intentInicio, horaInicio, requestCode = 1001)
 
         // 🔹 Crear Intent para activar modo extendido
         val intentFin = Intent(context, GpsReceiver::class.java).apply {
-            action = "com.upd.kvupd.CHANGE_MODE"
-            putExtra("modo", MODO_EXTENSO)
+            action = ACTION_CHANGE_MODE
+            putExtra(INTENT_EXTRA_GPS, MODO_EXTENSO)
         }
         programarAlarma(intentFin, horaFin, requestCode = 1002)
     }
@@ -200,9 +224,9 @@ class OperationSource @Inject constructor(
             pendingIntent
         )
 
-        Log.i(
-            "AlarmasGPS",
-            "⏰ Alarma programada: ${intent.getStringExtra("modo")} -> ${calendar.time}"
+        Log.e(
+            GPS_FLOW,
+            "[AlarmasGPS] ⏰ Alarma programada: ${intent.getStringExtra(INTENT_EXTRA_GPS)} -> ${calendar.time}"
         )
     }
 
@@ -224,7 +248,7 @@ class OperationSource @Inject constructor(
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
-            Log.i("AlarmasGPS", "❌ Alarma cancelada ($tipo)")
+            Log.e(GPS_FLOW, "[AlarmasGPS] ❌ Alarma cancelada ($tipo)")
         }
     }
 

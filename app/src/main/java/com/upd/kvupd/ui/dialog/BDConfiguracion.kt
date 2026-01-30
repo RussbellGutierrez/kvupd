@@ -97,7 +97,7 @@ class BDConfiguracion : BottomSheetDialogFragment() {
         binding.apply {
             autoEmpresa.setOnClickListener { autoEmpresa.showDropDown() }
             btnRegistrar.setOnClickListener { registerAndroidMovil() }
-            btnEnviar.setOnClickListener{localViewModel.entregarRegistroPedimap()}
+            btnEnviar.setOnClickListener { localViewModel.entregarRegistroPedimap() }
         }
 
         initUI()
@@ -112,9 +112,9 @@ class BDConfiguracion : BottomSheetDialogFragment() {
             )
         )
 
-        binding.txtUuid.text = localViewModel.obtenerUUID()
-            ?.takeIf { it.isNotBlank() }
-            ?: NO_FIND_UUID
+        binding.txtUuid.text =
+            localViewModel.obtenerUUID().takeUnless { it.isNullOrBlank() }
+                ?: NO_FIND_UUID
     }
 
     private fun registerAndroidMovil() {
@@ -122,15 +122,20 @@ class BDConfiguracion : BottomSheetDialogFragment() {
         val uuid = binding.txtUuid.text.toString()
 
         if (empresa.isEmpty()) {
-            mostrarDialog(AppDialogType.Informativo(T_ERROR, "Debe seleccionar una empresa"))
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Debe seleccionar una empresa"
+                )
+            )
             return
         }
 
         if (uuid == NO_FIND_UUID) {
             mostrarDialog(
                 AppDialogType.Informativo(
-                    T_ERROR,
-                    "No existe identificador generado previamente"
+                    titulo = T_ERROR,
+                    mensaje = "No existe identificador generado previamente"
                 )
             )
             return

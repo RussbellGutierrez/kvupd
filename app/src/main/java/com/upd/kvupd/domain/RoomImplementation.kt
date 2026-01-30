@@ -20,7 +20,6 @@ import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
 import com.upd.kvupd.data.model.TableEstado
-import com.upd.kvupd.data.model.TableIncidencia
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -38,7 +37,6 @@ class RoomImplementation @Inject constructor(
         crudSource.apiGuardarConfiguracion(item)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun apiSaveClientes(item: List<Cliente>) {
         crudSource.apiGuardarClientes(item)
     }
@@ -89,10 +87,6 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun saveRespuestas(item: List<TableRespuesta>) {
         crudSource.guardarRespuestas(item)
-    }
-
-    override suspend fun saveIncidencia(item: TableIncidencia) {
-        crudSource.guardarIncidencias(item)
     }
 
     override suspend fun updateSeguimiento(actual: TableSeguimiento) {
@@ -169,10 +163,6 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun deleteRespuestas() {
         crudSource.borrarRespuestas()
-    }
-
-    override suspend fun deleteIncidencias() {
-        crudSource.borrarIncidencias()
     }
 
     override suspend fun queryConfiguracion(): TableConfiguracion? {

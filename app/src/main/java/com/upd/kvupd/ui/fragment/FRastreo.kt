@@ -31,7 +31,7 @@ import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
-import com.upd.kvupd.utils.GPSConstants.MODO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
 import com.upd.kvupd.utils.GpsTracker
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
@@ -67,7 +67,7 @@ class FRastreo : Fragment(), MenuProvider {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        gpsTracker.stopTracking(MODO_RAPIDO)
+        gpsTracker.stopTracking(TRACKER_RAPIDO)
 
         mapHelper.disableMyLocation()
         mapHelper.clearMarkers()
@@ -173,7 +173,7 @@ class FRastreo : Fragment(), MenuProvider {
 
     private fun launchGpsRastreo() {
         gpsTracker.startTracking(
-            id = MODO_RAPIDO,
+            id = TRACKER_RAPIDO,
             interval = GPS_INTERVALO_NORMAL,
             fastest = GPS_INTERVALO_RAPIDO,
             minDistance = IGNORAR_METROS,
@@ -195,7 +195,7 @@ class FRastreo : Fragment(), MenuProvider {
     private fun moveToMarkerByCode(codigo: String) {
         val pedimap = mapHelper
             .getMarkerData(Pedimap::class.java)
-            .firstOrNull { it.codigo == codigo.toInt() }
+            .firstOrNull { it.codigo == codigo }
 
         if (pedimap != null) {
             mapHelper.focus(pedimap)

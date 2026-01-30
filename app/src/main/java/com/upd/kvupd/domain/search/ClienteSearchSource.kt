@@ -14,7 +14,7 @@ class ClienteSearchSource @Inject constructor() {
         val q = query.lowercase()
 
         return lista.filter {
-            it.cliente.toString().contains(q) ||
+            it.cliente.contains(q) ||
                     it.nomcli.lowercase().contains(q)
         }
     }

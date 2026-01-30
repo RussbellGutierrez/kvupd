@@ -39,14 +39,21 @@ import com.upd.kvupd.ui.dialog.CarteraVendedor
 import com.upd.kvupd.ui.dialog.ListaClientesMapa
 import com.upd.kvupd.ui.fragment.enumClass.Vista
 import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.ui.sealed.BajaEstados
 import com.upd.kvupd.ui.sealed.ResultadoApi
+import com.upd.kvupd.utils.BajaConstantes.KEY_BAJA
+import com.upd.kvupd.utils.BajaConstantes.PAIR_BAJA
 import com.upd.kvupd.utils.FechaHoraUtil
-import com.upd.kvupd.utils.GPSConstants
-import com.upd.kvupd.utils.GPSConstants.MODO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
+import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.TRACKER_TEMPORAL
 import com.upd.kvupd.utils.GpsTracker
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
+import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
@@ -57,6 +64,7 @@ import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -70,10 +78,12 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     MenuProvider {
 
     private val apiViewModel by activityViewModels<APIViewModel>()
+    private val localViewmodel by activityViewModels<ALLViewModel>()
     private val binding by viewBinding(FragmentFCarteraBinding::bind)
 
     private lateinit var adapter: ClienteAdapter
-    private lateinit var mapHelper: MapHelper
+    private val mapHelper by lazy { MapHelper(layoutInflater) }
+    private var bajaEstado: BajaEstados = BajaEstados.Reposo
     private var vistaActual: Vista = Vista.LISTA
     private var getLocation: Location? = null
     private var clientesCache: List<FlowCliente> = emptyList()
@@ -106,8 +116,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        mapHelper = MapHelper(layoutInflater)
-
         adapter = adapterFactory.create(listener = this, hoy = FechaHoraUtil.dia())
         binding.rcvCartera.layoutManager = LinearLayoutManager(requireContext())
         binding.rcvCartera.adapter = adapter
@@ -116,7 +124,16 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         setupButtons()
         collectFlows()
 
-        resultBottomDialog()
+        resultadoBajaDialogo()
+
+        collectFlow(apiViewModel.bajaMessage) collect@{ mensaje ->
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = mensaje
+                )
+            )
+        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -132,7 +149,7 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
     override fun onQueryTextSubmit(p0: String) = false
     override fun onQueryTextChange(p0: String): Boolean {
-        apiViewModel.setQuery(p0)
+        localViewmodel.setQuery(p0)
         return true
     }
 
@@ -143,13 +160,33 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             mostrarNegativo = true,
             onPositive = {
                 toggleVista()
+                movedOnce = true
                 mapHelper.focus(cliente)
             }
         ))
     }
 
     override fun onLongClick(cliente: FlowCliente) {
-        val action = FCarteraDirections.actionFCarteraToBDBajaCliente(cliente)
+        if (cliente.baja > 0) {
+            mostrarClienteDadoDeBaja()
+            return
+        }
+
+        navegarABaja(cliente)
+    }
+
+    private fun mostrarClienteDadoDeBaja() {
+        mostrarDialog(
+            AppDialogType.Informativo(
+                titulo = T_WARNING,
+                mensaje = "El cliente fue dado de baja, si fue por error, puede anularlo desde 'Administrar Bajas'"
+            )
+        )
+    }
+
+    private fun navegarABaja(cliente: FlowCliente) {
+        val action = FCarteraDirections
+            .actionFCarteraToBDBajaCliente(cliente)
         findNavController().navigate(action)
     }
 
@@ -202,7 +239,8 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             }
         }
 
-        collectFlow(apiViewModel.flowClientesFiltrados) { lista ->
+        val flow = apiViewModel.flowClientesFiltrados(localViewmodel.query)
+        collectFlow(flow) { lista ->
             clientesCache = lista
             renderCurrentView()
         }
@@ -212,42 +250,82 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         }
     }
 
-    private fun resultBottomDialog() {
+    private fun resultadoBajaDialogo() {
         parentFragmentManager.setFragmentResultListener(
-            "baja_result",
+            KEY_BAJA,
             viewLifecycleOwner
         ) { _, bundle ->
-            val baja = bundle.getParcelableCompat<BajaAux>("baja")
+
+            if (bajaEstado !is BajaEstados.Reposo) return@setFragmentResultListener
+
+            val baja = bundle.getParcelableCompat<BajaAux>(PAIR_BAJA)
                 ?: return@setFragmentResultListener
 
-            val location = getLocation ?: run {
-                snack("No se pudo obtener ubicación")
+            val location = getLocation
+            if (location == null) {
+                bajaEstado = BajaEstados.ObteniendoUbicacion
+                obtenerUbicacionParaBaja(baja)
                 return@setFragmentResultListener
             }
 
-            val getCliente = baja.cliente
-
-            val item = TableBaja(
-                cliente = getCliente.cliente,
-                nombre = getCliente.nomcli,
-                motivo = baja.motivo,
-                comentario = baja.comentario,
-                longitud = location.longitude,
-                latitud = location.latitude,
-                precision = location.accuracy.toDouble().to2Decimals(),
-                fecha = baja.fecha,
-                anulado = 0
-            )
-
-            Log.d(_tag, "Baja $item")
-
-            /*val bajaFinal = baja.copy(
-                latitud = location.latitude,
-                longitud = location.longitude
-            )
-
-            apiViewModel.guardarBaja(bajaFinal)*/
+            bajaEstado = BajaEstados.Procesada
+            procesarBaja(baja, location)
+            bajaEstado = BajaEstados.Reposo
         }
+    }
+
+    private fun obtenerUbicacionParaBaja(baja: BajaAux) {
+        snack("Obteniendo ubicación…")
+
+        gpsTracker.startTracking(
+            id = TRACKER_TEMPORAL,
+            interval = 0,
+            fastest = 0,
+            minDistance = 0f,
+            onLocation = { location ->
+                if (bajaEstado !is BajaEstados.ObteniendoUbicacion) return@startTracking
+
+                gpsTracker.stopTracking(TRACKER_TEMPORAL)
+                getLocation = location
+
+                bajaEstado = BajaEstados.Procesada
+                procesarBaja(baja, location)
+                bajaEstado = BajaEstados.Reposo
+            },
+            onError = {
+                if (bajaEstado !is BajaEstados.ObteniendoUbicacion) return@startTracking
+
+                bajaEstado = BajaEstados.Error
+                snack("No se pudo obtener ubicación")
+                bajaEstado = BajaEstados.Reposo
+            }
+        )
+    }
+
+    private fun procesarBaja(
+        baja: BajaAux,
+        location: Location
+    ) {
+        val cliente = baja.cliente
+
+        val item = TableBaja(
+            cliente = cliente.cliente,
+            nombre = cliente.nomcli,
+            motivo = baja.motivo,
+            comentario = baja.comentario,
+            longitud = location.longitude,
+            latitud = location.latitude,
+            precision = location.accuracy.toDouble().to2Decimals(),
+            fecha = baja.fecha,
+            anulado = 0
+        )
+
+        if (vistaActual == Vista.MAPA) {
+            mapHelper.hideInfoWindow(cliente)
+        }
+
+        snack("Cliente ${cliente.nomcli} dado de baja")
+        apiViewModel.saveAndSendBaja(item)
     }
 
     private fun renderCurrentView() {
@@ -268,9 +346,15 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         initMapaSiEsNecesario { _ ->
             mapHelper.clearMarkers()
             clientesCache.forEach { item ->
-                mapHelper.addMarker(item, item.latitud, item.longitud, item.icono(requireContext()))
+                mapHelper.addMarker(
+                    data = item,
+                    lat = item.latitud,
+                    lng = item.longitud,
+                    icon = item.icono(requireContext())
+                )
             }
             startGps() // activa MyLocation y lanza rastreo
+            mapHelper.resolvePendingFocus()
         }
     }
 
@@ -292,7 +376,7 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             }
 
             Vista.MAPA -> {
-                apiViewModel.clearQuery() // limpia filtro
+                localViewmodel.clearQuery() // limpia filtro
                 binding.searchview.setQuery("", true)
                 binding.rltMapa.setUI("v", true)
                 binding.rcvCartera.setUI("v", false)
@@ -307,16 +391,16 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     }
 
     private fun stopGps() {
-        gpsTracker.stopTracking(MODO_RAPIDO)
+        gpsTracker.stopTracking(TRACKER_RAPIDO)
         mapHelper.disableMyLocation()
     }
 
     private fun launchGpsRastreo() {
         gpsTracker.startTracking(
-            id = MODO_RAPIDO,
-            interval = GPSConstants.GPS_INTERVALO_NORMAL,
-            fastest = GPSConstants.GPS_INTERVALO_RAPIDO,
-            minDistance = GPSConstants.IGNORAR_METROS,
+            id = TRACKER_RAPIDO,
+            interval = GPS_INTERVALO_NORMAL,
+            fastest = GPS_INTERVALO_RAPIDO,
+            minDistance = IGNORAR_METROS,
             onLocation = { location ->
                 getLocation = location
                 if (!movedOnce) mapHelper.moveCamera(location).also { movedOnce = true }

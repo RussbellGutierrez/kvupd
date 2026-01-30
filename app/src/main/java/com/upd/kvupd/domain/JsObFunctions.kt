@@ -1,5 +1,6 @@
 package com.upd.kvupd.domain
 
+import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableConfiguracion
 import okhttp3.RequestBody
 
@@ -10,4 +11,5 @@ interface JsObFunctions {
     fun jsonObjectPedimap(item: TableConfiguracion): RequestBody
     fun jsonObjectBasico(item: TableConfiguracion): RequestBody
     fun jsonObjectSimple(item: TableConfiguracion): RequestBody
+    fun jsonObjectBajas(item: TableConfiguracion, baja: TableBaja): RequestBody
 }

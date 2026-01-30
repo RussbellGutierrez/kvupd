@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.ui.fragment.type.MapData
-import com.upd.kvupd.utils.ALLInfoWindow
+import com.upd.kvupd.utils.MapInfoWindow
 import com.upd.kvupd.utils.settingsMap
 
 class MapHelper(
@@ -31,22 +31,28 @@ class MapHelper(
     private val markers = mutableListOf<Marker>()
     private val polygons = mutableListOf<Polygon>()
 
-    // Colas para dibujar después
+    // Colas para dibujar o ejecutar después
+    private var pendingFocus: MapData? = null
     private val pendingPolygons = mutableListOf<List<LatLng>>()
     private val pendingCamera = mutableListOf<() -> Unit>()
 
     fun attachMap(map: GoogleMap) {
         googleMap = map
         map.settingsMap()
-        map.setInfoWindowAdapter(ALLInfoWindow(inflater))
+        map.setInfoWindowAdapter(MapInfoWindow(inflater))
 
         map.setOnMarkerClickListener { marker ->
-            focus(marker.tag ?: return@setOnMarkerClickListener false)
+            val data = marker.tag as? MapData
+                ?: return@setOnMarkerClickListener false
+
+            focus(data)
             true
         }
 
         map.setOnInfoWindowClickListener { marker ->
-            val data = marker.tag as? MapData ?: return@setOnInfoWindowClickListener
+            val data = marker.tag as? MapData
+                ?: return@setOnInfoWindowClickListener
+
             infoWindowClickListener?.invoke(data)
         }
 
@@ -200,25 +206,42 @@ class MapHelper(
         )
     }
 
+    fun resolvePendingFocus() {
+        val data = pendingFocus ?: return
+        pendingFocus = null
+        focus(data)
+    }
+
     fun <T> getMarkerData(clazz: Class<T>): List<T> =
         markers.mapNotNull { clazz.cast(it.tag) }
 
     fun focus(
-        data: Any,
-        zoom: Float = 16f,
+        data: MapData,
+        zoom: Float = 18f,
         showInfo: Boolean = true
     ) {
-        val map = googleMap ?: return
+        val map = googleMap
+        if (map == null || markers.isEmpty()) {
+            pendingFocus = data
+            return
+        }
 
-        val marker = markers.firstOrNull { it.tag == data } ?: return
+        val marker = markers.firstOrNull {
+            (it.tag as? MapData)?.mapId == data.mapId
+        } ?: return
 
         map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(marker.position, zoom)
         )
 
-        if (showInfo) {
-            marker.showInfoWindow()
-        }
+        if (showInfo) marker.showInfoWindow()
+    }
+
+    fun hideInfoWindow(data: MapData) {
+        val marker = markers.firstOrNull {
+            (it.tag as? MapData)?.mapId == data.mapId
+        } ?: return
+        marker.hideInfoWindow()
     }
 
     fun getMap(): GoogleMap? = googleMap

@@ -86,34 +86,26 @@ class JsonObjectDataSource @Inject constructor(
 
     fun jsonRequestBajas(dato: TableConfiguracion, baja: TableBaja): RequestBody {
         val tipoUsuario = TipoUsuario.inicialTipo(dato.tipo)
-        when (tipoUsuario) {
-            TipoUsuario.Vendedor ->
-            TipoUsuario.Supervisor -> {}
-            TipoUsuario.JefeVentas -> {}
+        val estado = when (tipoUsuario) {
+            TipoUsuario.Vendedor -> 1
+            TipoUsuario.Supervisor,
+            TipoUsuario.JefeVentas -> 2
         }
         val json = JSONObject().apply {
             put("empleado", dato.codigo)
             put("empresa", dato.empresa)
+            put("estado", estado)
+            put("fecha", baja.fecha)
+            put("cliente", baja.cliente)
+            put("motivo", baja.motivo)
+            put("observacion", baja.comentario)
+            put("xcoord", baja.longitud)
+            put("ycoord", baja.latitud)
+            put("precision", baja.precision)
+            put("anulado", baja.anulado)
         }
         return json.toReqBody()
     }
-    /*private fun requestBody(j: TBaja): RequestBody {
-        val p = JSONObject()
-                p.put("empleado", CONF.codigo)
-        p.put("fecha", j.fecha)
-        p.put("cliente", j.cliente)
-        p.put("motivo", j.motivo)
-        p.put("observacion", j.comentario)
-        p.put("xcoord", j.longitud)
-        p.put("ycoord", j.latitud)
-        p.put("precision", j.precision)
-        p.put("anulado", j.anulado)
-                p.put("empresa", CONF.empresa)
-        if (CONF.tipo == "S") {
-            p.put("estado",2)
-        }
-        return p.toReqBody()
-    }*/
 
     private fun obtenerSistemaOperativo(): String {
         val sdkInt = ExtraInfo.obtener(InfoDispositivo.SDK_INT).toInt()

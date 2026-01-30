@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.JsonObjectDataSource
+import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableConfiguracion
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
@@ -31,4 +32,7 @@ class JsObImplementation @Inject constructor(
 
     override fun jsonObjectSimple(item: TableConfiguracion): RequestBody =
         jsonObjectDataSource.jsonRequestSimple(item)
+
+    override fun jsonObjectBajas(item: TableConfiguracion, baja: TableBaja): RequestBody =
+        jsonObjectDataSource.jsonRequestBajas(item, baja)
 }

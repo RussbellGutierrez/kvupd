@@ -1,7 +1,6 @@
 package com.upd.kvupd.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,10 +8,9 @@ import com.upd.kvupd.data.remote.FirebaseHelper
 import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.OperationsFunctions
 import com.upd.kvupd.domain.RoomFunctions
-import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.ui.sealed.InitialState
+import com.upd.kvupd.ui.sealed.EstadoSesion
 import com.upd.kvupd.utils.EventFlow
-import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
 import com.upd.kvupd.utils.PlayServicesChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,11 +40,14 @@ class ALLViewModel @Inject constructor(
     private val _pedimapMensaje = EventFlow<String>()
     val pedimapMensaje = _pedimapMensaje.events
 
-    private val _sesionActual = MutableStateFlow (false)
-    val sesionActual: StateFlow<Boolean> = _sesionActual
+    private val _sesionEstado = MutableStateFlow<EstadoSesion>(EstadoSesion.Loading)
+    val sesionEstado: StateFlow<EstadoSesion> = _sesionEstado
 
     private val _remainingWorkersIds = EventFlow<List<UUID>>()
     val remainingWorkersIds = _remainingWorkersIds.events
+
+    private val _query = MutableStateFlow("")
+    val query: StateFlow<String> = _query
 
     fun obtenerUUID(): String? {
         return identityFunctions.obtenerIdentificador()
@@ -138,33 +139,54 @@ class ALLViewModel @Inject constructor(
         }
     }
 
-    fun ejecutarLocationService() {
-        operationsFunctions.syncModeAlarms()
+    fun ejecutarSyncInicial() {
+        viewModelScope.launch {
+            operationsFunctions.syncInitial()
+        }
+    }
+
+    fun reprogramarUsandoConfig() {
+        operationsFunctions.reprogramBeforeConfig()
     }
 
     fun iniciarServiceSiHayConfiguracion() {
         viewModelScope.launch {
-            roomFunctions.queryConfiguracion()?.let {
-                operationsFunctions.syncModeAlarms()
-            }
+            roomFunctions.queryConfiguracion() ?: return@launch
+            operationsFunctions.syncInitial()
         }
     }
 
     fun entregarRegistroPedimap() {
         viewModelScope.launch {
-            identityFunctions.obtenerIdentificador()?.let { uuid ->
-                val mensaje = firebaseHelper.obtenerMensajePedimap()
-                val completo = "$mensaje:\n$uuid"
-                _pedimapMensaje.emit(completo)
-            }
+            val uuid = identityFunctions.obtenerIdentificador() ?: return@launch
+            val mensaje = firebaseHelper.obtenerMensajePedimap()
+            val completo = "$mensaje:\n$uuid"
+            _pedimapMensaje.emit(completo)
         }
+    }
+
+    fun setQuery(text: String) {
+        _query.value = text
+    }
+
+    fun clearQuery() {
+        _query.value = ""
     }
 
     fun verificarFechaSesion() {
         viewModelScope.launch {
-            roomFunctions.queryConfiguracion()?.let {
-                val respuesta = operationsFunctions.checkTodaySesion(it)
-                _sesionActual.value = respuesta
+            val config = roomFunctions.queryConfiguracion()
+                ?: return@launch
+
+            val esValida = operationsFunctions.checkTodaySesion(config)
+
+            val nuevoEstado = if (esValida)
+                EstadoSesion.Valida
+            else
+                EstadoSesion.Invalida
+
+            if (_sesionEstado.value != nuevoEstado) {
+                _sesionEstado.value = nuevoEstado
             }
         }
     }

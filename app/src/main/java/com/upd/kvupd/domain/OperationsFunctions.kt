@@ -7,7 +7,8 @@ interface OperationsFunctions {
 
     fun initWorker(): UUID
     fun remainingWorkers(usuarioTipo: String): List<UUID>
-    fun syncModeAlarms()
+    fun syncInitial()
+    fun reprogramBeforeConfig()
     fun initBootWorker()
     fun checkTodaySesion(config: TableConfiguracion): Boolean
 }

@@ -9,10 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.upd.kvupd.R
 import com.upd.kvupd.application.receiver.GpsReceiver
+import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.GPSConstants.GPS_CHANNEL
 import com.upd.kvupd.utils.GPSConstants.GPS_NOTIF_ID
 import com.upd.kvupd.utils.NotificationHelper.ACTION_OPEN_APP
@@ -34,20 +36,18 @@ class GpsNotificationHelper @Inject constructor(
     }
 
     private fun crearCanal() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Servicio GPS",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description = "Ubicacion en segundo plano"
-                enableLights(true)
-                enableVibration(true)
-                lightColor = Color.BLUE
-                setShowBadge(false)
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            channelId,
+            "Servicio GPS",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Ubicacion en segundo plano"
+            enableLights(true)
+            enableVibration(true)
+            lightColor = Color.BLUE
+            setShowBadge(false)
         }
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun pendingIntentAbrirApp(): PendingIntent {
@@ -74,17 +74,21 @@ class GpsNotificationHelper @Inject constructor(
         )
     }
 
-    fun mostrarModoNormal(): Notification =
-        buildNotification(
+    fun mostrarModoNormal(): Notification {
+        Log.e(GPS_FLOW, "[GPS_NOTIF] 🔔 creando notificación MODO_NORMAL")
+        return buildNotification(
             texto = "Aplicacion activa",
             icono = R.drawable.emitir
         )
+    }
 
-    fun mostrarModoExtendido(): Notification =
-        buildNotification(
+    fun mostrarModoExtendido(): Notification {
+        Log.e(GPS_FLOW, "[GPS_NOTIF] 🔔 creando notificación MODO_EXTENSO")
+        return buildNotification(
             texto = "Fuera de hora laboral",
             icono = R.drawable.dormir
         )
+    }
 
     private fun buildNotification(texto: String, icono: Int): Notification {
         return NotificationCompat.Builder(ctx, channelId)
@@ -101,6 +105,7 @@ class GpsNotificationHelper @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun actualizarNotificacion(notification: Notification) {
-        NotificationManagerCompat.from(ctx).notify(notificationId, notification)
+        Log.e(GPS_FLOW, "[GPS_NOTIF] ♻️ notificación actualizada")
+        notificationManager.notify(notificationId, notification)
     }
 }

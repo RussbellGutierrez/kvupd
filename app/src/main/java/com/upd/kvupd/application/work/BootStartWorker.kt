@@ -18,7 +18,6 @@ class BootStartWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParameters: WorkerParameters,
     private val roomFunctions: RoomFunctions,
-    private val preference: SharedPreferences,
     private val operationsFunctions: OperationsFunctions
 ) : CoroutineWorker(appContext, workerParameters) {
 
@@ -26,9 +25,7 @@ class BootStartWorker @AssistedInject constructor(
         val config = roomFunctions.queryConfiguracion()
 
         if (config != null) {
-            val modo = preference.getString(KEY_MODO_GPS, MODO_NORMAL) ?: MODO_NORMAL
-            LocationServiceBackground.reiniciar(applicationContext, modo)
-            operationsFunctions.syncModeAlarms()
+            operationsFunctions.syncInitial()
         }
 
         return Result.success()

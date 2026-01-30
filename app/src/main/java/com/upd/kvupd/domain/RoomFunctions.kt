@@ -16,7 +16,6 @@ import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
 import com.upd.kvupd.data.model.TableEstado
-import com.upd.kvupd.data.model.TableIncidencia
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -43,7 +42,6 @@ interface RoomFunctions {
     suspend fun saveAlta(item: TableAlta)
     suspend fun saveDatosAlta(item: TableAltaDatos)
     suspend fun saveRespuestas(item: List<TableRespuesta>)
-    suspend fun saveIncidencia(item: TableIncidencia)
 
     ///     Room Update
     suspend fun updateSeguimiento(actual: TableSeguimiento)
@@ -67,7 +65,6 @@ interface RoomFunctions {
     suspend fun deleteDatosAltas()
     suspend fun deleteBajasSupervisor()
     suspend fun deleteRespuestas()
-    suspend fun deleteIncidencias()
 
     ///     Room Query
     suspend fun queryConfiguracion(): TableConfiguracion?

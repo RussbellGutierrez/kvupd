@@ -38,6 +38,7 @@ import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
+import java.util.Locale
 import java.util.UUID
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
@@ -133,6 +134,8 @@ fun DialogFragment.setResume(isCompact: Boolean = true) {
         }
     }
 }
+
+fun String.toUpper(): String = this.uppercase(Locale.getDefault())
 
 fun String.toLocalTime(): LocalTime = LocalTime.parse(this)
 

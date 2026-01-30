@@ -2,7 +2,6 @@ package com.upd.kvupd.utils
 
 import android.os.Build
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import com.afollestad.materialdialogs.MaterialDialog
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
@@ -13,12 +12,13 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object BaseDatosRoom {
-    const val VERSION_BASEDATOS = 16
+    const val VERSION_BASEDATOS = 17
     const val DB_NAME = "KventasN"
 }
 
 object ConstantsExtras {
     const val NO_FIND_UUID = "/////-/////-/////-/////"
+    const val GPS_FLOW = "GPS_FLOW"
 }
 
 object AlarmConstants {
@@ -34,6 +34,7 @@ object SharedPreferenceKeys {
     const val KEY_MODO_GPS = "gps_mode"
     const val KEY_HORA_INICIO = "hora_inicio_gps"
     const val KEY_HORA_FIN = "hora_fin_gps"
+    const val KEY_SYNC_INIT = "sync_inicial_ejecutado"
 }
 
 object NotificationHelper {
@@ -43,19 +44,29 @@ object NotificationHelper {
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
 }
 
+object BajaConstantes {
+    const val KEY_BAJA = "baja_resultado"
+    const val PAIR_BAJA = "baja"
+}
+
 object GPSConstants {
-    const val MODO_NORMAL = "normal"
-    const val MODO_EXTENSO = "extendido"
-    const val MODO_RAPIDO = "rapido"
-    const val TRACKER_ID = "rastreogps"
+    const val INTENT_EXTRA_GPS = "intent_modo"
 
     const val GPS_CHANNEL = "gps_channel"
     const val GPS_NOTIF_ID = 101
 
-    const val TRACKER_INTERVALO_NORMAL = 120_000L
-    const val TRACKER_INTERVALO_RAPIDO = 60_000L
-    const val TRACKER_LAPSO_EXTENSO = 3_600_000L
-    const val FRECUENCIA_METROS = 2.0f
+    const val TRACKER_GPS = "rastreo_gps"
+    const val GPT_INTERVALO_NORMAL = 120_000L
+    const val GPT_INTERVALO_RAPIDO = 60_000L
+    const val DISTANCIA_NORMAL = 2.0f
+    const val GPT_LAPSO_EXTENSO = 3_600_000L
+    const val DISTANCIA_EXTENSO = 50f
+
+    const val MODO_NORMAL = "normal"
+    const val MODO_EXTENSO = "extendido"
+
+    const val TRACKER_RAPIDO = "rastreo_rapido"
+    const val TRACKER_TEMPORAL = "rastreo_temporal"
     const val GPS_INTERVALO_NORMAL = 60_000L
     const val GPS_INTERVALO_RAPIDO = 30_000L
     const val IGNORAR_METROS = 0f

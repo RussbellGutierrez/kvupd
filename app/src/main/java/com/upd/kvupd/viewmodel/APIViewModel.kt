@@ -2,6 +2,7 @@ package com.upd.kvupd.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
@@ -34,6 +35,9 @@ class APIViewModel @Inject constructor(
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
 
+    private val _bajaMessage = EventFlow<String>()
+    val bajaMessage = _bajaMessage.events
+
     private val _pedimapEvent = EventFlow<ResultadoApi<JsonPedimap>>()
     val pedimapEvent = _pedimapEvent.events
 
@@ -42,8 +46,6 @@ class APIViewModel @Inject constructor(
 
     private val flowClientes = roomFunctions.listFlowClientes()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    private val _query = MutableStateFlow("")
 
     /// VARIABLES PRIVADAS ARRIBA ///
 
@@ -60,10 +62,6 @@ class APIViewModel @Inject constructor(
     val flowPolygon = roomFunctions.listFlowPolygon()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val flowClientesFiltrados = combine(flowClientes, _query) { lista, q ->
-        clienteSearchSource.filtrar(lista, q)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
     val flowVendedores = roomFunctions.listFlowVendedores()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -78,46 +76,86 @@ class APIViewModel @Inject constructor(
 
     fun downloadPedimap() {
         viewModelScope.launch {
-            roomFunctions.queryConfiguracion()?.let { config ->
-                val json = jsobFunctions.jsonObjectPedimap(config)
-                serverFunctions.apiQueryPedimap(json).collect {
-                    _pedimapEvent.emit(it)
-                }
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val json = jsobFunctions.jsonObjectPedimap(config)
+            serverFunctions.apiQueryPedimap(json).collect {
+                _pedimapEvent.emit(it)
             }
         }
     }
 
     fun downloadClientes(vendedor: Int? = null, fecha: String? = null) {
         viewModelScope.launch {
-            roomFunctions.queryConfiguracion()?.let { config ->
-                val json = jsobFunctions.jsonObjectClientes(config, vendedor, fecha)
-                serverFunctions.apiDownloadCliente(json).collect { result ->
-                    if (result is ResultadoApi.Exito) {
-                        result.data?.jobl?.let { lista ->
-                            roomFunctions.apiSaveClientes(lista)
-                        }
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val json = jsobFunctions.jsonObjectClientes(config, vendedor, fecha)
+            serverFunctions.apiDownloadCliente(json).collect { result ->
+                if (result is ResultadoApi.Exito) {
+                    result.data?.jobl?.let { lista ->
+                        roomFunctions.apiSaveClientes(lista)
                     }
-                    _clienteEvent.emit(result)
                 }
+                _clienteEvent.emit(result)
             }
         }
     }
 
-    fun setQuery(text: String) {
-        _query.value = text
-    }
-
-    fun clearQuery() {
-        _query.value = ""
-    }
+    fun flowClientesFiltrados(
+        query: StateFlow<String>
+    ): StateFlow<List<FlowCliente>> =
+        combine(flowClientes, query) { lista, q ->
+            clienteSearchSource.filtrar(lista, q)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
 
     fun saveAndSendBaja(item: TableBaja) {
         viewModelScope.launch {
             roomFunctions.saveBaja(item)
-            /*val json = jsobFunctions.jsonRegistrarEquipo(identificador, empresa)
-            serverFunctions.apiSendRegistro(json).collect {
-                _registerEvent.emit(it)
-            }*/
+            intentarEnviarBaja(item)
+        }
+    }
+
+    fun retrySendBaja(item: TableBaja) {
+        viewModelScope.launch {
+            roomFunctions.updateBaja(
+                item.copy(
+                    sincronizado = false
+                )
+            )
+            intentarEnviarBaja(item)
+        }
+    }
+
+    private suspend fun intentarEnviarBaja(item: TableBaja) {
+        val config = roomFunctions.queryConfiguracion() ?: return
+
+        val json = jsobFunctions.jsonObjectBajas(config, item)
+
+        serverFunctions.apiSendBaja(json).collect { result ->
+            when (result) {
+                is ResultadoApi.Exito -> {
+                    roomFunctions.updateBaja(
+                        item.copy(
+                            sincronizado = true
+                        )
+                    )
+                }
+
+                is ResultadoApi.ErrorHttp,
+                is ResultadoApi.Fallo -> {
+                    roomFunctions.updateBaja(
+                        item.copy(
+                            sincronizado = false
+                        )
+                    )
+                    result.mensajeUsuario()
+                        ?.let { _bajaMessage.emit(it) }
+                }
+
+                ResultadoApi.Loading -> Unit
+            }
         }
     }
 }

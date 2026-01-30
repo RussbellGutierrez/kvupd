@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/separation_10"
                 android:orientation="vertical"
-                android:background="@color/lightorange"
                 android:padding="@dimen/separation_5"
                 app:layout_constraintTop_toBottomOf="@id/text1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -66,30 +65,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:textSize="@dimen/text_medium"
                     app:drawableStartCompat="@drawable/alzamano"
                     app:drawableTint="@color/lightcrimson"
                     android:drawablePadding="@dimen/separation_5"
                     tools:text="Cliente"/>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="@dimen/separation_5" />
 
                 <TextView
                     android:id="@+id/txt_direccion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:textSize="@dimen/text_medium"
                     app:drawableStartCompat="@drawable/casa"
                     app:drawableTint="@color/lightcrimson"
-                    android:layout_marginVertical="@dimen/separation_5"
                     android:drawablePadding="@dimen/separation_5"
                     tools:text="Direccion"/>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="@dimen/separation_5" />
 
                 <TextView
                     android:id="@+id/txt_negocio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:textSize="@dimen/text_medium"
                     app:drawableStartCompat="@drawable/tienda"
                     app:drawableTint="@color/lightcrimson"
                     android:drawablePadding="@dimen/separation_5"
@@ -118,6 +123,17 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/text2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/separation_5"
+                android:text="Indicar nuevo codigo en el caso de duplicado"
+                android:textColor="@color/lightcrimson"
+                app:layout_constraintTop_toBottomOf="@id/textinput1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textinput2"
                 android:layout_width="match_parent"
@@ -127,14 +143,14 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textinput1">
+                app:layout_constraintTop_toBottomOf="@id/text2">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_comentario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:gravity="top|start"
                     android:lines="4"
                     android:maxLines="5"
                     android:hint="Comentario" />

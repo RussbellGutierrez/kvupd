@@ -1,5 +1,6 @@
 package com.upd.kvupd.ui.dialog
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.upd.kvupd.databinding.CustomDialogProgressbarBinding
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_SYNC_INIT
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.observeWorkersById
 import com.upd.kvupd.utils.setResume
@@ -29,6 +31,9 @@ class DSincronizarDiario : DialogFragment() {
 
     @Inject
     lateinit var workManager: WorkManager
+
+    @Inject
+    lateinit var preferences: SharedPreferences
 
     override fun onStart() {
         super.onStart()
@@ -203,6 +208,14 @@ class DSincronizarDiario : DialogFragment() {
         }
         stateUI(inProgress = false)
 
-        localViewModel.ejecutarLocationService()
+        val inicializado = preferences.getBoolean(KEY_SYNC_INIT, false)
+
+        if (!inicializado) {
+            // 🔴 Primera vez: arranca todo el sistema
+            localViewModel.ejecutarSyncInicial()
+        } else {
+            // 🟢 Días siguientes: solo reprograma alarmas
+            localViewModel.reprogramarUsandoConfig()
+        }
     }
 }

@@ -82,45 +82,6 @@
             </intent-filter>
         </activity>
 
-        <!--service
-            android:name="com.upd.kvupd.service.ServiceSetup"
-            android:directBootAware="true"
-            android:enabled="true"
-            android:foregroundServiceType="location" />
-
-        <service
-            android:name="com.upd.kvupd.service.ServicePosicion"
-            android:directBootAware="true"
-            android:enabled="true"
-            android:foregroundServiceType="location" />
-
-        <service
-            android:name="com.upd.kvupd.service.ServiceFinish"
-            android:directBootAware="true"
-            android:enabled="true"
-            android:foregroundServiceType="dataSync" />
-
-        <receiver
-            android:name="com.upd.kvupd.application.OldReceiver"
-            android:directBootAware="true"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.MY_PACKAGE_SUSPENDED" />
-                <action android:name="android.intent.action.REBOOT" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.TIME_SET" />
-                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
-                <action android:name="android.intent.action.BATTERY_CHANGED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver-->
-
         <service
             android:name="com.upd.kvupd.service.LocationServiceBackground"
             android:directBootAware="true"
@@ -145,7 +106,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
-                <action android:name="android.intent.action.BATTERY_CHANGED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

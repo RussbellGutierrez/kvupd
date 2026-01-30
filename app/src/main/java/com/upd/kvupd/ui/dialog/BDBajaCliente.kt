@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.compose.ui.text.toUpperCase
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -12,7 +13,10 @@ import com.upd.kvupd.data.model.BajaAux
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.databinding.BottomBajaclienteBinding
 import com.upd.kvupd.ui.fragment.enumClass.MotivoBaja
+import com.upd.kvupd.utils.BajaConstantes.KEY_BAJA
+import com.upd.kvupd.utils.BajaConstantes.PAIR_BAJA
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.toUpper
 import com.upd.kvupd.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,7 +72,7 @@ class BDBajaCliente : BottomSheetDialogFragment() {
         return BajaAux(
             cliente = cliente,
             motivo = motivo.id,
-            comentario = comentario,
+            comentario = comentario.toUpper(),
             fecha = FechaHoraUtil.ahora()
         )
     }
@@ -77,8 +81,8 @@ class BDBajaCliente : BottomSheetDialogFragment() {
         val baja = recolectarDatos()
 
         parentFragmentManager.setFragmentResult(
-            "baja_result",
-            bundleOf("baja" to baja)
+            KEY_BAJA,
+            bundleOf(PAIR_BAJA to baja)
         )
 
         dismiss()

@@ -1,7 +1,5 @@
 package com.upd.kvupd.data.local
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.model.BajaSupervisor
 import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
@@ -13,7 +11,6 @@ import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableEstado
-import com.upd.kvupd.data.model.TableIncidencia
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.data.model.Vendedor
@@ -35,7 +32,6 @@ class RoomCrudSource @Inject constructor(
         crud.insertConfiguracion(item.map { it.asTConfig() })
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun apiGuardarClientes(item: List<Cliente>) {
         crud.insertClientes(item.map { it.asTCliente() })
     }
@@ -86,10 +82,6 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun guardarRespuestas(item: List<TableRespuesta>) {
         crud.insertRespuesta(item)
-    }
-
-    suspend fun guardarIncidencias(item: TableIncidencia) {
-        crud.insertIncidencia(item)
     }
 
     /////      UPDATE
@@ -168,9 +160,5 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun borrarRespuestas(){
         crud.deleteRespuesta()
-    }
-
-    suspend fun borrarIncidencias(){
-        crud.deleteIncidencia()
     }
 }

@@ -23,6 +23,7 @@ import com.upd.kvupd.data.model.colorSeguimiento
 import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.ui.sealed.EstadoSesion
 import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.InstanciaDialog
@@ -59,10 +60,11 @@ class FBase : Fragment(), MenuProvider {
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         collectFlow(apiViewmodel.flowConfiguracion) { list ->
-            list.firstOrNull()?.let { config ->
-                parametrosConfig(config)
-                showBotones(config)
-            }
+            val config = list.firstOrNull() ?: return@collectFlow
+            parametrosConfig(config)
+            showBotones(config)
+
+            localViewmodel.verificarFechaSesion()
         }
 
         collectFlow(apiViewmodel.flowRutas) { rutas ->
@@ -80,6 +82,11 @@ class FBase : Fragment(), MenuProvider {
             btnCartera.setOnClickListener {
                 verificarSesionVigente {
                     findNavController().navigate(R.id.action_FBase_to_FCartera)
+                }
+            }
+            btnBaja.setOnClickListener {
+                verificarSesionVigente {
+                    findNavController().navigate()
                 }
             }
             //btnCliente.setUI("v", true)
@@ -100,7 +107,6 @@ class FBase : Fragment(), MenuProvider {
         R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
         R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
         R.id.encuesta -> consume { }
-        R.id.incidencia -> consume { }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
@@ -118,7 +124,6 @@ class FBase : Fragment(), MenuProvider {
 
     private fun showBotones(config: TableConfiguracion) {
         val tipo = TipoUsuario.inicialTipo(config.tipo)
-        Log.d(_tag, "User type ${tipo.nombre()}")
 
         val cfg = configPorTipo(tipo)
 
@@ -168,58 +173,6 @@ class FBase : Fragment(), MenuProvider {
         bind.fabGps.imageTintList = ColorStateList.valueOf(color)
     }*/
 
-    /*private fun setParams(config: TConfiguracion) {
-        if (config.tipo != "S") {
-            bind.lnrVendedor.setUI("v", false)
-            bind.txtRuta.setUI("v", true)
-        }
-        if (config.esquema == 8) {
-            bind.lnrConsulta.setUI("v", true)
-        } else {
-            bind.lnrConsulta.setUI("v", false)
-        }
-        val img = if (config.empresa == 1) R.drawable.oriunda_logo else R.drawable.terranorte_logo
-        val version = "ver. ${BuildConfig.VERSION_NAME}"
-        val usuario = getUsuario(config)
-        val gps =
-            if (requireContext().isGPSDisabled()) Color.rgb(255, 51, 51) else Color.rgb(4, 106, 97)
-        val seguimiento =
-            if (config.seguimiento == 1) Color.rgb(4, 106, 97) else Color.rgb(221, 150, 6)
-        bind.imgEmpresa.setImageResource(img)
-        bind.txtUsuario.text = usuario
-        bind.txtVersion.text = version
-        bind.fabGps.imageTintList = ColorStateList.valueOf(gps)
-        bind.fabEmit.imageTintList = ColorStateList.valueOf(seguimiento)
-    }*/
-
-    /*private fun setRuta(l: List<RowCliente>) {
-        var mensaje = ""
-        val rutas = arrayListOf<String>()
-        l.forEach { i ->
-            rutas.add(i.ruta.toString())
-        }
-        val rd = rutas.distinct()
-        rd.forEach { i ->
-            if (mensaje == "") {
-                mensaje = "Ruta $i"
-            } else {
-                mensaje += " - Ruta $i"
-            }
-        }
-        bind.txtRuta.text = mensaje
-    }*/
-
-    /*private fun getUsuario(item: TConfiguracion): String {
-        return if (item.nombre == "") {
-            when (item.tipo) {
-                "S" -> "Supervisor de ventas - ${item.codigo}"
-                else -> "Usuario de ventas - ${item.codigo}"
-            }
-        } else {
-            "${item.nombre} - ${item.codigo}"
-        }
-    }*/
-
     private fun launchEncuesta() {
         val p = JSONObject()
         //p.put("empleado", CONF.codigo)
@@ -264,13 +217,19 @@ class FBase : Fragment(), MenuProvider {
     }*/
 
     private fun verificarSesionVigente(f: () -> Unit) {
-        if (localViewmodel.sesionActual.value) {
-            f()
-        }else {
-            mostrarDialog(AppDialogType.Informativo(
-                titulo = T_WARNING,
-                mensaje = "Debe sincronizar primero la aplicacion"
-            ))
+        when (localViewmodel.sesionEstado.value) {
+            EstadoSesion.Valida -> f()
+
+            EstadoSesion.Invalida -> {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_WARNING,
+                        mensaje = "Debe sincronizar primero la aplicacion"
+                    )
+                )
+            }
+
+            EstadoSesion.Loading -> Unit
         }
     }
 

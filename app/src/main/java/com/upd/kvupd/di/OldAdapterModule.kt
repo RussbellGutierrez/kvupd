@@ -22,7 +22,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AdapterModule {
+object OldAdapterModule {
 
     @Provides
     fun prodiverClienteAdapter(

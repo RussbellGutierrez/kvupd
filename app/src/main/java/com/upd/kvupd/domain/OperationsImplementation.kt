@@ -20,8 +20,12 @@ class OperationsImplementation @Inject constructor(
         return operationSource.lanzarWorkersRestantes(usuarioTipo)
     }
 
-    override fun syncModeAlarms() {
-        operationSource.sincronizarModoYAlarmas()
+    override fun syncInitial() {
+        operationSource.syncInicial()
+    }
+
+    override fun reprogramBeforeConfig() {
+        operationSource.reprogramarPorNuevaConfig()
     }
 
     override fun initBootWorker() {

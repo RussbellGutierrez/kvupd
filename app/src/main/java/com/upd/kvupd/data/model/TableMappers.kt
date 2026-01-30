@@ -22,7 +22,6 @@ fun Configuracion.asTConfig(): TableConfiguracion =
         this.tipo
     )
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun Cliente.asTCliente(): TableCliente =
     TableCliente(
         this.codigo,

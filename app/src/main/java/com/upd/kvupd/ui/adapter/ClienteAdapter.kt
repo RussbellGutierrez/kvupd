@@ -46,6 +46,17 @@ class ClienteAdapter @AssistedInject constructor(
             bind.txtCliente.text = "${item.cliente} - ${item.nomcli}"
             bind.txtFecha.text = item.fecha
 
+            when{
+                item.compras == 1 -> {
+                    bind.txtVentas.setTextColor(Color.parseColor("#B6B6B6"))
+                    bind.txtCompras.setTextColor(Color.parseColor("#3700B3"))
+                }
+                item.ventas == 0 -> {
+                    bind.txtCompras.setTextColor(Color.parseColor("#B6B6B6"))
+                    bind.txtVentas.setTextColor(Color.parseColor("#3700B3"))
+                }
+            }
+
             val color = if (item.fecha == hoy)
                 Color.parseColor("#000000")
             else

@@ -21,12 +21,6 @@
         app:showAsAction="collapseActionView"/>
 
     <item
-        android:id="@+id/incidencia"
-        android:title="Reporte sistema"
-        android:icon="@drawable/otros"
-        app:showAsAction="collapseActionView"/>
-
-    <item
         android:id="@+id/apagar"
         android:title="Cerrar aplicacion"
         android:icon="@drawable/apagar"

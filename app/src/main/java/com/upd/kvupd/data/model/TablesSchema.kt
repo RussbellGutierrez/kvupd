@@ -4,7 +4,7 @@ import androidx.room.Entity
 
 @Entity(primaryKeys = ["codigo"])
 data class TableConfiguracion(
-    val codigo: Int,
+    val codigo: String,
     val empresa: Int,
     val esquema: Int,
     val fecha: String,
@@ -22,10 +22,10 @@ data class TableConfiguracion(
 
 @Entity(primaryKeys = ["idcliente", "ruta"])
 data class TableCliente(
-    val idcliente: Int,
+    val idcliente: String,
     val nomcli: String,
     val ruta: Int,
-    val empleado: Int,
+    val empleado: String,
     val domicli: String,
     val longitud: Double,
     val latitud: Double,
@@ -41,7 +41,7 @@ data class TableCliente(
 
 @Entity(primaryKeys = ["codigo"])
 data class TableVendedor(
-    val codigo: Int,
+    val codigo: String,
     val descripcion: String,
     val cargo: String
 )
@@ -62,7 +62,7 @@ data class TableNegocio(
 
 @Entity(primaryKeys = ["ruta"])
 data class TableRuta(
-    val ruta: Int,
+    val ruta: String,
     val corte: String,
     val longitud: Double,
     val latitud: Double,
@@ -71,7 +71,7 @@ data class TableRuta(
 
 @Entity(primaryKeys = ["id", "pregunta"])
 data class TableEncuesta(
-    val id: Int,
+    val id: String,
     val nombre: String,
     val foto: Boolean,
     val pregunta: Int,
@@ -107,11 +107,11 @@ data class TableRespuesta(
 @Entity(primaryKeys = ["fecha", "longitud", "latitud"])
 data class TableSeguimiento(
     val fecha: String,
-    val usuario: Int,
+    val usuario: String,
     val longitud: Double,
     val latitud: Double,
     val precision: Double,
-    val bateria: Double,
+    val bateria: Int,
 
     // 🔑 Nuevo control de sincronización
     var sincronizado: Boolean = false
@@ -133,10 +133,10 @@ data class TableBaja(
     var sincronizado: Boolean = false
 )
 
-@Entity(primaryKeys = ["idaux"])
+@Entity(primaryKeys = ["fecha", "idaux"])
 data class TableAlta(
     val idaux: String,             // Codigo usuario + dia + hora
-    val empleado: Int,          // empleado que generó el alta
+    val empleado: String,          // empleado que generó el alta
     val fecha: String,
     val longitud: Double,
     val latitud: Double,
@@ -148,10 +148,11 @@ data class TableAlta(
     var sincronizado: Boolean = false
 )
 
-@Entity(primaryKeys = ["idaux"])
+@Entity(primaryKeys = ["fecha", "idaux"])
 data class TableAltaDatos(
-    val idaux: Int,
-    val empleado: Int,
+    val fecha: String,
+    val idaux: String,
+    val empleado: String,
     val tipo: String,
     val razon: String,
     val nombre: String,
@@ -184,7 +185,7 @@ data class TableAltaDatos(
 @Entity(primaryKeys = ["clicodigo", "creado"])
 data class TableBajaSupervisor(
     val sucursal: Int,
-    val empleado: Int,
+    val empleado: String,
     val nombre: String,
     val creado: String,
     val dia: String,
@@ -193,7 +194,7 @@ data class TableBajaSupervisor(
     val observacion: String,
     val confirmado: Int?,
     val fechaconf: String,
-    val clicodigo: Int,
+    val clicodigo: String,
     val clinombre: String,
     val documento: String,
     val direccion: String,
@@ -209,14 +210,6 @@ data class TableBajaSupervisor(
     val longitud: Double,
     val latitud: Double,
     val compra: String
-)
-
-@Entity(primaryKeys = ["tipo", "fecha"])
-data class TableIncidencia(
-    var tipo: String,
-    var usuario: Int,
-    var observacion: String,
-    var fecha: String
 )
 
 @Entity(primaryKeys = ["cliente", "fecha", "tipo"])
