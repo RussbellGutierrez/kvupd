@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.data.model.BajaVendedor
-import com.upd.kvupd.databinding.RowBajaVendedorBinding
+import com.upd.kvupd.databinding.OldRowBajaVendedorBinding
 import com.upd.kvupd.domain.OldFunctions
 import com.upd.kvupd.utils.OldBaseViewHolder
 import com.upd.kvupd.utils.dateToday
@@ -52,7 +52,7 @@ class OldBajaVendedorAdapter @Inject constructor(
     var mDiffer: AsyncListDiffer<BajaVendedor> = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
-        val bind = RowBajaVendedorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val bind = OldRowBajaVendedorBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(bind)
     }
 
@@ -67,7 +67,7 @@ class OldBajaVendedorAdapter @Inject constructor(
     override fun getItemViewType(position: Int) = position
 
     private inner class ViewHolder(
-        private val bind: RowBajaVendedorBinding
+        private val bind: OldRowBajaVendedorBinding
     ) : OldBaseViewHolder<BajaVendedor>(bind.root) {
 
         override fun bind(item: BajaVendedor) {

@@ -75,16 +75,16 @@ class ServerImplementation @Inject constructor(
             block = { downloadEncuesta(body) }
         )
 
+    override fun apiDownloadSupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>> =
+        remoteFlowCall(
+            setupHolder = { downloadSource },
+            block = { downloadSupervisorBajas(body) }
+        )
+
     override fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>> =
         remoteFlowCall(
             setupHolder = { downloadSource },
             block = { queryPedimap(body) }
-        )
-
-    override fun apiQuerySupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>> =
-        remoteFlowCall(
-            setupHolder = { downloadSource },
-            block = { querySupervisorBajas(body) }
         )
 
     override fun apiQueryVendedorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaVendedor>> =

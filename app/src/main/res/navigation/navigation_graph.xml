@@ -43,6 +43,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/action_FBase_to_FBaja"
+            app:destination="@id/FBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <dialog
@@ -78,6 +86,12 @@
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/FBaja"
+        android:name="com.upd.kvupd.ui.fragment.FBaja"
+        android:label="Bajas"
+        tools:layout="@layout/fragment_f_baja" />
 
     <dialog
         android:id="@+id/BDBajaCliente"

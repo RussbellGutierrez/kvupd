@@ -212,29 +212,18 @@ data class TableBajaSupervisor(
     val compra: String
 )
 
-@Entity(primaryKeys = ["cliente", "fecha", "tipo"])
-data class TableEstado(
+@Entity(primaryKeys = ["empleado", "cliente", "fecha"])
+data class TableBajaProcesada(
+    var empleado: String,
+    var cliente: String,
+    var procede: Int,
+    var fecha: String,
+    var precision: Double,
+    var longitud: Double,
+    var latitud: Double,
+    var fechaconfirmacion: String,
+    var observacion: String,
 
-    // ----------- Identificadores principales -----------
-    val cliente: Int,       // ID del cliente afectado
-    val empleado: Int,      // Empleado que realizó la acción
-    val tipo: String,       // Tipo de estado: "VISITA", "BAJA", "ALTA", etc.
-    val fecha: String,      // Fecha en la que se registró el evento
-
-    // ----------- Datos de VISITA (antes en TableEstado) -----------
-    val ruta: Int? = null,        // Ruta a la que pertenece (si aplica)
-    val atendido: Int? = null,    // 0 = no atendido, 1 = atendido
-
-    // ----------- Datos de BAJA (antes en TableBajaEstado) -----------
-    val bajaestado: Int? = null,         // 0 = anulado, 1 = pendiente, 2 = confirmado, 3 = no procede, 4 = registrado
-    val observacion: String? = null,  // Comentarios u observaciones
-    val fechaconf: String? = null,    // Fecha de confirmación (si aplica)
-
-    // ----------- Ubicación (usada en bajas o si se desea loguear visitas con coordenadas) -----------
-    val longitud: Double? = null,     // Longitud GPS
-    val latitud: Double? = null,      // Latitud GPS
-    val precision: Double? = null,    // Precisión de la ubicación
-
-    // 🔑----------- Control de sincronización -----------
-    var sincronizado: Boolean = false // false = pendiente de enviar, true = enviado al servidor
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
 )

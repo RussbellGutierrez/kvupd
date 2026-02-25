@@ -8,8 +8,9 @@ import com.upd.kvupd.data.remote.FirebaseHelper
 import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.OperationsFunctions
 import com.upd.kvupd.domain.RoomFunctions
-import com.upd.kvupd.ui.sealed.InitialState
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.ui.sealed.EstadoSesion
+import com.upd.kvupd.ui.sealed.InitialState
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.PlayServicesChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +32,10 @@ class ALLViewModel @Inject constructor(
     private val firebaseHelper: FirebaseHelper
 ) : ViewModel() {
 
+    init {
+        tipoUsuarioActual()
+    }
+
     private val _uuidEstados = MutableStateFlow<InitialState>(InitialState.Loading())
     val uuidEstados: StateFlow<InitialState> = _uuidEstados
 
@@ -42,6 +47,9 @@ class ALLViewModel @Inject constructor(
 
     private val _sesionEstado = MutableStateFlow<EstadoSesion>(EstadoSesion.Loading)
     val sesionEstado: StateFlow<EstadoSesion> = _sesionEstado
+
+    private val _tipoUsuario = MutableStateFlow<TipoUsuario?>(null)
+    val tipoUsuario: StateFlow<TipoUsuario?> = _tipoUsuario
 
     private val _remainingWorkersIds = EventFlow<List<UUID>>()
     val remainingWorkersIds = _remainingWorkersIds.events
@@ -125,7 +133,7 @@ class ALLViewModel @Inject constructor(
                     return@launch
                 }
 
-                val tipo = config.tipo
+                val tipo = TipoUsuario.fromCodigo(config.tipo)
                 val ids = operationsFunctions.remainingWorkers(tipo)
 
                 if (ids.isEmpty()) {
@@ -188,6 +196,16 @@ class ALLViewModel @Inject constructor(
             if (_sesionEstado.value != nuevoEstado) {
                 _sesionEstado.value = nuevoEstado
             }
+        }
+    }
+
+    fun tipoUsuarioActual() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion()
+                ?: return@launch
+
+            val tipo = TipoUsuario.fromCodigo(config.tipo)
+            _tipoUsuario.value = tipo
         }
     }
 }

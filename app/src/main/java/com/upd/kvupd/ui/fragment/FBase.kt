@@ -1,7 +1,6 @@
 package com.upd.kvupd.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -24,7 +23,7 @@ import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.EstadoSesion
-import com.upd.kvupd.ui.sealed.TipoUsuario
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -59,18 +58,6 @@ class FBase : Fragment(), MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        collectFlow(apiViewmodel.flowConfiguracion) { list ->
-            val config = list.firstOrNull() ?: return@collectFlow
-            parametrosConfig(config)
-            showBotones(config)
-
-            localViewmodel.verificarFechaSesion()
-        }
-
-        collectFlow(apiViewmodel.flowRutas) { rutas ->
-            binding.txtRuta.text = rutas
-        }
-
         binding.apply {
             txtVersion.text = ExtraInfo.obtener(InfoDispositivo.VERSION_APP)
 
@@ -86,7 +73,7 @@ class FBase : Fragment(), MenuProvider {
             }
             btnBaja.setOnClickListener {
                 verificarSesionVigente {
-                    findNavController().navigate()
+                    findNavController().navigate(R.id.action_FBase_to_FBaja)
                 }
             }
             //btnCliente.setUI("v", true)
@@ -97,6 +84,8 @@ class FBase : Fragment(), MenuProvider {
             //btnServidor.setUI("v", true)
             //agregar un fragment para enviar solicitudes de promociones
         }
+
+        collectFlows()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -112,7 +101,7 @@ class FBase : Fragment(), MenuProvider {
     }
 
     private fun parametrosConfig(config: TableConfiguracion) = with(binding) {
-        val tipo = TipoUsuario.nombreDesdeCodigo(config.tipo)
+        val tipo = TipoUsuario.fromCodigo(config.tipo)
         val usuarioTipo = "$tipo - ${config.codigo}"
         txtUsuario.text = config.nombre
         txtEmpresa.text = config.nombreEmpresa()
@@ -122,26 +111,38 @@ class FBase : Fragment(), MenuProvider {
         )
     }
 
-    private fun showBotones(config: TableConfiguracion) {
-        val tipo = TipoUsuario.inicialTipo(config.tipo)
+    private fun collectFlows() {
+        collectFlow(apiViewmodel.flowConfiguracion) { list ->
+            val config = list.firstOrNull() ?: return@collectFlow
+            parametrosConfig(config)
+            localViewmodel.verificarFechaSesion()
+        }
 
-        val cfg = configPorTipo(tipo)
+        collectFlow(apiViewmodel.flowRutas) { rutas ->
+            binding.txtRuta.text = rutas
+        }
 
-        binding.apply {
-            btnVendedor.setUI("v", cfg.vendedor)
-            btnCartera.setUI("v", cfg.cartera)
-            btnCliente.setUI("v", cfg.cliente)
-            btnReporte.setUI("v", cfg.reporte)
-            btnEncuesta.setUI("v", cfg.encuesta)
-            btnAlta.setUI("v", cfg.alta)
-            btnBaja.setUI("v", cfg.baja)
-            btnServidor.setUI("v", cfg.servidor)
+        collectFlow(localViewmodel.tipoUsuario) { tipo ->
+            if (tipo == null) return@collectFlow
+
+            val cfg = configPorTipo(tipo)
+
+            binding.apply {
+                btnVendedor.setUI("v", cfg.vendedor)
+                btnCartera.setUI("v", cfg.cartera)
+                btnCliente.setUI("v", cfg.cliente)
+                btnReporte.setUI("v", cfg.reporte)
+                btnEncuesta.setUI("v", cfg.encuesta)
+                btnAlta.setUI("v", cfg.alta)
+                btnBaja.setUI("v", cfg.baja)
+                btnServidor.setUI("v", cfg.servidor)
+            }
         }
     }
 
     private fun configPorTipo(tipo: TipoUsuario): BotonesConfig =
         when (tipo) {
-            TipoUsuario.Vendedor -> BotonesConfig(
+            TipoUsuario.VENDEDOR -> BotonesConfig(
                 cliente = true,
                 reporte = true,
                 encuesta = true,
@@ -150,7 +151,7 @@ class FBase : Fragment(), MenuProvider {
                 servidor = true
             )
 
-            TipoUsuario.Supervisor -> BotonesConfig(
+            TipoUsuario.SUPERVISOR -> BotonesConfig(
                 vendedor = true,
                 cartera = true,
                 reporte = true,
@@ -160,11 +161,11 @@ class FBase : Fragment(), MenuProvider {
                 servidor = true
             )
 
-            TipoUsuario.JefeVentas -> BotonesConfig(
+            TipoUsuario.JEFE_VENTAS -> BotonesConfig(
                 reporte = true,
                 encuesta = true,
                 alta = true,
-                servidor = true
+                servidor = true /// agregar rastreo para ver supervisor y vendedores
             )
         }
 

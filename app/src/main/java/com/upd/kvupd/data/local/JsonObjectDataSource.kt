@@ -5,7 +5,7 @@ import android.os.Build
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.ui.sealed.TipoUsuario
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.toReqBody
@@ -85,11 +85,11 @@ class JsonObjectDataSource @Inject constructor(
     }
 
     fun jsonRequestBajas(dato: TableConfiguracion, baja: TableBaja): RequestBody {
-        val tipoUsuario = TipoUsuario.inicialTipo(dato.tipo)
+        val tipoUsuario = TipoUsuario.fromCodigo(dato.tipo)
         val estado = when (tipoUsuario) {
-            TipoUsuario.Vendedor -> 1
-            TipoUsuario.Supervisor,
-            TipoUsuario.JefeVentas -> 2
+            TipoUsuario.VENDEDOR -> 1
+            TipoUsuario.SUPERVISOR,
+            TipoUsuario.JEFE_VENTAS -> 2
         }
         val json = JSONObject().apply {
             put("empleado", dato.codigo)

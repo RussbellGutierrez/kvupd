@@ -32,9 +32,9 @@ interface ServerFunctions {
     fun apiDownloadDistrito(body: RequestBody): Flow<ResultadoApi<JsonDistrito>>
     fun apiDownloadNegocio(body: RequestBody): Flow<ResultadoApi<JsonNegocio>>
     fun apiDownloadEncuesta(body: RequestBody): Flow<ResultadoApi<JsonEncuesta>>
+    fun apiDownloadSupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>>
 
     fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>>
-    fun apiQuerySupervisorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaSupervisor>>
     fun apiQueryVendedorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaVendedor>>
 
     fun apiReportPreventa(body: RequestBody): Flow<ResultadoApi<JsonVolumen>>

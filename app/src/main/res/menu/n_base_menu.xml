@@ -12,7 +12,7 @@
         android:id="@+id/sincronizar"
         android:title="Sincronizacion diaria"
         android:icon="@drawable/actualizar"
-        app:showAsAction="collapseActionView"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/encuesta"

@@ -30,7 +30,7 @@ class DownloadSource @Inject constructor(
     // Creacion del Api para consultas
     private suspend fun api() = apiBuilder.createAPI()
 
-    // DESCARGA INICIAL DE DATOS
+    // DESCARGA DE DATOS
     suspend fun downloadConfiguracion(body: RequestBody): Response<JsonConfiguracion> =
         api().downloadConfiguracion(body)
 
@@ -52,13 +52,13 @@ class DownloadSource @Inject constructor(
     suspend fun downloadEncuesta(body: RequestBody): Response<JsonEncuesta> =
         api().downloadEncuesta(body)
 
+    suspend fun downloadSupervisorBajas(body: RequestBody): Response<JsonBajaSupervisor> =
+        api().querySupervisorBajas(body)
+
 
     // CONSULTA DE DATOS EN SERVIDOR
     suspend fun queryPedimap(body: RequestBody): Response<JsonPedimap> =
         api().queryPedimap(body)
-
-    suspend fun querySupervisorBajas(body: RequestBody): Response<JsonBajaSupervisor> =
-        api().querySupervisorBajas(body)
 
     suspend fun queryVendedorBajas(body: RequestBody): Response<JsonBajaVendedor> =
         api().queryVendedorBajas(body)

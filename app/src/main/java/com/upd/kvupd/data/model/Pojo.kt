@@ -28,6 +28,24 @@ data class FlowCliente(
 }
 
 @Parcelize
+data class FlowBajaSupervisor(
+    @ColumnInfo(name = "empleado") val vendedor: String,
+    @ColumnInfo(name = "nombre") val vendnom: String,
+    @ColumnInfo(name = "creado") val fecha: String,
+    @ColumnInfo(name = "motivo") val motivo: String,
+    @ColumnInfo(name = "clicodigo") val cliente: String,
+    @ColumnInfo(name = "clinombre") val nombre: String,
+    @ColumnInfo(name = "direccion") val direccion: String,
+    @ColumnInfo(name = "canal") val canal: String,
+    @ColumnInfo(name = "observacion") val observacion: String,
+    @ColumnInfo(name = "negocio") val negocio: String,
+    @ColumnInfo(name = "pago") val pago: String,
+    @ColumnInfo(name = "compra") val compra: String,
+    @ColumnInfo(name = "revisado") val revisado: Int,
+    @ColumnInfo(name = "procede") val procede: Int?
+): Parcelable
+
+@Parcelize
 data class BajaAux(
     val cliente: FlowCliente,
     val motivo: Int,

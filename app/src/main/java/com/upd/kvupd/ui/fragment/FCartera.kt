@@ -37,15 +37,16 @@ import com.upd.kvupd.ui.adapter.ClienteAdapter
 import com.upd.kvupd.ui.adapter.ClienteAdapterFactory
 import com.upd.kvupd.ui.dialog.CarteraVendedor
 import com.upd.kvupd.ui.dialog.ListaClientesMapa
-import com.upd.kvupd.ui.fragment.enumClass.Vista
+import com.upd.kvupd.ui.fragment.enumClass.EstadoBaja
+import com.upd.kvupd.ui.fragment.enumClass.VistaInterfaz
 import com.upd.kvupd.ui.sealed.AppDialogType
-import com.upd.kvupd.ui.sealed.BajaEstados
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.BajaConstantes.KEY_BAJA
 import com.upd.kvupd.utils.BajaConstantes.PAIR_BAJA
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.GT_SIN_INTERVALO
 import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
 import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.TRACKER_TEMPORAL
@@ -83,8 +84,8 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
     private lateinit var adapter: ClienteAdapter
     private val mapHelper by lazy { MapHelper(layoutInflater) }
-    private var bajaEstado: BajaEstados = BajaEstados.Reposo
-    private var vistaActual: Vista = Vista.LISTA
+    private var bajaEstado: EstadoBaja = EstadoBaja.Reposo
+    private var vistaActual: VistaInterfaz = VistaInterfaz.LISTA
     private var getLocation: Location? = null
     private var clientesCache: List<FlowCliente> = emptyList()
     private var vendedorList: List<TableVendedor> = emptyList()
@@ -125,15 +126,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         collectFlows()
 
         resultadoBajaDialogo()
-
-        collectFlow(apiViewModel.bajaMessage) collect@{ mensaje ->
-            mostrarDialog(
-                AppDialogType.Informativo(
-                    titulo = T_ERROR,
-                    mensaje = mensaje
-                )
-            )
-        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -173,6 +165,11 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         }
 
         navegarABaja(cliente)
+    }
+
+    override fun onStop() {
+        localViewmodel.clearQuery()
+        super.onStop()
     }
 
     private fun mostrarClienteDadoDeBaja() {
@@ -221,19 +218,24 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     private fun collectFlows() {
         collectFlow(apiViewModel.clienteEvent) { resultado ->
             when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(AppDialogType.Progreso("Obteniendo lista de clientes"))
+                is ResultadoApi.Loading -> mostrarDialog(
+                    AppDialogType.Progreso(
+                        mensaje = "Obteniendo lista de clientes"
+                    )
+                )
+
                 is ResultadoApi.Exito -> stateSuccess(resultado.data)
                 is ResultadoApi.ErrorHttp -> mostrarDialog(
                     AppDialogType.Informativo(
-                        T_ERROR,
-                        "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                        titulo = T_ERROR,
+                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
                     )
                 )
 
                 is ResultadoApi.Fallo -> mostrarDialog(
                     AppDialogType.Informativo(
-                        T_ERROR,
-                        "Fallo: ${resultado.mensaje}"
+                        titulo = T_ERROR,
+                        mensaje = "Fallo: ${resultado.mensaje}"
                     )
                 )
             }
@@ -248,6 +250,15 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         collectFlow(apiViewModel.flowVendedores) { lista ->
             vendedorList = lista
         }
+
+        collectFlow(apiViewModel.bajaMessage) collect@{ mensaje ->
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = mensaje
+                )
+            )
+        }
     }
 
     private fun resultadoBajaDialogo() {
@@ -256,21 +267,21 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             viewLifecycleOwner
         ) { _, bundle ->
 
-            if (bajaEstado !is BajaEstados.Reposo) return@setFragmentResultListener
+            if (bajaEstado != EstadoBaja.Reposo) return@setFragmentResultListener
 
             val baja = bundle.getParcelableCompat<BajaAux>(PAIR_BAJA)
                 ?: return@setFragmentResultListener
 
             val location = getLocation
             if (location == null) {
-                bajaEstado = BajaEstados.ObteniendoUbicacion
+                bajaEstado = EstadoBaja.ObteniendoUbicacion
                 obtenerUbicacionParaBaja(baja)
                 return@setFragmentResultListener
             }
 
-            bajaEstado = BajaEstados.Procesada
+            bajaEstado = EstadoBaja.Procesada
             procesarBaja(baja, location)
-            bajaEstado = BajaEstados.Reposo
+            bajaEstado = EstadoBaja.Reposo
         }
     }
 
@@ -279,25 +290,25 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
         gpsTracker.startTracking(
             id = TRACKER_TEMPORAL,
-            interval = 0,
-            fastest = 0,
-            minDistance = 0f,
+            interval = GT_SIN_INTERVALO,
+            fastest = GT_SIN_INTERVALO,
+            minDistance = IGNORAR_METROS,
             onLocation = { location ->
-                if (bajaEstado !is BajaEstados.ObteniendoUbicacion) return@startTracking
+                if (bajaEstado != EstadoBaja.ObteniendoUbicacion) return@startTracking
 
                 gpsTracker.stopTracking(TRACKER_TEMPORAL)
                 getLocation = location
 
-                bajaEstado = BajaEstados.Procesada
+                bajaEstado = EstadoBaja.Procesada
                 procesarBaja(baja, location)
-                bajaEstado = BajaEstados.Reposo
+                bajaEstado = EstadoBaja.Reposo
             },
             onError = {
-                if (bajaEstado !is BajaEstados.ObteniendoUbicacion) return@startTracking
+                if (bajaEstado != EstadoBaja.ObteniendoUbicacion) return@startTracking
 
-                bajaEstado = BajaEstados.Error
+                bajaEstado = EstadoBaja.Error
                 snack("No se pudo obtener ubicación")
-                bajaEstado = BajaEstados.Reposo
+                bajaEstado = EstadoBaja.Reposo
             }
         )
     }
@@ -320,7 +331,7 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             anulado = 0
         )
 
-        if (vistaActual == Vista.MAPA) {
+        if (vistaActual == VistaInterfaz.MAPA) {
             mapHelper.hideInfoWindow(cliente)
         }
 
@@ -330,8 +341,8 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
     private fun renderCurrentView() {
         when (vistaActual) {
-            Vista.LISTA -> renderLista()
-            Vista.MAPA -> drawMarkers()
+            VistaInterfaz.LISTA -> renderLista()
+            VistaInterfaz.MAPA -> drawMarkers()
         }
     }
 
@@ -359,27 +370,27 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     }
 
     private fun toggleVista() {
-        val siguiente = if (vistaActual == Vista.LISTA) Vista.MAPA else Vista.LISTA
+        val siguiente =
+            if (vistaActual == VistaInterfaz.LISTA) VistaInterfaz.MAPA else VistaInterfaz.LISTA
         cambiarVista(siguiente)
     }
 
-    private fun cambiarVista(nuevaVista: Vista) {
+    private fun cambiarVista(nuevaVista: VistaInterfaz) {
         if (vistaActual == nuevaVista) return
         vistaActual = nuevaVista
 
+        binding.lnrCartera.setUI("v", nuevaVista == VistaInterfaz.LISTA)
+        binding.rltMapa.setUI("v", nuevaVista == VistaInterfaz.MAPA)
+
         when (nuevaVista) {
-            Vista.LISTA -> {
-                binding.rcvCartera.setUI("v", true)
-                binding.rltMapa.setUI("v", false)
+            VistaInterfaz.LISTA -> {
                 stopGps()
                 renderLista()
             }
 
-            Vista.MAPA -> {
-                localViewmodel.clearQuery() // limpia filtro
-                binding.searchview.setQuery("", true)
-                binding.rltMapa.setUI("v", true)
-                binding.rcvCartera.setUI("v", false)
+            VistaInterfaz.MAPA -> {
+                localViewmodel.clearQuery()
+                binding.searchview.setQuery("", false)
                 drawMarkers()
             }
         }
@@ -480,8 +491,8 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
     private fun buscarClienteVoz(codigo: String) {
         when (vistaActual) {
-            Vista.LISTA -> binding.searchview.setQuery(codigo, true)
-            Vista.MAPA -> focusClienteEnMapa(
+            VistaInterfaz.LISTA -> binding.searchview.setQuery(codigo, true)
+            VistaInterfaz.MAPA -> focusClienteEnMapa(
                 filtro = codigo,
                 forzadoDirecto = true
             )
@@ -501,22 +512,22 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         when {
             clientes == null -> mostrarDialog(
                 AppDialogType.Informativo(
-                    T_ERROR,
-                    "No se obtuvo respuesta del servidor"
+                    titulo = T_ERROR,
+                    mensaje = "No se obtuvo respuesta del servidor"
                 )
             )
 
             clientes.jobl.isEmpty() -> mostrarDialog(
                 AppDialogType.Informativo(
-                    T_ERROR,
-                    "No se encontraron clientes"
+                    titulo = T_ERROR,
+                    mensaje = "No se encontraron clientes"
                 )
             )
 
             else -> mostrarDialog(
                 AppDialogType.Informativo(
-                    T_SUCCESS,
-                    "Se descargaron ${clientes.jobl.size} clientes correctamente"
+                    titulo = T_SUCCESS,
+                    mensaje = "Se descargaron ${clientes.jobl.size} clientes correctamente"
                 )
             )
         }

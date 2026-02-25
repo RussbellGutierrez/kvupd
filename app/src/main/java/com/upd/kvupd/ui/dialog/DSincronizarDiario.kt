@@ -217,5 +217,8 @@ class DSincronizarDiario : DialogFragment() {
             // 🟢 Días siguientes: solo reprograma alarmas
             localViewModel.reprogramarUsandoConfig()
         }
+
+        // ✅ ACTUALIZA el estado global una vez que la config ya existe
+        localViewModel.tipoUsuarioActual()
     }
 }

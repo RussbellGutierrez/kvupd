@@ -1,5 +1,6 @@
 package com.upd.kvupd.utils
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
@@ -12,7 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object BaseDatosRoom {
-    const val VERSION_BASEDATOS = 17
+    const val VERSION_BASEDATOS = 18
     const val DB_NAME = "KventasN"
 }
 
@@ -66,10 +67,12 @@ object GPSConstants {
     const val MODO_EXTENSO = "extendido"
 
     const val TRACKER_RAPIDO = "rastreo_rapido"
-    const val TRACKER_TEMPORAL = "rastreo_temporal"
     const val GPS_INTERVALO_NORMAL = 60_000L
     const val GPS_INTERVALO_RAPIDO = 30_000L
     const val IGNORAR_METROS = 0f
+
+    const val TRACKER_TEMPORAL = "rastreo_temporal"
+    const val GT_SIN_INTERVALO = 0L
 }
 
 object DimensionesDialog {
@@ -110,6 +113,7 @@ object ExtraInfo {
     }
 }
 
+@SuppressLint("ConstantLocale")
 object FechaHoraUtil {
     private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
@@ -145,7 +149,7 @@ object FirebaseKeys {
     const val NODO_TEMPORAL = "Temporal"
 }
 
-object ApisDescargaInicial {
+object ApisDescargaDatos {
     const val API_CLIENTE = "empleado/movil/cliente"
     const val API_EMPLEADO = "empresa/movil/empleado"
     const val API_RUTA = "empleado/movil/ruta"
@@ -153,14 +157,14 @@ object ApisDescargaInicial {
     const val API_NEGOCIO = "empresa/movil/tipo-negocio"
     const val API_CONFIGURACION = "movil/configuracion"
     const val API_ENCUESTA = "empleado/movil/encuesta/lista"
+    const val API_BAJAS_SUPERVISOR = "empleado/movil/baja/lista"
 }
 
 object ApisConsultaDatos {
     const val FETCH_LOGIN = "usuario/ingresar"
     const val FETCH_CONSULTA = "empleado/movil/cliente/completo"
     const val FETCH_PEDIMAP = "empleado/movil/marker/empleado"
-    const val FETCH_LISTA_BAJAS = "empleado/movil/baja/lista"
-    const val FETCH_ESTADOLISTA_BAJAS = "empleado/movil/baja/lista/estado"
+    const val FETCH_BAJAS_VENDEDOR = "empleado/movil/baja/lista/estado"
 }
 
 object ApisEnviarServidor {

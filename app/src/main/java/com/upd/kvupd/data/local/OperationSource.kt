@@ -22,7 +22,7 @@ import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.service.LocationServiceBackground
-import com.upd.kvupd.ui.sealed.TipoUsuario
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
@@ -63,19 +63,17 @@ class OperationSource @Inject constructor(
         return configuracion.id
     }
 
-    fun lanzarWorkersRestantes(usuarioTipo: String): List<UUID> {
-        val tipo = TipoUsuario.inicialTipo(usuarioTipo)
-
+    fun lanzarWorkersRestantes(usuarioTipo: TipoUsuario): List<UUID> {
         val comunes = listOf(
             workerDistritos(),
             workerNegocios(),
             workerRutas()
         )
 
-        val especificos = when (tipo) {
-            TipoUsuario.Vendedor -> listOf(workerClientes())
-            TipoUsuario.Supervisor -> listOf(workerEmpleados())
-            TipoUsuario.JefeVentas -> emptyList()
+        val especificos = when (usuarioTipo) {
+            TipoUsuario.VENDEDOR -> listOf(workerClientes())
+            TipoUsuario.SUPERVISOR -> listOf(workerEmpleados())
+            TipoUsuario.JEFE_VENTAS -> emptyList()
         }
 
         val lista = especificos + comunes

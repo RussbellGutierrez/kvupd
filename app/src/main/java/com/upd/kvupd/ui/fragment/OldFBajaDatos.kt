@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.RowBaja
-import com.upd.kvupd.databinding.FragmentFBajaDatosBinding
+import com.upd.kvupd.databinding.OldFragmentFBajaDatosBinding
 import com.upd.kvupd.ui.adapter.OldBajaSupervisorAdapter
 import com.upd.kvupd.ui.adapter.OldBajaVendedorAdapter
 import com.upd.kvupd.ui.dialog.OldDFiltro
@@ -35,7 +35,7 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     OldBajaSupervisorAdapter.OnBajaSuperListener, MenuProvider {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFBajaDatosBinding? = null
+    private var _bind: OldFragmentFBajaDatosBinding? = null
     private val bind get() = _bind!!
     private var row = listOf<RowBaja>()
     private var filter = listOf<RowBaja>()
@@ -61,7 +61,7 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFBajaDatosBinding.inflate(inflater, container, false)
+        _bind = OldFragmentFBajaDatosBinding.inflate(inflater, container, false)
         return bind.root
     }
 

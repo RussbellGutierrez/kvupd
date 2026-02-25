@@ -20,17 +20,16 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
-import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_CONSULTA
-import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_ESTADOLISTA_BAJAS
-import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_LISTA_BAJAS
+import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_BAJAS_VENDEDOR
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_PEDIMAP
-import com.upd.kvupd.utils.ApisDescargaInicial.API_CLIENTE
-import com.upd.kvupd.utils.ApisDescargaInicial.API_CONFIGURACION
-import com.upd.kvupd.utils.ApisDescargaInicial.API_DISTRITO
-import com.upd.kvupd.utils.ApisDescargaInicial.API_EMPLEADO
-import com.upd.kvupd.utils.ApisDescargaInicial.API_ENCUESTA
-import com.upd.kvupd.utils.ApisDescargaInicial.API_NEGOCIO
-import com.upd.kvupd.utils.ApisDescargaInicial.API_RUTA
+import com.upd.kvupd.utils.ApisDescargaDatos.API_BAJAS_SUPERVISOR
+import com.upd.kvupd.utils.ApisDescargaDatos.API_CLIENTE
+import com.upd.kvupd.utils.ApisDescargaDatos.API_CONFIGURACION
+import com.upd.kvupd.utils.ApisDescargaDatos.API_DISTRITO
+import com.upd.kvupd.utils.ApisDescargaDatos.API_EMPLEADO
+import com.upd.kvupd.utils.ApisDescargaDatos.API_ENCUESTA
+import com.upd.kvupd.utils.ApisDescargaDatos.API_NEGOCIO
+import com.upd.kvupd.utils.ApisDescargaDatos.API_RUTA
 import com.upd.kvupd.utils.ApisEnviarServidor.SEND_ALTA
 import com.upd.kvupd.utils.ApisEnviarServidor.SEND_ALTADETALLE
 import com.upd.kvupd.utils.ApisEnviarServidor.SEND_ALTAFOTO
@@ -59,7 +58,7 @@ import retrofit2.http.POST
 
 interface ApiService {
 
-    // DESCARGA INICIAL DE DATOS
+    // DESCARGA DE DATOS
     @POST(API_CONFIGURACION) // Parametros: imei (android_uid)
     suspend fun downloadConfiguracion(@Body body: RequestBody): Response<JsonConfiguracion>
     @POST(API_CLIENTE) // Parametros: empleado,fecha, empresa
@@ -74,14 +73,14 @@ interface ApiService {
     suspend fun downloadNegocio(@Body body: RequestBody): Response<JsonNegocio>
     @POST(API_ENCUESTA) // Parametros: empleado, empresa
     suspend fun downloadEncuesta(@Body body: RequestBody): Response<JsonEncuesta>
+    @POST(API_BAJAS_SUPERVISOR) // Parametros: empleado, empresa
+    suspend fun querySupervisorBajas(@Body body: RequestBody): Response<JsonBajaSupervisor>
 
 
     // CONSULTA DE DATOS EN SERVIDOR
     @POST(FETCH_PEDIMAP) // Parametros: empleado, empresa, esquema
     suspend fun queryPedimap(@Body body: RequestBody): Response<JsonPedimap>
-    @POST(FETCH_LISTA_BAJAS) // Parametros: empleado, empresa
-    suspend fun querySupervisorBajas(@Body body: RequestBody): Response<JsonBajaSupervisor>
-    @POST(FETCH_ESTADOLISTA_BAJAS) // Parametros: empleado, empresa
+    @POST(FETCH_BAJAS_VENDEDOR) // Parametros: empleado, empresa
     suspend fun queryVendedorBajas(@Body body: RequestBody): Response<JsonBajaVendedor>
 
 

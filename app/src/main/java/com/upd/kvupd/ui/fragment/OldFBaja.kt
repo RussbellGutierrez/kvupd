@@ -53,8 +53,8 @@ class OldFBaja : Fragment(), MenuProvider{// BajaAdapter.OnBajaListener, MenuPro
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.rcvBajas.layoutManager = LinearLayoutManager(requireContext())
-        bind.rcvBajas.adapter = adapter
+        bind.rcvBaja.layoutManager = LinearLayoutManager(requireContext())
+        bind.rcvBaja.adapter = adapter
 
         /*viewmodel.bajasObs().observe(viewLifecycleOwner) {
             setupList(it)

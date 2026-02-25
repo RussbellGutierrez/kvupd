@@ -6,12 +6,11 @@
         android:id="@+id/actualizar"
         android:icon="@drawable/actualizar"
         android:title="Actualizar Pedimap"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/voz"
         android:icon="@drawable/microfono"
         android:title="Busqueda por voz"
         app:showAsAction="ifRoom" />
-
 </menu>

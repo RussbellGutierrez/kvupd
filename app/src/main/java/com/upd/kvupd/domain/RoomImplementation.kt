@@ -1,7 +1,5 @@
 package com.upd.kvupd.domain
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.upd.kvupd.data.local.RoomCrudSource
 import com.upd.kvupd.data.local.RoomQuerySource
 import com.upd.kvupd.data.model.BajaSupervisor
@@ -9,17 +7,19 @@ import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
 import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -69,12 +69,12 @@ class RoomImplementation @Inject constructor(
         crudSource.guardarSeguimiento(item)
     }
 
-    override suspend fun saveEstado(item: TableEstado) {
-        crudSource.guardarEstado(item)
-    }
-
     override suspend fun saveBaja(item: TableBaja) {
         crudSource.guardarBajas(item)
+    }
+
+    override suspend fun saveBajaProcesada(item: TableBajaProcesada) {
+        crudSource.guardarBajaProcesada(item)
     }
 
     override suspend fun saveAlta(item: TableAlta) {
@@ -141,12 +141,12 @@ class RoomImplementation @Inject constructor(
         crudSource.borrarSeguimiento()
     }
 
-    override suspend fun deleteEstados() {
-        crudSource.borrarEstados()
-    }
-
     override suspend fun deleteBajas() {
         crudSource.borrarBaja()
+    }
+
+    override suspend fun deleteBajasProcesadas() {
+        crudSource.borrarBajaProcesada()
     }
 
     override suspend fun deleteAltas() {
@@ -189,8 +189,11 @@ class RoomImplementation @Inject constructor(
         return querySource.roomEncuestas()
     }
 
-    override suspend fun queryBajaEspecifica(cliente: String): TableBaja? {
-        return querySource.roomBajaEspecifica(cliente)
+    override suspend fun queryBajaSupervisor(
+        vendedor: String,
+        cliente: String
+    ): TableBajaSupervisor? {
+        return querySource.roomBajaSupervisor(vendedor, cliente)
     }
 
     override fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
@@ -201,8 +204,16 @@ class RoomImplementation @Inject constructor(
         return querySource.flowClientes()
     }
 
+    override fun listFlowBajaSupervisor(): Flow<List<FlowBajaSupervisor>> {
+        return querySource.flowBajaSupervisor()
+    }
+
     override fun listFlowAltas(): Flow<List<TableAlta>> {
         return querySource.flowAltas()
+    }
+
+    override fun listFlowBajas(): Flow<List<TableBaja>> {
+        return querySource.flowBajas()
     }
 
     override fun listFlowPolygon(): Flow<List<TableRuta>> {
@@ -229,8 +240,8 @@ class RoomImplementation @Inject constructor(
         return querySource.serverBajas(sync)
     }
 
-    override suspend fun apiServerEstados(sync: Boolean): List<TableEstado> {
-        return querySource.serverEstados(sync)
+    override suspend fun apiServerBajasProcesadas(sync: Boolean): List<TableBajaProcesada> {
+        return querySource.serverBajasProcesadas(sync)
     }
 
     override suspend fun apiServerRespuestas(sync: Boolean): List<TableRespuesta> {

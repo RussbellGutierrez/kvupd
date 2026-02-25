@@ -3,7 +3,6 @@ package com.upd.kvupd.data.model
 object QueryConstant {
 
     // Eliminar o revisar las tablas que contengan lo siguiente:
-    // TableSeleccionEncuesta
     const val GET_CONFIGURACION = "SELECT * FROM TableConfiguracion"
     const val GET_CLIENTES = "SELECT * FROM TableCliente"
     const val GET_VENDEDORES = "SELECT * FROM TableVendedor"
@@ -17,10 +16,20 @@ object QueryConstant {
         WHERE e.seleccionada = 1
         ORDER BY e.pregunta ASC
     """
-    const val GET_BAJA_ESPECIFICA = "SELECT * FROM TableBaja WHERE cliente = :cliente"
-    const val GET_INCIDENCIA = "SELECT * FROM TableIncidencia ORDER BY fecha DESC"
     const val GET_ALTAS = "SELECT * FROM TableAlta ORDER BY fecha DESC"
+    const val GET_BAJAS = "SELECT * FROM TableBaja ORDER BY fecha DESC"
+    const val GET_BAJA_SUPERVISOR = """
+        SELECT * FROM TableBajaSupervisor 
+        WHERE empleado = :vendedor AND clicodigo = :cliente"""
 
+    const val GET_RECYCLER_BAJASUPER = """
+        SELECT b.empleado, b.nombre, b.creado, b.descripcion as motivo, b.clicodigo, b.clinombre, 
+               IFNULL(p.cliente,'0') as revisado, p.procede, b.direccion, b.canal, b.observacion,
+               b.negocio, b.pago, b.compra
+        FROM TableBajaSupervisor b
+        LEFT JOIN TableBajaProcesada p on b.empleado=p.empleado AND b.clicodigo=p.cliente
+        ORDER BY b.creado DESC
+    """
     const val GET_RECYCLER_CLIENTE = """
         SELECT c.idcliente as cliente, c.nomcli, c.empleado as vendedor, IFNULL(v.descripcion,'null') as nomemp, 
                c.domicli, c.longitud, c.latitud, c.ruta, COUNT(b.cliente) as baja, c.ventas, c.ventanio, c.fecha, c.negocio 
@@ -52,10 +61,10 @@ object QueryConstant {
         WHERE sincronizado = :sync
         ORDER BY fecha ASC
     """
-    const val ESTADO_SERVER = """
-        SELECT * FROM TableEstado
+    const val BAJA_PROCESADO_SERVER = """
+        SELECT * FROM TableBajaProcesada
         WHERE sincronizado = :sync
-        ORDER BY fechaconf ASC
+        ORDER BY fechaconfirmacion ASC
     """
     const val RESPUESTA_SERVER = """
         SELECT * FROM TableRespuesta

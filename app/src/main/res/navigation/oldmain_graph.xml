@@ -398,7 +398,7 @@
         android:id="@+id/OldFBajaDatos"
         android:name="com.upd.kvupd.ui.fragment.OldFBajaDatos"
         android:label="Bajas generadas"
-        tools:layout="@layout/fragment_f_baja_datos">
+        tools:layout="@layout/old_fragment_f_baja_datos">
         <action
             android:id="@+id/action_FBajaDatos_to_FValidar2"
             app:destination="@id/OldFValidar"
@@ -411,7 +411,7 @@
         android:id="@+id/OldFValidar"
         android:name="com.upd.kvupd.ui.fragment.OldFValidar"
         android:label="Validar"
-        tools:layout="@layout/fragment_f_validar">
+        tools:layout="@layout/old_fragment_f_validar">
         <action
             android:id="@+id/action_FValidar_to_FBajaDatos2"
             app:destination="@id/OldFBajaDatos"

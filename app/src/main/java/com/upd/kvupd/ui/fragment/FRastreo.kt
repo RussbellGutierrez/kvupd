@@ -90,7 +90,7 @@ class FRastreo : Fragment(), MenuProvider {
         val mapFragment =
             childFragmentManager.findFragmentById(binding.map.id) as SupportMapFragment
 
-        collectFlow(apiViewmodel.pedimapEvent) collect@{ resultado ->
+        collectFlow(apiViewmodel.pedimapEvent) { resultado ->
             when (resultado) {
                 is ResultadoApi.Loading -> mostrarDialog(
                     AppDialogType.Progreso(
@@ -98,9 +98,7 @@ class FRastreo : Fragment(), MenuProvider {
                     )
                 )
 
-                is ResultadoApi.Exito -> {
-                    stateSuccess(resultado.data)
-                }
+                is ResultadoApi.Exito -> stateSuccess(resultado.data)
 
                 is ResultadoApi.ErrorHttp -> mostrarDialog(
                     AppDialogType.Informativo(
@@ -241,23 +239,19 @@ class FRastreo : Fragment(), MenuProvider {
 
     private fun stateSuccess(pedimap: JsonPedimap?) {
         when {
-            pedimap == null -> {
-                mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "No se obtuvo respuesta del servidor"
-                    )
+            pedimap == null -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "No se obtuvo respuesta del servidor"
                 )
-            }
+            )
 
-            pedimap.jobl.isEmpty() -> {
-                mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "No se encontraron posiciones en Pedimap"
-                    )
+            pedimap.jobl.isEmpty() -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "No se encontraron posiciones en Pedimap"
                 )
-            }
+            )
 
             else -> {
                 mostrarDialog(
@@ -274,16 +268,9 @@ class FRastreo : Fragment(), MenuProvider {
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         lifecycleScope.launch(Dispatchers.Main) {
-            // Cerrar diálogo previo si existe
             InstanciaDialog.cerrarDialogActual()
-
-            // Crear el dialog
             val dialog = buildMaterialDialog(requireContext(), dialogType)
-
-            // Mostrarlo
             dialog.show()
-
-            // Guardar referencia
             InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }

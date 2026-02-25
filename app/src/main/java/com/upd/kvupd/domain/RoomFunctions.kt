@@ -5,17 +5,19 @@ import com.upd.kvupd.data.model.Cliente
 import com.upd.kvupd.data.model.Configuracion
 import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -37,8 +39,8 @@ interface RoomFunctions {
 
     ///     Room Insert
     suspend fun saveSeguimiento(item: TableSeguimiento)
-    suspend fun saveEstado(item: TableEstado)
     suspend fun saveBaja(item: TableBaja)
+    suspend fun saveBajaProcesada(item: TableBajaProcesada)
     suspend fun saveAlta(item: TableAlta)
     suspend fun saveDatosAlta(item: TableAltaDatos)
     suspend fun saveRespuestas(item: List<TableRespuesta>)
@@ -59,8 +61,8 @@ interface RoomFunctions {
     suspend fun deleteRutas()
     suspend fun deleteEncuesta()
     suspend fun deleteSeguimiento()
-    suspend fun deleteEstados()
     suspend fun deleteBajas()
+    suspend fun deleteBajasProcesadas()
     suspend fun deleteAltas()
     suspend fun deleteDatosAltas()
     suspend fun deleteBajasSupervisor()
@@ -73,12 +75,14 @@ interface RoomFunctions {
     suspend fun queryNegocios(): List<TableNegocio>
     suspend fun queryRutas(): List<TableRuta>
     suspend fun queryEncuestas(): List<TableEncuesta>
-    suspend fun queryBajaEspecifica(cliente: String): TableBaja?
+    suspend fun queryBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor?
 
     ///     Room Flow
     fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
     fun listFlowClientes(): Flow<List<FlowCliente>>
+    fun listFlowBajaSupervisor(): Flow<List<FlowBajaSupervisor>>
     fun listFlowAltas(): Flow<List<TableAlta>>
+    fun listFlowBajas(): Flow<List<TableBaja>>
     fun listFlowPolygon(): Flow<List<TableRuta>>
     fun listFlowVendedores(): Flow<List<TableVendedor>>
 
@@ -87,7 +91,7 @@ interface RoomFunctions {
     suspend fun apiServerAltas(sync: Boolean): List<TableAlta>
     suspend fun apiServerAltaDatos(sync: Boolean): List<TableAltaDatos>
     suspend fun apiServerBajas(sync: Boolean): List<TableBaja>
-    suspend fun apiServerEstados(sync: Boolean): List<TableEstado>
+    suspend fun apiServerBajasProcesadas(sync: Boolean): List<TableBajaProcesada>
     suspend fun apiServerRespuestas(sync: Boolean): List<TableRespuesta>
     suspend fun apiServerFotos(sync: Boolean): List<TableRespuesta>
 }

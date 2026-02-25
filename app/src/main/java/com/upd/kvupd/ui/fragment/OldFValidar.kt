@@ -18,7 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.upd.kvupd.databinding.FragmentFValidarBinding
+import com.upd.kvupd.databinding.OldFragmentFValidarBinding
 import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.OldConstant.POS_LOC
@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFValidarBinding? = null
+    private var _bind: OldFragmentFValidarBinding? = null
     private val bind get() = _bind!!
     private val arg: OldFValidarArgs by navArgs()
     private lateinit var sup: SupportMapFragment
@@ -61,7 +61,7 @@ class OldFValidar : Fragment(), OnMapReadyCallback, OnMarkerClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFValidarBinding.inflate(inflater, container, false)
+        _bind = OldFragmentFValidarBinding.inflate(inflater, container, false)
         return bind.root
     }
 

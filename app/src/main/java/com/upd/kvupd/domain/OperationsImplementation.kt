@@ -3,6 +3,7 @@ package com.upd.kvupd.domain
 import android.content.Context
 import com.upd.kvupd.data.local.OperationSource
 import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import javax.inject.Inject
@@ -16,7 +17,7 @@ class OperationsImplementation @Inject constructor(
         return operationSource.lanzarWorkerInicial()
     }
 
-    override fun remainingWorkers(usuarioTipo: String): List<UUID> {
+    override fun remainingWorkers(usuarioTipo: TipoUsuario): List<UUID> {
         return operationSource.lanzarWorkersRestantes(usuarioTipo)
     }
 

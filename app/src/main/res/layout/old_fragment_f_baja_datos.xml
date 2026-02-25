@@ -18,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="">
+        android:visibility="gone">
 
         <SearchView
             android:id="@+id/searchView"
@@ -51,6 +51,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_search"
-        tools:listitem="@layout/row_baja"/>
+        tools:listitem="@layout/old_row_baja"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

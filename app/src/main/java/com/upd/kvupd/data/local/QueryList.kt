@@ -2,19 +2,22 @@ package com.upd.kvupd.data.local
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.QueryConstant.ALTADATO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.ALTA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.BAJA_PROCESADO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.BAJA_SERVER
-import com.upd.kvupd.data.model.QueryConstant.ESTADO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.FOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTAS
-import com.upd.kvupd.data.model.QueryConstant.GET_BAJA_ESPECIFICA
+import com.upd.kvupd.data.model.QueryConstant.GET_BAJAS
+import com.upd.kvupd.data.model.QueryConstant.GET_BAJA_SUPERVISOR
 import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIGURACION
 import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
+import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_BAJASUPER
 import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_CLIENTE
 import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_VENDEDORES
@@ -23,11 +26,12 @@ import com.upd.kvupd.data.model.QueryConstant.SEGUIMIENTO_SERVER
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -55,8 +59,8 @@ interface QueryList {
     @Query(GET_ENCUESTA)
     suspend fun getEncuestas(): List<TableEncuesta>
 
-    @Query(GET_BAJA_ESPECIFICA)
-    suspend fun getBajaCliente(cliente: String): TableBaja?
+    @Query(GET_BAJA_SUPERVISOR)
+    suspend fun getBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor?
 
     ////  FLOW
     @Query(GET_CONFIGURACION)
@@ -65,8 +69,14 @@ interface QueryList {
     @Query(GET_RECYCLER_CLIENTE)
     fun flowClientes(): Flow<List<FlowCliente>>
 
+    @Query(GET_RECYCLER_BAJASUPER)
+    fun flowBajasSupervisor(): Flow<List<FlowBajaSupervisor>>
+
     @Query(GET_ALTAS)
     fun flowAltas(): Flow<List<TableAlta>>
+
+    @Query(GET_BAJAS)
+    fun flowBajas(): Flow<List<TableBaja>>
 
     @Query(GET_RUTAS)
     fun flowRutasPolygon(): Flow<List<TableRuta>>
@@ -87,15 +97,14 @@ interface QueryList {
     @Query(BAJA_SERVER)
     suspend fun serverBajas(sync: Boolean): List<TableBaja>
 
-    @Query(ESTADO_SERVER)
-    suspend fun serverEstados(sync: Boolean): List<TableEstado>
+    @Query(BAJA_PROCESADO_SERVER)
+    suspend fun serverBajaProcesado(sync: Boolean): List<TableBajaProcesada>
 
     @Query(RESPUESTA_SERVER)
     suspend fun serverRespuestas(sync: Boolean): List<TableRespuesta>
 
     @Query(FOTO_SERVER)
     suspend fun serverFotos(sync: Boolean): List<TableRespuesta>
-
 
 
     /////////////////////////////////////////////////          REVISAR

@@ -1,6 +1,6 @@
 package com.upd.kvupd.ui.fragment.enumClass
 
-enum class Vista {
+enum class VistaInterfaz {
     LISTA,
     MAPA
 }

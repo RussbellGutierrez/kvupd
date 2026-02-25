@@ -10,7 +10,7 @@ import com.upd.kvupd.data.model.Ruta
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableEstado
+import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.data.model.Vendedor
@@ -64,12 +64,12 @@ class RoomCrudSource @Inject constructor(
         crud.insertSeguimiento(item)
     }
 
-    suspend fun guardarEstado(item: TableEstado) {
-        crud.insertEstado(item)
-    }
-
     suspend fun guardarBajas(item: TableBaja) {
         crud.insertBaja(item)
+    }
+
+    suspend fun guardarBajaProcesada(item: TableBajaProcesada) {
+        crud.insertBajaProcesada(item)
     }
 
     suspend fun guardarAltas(item: TableAlta) {
@@ -138,12 +138,12 @@ class RoomCrudSource @Inject constructor(
         crud.deleteSeguimiento()
     }
 
-    suspend fun borrarEstados(){
-        crud.deleteEstado()
-    }
-
     suspend fun borrarBaja(){
         crud.deleteBaja()
+    }
+
+    suspend fun borrarBajaProcesada(){
+        crud.deleteBajaProcesada()
     }
 
     suspend fun borrarAlta(){

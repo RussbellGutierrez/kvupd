@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/lista"
+        android:title="Lista de bajas"
+        android:icon="@drawable/baja_supervisor"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/descargar"
+        android:title="Descargar bajas de vendedor"
+        android:icon="@drawable/descargar"
+        app:showAsAction="ifRoom"/>
+</menu>

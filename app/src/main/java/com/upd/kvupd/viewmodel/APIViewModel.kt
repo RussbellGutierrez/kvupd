@@ -2,7 +2,10 @@ package com.upd.kvupd.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
+import com.upd.kvupd.data.model.JsonBajaSupervisor
+import com.upd.kvupd.data.model.JsonBajaVendedor
 import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
@@ -10,12 +13,11 @@ import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
+import com.upd.kvupd.domain.search.BajaSearchSource
 import com.upd.kvupd.domain.search.ClienteSearchSource
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.ui.sealed.TipoUsuario
 import com.upd.kvupd.utils.EventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,7 +31,8 @@ class APIViewModel @Inject constructor(
     private val serverFunctions: ServerFunctions,
     private val roomFunctions: RoomFunctions,
     private val jsobFunctions: JsObFunctions,
-    private val clienteSearchSource: ClienteSearchSource
+    private val clienteSearchSource: ClienteSearchSource,
+    private val bajaSearchSource: BajaSearchSource
 ) : ViewModel() {
 
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
@@ -44,7 +47,19 @@ class APIViewModel @Inject constructor(
     private val _clienteEvent = EventFlow<ResultadoApi<JsonCliente>>()
     val clienteEvent = _clienteEvent.events
 
+    private val _bajasuperEvent = EventFlow<ResultadoApi<JsonBajaSupervisor>>()
+    val bajasuperEvent = _bajasuperEvent.events
+
+    private val _bajaestadoEvent = EventFlow<ResultadoApi<JsonBajaVendedor>>()
+    val bajaestadoEvent = _bajaestadoEvent.events
+
     private val flowClientes = roomFunctions.listFlowClientes()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val flowBaja = roomFunctions.listFlowBajas()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val flowBajaSupervisor = roomFunctions.listFlowBajaSupervisor()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     /// VARIABLES PRIVADAS ARRIBA ///
@@ -64,6 +79,7 @@ class APIViewModel @Inject constructor(
 
     val flowVendedores = roomFunctions.listFlowVendedores()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
         viewModelScope.launch {
@@ -99,11 +115,58 @@ class APIViewModel @Inject constructor(
         }
     }
 
+    fun downloadBajasSupervisor() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val json = jsobFunctions.jsonObjectBasico(config)
+            serverFunctions.apiDownloadSupervisorBajas(json).collect { result ->
+                if (result is ResultadoApi.Exito) {
+                    result.data?.jobl?.let { lista ->
+                        roomFunctions.apiSaveBajaSupervisor(lista)
+                    }
+                }
+                _bajasuperEvent.emit(result)
+            }
+        }
+    }
+
+    fun downloadAndShowBajas() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val json = jsobFunctions.jsonObjectBasico(config)
+            serverFunctions.apiQueryVendedorBajas(json).collect {
+                _bajaestadoEvent.emit(it)
+            }
+        }
+    }
+
     fun flowClientesFiltrados(
         query: StateFlow<String>
     ): StateFlow<List<FlowCliente>> =
         combine(flowClientes, query) { lista, q ->
             clienteSearchSource.filtrar(lista, q)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
+
+    fun flowBajasFiltrados(
+        query: StateFlow<String>
+    ): StateFlow<List<TableBaja>> =
+        combine(flowBaja, query) { lista, q ->
+            bajaSearchSource.filtrarGeneradas(lista, q)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            emptyList()
+        )
+
+    fun flowBajasSupervisorFiltrados(
+        query: StateFlow<String>
+    ): StateFlow<List<FlowBajaSupervisor>> =
+        combine(flowBajaSupervisor, query) { lista, q ->
+            bajaSearchSource.filtrarSupervisor(lista, q)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -119,12 +182,9 @@ class APIViewModel @Inject constructor(
 
     fun retrySendBaja(item: TableBaja) {
         viewModelScope.launch {
-            roomFunctions.updateBaja(
-                item.copy(
-                    sincronizado = false
-                )
-            )
-            intentarEnviarBaja(item)
+            val actualizado = item.copy(sincronizado = false)
+            roomFunctions.updateBaja(actualizado)
+            intentarEnviarBaja(actualizado)
         }
     }
 

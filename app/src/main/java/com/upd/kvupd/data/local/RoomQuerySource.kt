@@ -1,14 +1,16 @@
 package com.upd.kvupd.data.local
 
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -39,8 +41,8 @@ class RoomQuerySource @Inject constructor(
     suspend fun roomEncuestas(): List<TableEncuesta> =
         query.getEncuestas()
 
-    suspend fun roomBajaEspecifica(cliente: String): TableBaja? =
-        query.getBajaCliente(cliente)
+    suspend fun roomBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor? =
+        query.getBajaSupervisor(vendedor, cliente)
 
     ////  FLOW
     fun flowConfiguracion(): Flow<List<TableConfiguracion>> =
@@ -49,8 +51,14 @@ class RoomQuerySource @Inject constructor(
     fun flowClientes(): Flow<List<FlowCliente>> =
         query.flowClientes()
 
+    fun flowBajaSupervisor(): Flow<List<FlowBajaSupervisor>> =
+        query.flowBajasSupervisor()
+
     fun flowAltas(): Flow<List<TableAlta>> =
         query.flowAltas()
+
+    fun flowBajas(): Flow<List<TableBaja>> =
+        query.flowBajas()
 
     fun flowRutasPolygon(): Flow<List<TableRuta>> =
         query.flowRutasPolygon()
@@ -71,8 +79,8 @@ class RoomQuerySource @Inject constructor(
     suspend fun serverBajas(sync: Boolean): List<TableBaja> =
         query.serverBajas(sync)
 
-    suspend fun serverEstados(sync: Boolean): List<TableEstado> =
-        query.serverEstados(sync)
+    suspend fun serverBajasProcesadas(sync: Boolean): List<TableBajaProcesada> =
+        query.serverBajaProcesado(sync)
 
     suspend fun serverRespuestas(sync: Boolean): List<TableRespuesta> =
         query.serverRespuestas(sync)

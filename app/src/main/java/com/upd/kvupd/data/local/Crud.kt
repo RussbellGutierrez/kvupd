@@ -8,13 +8,12 @@ import androidx.room.Update
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTADATOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA
+import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_PROCESADA
 import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_SUPERVISOR
 import com.upd.kvupd.data.model.CrudConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.CrudConstant.DEL_CONFIGURACION
 import com.upd.kvupd.data.model.CrudConstant.DEL_DISTRITOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_ENCUESTA
-import com.upd.kvupd.data.model.CrudConstant.DEL_ESTADO
-import com.upd.kvupd.data.model.CrudConstant.DEL_INCIDENCIA
 import com.upd.kvupd.data.model.CrudConstant.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_RUTAS
@@ -23,12 +22,12 @@ import com.upd.kvupd.data.model.CrudConstant.DEL_VENDEDOR
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableEstado
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -63,10 +62,10 @@ interface Crud {
     suspend fun insertSeguimiento(seg: TableSeguimiento)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEstado(est: TableEstado)
+    suspend fun insertBaja(baja: TableBaja)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBaja(baja: TableBaja)
+    suspend fun insertBajaProcesada(est: TableBajaProcesada)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlta(alta: TableAlta)
@@ -121,11 +120,11 @@ interface Crud {
     @Query(DEL_SEGUIMIENTO)
     suspend fun deleteSeguimiento()
 
-    @Query(DEL_ESTADO)
-    suspend fun deleteEstado()
-
     @Query(DEL_BAJA)
     suspend fun deleteBaja()
+
+    @Query(DEL_BAJA_PROCESADA)
+    suspend fun deleteBajaProcesada()
 
     @Query(DEL_ALTA)
     suspend fun deleteAlta()
