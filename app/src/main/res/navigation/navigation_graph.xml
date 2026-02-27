@@ -91,7 +91,17 @@
         android:id="@+id/FBaja"
         android:name="com.upd.kvupd.ui.fragment.FBaja"
         android:label="Bajas"
-        tools:layout="@layout/fragment_f_baja" />
+        tools:layout="@layout/fragment_f_baja">
+
+        <action
+            android:id="@+id/action_FBaja_to_BDDetalleBaja"
+            app:destination="@id/BDDetalleBaja"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
 
     <dialog
         android:id="@+id/BDBajaCliente"
@@ -102,6 +112,18 @@
         <argument
             android:name="cliente"
             app:argType="com.upd.kvupd.data.model.FlowCliente" />
+
+    </dialog>
+
+    <dialog
+        android:id="@+id/BDDetalleBaja"
+        android:name="com.upd.kvupd.ui.dialog.BDDetalleBaja"
+        android:label="Detalle Baja cliente"
+        tools:layout="@layout/bottom_detallebaja">
+
+        <argument
+            android:name="detalle"
+            app:argType="com.upd.kvupd.data.model.FlowBajaSupervisor" />
 
     </dialog>
 

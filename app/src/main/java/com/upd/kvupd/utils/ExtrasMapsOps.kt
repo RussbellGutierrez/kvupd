@@ -9,6 +9,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.upd.kvupd.R
+import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Pedimap
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -50,9 +51,15 @@ fun FlowCliente.icono(context: Context): BitmapDescriptor {
     return context.vectorToBitmapDescriptor(drawableId)
 }
 
+fun FlowBajaSupervisor.icono(context: Context): BitmapDescriptor {
+    val drawableId = R.drawable.pin_bajas
+    return context.vectorToBitmapDescriptor(drawableId)
+}
+
 // Utilidad general para convertir un vector a BitmapDescriptor
 fun Context.vectorToBitmapDescriptor(drawableId: Int): BitmapDescriptor {
-    val drawable = ContextCompat.getDrawable(this, drawableId) ?: return BitmapDescriptorFactory.defaultMarker()
+    val drawable = ContextCompat.getDrawable(this, drawableId)
+        ?: return BitmapDescriptorFactory.defaultMarker()
     val bitmap = Bitmap.createBitmap(
         drawable.intrinsicWidth,
         drawable.intrinsicHeight,

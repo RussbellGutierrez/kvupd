@@ -25,7 +25,7 @@ object QueryConstant {
     const val GET_RECYCLER_BAJASUPER = """
         SELECT b.empleado, b.nombre, b.creado, b.descripcion as motivo, b.clicodigo, b.clinombre, 
                IFNULL(p.cliente,'0') as revisado, p.procede, b.direccion, b.canal, b.observacion,
-               b.negocio, b.pago, b.compra
+               b.negocio, b.pago, b.compra, b.clilongitud, b.clilatitud
         FROM TableBajaSupervisor b
         LEFT JOIN TableBajaProcesada p on b.empleado=p.empleado AND b.clicodigo=p.cliente
         ORDER BY b.creado DESC
