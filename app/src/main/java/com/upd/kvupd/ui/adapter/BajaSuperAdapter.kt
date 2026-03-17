@@ -41,25 +41,30 @@ class BajaSuperAdapter @AssistedInject constructor(
 
         @SuppressLint("SetTextI18n")
         fun bind(item: FlowBajaSupervisor, listener: Listener) {
-            bind.txtFecha.text = item.fecha
-            bind.txtCliente.text = "${item.cliente} - ${item.nombre}"
-            bind.txtMotivo.text = item.motivo
-            bind.txtVendedor.text = "V-${item.vendedor}"
+            var colorAprobado = ""
+            var colorDenegado = ""
 
             when (item.procede) {
                 0 -> {
-                    bind.txtDenegado.setTextColor(Color.parseColor("#3700B3"))
-                    bind.txtAprobado.setTextColor(Color.parseColor("#B6B6B6"))
+                    colorAprobado = "#B6B6B6"
+                    colorDenegado = "#3700B3"
                 }
                 1 -> {
-                    bind.txtAprobado.setTextColor(Color.parseColor("#3700B3"))
-                    bind.txtDenegado.setTextColor(Color.parseColor("#B6B6B6"))
+                    colorAprobado = "#3700B3"
+                    colorDenegado = "#B6B6B6"
                 }
                 null -> {
-                    bind.txtDenegado.setTextColor(Color.parseColor("#B6B6B6"))
-                    bind.txtAprobado.setTextColor(Color.parseColor("#B6B6B6"))
+                    colorAprobado = "#B6B6B6"
+                    colorDenegado = "#B6B6B6"
                 }
             }
+
+            bind.txtFecha.text = item.creacion
+            bind.txtCliente.text = "${item.cliente} - ${item.nombre}"
+            bind.txtMotivo.text = MotivoBaja.fromId(item.motivo).label
+            bind.txtVendedor.text = "V-${item.vendedor}"
+            bind.txtDenegado.setTextColor(Color.parseColor(colorDenegado))
+            bind.txtAprobado.setTextColor(Color.parseColor(colorAprobado))
 
             bind.lnrBaja.setOnLongClickListener {
                 listener.onLongClick(item)

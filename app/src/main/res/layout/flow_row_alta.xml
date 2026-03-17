@@ -10,7 +10,7 @@
     app:cardElevation="3dp">
 
     <LinearLayout
-        android:id="@+id/lnr_baja"
+        android:id="@+id/lnr_alta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
@@ -23,57 +23,22 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txt_fecha"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:textColor="@color/teal"
-                tools:text="yyyy-mm-dd" />
-
-            <TextView
-                android:id="@+id/txt_vendedor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:gravity="center"
-                android:textColor="@color/teal"
-                tools:text="V-00" />
-
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/ojo"
-                app:tint="@color/dodgerblue" />
+                app:srcCompat="@drawable/alzamano"
+                app:tint="@color/deeporange" />
 
+            <TextView
+                android:id="@+id/txt_empleado"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:textColor="@color/teal"
+                tools:text="Empleado - 00" />
         </LinearLayout>
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="@dimen/separation_5" />
-
-        <TextView
-            android:id="@+id/txt_cliente"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            tools:text="999 - Nombre del cliente" />
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginVertical="@dimen/separation_5" />
-
-        <TextView
-            android:id="@+id/txt_motivo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/lightcrimson"
-            tools:text="MOTIVO DE LA BAJA" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
@@ -86,13 +51,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/txt_aprobado"
+                android:id="@+id/txt_codigo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.3"
                 android:gravity="center"
-                android:text="APROBADO"
-                android:textColor="@color/lightgray" />
+                tools:text="100yyyymmddhhmmss" />
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="1dp"
@@ -100,15 +64,27 @@
                 android:layout_marginHorizontal="@dimen/separation_5" />
 
             <TextView
-                android:id="@+id/txt_denegado"
+                android:id="@+id/txt_datos"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.7"
                 android:gravity="center"
-                android:text="DENEGADO"
+                android:text="CON DATOS"
                 android:textColor="@color/lightgray" />
         </LinearLayout>
 
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="@dimen/separation_5" />
+
+        <TextView
+            android:id="@+id/txt_fecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/deeporange"
+            tools:text="yyyy-mm-dd HH:mm:ss" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

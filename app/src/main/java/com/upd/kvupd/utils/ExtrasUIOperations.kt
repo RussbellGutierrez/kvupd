@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -24,6 +25,9 @@ import androidx.work.WorkManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.R
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.utils.DimensionesDialog.DIALOG_ALTO
@@ -132,6 +136,25 @@ fun DialogFragment.setResume(isCompact: Boolean = true) {
             window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             setStyle(STYLE_NO_FRAME, android.R.style.Theme_Translucent_NoTitleBar)
         }
+    }
+}
+
+fun BottomSheetDialogFragment.expandFullHeight(
+    skipCollapsed: Boolean = true,
+    fullHeight: Boolean = false
+) {
+    val dialog = dialog as? BottomSheetDialog ?: return
+    val bottomSheet = dialog.findViewById<View>(
+        com.google.android.material.R.id.design_bottom_sheet
+    ) ?: return
+
+    val behavior = BottomSheetBehavior.from(bottomSheet)
+
+    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    behavior.skipCollapsed = skipCollapsed
+
+    if (fullHeight) {
+        bottomSheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
     }
 }
 

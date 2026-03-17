@@ -101,64 +101,68 @@ class RoomCrudSource @Inject constructor(
         crud.updateBaja(actual)
     }
 
-    suspend fun actualizarRespuesta(actual: TableRespuesta){
+    suspend fun actualizarBajaProcesada(actual: TableBajaProcesada) {
+        crud.updateBajaProcesada(actual)
+    }
+
+    suspend fun actualizarRespuesta(actual: TableRespuesta) {
         crud.updateRespuesta(actual)
     }
 
     /////      DELETE
-    suspend fun borrarConfiguracion(){
+    suspend fun borrarConfiguracion() {
         crud.deleteConfiguracion()
     }
 
-    suspend fun borrarClientes(){
+    suspend fun borrarClientes() {
         crud.deleteClientes()
     }
 
-    suspend fun borrarVendedores(){
+    suspend fun borrarVendedores() {
         crud.deleteVendedores()
     }
 
-    suspend fun borrarDistritos(){
+    suspend fun borrarDistritos() {
         crud.deleteDistritos()
     }
 
-    suspend fun borrarNegocios(){
+    suspend fun borrarNegocios() {
         crud.deleteNegocios()
     }
 
-    suspend fun borrarRutas(){
+    suspend fun borrarRutas() {
         crud.deleteRutas()
     }
 
-    suspend fun borrarEncuesta(){
+    suspend fun borrarEncuesta() {
         crud.deleteEncuesta()
     }
 
-    suspend fun borrarSeguimiento(){
+    suspend fun borrarSeguimiento() {
         crud.deleteSeguimiento()
     }
 
-    suspend fun borrarBaja(){
+    suspend fun borrarBaja() {
         crud.deleteBaja()
     }
 
-    suspend fun borrarBajaProcesada(){
+    suspend fun borrarBajaProcesada() {
         crud.deleteBajaProcesada()
     }
 
-    suspend fun borrarAlta(){
+    suspend fun borrarAlta() {
         crud.deleteAlta()
     }
 
-    suspend fun borrarDatosAlta(){
+    suspend fun borrarDatosAlta() {
         crud.deleteAltaDatos()
     }
 
-    suspend fun borrarBajaSupervisor(){
+    suspend fun borrarBajaSupervisor() {
         crud.deleteBajaSupervisor()
     }
 
-    suspend fun borrarRespuestas(){
+    suspend fun borrarRespuestas() {
         crud.deleteRespuesta()
     }
 }

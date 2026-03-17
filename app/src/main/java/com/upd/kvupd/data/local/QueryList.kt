@@ -11,11 +11,11 @@ import com.upd.kvupd.data.model.QueryConstant.BAJA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.FOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_BAJAS
-import com.upd.kvupd.data.model.QueryConstant.GET_BAJA_SUPERVISOR
 import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIGURACION
 import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
+import com.upd.kvupd.data.model.QueryConstant.GET_LAST_GPS
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
 import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_BAJASUPER
 import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_CLIENTE
@@ -27,7 +27,6 @@ import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
@@ -59,9 +58,6 @@ interface QueryList {
     @Query(GET_ENCUESTA)
     suspend fun getEncuestas(): List<TableEncuesta>
 
-    @Query(GET_BAJA_SUPERVISOR)
-    suspend fun getBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor?
-
     ////  FLOW
     @Query(GET_CONFIGURACION)
     fun flowConfiguracion(): Flow<List<TableConfiguracion>>
@@ -83,6 +79,9 @@ interface QueryList {
 
     @Query(GET_VENDEDORES)
     fun flowVendedores(): Flow<List<TableVendedor>>
+
+    @Query(GET_LAST_GPS)
+    fun flowLastSeguimiento(): Flow<TableSeguimiento?>
 
     ////  SERVER
     @Query(SEGUIMIENTO_SERVER)

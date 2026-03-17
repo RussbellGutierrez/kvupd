@@ -14,22 +14,32 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaVendedor
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.databinding.DialogBajasVendedorBinding
 import com.upd.kvupd.databinding.FragmentFBajaBinding
+import com.upd.kvupd.databinding.RowBajavendedorBinding
 import com.upd.kvupd.ui.adapter.BajaAdapter
 import com.upd.kvupd.ui.adapter.BajaAdapterFactory
 import com.upd.kvupd.ui.adapter.BajaSuperAdapter
 import com.upd.kvupd.ui.adapter.BajaSuperAdapterFactory
+import com.upd.kvupd.ui.fragment.enumClass.EstadoBajaDetalle
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.ui.fragment.enumClass.VistaBaja
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
+import com.upd.kvupd.utils.BundleConstantes.KEY_DETALLE
+import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.GPSConstants
 import com.upd.kvupd.utils.GpsTracker
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
@@ -39,6 +49,8 @@ import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
@@ -59,9 +71,9 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
     private lateinit var bajaAdapter: BajaAdapter
     private lateinit var bajasuperAdapter: BajaSuperAdapter
     private var vistaActual: VistaBaja = VistaBaja.GENERADO
+    private var detallebajaEstado: EstadoBajaDetalle = EstadoBajaDetalle.Reposo
     private var bajaCache: List<TableBaja> = emptyList()
     private var bajaSuperCache: List<FlowBajaSupervisor> = emptyList()
-    private var getLocation: Location? = null
     private val _tag by lazy { FBaja::class.java.simpleName }
 
     @Inject
@@ -89,6 +101,8 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         binding.searchview.setOnQueryTextListener(this)
 
         collectFlows()
+
+        resultadoDetalleBajaDialogo()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -115,7 +129,9 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
     }
 
     override fun onLongClick(bajaSupervisor: FlowBajaSupervisor) {
-        TODO("Not yet implemented")
+        val action = FBajaDirections
+            .actionFBajaToBDDetalleBaja(bajaSupervisor)
+        findNavController().navigate(action)
     }
 
     override fun onQueryTextSubmit(p0: String) = false
@@ -158,6 +174,89 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
                 stateSuccessBajaEstado(data)
             }
         }
+
+        collectFlow(apiViewModel.bajaProcesadaMessage) collect@{ mensaje ->
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = mensaje
+                )
+            )
+        }
+    }
+
+    private fun resultadoDetalleBajaDialogo() {
+        parentFragmentManager.setFragmentResultListener(
+            KEY_DETALLE,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            if (detallebajaEstado != EstadoBajaDetalle.Reposo) return@setFragmentResultListener
+
+            val empleado = bundle.getString("empleado") ?: return@setFragmentResultListener
+            val cliente = bundle.getString("cliente") ?: return@setFragmentResultListener
+            val procede = bundle.getInt("procede")
+            val creacion = bundle.getString("fecha") ?: return@setFragmentResultListener
+            val confirmacion =
+                bundle.getString("fechaconfirmacion") ?: return@setFragmentResultListener
+            val observacion = bundle.getString("observacion") ?: ""
+
+            val detalleBaja = TableBajaProcesada(
+                empleado = empleado,
+                cliente = cliente,
+                procede = procede,
+                fecha = creacion,
+                precision = 0.0,
+                longitud = 0.0,
+                latitud = 0.0,
+                fechaconfirmacion = confirmacion,
+                observacion = observacion
+            )
+
+            detallebajaEstado = EstadoBajaDetalle.ObteniendoUbicacion
+            obtenerUbicacionDetalleBaja(detalleBaja)
+            return@setFragmentResultListener
+        }
+    }
+
+    private fun obtenerUbicacionDetalleBaja(baja: TableBajaProcesada) {
+        snack("Obteniendo ubicación…")
+
+        gpsTracker.startTracking(
+            id = GPSConstants.TRACKER_TEMPORAL,
+            interval = GPSConstants.GT_SIN_INTERVALO,
+            fastest = GPSConstants.GT_SIN_INTERVALO,
+            minDistance = GPSConstants.IGNORAR_METROS,
+            onLocation = { location ->
+                if (detallebajaEstado != EstadoBajaDetalle.ObteniendoUbicacion) return@startTracking
+
+                gpsTracker.stopTracking(GPSConstants.TRACKER_TEMPORAL)
+
+                detallebajaEstado = EstadoBajaDetalle.Procesada
+                procesarDetalleBaja(baja, location)
+                detallebajaEstado = EstadoBajaDetalle.Reposo
+            },
+            onError = {
+                if (detallebajaEstado != EstadoBajaDetalle.ObteniendoUbicacion) return@startTracking
+
+                detallebajaEstado = EstadoBajaDetalle.Error
+                snack("No se pudo obtener ubicación")
+                detallebajaEstado = EstadoBajaDetalle.Reposo
+            }
+        )
+    }
+
+    private fun procesarDetalleBaja(
+        baja: TableBajaProcesada,
+        location: Location
+    ) {
+        val item = baja.copy(
+            longitud = location.longitude,
+            latitud = location.latitude,
+            precision = location.accuracy.toDouble().to2Decimals()
+        )
+
+        snack("Baja de cliente ${item.cliente} revisado")
+        apiViewModel.saveAndSendBajaProcesada(item)
     }
 
     private fun toggleVista() {
@@ -212,6 +311,7 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         val hayDatos = bajaCache.isNotEmpty()
         toggleEmpty(hayDatos)
 
+        binding.txtVista.text = "Bajas generadas"
         binding.rcvBaja.adapter = bajaAdapter
         bajaAdapter.submitList(bajaCache)
     }
@@ -220,6 +320,7 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         val hayDatos = bajaSuperCache.isNotEmpty()
         toggleEmpty(hayDatos)
 
+        binding.txtVista.text = "Bajas pendientes"
         binding.rcvBaja.adapter = bajasuperAdapter
         bajasuperAdapter.submitList(bajaSuperCache)
     }
@@ -284,7 +385,41 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
     }
 
     private fun renderBajasPendientes(lista: List<BajaVendedor>) {
-        //
+
+        val bindingDialog = DialogBajasVendedorBinding.inflate(layoutInflater)
+
+        val dialog = MaterialDialog(requireContext())
+            .customView(view = bindingDialog.root, scrollable = false)
+
+        lista.forEach { item ->
+            val row = createRow(item, bindingDialog.lnrBajavendedor)
+            bindingDialog.lnrBajavendedor.addView(row)
+        }
+
+        dialog.show()
+    }
+
+    private fun createRow(
+        item: BajaVendedor,
+        parent: ViewGroup
+    ): View {
+
+        val cliente = "${item.cliente} - ${item.nombre}"
+        val lapso = FechaHoraUtil.diasDesde(item.fecha)
+        val dias = "$lapso dias"
+
+        val binding = RowBajavendedorBinding.inflate(
+            layoutInflater,
+            parent,
+            false
+        )
+
+        binding.txtFecha.text = item.fecha
+        binding.txtCliente.text = cliente
+        binding.txtMotivo.text = item.descripcion
+        binding.txtDias.text = dias
+
+        return binding.root
     }
 
     private fun <T> handleResultadoApi(

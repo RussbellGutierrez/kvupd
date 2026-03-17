@@ -51,6 +51,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/action_FBase_to_FAlta"
+            app:destination="@id/FAlta"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <dialog
@@ -126,5 +134,10 @@
             app:argType="com.upd.kvupd.data.model.FlowBajaSupervisor" />
 
     </dialog>
+    <fragment
+        android:id="@+id/FAlta"
+        android:name="com.upd.kvupd.ui.fragment.FAlta"
+        android:label="fragment_f_alta"
+        tools:layout="@layout/fragment_f_alta" />
 
 </navigation>

@@ -6,10 +6,12 @@ import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
 import com.upd.kvupd.BuildConfig
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.ui.fragment.type.MapData
 import java.lang.ref.WeakReference
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object BaseDatosRoom {
@@ -45,9 +47,9 @@ object NotificationHelper {
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
 }
 
-object BajaConstantes {
+object BundleConstantes {
     const val KEY_BAJA = "baja_resultado"
-    const val PAIR_BAJA = "baja"
+    const val KEY_DETALLE = "bajadetalle_resultado"
 }
 
 object GPSConstants {
@@ -102,6 +104,10 @@ object InstanciaDialog {
     }
 }
 
+object UbicacionActual : MapData {
+    override val mapId: String = "GPS_ACTUAL"
+}
+
 object ExtraInfo {
     fun obtener(opcion: InfoDispositivo): String {
         return when (opcion) {
@@ -115,14 +121,23 @@ object ExtraInfo {
 
 @SuppressLint("ConstantLocale")
 object FechaHoraUtil {
-    private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+    private val dateTimeFormatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    fun ahora(): String = LocalDateTime.now().format(dateTimeFormatter)
+    private val dateFormatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
 
-    fun dia(): String = LocalDate.now().format(dateFormatter)
+    private val apiDateTimeFormatter =
+        DateTimeFormatter.ofPattern("yyyy/MM/dd h:mma", Locale.ENGLISH)
 
-    fun esHoy(fecha: String): Boolean = LocalDate.parse(fecha) == LocalDate.now()
+    fun ahora(): String =
+        LocalDateTime.now().format(dateTimeFormatter)
+
+    fun dia(): String =
+        LocalDate.now().format(dateFormatter)
+
+    fun esHoy(fecha: String): Boolean =
+        LocalDate.parse(fecha) == LocalDate.now()
 
     fun castApi(fecha: String): String {
         return try {
@@ -131,6 +146,18 @@ object FechaHoraUtil {
             localDate.format(dateFormatter)
         } catch (e: Exception) {
             fecha
+        }
+    }
+
+    fun diasDesde(fecha: String): Long {
+        return try {
+            val fechaRegistro = LocalDateTime
+                .parse(fecha, apiDateTimeFormatter)
+                .toLocalDate()
+
+            ChronoUnit.DAYS.between(fechaRegistro, LocalDate.now())
+        } catch (e: Exception) {
+            0
         }
     }
 }

@@ -21,9 +21,9 @@ import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.colorSeguimiento
 import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
+import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.EstadoSesion
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -61,26 +61,20 @@ class FBase : Fragment(), MenuProvider {
         binding.apply {
             txtVersion.text = ExtraInfo.obtener(InfoDispositivo.VERSION_APP)
 
-            btnVendedor.setOnClickListener {
-                verificarSesionVigente {
-                    findNavController().navigate(R.id.action_FBase_to_FRastreo)
-                }
-            }
-            btnCartera.setOnClickListener {
-                verificarSesionVigente {
-                    findNavController().navigate(R.id.action_FBase_to_FCartera)
-                }
-            }
-            btnBaja.setOnClickListener {
-                verificarSesionVigente {
-                    findNavController().navigate(R.id.action_FBase_to_FBaja)
-                }
-            }
+            btnVendedor.navegarSeguro(R.id.action_FBase_to_FRastreo)
+
+            btnCartera.navegarSeguro(R.id.action_FBase_to_FCartera)
+
+            btnCliente.navegarSeguro(R.id.action_FBase_to_FCartera)
+
+            btnAlta.navegarSeguro(R.id.action_FBase_to_FAlta)
+
+            btnBaja.navegarSeguro(R.id.action_FBase_to_FBaja)
+
             //btnCliente.setUI("v", true)
             //btnReporte.setUI("v", true)
             //btnEncuesta.setUI("v", true)
             //btnAlta.setUI("v", true)
-            //btnBaja.setUI("v", true)
             //btnServidor.setUI("v", true)
             //agregar un fragment para enviar solicitudes de promociones
         }
@@ -216,6 +210,14 @@ class FBase : Fragment(), MenuProvider {
             }
         }
     }*/
+
+    private fun View.navegarSeguro(action: Int) {
+        setOnClickListener {
+            verificarSesionVigente {
+                findNavController().navigate(action)
+            }
+        }
+    }
 
     private fun verificarSesionVigente(f: () -> Unit) {
         when (localViewmodel.sesionEstado.value) {

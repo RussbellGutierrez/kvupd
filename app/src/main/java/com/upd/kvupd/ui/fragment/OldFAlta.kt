@@ -59,8 +59,8 @@ class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuP
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.rcvAltas.layoutManager = LinearLayoutManager(requireContext())
-        bind.rcvAltas.adapter = adapter
+        //bind.rcvAltas.layoutManager = LinearLayoutManager(requireContext())
+        //bind.rcvAltas.adapter = adapter
 
         /*viewmodel.launchPosition()
         viewmodel.altasObs().distinctUntilChanged().observe(viewLifecycleOwner) {
@@ -81,7 +81,7 @@ class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuP
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.oldalta_menu, menu)
+        menuInflater.inflate(R.menu.n_alta_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {

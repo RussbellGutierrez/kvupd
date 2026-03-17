@@ -1,5 +1,6 @@
 package com.upd.kvupd.domain
 
+import androidx.room.util.query
 import com.upd.kvupd.data.local.RoomCrudSource
 import com.upd.kvupd.data.local.RoomQuerySource
 import com.upd.kvupd.data.model.BajaSupervisor
@@ -105,6 +106,10 @@ class RoomImplementation @Inject constructor(
         crudSource.actualizarBaja(actual)
     }
 
+    override suspend fun updateBajaProcesada(actual: TableBajaProcesada) {
+        crudSource.actualizarBajaProcesada(actual)
+    }
+
     override suspend fun updateRespuesta(actual: TableRespuesta) {
         crudSource.actualizarRespuesta(actual)
     }
@@ -189,13 +194,6 @@ class RoomImplementation @Inject constructor(
         return querySource.roomEncuestas()
     }
 
-    override suspend fun queryBajaSupervisor(
-        vendedor: String,
-        cliente: String
-    ): TableBajaSupervisor? {
-        return querySource.roomBajaSupervisor(vendedor, cliente)
-    }
-
     override fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
         return querySource.flowConfiguracion()
     }
@@ -214,6 +212,10 @@ class RoomImplementation @Inject constructor(
 
     override fun listFlowBajas(): Flow<List<TableBaja>> {
         return querySource.flowBajas()
+    }
+
+    override fun listFlowLastGPS(): Flow<TableSeguimiento?> {
+        return querySource.flowLastGPS()
     }
 
     override fun listFlowPolygon(): Flow<List<TableRuta>> {

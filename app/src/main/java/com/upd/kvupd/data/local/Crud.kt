@@ -89,6 +89,9 @@ interface Crud {
     @Update(entity = TableBaja::class)
     suspend fun updateBaja(upd: TableBaja)
 
+    @Update(entity = TableBajaProcesada::class)
+    suspend fun updateBajaProcesada(upd: TableBajaProcesada)
+
     @Update(entity = TableRespuesta::class)
     suspend fun updateRespuesta(rsp: TableRespuesta)
 

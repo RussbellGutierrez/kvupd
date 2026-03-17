@@ -13,7 +13,7 @@ enum class Canal(
     MINORISTA("MINORISTA", R.drawable.minorista),
     MAYORISTA("MAYORISTA", R.drawable.mayorista),
     HORIZONTAL("HORIZONTAL", R.drawable.horizontal),
-    MERCADOS("MERCADOS", R.drawable.tienda),
+    MERCADOS("MERCADOS", R.drawable.mercado),
     BOTICAS("BOTICAS", R.drawable.pildora),
     DESCONOCIDO("DESCONOCIDO", R.drawable.restringido);
 

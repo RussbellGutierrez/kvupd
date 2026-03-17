@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
 import com.upd.kvupd.utils.ExtraInfo
@@ -103,6 +104,25 @@ class JsonObjectDataSource @Inject constructor(
             put("ycoord", baja.latitud)
             put("precision", baja.precision)
             put("anulado", baja.anulado)
+        }
+        return json.toReqBody()
+    }
+
+    fun jsonRequestBajasProcesadas(
+        dato: TableConfiguracion,
+        baja: TableBajaProcesada
+    ): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", baja.empleado)
+            put("fecha", baja.fecha)
+            put("cliente", baja.cliente)
+            put("cfecha", baja.fechaconfirmacion)
+            put("observacion", baja.observacion)
+            put("precision", baja.precision)
+            put("xcoord", baja.longitud)
+            put("ycoord", baja.latitud)
+            put("confirmar", baja.procede)
+            put("empresa", dato.empresa)
         }
         return json.toReqBody()
     }

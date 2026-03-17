@@ -50,6 +50,7 @@ interface RoomFunctions {
     suspend fun updateAlta(actual: TableAlta)
     suspend fun updateDatosAlta(actual: TableAltaDatos)
     suspend fun updateBaja(actual: TableBaja)
+    suspend fun updateBajaProcesada(actual: TableBajaProcesada)
     suspend fun updateRespuesta(actual: TableRespuesta)
 
     ///     Room Delete
@@ -75,7 +76,6 @@ interface RoomFunctions {
     suspend fun queryNegocios(): List<TableNegocio>
     suspend fun queryRutas(): List<TableRuta>
     suspend fun queryEncuestas(): List<TableEncuesta>
-    suspend fun queryBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor?
 
     ///     Room Flow
     fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
@@ -85,6 +85,7 @@ interface RoomFunctions {
     fun listFlowBajas(): Flow<List<TableBaja>>
     fun listFlowPolygon(): Flow<List<TableRuta>>
     fun listFlowVendedores(): Flow<List<TableVendedor>>
+    fun listFlowLastGPS(): Flow<TableSeguimiento?>
 
     ///     Room Server
     suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento>

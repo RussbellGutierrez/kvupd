@@ -31,8 +31,8 @@ data class FlowCliente(
 data class FlowBajaSupervisor(
     @ColumnInfo(name = "empleado") val vendedor: String,
     @ColumnInfo(name = "nombre") val vendnom: String,
-    @ColumnInfo(name = "creado") val fecha: String,
-    @ColumnInfo(name = "motivo") val motivo: String,
+    @ColumnInfo(name = "creado") val creacion: String,
+    @ColumnInfo(name = "motivo") val motivo: Int,
     @ColumnInfo(name = "clicodigo") val cliente: String,
     @ColumnInfo(name = "clinombre") val nombre: String,
     @ColumnInfo(name = "direccion") val direccion: String,
@@ -43,21 +43,12 @@ data class FlowBajaSupervisor(
     @ColumnInfo(name = "compra") val compra: String,
     @ColumnInfo(name = "clilongitud") val longitud: Double,
     @ColumnInfo(name = "clilatitud") val latitud: Double,
-    @ColumnInfo(name = "revisado") val revisado: Int,
     @ColumnInfo(name = "procede") val procede: Int?
 ) : Parcelable, MapData {
     @IgnoredOnParcel
     override val mapId: String
         get() = cliente
 }
-
-@Parcelize
-data class BajaAux(
-    val cliente: FlowCliente,
-    val motivo: Int,
-    val comentario: String,
-    val fecha: String
-) : Parcelable
 
 data class BotonesConfig(
     val vendedor: Boolean = false,

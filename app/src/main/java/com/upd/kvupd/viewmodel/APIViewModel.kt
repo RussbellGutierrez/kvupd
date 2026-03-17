@@ -10,6 +10,7 @@ import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
@@ -40,6 +41,9 @@ class APIViewModel @Inject constructor(
 
     private val _bajaMessage = EventFlow<String>()
     val bajaMessage = _bajaMessage.events
+
+    private val _bajaProcesadaMessage = EventFlow<String>()
+    val bajaProcesadaMessage = _bajaProcesadaMessage.events
 
     private val _pedimapEvent = EventFlow<ResultadoApi<JsonPedimap>>()
     val pedimapEvent = _pedimapEvent.events
@@ -79,6 +83,9 @@ class APIViewModel @Inject constructor(
 
     val flowVendedores = roomFunctions.listFlowVendedores()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val flowLastGPS = roomFunctions.listFlowLastGPS()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
@@ -215,6 +222,41 @@ class APIViewModel @Inject constructor(
                 }
 
                 ResultadoApi.Loading -> Unit
+            }
+        }
+    }
+
+    fun saveAndSendBajaProcesada(item: TableBajaProcesada) {
+        viewModelScope.launch {
+            roomFunctions.saveBajaProcesada(item)
+
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+
+            val json = jsobFunctions.jsonObjectBajasProcesadas(config, item)
+
+            serverFunctions.apiSendConfirmarBaja(json).collect { result ->
+                when (result) {
+                    is ResultadoApi.Exito -> {
+                        roomFunctions.updateBajaProcesada(
+                            item.copy(
+                                sincronizado = true
+                            )
+                        )
+                    }
+
+                    is ResultadoApi.ErrorHttp,
+                    is ResultadoApi.Fallo -> {
+                        roomFunctions.updateBajaProcesada(
+                            item.copy(
+                                sincronizado = false
+                            )
+                        )
+                        result.mensajeUsuario()
+                            ?.let { _bajaProcesadaMessage.emit(it) }
+                    }
+
+                    ResultadoApi.Loading -> Unit
+                }
             }
         }
     }

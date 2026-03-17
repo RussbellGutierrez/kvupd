@@ -23,6 +23,10 @@ class MapHelper(
         fun onClick(data: T)
     }
 
+    interface OnMarkerMovedListener<T : MapData> {
+        fun onMoved(data: T, position: LatLng)
+    }
+
     private var infoWindowClickListener: ((MapData) -> Unit)? = null
 
     private var googleMap: GoogleMap? = null
@@ -30,6 +34,7 @@ class MapHelper(
 
     private val markers = mutableListOf<Marker>()
     private val polygons = mutableListOf<Polygon>()
+    private var markerMovedListener: ((MapData, LatLng) -> Unit)? = null
 
     // Colas para dibujar o ejecutar después
     private var pendingFocus: MapData? = null
@@ -56,6 +61,26 @@ class MapHelper(
             infoWindowClickListener?.invoke(data)
         }
 
+        map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+
+            override fun onMarkerDragStart(marker: Marker) {
+                marker.alpha = 0.7f
+                marker.setAnchor(0.5f, 1.2f) // pequeño efecto de elevación
+            }
+
+            override fun onMarkerDrag(marker: Marker) {}
+
+            override fun onMarkerDragEnd(marker: Marker) {
+
+                marker.alpha = 1f
+                marker.setAnchor(0.5f, 1f)
+
+                val data = marker.tag as? MapData ?: return
+
+                markerMovedListener?.invoke(data, marker.position)
+            }
+        })
+
         // procesar polígonos pendientes
         pendingPolygons.forEach { drawPolygon(it) }
         pendingPolygons.clear()
@@ -63,6 +88,18 @@ class MapHelper(
         // procesar movimientos de cámara pendientes
         pendingCamera.forEach { it.invoke() }
         pendingCamera.clear()
+    }
+
+    fun <T : MapData> setOnMarkerMovedListener(
+        clazz: Class<T>,
+        listener: OnMarkerMovedListener<T>
+    ) {
+        markerMovedListener = { data, pos ->
+            if (clazz.isInstance(data)) {
+                @Suppress("UNCHECKED_CAST")
+                listener.onMoved(data as T, pos)
+            }
+        }
     }
 
     fun <T : MapData> setOnInfoWindowClickListener(
@@ -101,6 +138,17 @@ class MapHelper(
         }
     }
 
+    fun changeMarkerIcon(
+        data: MapData,
+        icon: BitmapDescriptor
+    ) {
+        val marker = markers.firstOrNull {
+            (it.tag as? MapData)?.mapId == data.mapId
+        } ?: return
+
+        marker.setIcon(icon)
+    }
+
     // -------- MARKERS -------- //
     fun clearMarkers() {
         markers.forEach { it.remove() }
@@ -111,7 +159,8 @@ class MapHelper(
         data: MapData,
         lat: Double,
         lng: Double,
-        icon: BitmapDescriptor
+        icon: BitmapDescriptor,
+        movable: Boolean = false
     ): Marker? {
         val map = googleMap
             ?: return null
@@ -120,6 +169,7 @@ class MapHelper(
             MarkerOptions()
                 .position(LatLng(lat, lng))
                 .icon(icon)
+                .draggable(movable)
         ) ?: return null
 
         marker.tag = data
@@ -203,6 +253,43 @@ class MapHelper(
 
         map.animateCamera(
             CameraUpdateFactory.newLatLngBounds(bounds, 200)
+        )
+    }
+
+    fun centerMarkersWithMaxZoom(
+        includeLocation: LatLng? = null,
+        padding: Int = 200,
+        maxZoom: Float = 15f
+    ) {
+        val map = googleMap
+
+        if (map == null) {
+            pendingCamera.add { centerMarkersWithMaxZoom(includeLocation, padding, maxZoom) }
+            return
+        }
+
+        if (markers.isEmpty() && includeLocation == null) return
+
+        val builder = LatLngBounds.Builder()
+        markers.forEach { builder.include(it.position) }
+        includeLocation?.let { builder.include(it) }
+
+        val bounds = builder.build()
+
+        map.animateCamera(
+            CameraUpdateFactory.newLatLngBounds(bounds, padding),
+            object : GoogleMap.CancelableCallback {
+                override fun onFinish() {
+                    val currentZoom = map.cameraPosition.zoom
+                    if (currentZoom > maxZoom) {
+                        map.animateCamera(
+                            CameraUpdateFactory.zoomTo(maxZoom)
+                        )
+                    }
+                }
+
+                override fun onCancel() {}
+            }
         )
     }
 

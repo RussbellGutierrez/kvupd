@@ -16,7 +16,6 @@ class ListaClientesMapa(
     private val onSelect: (cliente: FlowCliente) -> Unit
 ) {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun show() {
         val binding = DialogClientesMapaBinding.inflate(
             LayoutInflater.from(context)

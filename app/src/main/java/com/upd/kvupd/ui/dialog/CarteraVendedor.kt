@@ -22,7 +22,6 @@ class CarteraVendedor(
     private val onConfirm: (codigoVendedor: String, fecha: String?) -> Unit
 ) {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun show() {
         val binding = DialogCarteraVendedorBinding.inflate(
             LayoutInflater.from(context)

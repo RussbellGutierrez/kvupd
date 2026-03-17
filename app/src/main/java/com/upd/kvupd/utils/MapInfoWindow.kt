@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.databinding.InfowindowClientesBinding
+import com.upd.kvupd.databinding.InfowindowDefaultBinding
 import com.upd.kvupd.databinding.InfowindowPedimapBinding
 
 class MapInfoWindow(
@@ -18,19 +19,23 @@ class MapInfoWindow(
     override fun getInfoWindow(marker: Marker): View? = null
 
     override fun getInfoContents(marker: Marker): View? {
-        val tag = marker.tag ?: return null
-
-        return when (tag) {
+        return when (val tag = marker.tag) {
             is Pedimap -> bindPedimap(tag)
             is FlowCliente -> bindFlowClientes(tag)
-            else -> null
+            else -> {
+                if (marker.title.isNullOrEmpty() && marker.snippet.isNullOrEmpty()) {
+                    return null
+                }
+
+                bindDefault(marker.title!!, marker.snippet!!)
+            }
         }
     }
 
     private fun bindPedimap(data: Pedimap): View {
         val binding = InfowindowPedimapBinding.inflate(inflater)
         binding.apply {
-            txtCodigo.text = data.codigo.toString()
+            txtCodigo.text = data.codigo
             if (data.emitiendo > 0) {
                 txtEmite.setUI("v", true)
                 txtNoemite.setUI("v", false)
@@ -61,16 +66,26 @@ class MapInfoWindow(
             val show = (data.baja > 0)
             txtBaja.setUI("v", show)
 
-            when{
+            when {
                 data.compras == 1 -> {
                     txtVentas.setTextColor(Color.parseColor("#B6B6B6"))
                     txtCompras.setTextColor(Color.parseColor("#3700B3"))
                 }
+
                 data.ventas == 0 -> {
                     txtCompras.setTextColor(Color.parseColor("#B6B6B6"))
                     txtVentas.setTextColor(Color.parseColor("#3700B3"))
                 }
             }
+        }
+        return binding.root
+    }
+
+    private fun bindDefault(titulo: String, snippet: String): View {
+        val binding = InfowindowDefaultBinding.inflate(inflater)
+        binding.apply {
+            txtTitulo.text = titulo
+            txtContenido.text = snippet
         }
         return binding.root
     }

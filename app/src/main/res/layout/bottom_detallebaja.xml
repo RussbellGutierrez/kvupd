@@ -109,19 +109,38 @@
                 android:textColor="@color/teal_700"
                 tools:text="100 - NOMBRE DEL VENDEDOR" />
 
-            <TextView
-                android:id="@+id/txt_observacion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/separation_5"
-                android:gravity="center"
-                android:lines="2"
-                tools:text="Observacion de la baja generada" />
-
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/separation_5" />
+
+            <TextView
+                android:id="@+id/txt_motivo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/separation_5"
+                android:gravity="center"
+                android:textColor="@color/lightcrimson"
+                tools:text="MOTIVO BAJA" />
+
+            <TextView
+                android:id="@+id/txt_observacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lines="2"
+                tools:text="Observacion de la baja generada" />
+
+            <TextView
+                android:id="@+id/txt_compra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/separation_5"
+                android:background="@color/purple_500"
+                android:gravity="center"
+                android:padding="@dimen/separation_5"
+                android:textColor="@color/white"
+                tools:text="ULTIMA COMPRA: yyyy-mm-dd" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

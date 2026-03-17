@@ -327,7 +327,7 @@
         android:id="@+id/OldFAlta"
         android:name="com.upd.kvupd.ui.fragment.OldFAlta"
         android:label="Alta"
-        tools:layout="@layout/fragment_f_alta">
+        tools:layout="@layout/old_fragment_f_alta">
         <action
             android:id="@+id/action_FAlta_to_FAltaMapa2"
             app:destination="@id/OldFAltaMapa"

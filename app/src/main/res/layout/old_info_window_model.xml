@@ -55,7 +55,7 @@
                 android:layout_marginVertical="2dp"
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical|center"
-                app:drawableLeftCompat="@drawable/notf_negocio"
+                app:drawableLeftCompat="@drawable/mercado"
                 app:drawableTint="@color/magenta"
                 tools:text="NEGOCIO CLIENTE" />
 

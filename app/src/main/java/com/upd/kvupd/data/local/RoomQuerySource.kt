@@ -41,9 +41,6 @@ class RoomQuerySource @Inject constructor(
     suspend fun roomEncuestas(): List<TableEncuesta> =
         query.getEncuestas()
 
-    suspend fun roomBajaSupervisor(vendedor: String, cliente: String): TableBajaSupervisor? =
-        query.getBajaSupervisor(vendedor, cliente)
-
     ////  FLOW
     fun flowConfiguracion(): Flow<List<TableConfiguracion>> =
         query.flowConfiguracion()
@@ -65,6 +62,9 @@ class RoomQuerySource @Inject constructor(
 
     fun flowVendedores(): Flow<List<TableVendedor>> =
         query.flowVendedores()
+
+    fun flowLastGPS(): Flow<TableSeguimiento?> =
+        query.flowLastSeguimiento()
 
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =

@@ -18,14 +18,11 @@ object QueryConstant {
     """
     const val GET_ALTAS = "SELECT * FROM TableAlta ORDER BY fecha DESC"
     const val GET_BAJAS = "SELECT * FROM TableBaja ORDER BY fecha DESC"
-    const val GET_BAJA_SUPERVISOR = """
-        SELECT * FROM TableBajaSupervisor 
-        WHERE empleado = :vendedor AND clicodigo = :cliente"""
 
     const val GET_RECYCLER_BAJASUPER = """
-        SELECT b.empleado, b.nombre, b.creado, b.descripcion as motivo, b.clicodigo, b.clinombre, 
-               IFNULL(p.cliente,'0') as revisado, p.procede, b.direccion, b.canal, b.observacion,
-               b.negocio, b.pago, b.compra, b.clilongitud, b.clilatitud
+        SELECT b.empleado, b.nombre, b.creado, b.motivo, b.clicodigo, b.clinombre, 
+               p.procede, b.direccion, b.canal, b.observacion,b.negocio, b.pago, b.compra, 
+               b.clilongitud, b.clilatitud
         FROM TableBajaSupervisor b
         LEFT JOIN TableBajaProcesada p on b.empleado=p.empleado AND b.clicodigo=p.cliente
         ORDER BY b.creado DESC
@@ -40,6 +37,7 @@ object QueryConstant {
 		        c.latitud, c.ruta, c.ventas, c.ventanio, c.fecha, c.negocio  
         ORDER BY c.fecha ASC, c.nomcli ASC
     """
+    const val GET_LAST_GPS = "SELECT * FROM TableSeguimiento ORDER BY fecha DESC LIMIT 1"
 
     ////  SERVER
     const val SEGUIMIENTO_SERVER = """

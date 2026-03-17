@@ -303,7 +303,7 @@ class OldHelperNotification @Inject constructor(
     fun negocioNotif() {
         val manager = NotificationManagerCompat.from(ctx)
         val notif = NotificationCompat.Builder(ctx, NEGOCIO_CHANNEL)
-            .setSmallIcon(R.drawable.notf_negocio)
+            .setSmallIcon(R.drawable.mercado)
             .setContentTitle("KV Negocio")
             .setContentText(MSG_NEGOCIO)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
