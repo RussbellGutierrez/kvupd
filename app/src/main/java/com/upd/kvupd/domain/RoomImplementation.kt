@@ -1,6 +1,5 @@
 package com.upd.kvupd.domain
 
-import androidx.room.util.query
 import com.upd.kvupd.data.local.RoomCrudSource
 import com.upd.kvupd.data.local.RoomQuerySource
 import com.upd.kvupd.data.model.BajaSupervisor
@@ -10,17 +9,18 @@ import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
+import com.upd.kvupd.data.model.FlowHeaderEncuestas
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -34,6 +34,39 @@ class RoomImplementation @Inject constructor(
     private val crudSource: RoomCrudSource,
     private val querySource: RoomQuerySource
 ) : RoomFunctions {
+
+    override suspend fun replaceConfiguracion(item: List<Configuracion>) {
+        crudSource.replaceConfiguracion(item)
+    }
+
+    override suspend fun replaceClientes(item: List<Cliente>) {
+        crudSource.replaceClientes(item)
+    }
+
+    override suspend fun replaceVendedores(item: List<Vendedor>) {
+        crudSource.replaceVendedores(item)
+    }
+
+    override suspend fun replaceDistritos(item: List<Distrito>) {
+        crudSource.replaceDistritos(item)
+    }
+
+    override suspend fun replaceNegocios(item: List<Negocio>) {
+        crudSource.replaceNegocios(item)
+    }
+
+    override suspend fun replaceRutas(item: List<Ruta>) {
+        crudSource.replaceRutas(item)
+    }
+
+    override suspend fun replaceEncuesta(item: List<Encuesta>) {
+        crudSource.replaceEncuesta(item)
+    }
+
+    override suspend fun reselectEncuesta(id: String) {
+        querySource.cleanAndSelectEncuesta(id)
+    }
+
     override suspend fun apiSaveConfiguracion(item: List<Configuracion>) {
         crudSource.apiGuardarConfiguracion(item)
     }
@@ -90,6 +123,10 @@ class RoomImplementation @Inject constructor(
         crudSource.guardarRespuestas(item)
     }
 
+    override suspend fun saveFoto(item: TableFoto) {
+        crudSource.guardarFoto(item)
+    }
+
     override suspend fun updateSeguimiento(actual: TableSeguimiento) {
         crudSource.actualizarSeguimiento(actual)
     }
@@ -112,6 +149,14 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun updateRespuesta(actual: TableRespuesta) {
         crudSource.actualizarRespuesta(actual)
+    }
+
+    override suspend fun updateFoto(actual: TableFoto) {
+        crudSource.actualizarFoto(actual)
+    }
+
+    override suspend fun updateEncuestaSeleccion(id: String) {
+        querySource.setSeleccionEncuesta(id)
     }
 
     override suspend fun deleteConfiguracion() {
@@ -170,6 +215,10 @@ class RoomImplementation @Inject constructor(
         crudSource.borrarRespuestas()
     }
 
+    override suspend fun deleteFoto() {
+        crudSource.borrarFoto()
+    }
+
     override suspend fun queryConfiguracion(): TableConfiguracion? {
         return querySource.roomConfiguracion()
     }
@@ -190,8 +239,16 @@ class RoomImplementation @Inject constructor(
         return querySource.roomRutas()
     }
 
-    override suspend fun queryEncuestas(): List<TableEncuesta> {
-        return querySource.roomEncuestas()
+    override suspend fun queryAltaSpecific(idaux: String, fecha: String): TableAlta? {
+        return querySource.roomAlta(idaux, fecha)
+    }
+
+    override suspend fun queryAltaDatos(idaux: String, fecha: String): TableAltaDatos? {
+        return querySource.roomAltaDato(idaux, fecha)
+    }
+
+    override suspend fun queryCabeceraEncuesta(): List<FlowHeaderEncuestas> {
+        return querySource.roomHeaderEncuesta()
     }
 
     override fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
@@ -218,12 +275,32 @@ class RoomImplementation @Inject constructor(
         return querySource.flowLastGPS()
     }
 
-    override fun listFlowPolygon(): Flow<List<TableRuta>> {
-        return querySource.flowRutasPolygon()
+    override fun listFlowRutas(): Flow<List<TableRuta>> {
+        return querySource.flowRutas()
+    }
+
+    override fun listFlowNegocios(): Flow<List<TableNegocio>> {
+        return querySource.flowNegocios()
+    }
+
+    override fun listFlowDistritos(): Flow<List<TableDistrito>> {
+        return querySource.flowDistritos()
     }
 
     override fun listFlowVendedores(): Flow<List<TableVendedor>> {
         return querySource.flowVendedores()
+    }
+
+    override fun listFlowPreguntas(): Flow<List<TableEncuesta>> {
+        return querySource.flowPreguntasEncuesta()
+    }
+
+    override fun listFlowCabeceraEncuesta(): Flow<List<FlowHeaderEncuestas>> {
+        return querySource.flowHeaderEncuesta()
+    }
+
+    override fun listFlowClientesPendientes(encuestaId: String): Flow<List<TableCliente>> {
+        return querySource.flowClientesExcluidos(encuestaId)
     }
 
     override suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento> {
@@ -250,7 +327,7 @@ class RoomImplementation @Inject constructor(
         return querySource.serverRespuestas(sync)
     }
 
-    override suspend fun apiServerFotos(sync: Boolean): List<TableRespuesta> {
+    override suspend fun apiServerFotos(sync: Boolean): List<TableFoto> {
         return querySource.serverFotos(sync)
     }
 }

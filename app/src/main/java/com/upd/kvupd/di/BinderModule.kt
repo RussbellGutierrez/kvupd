@@ -14,6 +14,8 @@ import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.RoomImplementation
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.domain.ServerImplementation
+import com.upd.kvupd.domain.send.SendServerFunctions
+import com.upd.kvupd.domain.send.SendServerImplementation
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -43,6 +45,10 @@ abstract class BinderModule {
     @Singleton
     @Binds
     abstract fun bindOperationsImplementation(operations: OperationsImplementation): OperationsFunctions
+
+    @Singleton
+    @Binds
+    abstract fun bindSendServerImplementation(sendServer: SendServerImplementation): SendServerFunctions
 
     // ELIMINAR LUEGO
     @Singleton

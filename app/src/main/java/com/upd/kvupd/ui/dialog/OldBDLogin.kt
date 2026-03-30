@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.databinding.BottomDialogLoginBinding
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -100,16 +99,16 @@ class OldBDLogin : BottomSheetDialogFragment() {
     }*/
 
     private fun controlUI(launch: Boolean) {
-        bind.edtUser.setUI("e", !launch)
+        /*bind.edtUser.setUI("e", !launch)
         bind.edtPass.setUI("e", !launch)
         bind.pgrbCargando.setUI("v", launch)
-        bind.btnLogin.setUI("e", !launch)
+        bind.btnLogin.setUI("e", !launch)*/
     }
 
     private fun errorUI(msg: String?) {
-        controlUI(false)
+        /*controlUI(false)
         bind.txtMensaje.setUI("v", true)
-        bind.txtMensaje.text = msg
+        bind.txtMensaje.text = msg*/
     }
 
     private fun callWebApi() {

@@ -16,4 +16,5 @@ object CrudConstant {
     const val DEL_ALTADATOS = "DELETE FROM TableAltaDatos"
     const val DEL_BAJA_SUPERVISOR = "DELETE FROM TableBajaSupervisor"
     const val DEL_RESPUESTA = "DELETE FROM TableRespuesta"
+    const val DEL_FOTO = "DELETE FROM TableFoto"
 }

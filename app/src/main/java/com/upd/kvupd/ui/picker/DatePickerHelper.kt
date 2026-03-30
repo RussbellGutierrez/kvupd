@@ -25,6 +25,8 @@ object DatePickerHelper {
             initial.year,
             initial.monthValue - 1,
             initial.dayOfMonth
-        ).show()
+        ).apply {
+            datePicker.maxDate = System.currentTimeMillis()
+        }.show()
     }
 }

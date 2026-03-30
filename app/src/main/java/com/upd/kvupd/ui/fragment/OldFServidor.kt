@@ -13,10 +13,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFServidorBinding
-import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldHostSelectionInterceptor
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,7 +79,7 @@ class OldFServidor : Fragment(), MenuProvider {
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        if (CONF.tipo == "V") {
+        /*if (CONF.tipo == "V") {
             bind.cardBajaestado.setUI("v", false)
             bind.minicardBajaestado.setUI("v", false)
         }
@@ -89,7 +87,7 @@ class OldFServidor : Fragment(), MenuProvider {
         if (CONF.seguimiento == 0) {
             bind.cardSeguimiento.setUI("v", false)
             bind.minicardSeguimiento.setUI("v", false)
-        }
+        }*/
 
         restoreUI()
         //viewmodel.fetchServerAll()
@@ -559,7 +557,7 @@ class OldFServidor : Fragment(), MenuProvider {
     }
 
     private fun restoreUI() {
-        bind.progress1.setUI("v", true)
+        /*bind.progress1.setUI("v", true)
         bind.txtComp1.setUI("v", false)
         bind.progress2.setUI("v", true)
         bind.txtComp2.setUI("v", false)
@@ -576,11 +574,11 @@ class OldFServidor : Fragment(), MenuProvider {
         bind.progress8.setUI("v", true)
         bind.txtComp8.setUI("v", false)
         bind.progress9.setUI("v", true)
-        bind.txtComp9.setUI("v", false)
+        bind.txtComp9.setUI("v", false)*/
     }
 
     private fun setTextUI(size: Int, opt: Int) {
-        val texto: String
+        /*val texto: String
         val mensaje = "SIN DATOS PARA ENVIAR"
         when (opt) {
             0 -> {
@@ -681,11 +679,11 @@ class OldFServidor : Fragment(), MenuProvider {
                     bind.txtComp9.text = mensaje
                 }
             }
-        }
+        }*/
     }
 
     private fun outputUI(opt: Int, msg: String) {
-        when (opt) {
+        /*when (opt) {
             0 -> {
                 if (listS == 1) {
                     bind.progress1.setUI("v", false)
@@ -825,7 +823,7 @@ class OldFServidor : Fragment(), MenuProvider {
             if (prevIP) {
                 prevIP = false
             }
-        }
+        }*/
     }
 
     /*private fun calcEncuestasTotal(list: List<TRespuesta>) {

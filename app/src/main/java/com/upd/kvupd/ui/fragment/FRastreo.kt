@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment
 
-import MapHelper
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -25,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.Pedimap
+import com.upd.kvupd.data.model.TableRuta
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
@@ -32,15 +32,17 @@ import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
 import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
-import com.upd.kvupd.utils.GpsTracker
-import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
+import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
-import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.icono
+import com.upd.kvupd.utils.gps.GpsTracker
+import com.upd.kvupd.utils.maps.MapHelper
+import com.upd.kvupd.utils.maps.awaitMap
+import com.upd.kvupd.utils.maps.icono
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
@@ -57,9 +59,10 @@ class FRastreo : Fragment(), MenuProvider {
     private val apiViewmodel by activityViewModels<APIViewModel>()
     private val binding by viewBinding(FragmentFRastreoBinding::bind)
 
+    private var movedOnce = false
     private lateinit var mapHelper: MapHelper
     private var getLocation: Location? = null
-    private var movedOnce = false
+    private var pedimapCache: Map<String, Pedimap> = emptyMap()
     private val _tag by lazy { FRastreo::class.java.simpleName }
 
     @Inject
@@ -87,54 +90,24 @@ class FRastreo : Fragment(), MenuProvider {
 
         mapHelper = MapHelper(layoutInflater)
 
+        initMap()
+        setupButtons()
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.n_rastreo_menu, menu)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.actualizar -> consume { apiViewmodel.downloadPedimap() }
+        R.id.voz -> consume { searchVoice() }
+        else -> false
+    }
+
+    private fun initMap() {
         val mapFragment =
-            childFragmentManager.findFragmentById(binding.map.id) as SupportMapFragment
-
-        collectFlow(apiViewmodel.pedimapEvent) { resultado ->
-            when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(
-                    AppDialogType.Progreso(
-                        mensaje = "Obteniendo posiciones de pedimap"
-                    )
-                )
-
-                is ResultadoApi.Exito -> stateSuccess(resultado.data)
-
-                is ResultadoApi.ErrorHttp -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
-                    )
-                )
-
-                is ResultadoApi.Fallo -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Fallo: ${resultado.mensaje}"
-                    )
-                )
-            }
-        }
-
-        collectFlow(apiViewmodel.flowPolygon) { polygons ->
-            Log.d(_tag, "Poligonos $polygons")
-            mapHelper.clearPolygons()
-            polygons.forEach { ruta ->
-                val latLngs = ruta.corte.split(",")
-                    .mapNotNull { punto ->
-                        val parts = punto.trim().split(" ").filter { it.isNotBlank() }
-                        if (parts.size < 2) return@mapNotNull null
-
-                        val lng = parts[0].toDoubleOrNull()
-                        val lat = parts[1].toDoubleOrNull()
-
-                        if (lat != null && lng != null) LatLng(lat, lng) else null
-                    }
-
-                // Este dibujado será guardado si el mapa no está listo
-                mapHelper.drawPolygon(latLngs)
-            }
-        }
+            childFragmentManager.findFragmentById(binding.map.id) as? SupportMapFragment
+                ?: return
 
         viewLifecycleOwner.lifecycleScope.launch {
             val gMap = mapFragment.awaitMap()
@@ -142,10 +115,14 @@ class FRastreo : Fragment(), MenuProvider {
             mapHelper.attachMap(gMap)
             mapHelper.enableMyLocation()
 
+            observeData()
+
             launchGpsRastreo()
             apiViewmodel.downloadPedimap()
         }
+    }
 
+    private fun setupButtons() {
         binding.fabUbicacion.setOnClickListener {
             getLocation?.let {
                 mapHelper.moveCamera(it)
@@ -159,14 +136,42 @@ class FRastreo : Fragment(), MenuProvider {
         }
     }
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.n_rastreo_menu, menu)
+    private fun observeData() {
+        collectFlow(apiViewmodel.pedimapEvent) { resultado ->
+            handleResultadoApi(resultado) { data ->
+                stateSuccess(data)
+            }
+        }
+
+        collectFlow(apiViewmodel.flowPolygon) { polygons ->
+            drawPolygons(polygons)
+        }
     }
 
-    override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.actualizar -> consume { apiViewmodel.downloadPedimap() }
-        R.id.voz -> consume { searchVoice() }
-        else -> false
+    private fun drawPolygons(polygons: List<TableRuta>) {
+        mapHelper.clearPolygons()
+
+        polygons.forEach { ruta ->
+            val latLngs = parsePolygon(ruta.corte)
+            if (latLngs.isNotEmpty()) {
+                mapHelper.drawPolygon(latLngs)
+            }
+        }
+    }
+
+    private fun parsePolygon(corte: String): List<LatLng> {
+        return corte.split(",")
+            .mapNotNull { punto ->
+                val parts = punto.trim().split(" ")
+                if (parts.size < 2) return@mapNotNull null
+
+                val lng = parts[0].toDoubleOrNull()
+                val lat = parts[1].toDoubleOrNull()
+
+                if (lat != null && lng != null) {
+                    LatLng(lat, lng)
+                } else null
+            }
     }
 
     private fun launchGpsRastreo() {
@@ -191,9 +196,7 @@ class FRastreo : Fragment(), MenuProvider {
     }
 
     private fun moveToMarkerByCode(codigo: String) {
-        val pedimap = mapHelper
-            .getMarkerData(Pedimap::class.java)
-            .firstOrNull { it.codigo == codigo }
+        val pedimap = pedimapCache[codigo]
 
         if (pedimap != null) {
             mapHelper.focus(pedimap)
@@ -208,7 +211,7 @@ class FRastreo : Fragment(), MenuProvider {
                 val spokenText = result.data
                     ?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                     ?.firstOrNull()
-                    ?.replace("\\s".toRegex(), "")
+                    ?.replace("\\s+".toRegex(), "")
 
                 if (spokenText.isNullOrEmpty()) {
                     snack("No se reconocio ninguna palabra")
@@ -237,6 +240,35 @@ class FRastreo : Fragment(), MenuProvider {
         }
     }
 
+    private fun <T> handleResultadoApi(
+        resultado: ResultadoApi<T>,
+        onSuccess: (T?) -> Unit
+    ) {
+        when (resultado) {
+            is ResultadoApi.Loading -> mostrarDialog(
+                AppDialogType.Progreso(
+                    mensaje = "Obteniendo posiciones de pedimap"
+                )
+            )
+
+            is ResultadoApi.Exito -> onSuccess(resultado.data)
+
+            is ResultadoApi.ErrorHttp -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                )
+            )
+
+            is ResultadoApi.Fallo -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Fallo: ${resultado.mensaje}"
+                )
+            )
+        }
+    }
+
     private fun stateSuccess(pedimap: JsonPedimap?) {
         when {
             pedimap == null -> mostrarDialog(
@@ -261,6 +293,7 @@ class FRastreo : Fragment(), MenuProvider {
                     )
                 )
 
+                pedimapCache = pedimap.jobl.associateBy { it.codigo }
                 drawMarkers(pedimap.jobl)
             }
         }
@@ -268,10 +301,12 @@ class FRastreo : Fragment(), MenuProvider {
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         lifecycleScope.launch(Dispatchers.Main) {
-            InstanciaDialog.cerrarDialogActual()
+            cerrarDialogActual()
+
             val dialog = buildMaterialDialog(requireContext(), dialogType)
             dialog.show()
-            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+
+            REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }
 

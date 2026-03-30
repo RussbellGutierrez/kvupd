@@ -3,8 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/manual"
-        android:title="Altas manuales"
+        android:id="@+id/mapa"
+        android:title="Altas en mapa"
         android:icon="@drawable/manual"
+        android:visible="true"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/lista"
+        android:title="Altas directas"
+        android:icon="@drawable/lista_datos"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
 </menu>

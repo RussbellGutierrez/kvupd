@@ -9,13 +9,8 @@ import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class RutasWorker @AssistedInject constructor(
@@ -36,15 +31,19 @@ class RutasWorker @AssistedInject constructor(
                 when (resultado) {
                     is ResultadoApi.Loading -> {
                         setProgressAsync(workDataOf("estado" to "Iniciando descarga rutas..."))
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl ?: emptyList()
 
                         setProgressAsync(workDataOf("estado" to "Almacenando rutas"))
-                        roomFunctions.deleteRutas()
-                        roomFunctions.apiSaveRutas(jobl)
+                        kotlinx.coroutines.delay(300)
+
+                        roomFunctions.replaceRutas(jobl)
+
                         setProgressAsync(workDataOf("estado" to "Registros de rutas: ${jobl.size}"))
+                        kotlinx.coroutines.delay(300)
                     }
 
                     is ResultadoApi.ErrorHttp -> {

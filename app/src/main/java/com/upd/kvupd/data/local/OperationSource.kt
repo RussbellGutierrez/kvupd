@@ -22,7 +22,7 @@ import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.service.LocationServiceBackground
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
+import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW

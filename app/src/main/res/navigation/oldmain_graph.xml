@@ -216,7 +216,7 @@
         android:id="@+id/OldFEncuesta"
         android:name="com.upd.kvupd.ui.fragment.OldFEncuesta"
         android:label="Encuesta"
-        tools:layout="@layout/fragment_f_encuesta">
+        tools:layout="@layout/old_fragment_f_encuesta">
         <action
             android:id="@+id/action_FEncuesta_to_FMapa2"
             app:destination="@+id/OldFMapa"
@@ -257,7 +257,7 @@
         android:id="@+id/OldFReporte"
         android:name="com.upd.kvupd.ui.fragment.OldFReporte"
         android:label="Reporte"
-        tools:layout="@layout/fragment_f_reporte">
+        tools:layout="@layout/old_fragment_f_reporte">
         <action
             android:id="@+id/action_FReporte_to_FDetalle2"
             app:destination="@id/OldFDetalle"
@@ -347,7 +347,7 @@
         android:id="@+id/OldFAltaMapa"
         android:name="com.upd.kvupd.ui.fragment.OldFAltaMapa"
         android:label="Alta manual"
-        tools:layout="@layout/fragment_f_alta_mapa">
+        tools:layout="@layout/old_fragment_f_alta_mapa">
         <action
             android:id="@+id/action_FAltaMapa_to_FAltaDatos2"
             app:destination="@id/OldFAltaDatos"
@@ -360,7 +360,7 @@
         android:id="@+id/OldFAltaDatos"
         android:name="com.upd.kvupd.ui.fragment.OldFAltaDatos"
         android:label="Datos del alta"
-        tools:layout="@layout/fragment_f_alta_datos">
+        tools:layout="@layout/fragment_f_altadatos">
         <action
             android:id="@+id/action_FAltaDatos_to_FAlta2"
             app:enterAnim="@anim/slide_in_right"
@@ -490,7 +490,7 @@
         android:id="@+id/OldFAlterno"
         android:name="com.upd.kvupd.ui.fragment.OldFAlterno"
         android:label="Encuesta"
-        tools:layout="@layout/fragment_f_alterno" >
+        tools:layout="@layout/fragment_f_encuesta" >
         <action
             android:id="@+id/action_FAlterno_to_FBase2"
             app:enterAnim="@anim/slide_in_right"

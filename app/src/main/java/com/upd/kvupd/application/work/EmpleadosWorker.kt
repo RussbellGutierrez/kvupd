@@ -9,13 +9,8 @@ import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class EmpleadosWorker @AssistedInject constructor(
@@ -45,8 +40,7 @@ class EmpleadosWorker @AssistedInject constructor(
                         setProgressAsync(workDataOf("estado" to "Almacenando vendedores"))
                         kotlinx.coroutines.delay(300)
 
-                        roomFunctions.deleteVendedores()
-                        roomFunctions.apiSaveVendedores(jobl)
+                        roomFunctions.replaceVendedores(jobl)
 
                         setProgressAsync(workDataOf("estado" to "Registros de vendedores: ${jobl.size}"))
                         kotlinx.coroutines.delay(300)

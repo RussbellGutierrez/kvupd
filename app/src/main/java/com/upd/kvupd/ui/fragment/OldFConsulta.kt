@@ -28,10 +28,9 @@ import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.maps.settingsMap
 import com.upd.kvupd.utils.oldShowDialog
+import com.upd.kvupd.utils.progress
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -176,7 +175,7 @@ class OldFConsulta : Fragment(), OnMapReadyCallback, OnMarkerClickListener, Menu
         var numero = bind.edtDocumento.text.toString().trim()
         var nombre = bind.edtNombres.text.toString().uppercase().trim()
 
-        bind.cardConsulta.setUI("v", false)
+        //bind.cardConsulta.setUI("v", false)
         map.clear()
 
         if (numero.isEmpty()) {

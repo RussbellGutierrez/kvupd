@@ -26,8 +26,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.data.model.Respuesta
-import com.upd.kvupd.databinding.FragmentFEncuestaBinding
-import com.upd.kvupd.utils.setUI
+import com.upd.kvupd.databinding.OldFragmentFEncuestaBinding
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +38,7 @@ import java.io.IOException
 class OldFEncuesta : Fragment() {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFEncuestaBinding? = null
+    private var _bind: OldFragmentFEncuestaBinding? = null
     private val args: OldFEncuestaArgs by navArgs()
     private val bind get() = _bind!!
     //private var preguntas = listOf<TEncuesta>()
@@ -64,7 +63,7 @@ class OldFEncuesta : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFEncuestaBinding.inflate(inflater, container, false)
+        _bind = OldFragmentFEncuestaBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -77,11 +76,11 @@ class OldFEncuesta : Fragment() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) = Unit
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (necesario && p0 == "") {
+                /*if (necesario && p0 == "") {
                     bind.btnSiguiente.setUI("v", false)
                 } else {
                     bind.btnSiguiente.setUI("v", true)
-                }
+                }*/
             }
 
             override fun afterTextChanged(p0: Editable?) = Unit
@@ -320,7 +319,7 @@ class OldFEncuesta : Fragment() {
 
     private fun thumbnailPhoto() {
         val bitmap = BitmapFactory.decodeFile(abspath)
-        bind.txtRuta.setUI("v", true)
+        //bind.txtRuta.setUI("v", true)
         bind.txtRuta.text = abspath
         Glide
             .with(requireContext())

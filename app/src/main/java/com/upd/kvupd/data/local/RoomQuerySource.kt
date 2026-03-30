@@ -2,15 +2,16 @@ package com.upd.kvupd.data.local
 
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
+import com.upd.kvupd.data.model.FlowHeaderEncuestas
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableBajaSupervisor
 import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -38,8 +39,14 @@ class RoomQuerySource @Inject constructor(
     suspend fun roomRutas(): List<TableRuta> =
         query.getRutas()
 
-    suspend fun roomEncuestas(): List<TableEncuesta> =
-        query.getEncuestas()
+    suspend fun roomAlta(idaux: String, fecha: String): TableAlta? =
+        query.getAltaSpecific(idaux, fecha)
+
+    suspend fun roomAltaDato(idaux: String, fecha: String): TableAltaDatos? =
+        query.getAltaDatos(idaux, fecha)
+
+    suspend fun roomHeaderEncuesta(): List<FlowHeaderEncuestas> =
+        query.getHeadersEncuesta()
 
     ////  FLOW
     fun flowConfiguracion(): Flow<List<TableConfiguracion>> =
@@ -57,14 +64,38 @@ class RoomQuerySource @Inject constructor(
     fun flowBajas(): Flow<List<TableBaja>> =
         query.flowBajas()
 
-    fun flowRutasPolygon(): Flow<List<TableRuta>> =
-        query.flowRutasPolygon()
+    fun flowRutas(): Flow<List<TableRuta>> =
+        query.flowRutas()
+
+    fun flowNegocios(): Flow<List<TableNegocio>> =
+        query.flowNegocios()
+
+    fun flowDistritos(): Flow<List<TableDistrito>> =
+        query.flowDistritos()
 
     fun flowVendedores(): Flow<List<TableVendedor>> =
         query.flowVendedores()
 
     fun flowLastGPS(): Flow<TableSeguimiento?> =
         query.flowLastSeguimiento()
+
+    fun flowPreguntasEncuesta(): Flow<List<TableEncuesta>> =
+        query.flowPreguntaEncuestas()
+
+    fun flowHeaderEncuesta(): Flow<List<FlowHeaderEncuestas>> =
+        query.flowHeaderEncuestas()
+
+    fun flowClientesExcluidos(id: String): Flow<List<TableCliente>> =
+        query.flowClientesExcluidos(id)
+
+    ////  UPDATE MANUAL
+    suspend fun cleanAndSelectEncuesta(id: String) {
+        query.reselectEncuesta(id)
+    }
+
+    suspend fun setSeleccionEncuesta(id: String) {
+        query.setSeleccionEncuesta(id)
+    }
 
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =
@@ -85,6 +116,6 @@ class RoomQuerySource @Inject constructor(
     suspend fun serverRespuestas(sync: Boolean): List<TableRespuesta> =
         query.serverRespuestas(sync)
 
-    suspend fun serverFotos(sync: Boolean): List<TableRespuesta> =
+    suspend fun serverFotos(sync: Boolean): List<TableFoto> =
         query.serverFotos(sync)
 }

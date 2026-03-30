@@ -5,12 +5,6 @@
     <item
         android:id="@+id/lista"
         android:title="Lista de bajas"
-        android:icon="@drawable/baja_supervisor"
-        app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/descargar"
-        android:title="Descargar bajas de vendedor"
-        android:icon="@drawable/descargar"
+        android:icon="@drawable/lista_datos"
         app:showAsAction="ifRoom"/>
 </menu>

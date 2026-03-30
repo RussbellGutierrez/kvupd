@@ -8,7 +8,7 @@
     android:layout_marginHorizontal="20dp"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
-    tools:context=".ui.dialog.CarteraVendedor">
+    tools:context=".ui.dialog.CarteraSupervisor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

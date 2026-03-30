@@ -11,6 +11,7 @@ import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -22,9 +23,9 @@ import com.upd.kvupd.utils.BaseDatosRoom.VERSION_BASEDATOS
     version = VERSION_BASEDATOS,
     entities = [
         TableConfiguracion::class, TableCliente::class, TableVendedor::class, TableDistrito::class,
-        TableNegocio::class, TableEncuesta::class, TableRespuesta::class, TableRuta::class,
-        TableBajaProcesada::class, TableSeguimiento::class, TableBaja::class, TableAlta::class,
-        TableAltaDatos::class, TableBajaSupervisor::class
+        TableNegocio::class, TableEncuesta::class, TableRespuesta::class, TableFoto::class,
+        TableRuta::class, TableBajaProcesada::class, TableSeguimiento::class, TableBaja::class,
+        TableAlta::class, TableAltaDatos::class, TableBajaSupervisor::class
     ],
     exportSchema = true // Se debe crear una ruta para el esquema en build.gradle
 )

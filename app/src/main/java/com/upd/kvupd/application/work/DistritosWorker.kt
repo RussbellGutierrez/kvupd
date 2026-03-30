@@ -9,13 +9,8 @@ import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.toReqBody
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
-import okhttp3.RequestBody
-import org.json.JSONObject
 
 @HiltWorker
 class DistritosWorker @AssistedInject constructor(
@@ -45,8 +40,7 @@ class DistritosWorker @AssistedInject constructor(
                         setProgressAsync(workDataOf("estado" to "Almacenando distritos"))
                         kotlinx.coroutines.delay(300)
 
-                        roomFunctions.deleteDistritos()
-                        roomFunctions.apiSaveDistritos(jobl)
+                        roomFunctions.replaceDistritos(jobl)
 
                         setProgressAsync(workDataOf("estado" to "Registros de distritos: ${jobl.size}"))
                         kotlinx.coroutines.delay(300)

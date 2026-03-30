@@ -22,11 +22,10 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.transition.Transition
-import com.upd.kvupd.databinding.FragmentFAlternoBinding
+import com.upd.kvupd.databinding.FragmentFEncuestaBinding
 import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.OldConstant.POS_LOC
 import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +41,7 @@ class OldFAlterno : Fragment() {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private val args: OldFAlternoArgs by navArgs()
-    private var _bind: FragmentFAlternoBinding? = null
+    private var _bind: FragmentFEncuestaBinding? = null
     private val bind get() = _bind!!
     private var clienteDelMapa = 0
     private var countList = 0
@@ -72,7 +71,7 @@ class OldFAlterno : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFAlternoBinding.inflate(inflater, container, false)
+        _bind = FragmentFEncuestaBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -161,9 +160,9 @@ class OldFAlterno : Fragment() {
         //drawPregunta(listaPreguntas)
 
         // Iniciamos todos los views de la encuesta
-        bind.lnrPreguntas.setUI("v", true)
+        /*bind.lnrPreguntas.setUI("v", true)
         bind.cardFoto.setUI("v", foto)
-        bind.btnGuardar.setUI("v", true)
+        bind.btnGuardar.setUI("v", true)*/
     }
 
     /*private fun processClientList(clientes: List<TClientes>) {
@@ -313,7 +312,7 @@ class OldFAlterno : Fragment() {
 
     private fun thumbnailPhoto() {
         val bitmap = BitmapFactory.decodeFile(abspath)
-        bind.txtRuta.setUI("v", true)
+        //bind.txtRuta.setUI("v", true)
         bind.txtRuta.text = abspath
         Glide
             .with(requireContext())

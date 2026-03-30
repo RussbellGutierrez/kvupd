@@ -11,6 +11,7 @@ import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.data.model.Vendedor
@@ -27,6 +28,35 @@ import javax.inject.Inject
 class RoomCrudSource @Inject constructor(
     private val crud: Crud
 ) {
+    /////      TRANSACTION
+    suspend fun replaceConfiguracion(item: List<Configuracion>) {
+        crud.replaceConfiguracion(item.map { it.asTConfig() })
+    }
+
+    suspend fun replaceClientes(item: List<Cliente>) {
+        crud.replaceClientes(item.map { it.asTCliente() })
+    }
+
+    suspend fun replaceVendedores(item: List<Vendedor>) {
+        crud.replaceVendedores(item.map { it.asTVendedor() })
+    }
+
+    suspend fun replaceDistritos(item: List<Distrito>) {
+        crud.replaceDistritos(item.map { it.asTDistrito() })
+    }
+
+    suspend fun replaceNegocios(item: List<Negocio>) {
+        crud.replaceNegocios(item.map { it.asTNegocio() })
+    }
+
+    suspend fun replaceRutas(item: List<Ruta>) {
+        crud.replaceRutas(item.map { it.asTRutas() })
+    }
+
+    suspend fun replaceEncuesta(item: List<Encuesta>) {
+        crud.replaceEncuesta(item.map { it.asTEncuesta() })
+    }
+
     /////      INSERT
     suspend fun apiGuardarConfiguracion(item: List<Configuracion>) {
         crud.insertConfiguracion(item.map { it.asTConfig() })
@@ -84,6 +114,10 @@ class RoomCrudSource @Inject constructor(
         crud.insertRespuesta(item)
     }
 
+    suspend fun guardarFoto(item: TableFoto) {
+        crud.insertFoto(item)
+    }
+
     /////      UPDATE
     suspend fun actualizarSeguimiento(actual: TableSeguimiento) {
         crud.updateSeguimiento(actual)
@@ -107,6 +141,10 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun actualizarRespuesta(actual: TableRespuesta) {
         crud.updateRespuesta(actual)
+    }
+
+    suspend fun actualizarFoto(actual: TableFoto) {
+        crud.updateFoto(actual)
     }
 
     /////      DELETE
@@ -164,5 +202,9 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun borrarRespuestas() {
         crud.deleteRespuesta()
+    }
+
+    suspend fun borrarFoto() {
+        crud.deleteFoto()
     }
 }

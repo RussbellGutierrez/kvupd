@@ -1,7 +1,7 @@
 package com.upd.kvupd.domain
 
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
+import com.upd.kvupd.domain.enumFile.TipoUsuario
 import java.util.UUID
 
 interface OperationsFunctions {

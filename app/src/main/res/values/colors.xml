@@ -35,6 +35,8 @@
     <color name="transplightgray">#1f000000</color>
     <color name="whiteSmoke">#F5F5F5</color>
 
+    <color name="shimmer_placeholder">#CCCCCC</color>
+
 
     <color name="opacity">#99000000</color>
     <color name="transparent">#0fff</color>

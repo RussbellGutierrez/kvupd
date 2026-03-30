@@ -90,7 +90,7 @@ class BDConfiguracion : BottomSheetDialogFragment() {
             }
         }
 
-        collectFlow(localViewModel.pedimapMensaje) collect@{ mensaje ->
+        collectFlow(localViewModel.pedimapMensaje) { mensaje ->
             enviarMensajeWhatsapp(mensaje)
         }
 

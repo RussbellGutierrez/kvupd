@@ -4,6 +4,7 @@
     <dimen name="width_moredetail">150dp</dimen>
     <dimen name="width_detail">100dp</dimen>
     <dimen name="width_lessdetail">50dp</dimen>
+    <dimen name="separation_2">2dp</dimen>
     <dimen name="separation_5">5dp</dimen>
     <dimen name="separation_10">10dp</dimen>
     <dimen name="separation_15">15dp</dimen>

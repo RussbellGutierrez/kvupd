@@ -11,7 +11,6 @@ import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class ClientesWorker @AssistedInject constructor(
@@ -41,8 +40,7 @@ class ClientesWorker @AssistedInject constructor(
                         setProgressAsync(workDataOf("estado" to "Almacenando clientes"))
                         kotlinx.coroutines.delay(300)
 
-                        roomFunctions.deleteClientes()
-                        roomFunctions.apiSaveClientes(jobl)
+                        roomFunctions.replaceClientes(jobl)
 
                         setProgressAsync(workDataOf("estado" to "Registros de clientes: ${jobl.size}"))
                         kotlinx.coroutines.delay(300)

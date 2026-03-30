@@ -1,18 +1,27 @@
 package com.upd.kvupd.data.local
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Base64
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
+import com.upd.kvupd.data.model.TableFoto
+import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.domain.enumFile.TipoUsuario
+import com.upd.kvupd.utils.DeviceConstant.APP_ORIGIN
 import com.upd.kvupd.utils.ExtraInfo
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.toReqBody
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 class JsonObjectDataSource @Inject constructor(
@@ -20,32 +29,17 @@ class JsonObjectDataSource @Inject constructor(
 ) {
 
     fun registrarEquipo(identificador: String, empresaNom: String): RequestBody {
-        val fabricante = ExtraInfo.obtener(InfoDispositivo.FABRICANTE).uppercase()
-        val modelo = ExtraInfo.obtener(InfoDispositivo.MODELO).uppercase()
-        val equipo = "$fabricante $modelo"
-        val sistema = obtenerSistemaOperativo()
         val empresa = if (empresaNom.lowercase() == "oriunda") 1 else 2
-        val uuid = "$identificador-V"
-        val json = JSONObject()
-        json.put("imei", uuid)
-        json.put("modelo", equipo)
-        json.put("version", sistema)
-        json.put("empresa", empresa)
-        return json.toReqBody()
+
+        return baseDevice(identificador).apply {
+            put("empresa", empresa)
+        }.toReqBody()
     }
 
     fun jsonRequestConfiguracion(identificador: String): RequestBody {
-        val fabricante = ExtraInfo.obtener(InfoDispositivo.FABRICANTE).uppercase()
-        val modelo = ExtraInfo.obtener(InfoDispositivo.MODELO).uppercase()
-        val equipo = "$fabricante $modelo"
-        val sistema = obtenerSistemaOperativo()
-        val uuid = "$identificador-V"
-        val json = JSONObject()
-        json.put("imei", uuid)
-        json.put("modelo", equipo)
-        json.put("version", sistema)
-        json.put("fecha", FechaHoraUtil.dia())
-        return json.toReqBody()
+        return baseDevice(identificador).apply {
+            put("fecha", FechaHoraUtil.dia())
+        }.toReqBody()
     }
 
     fun jsonRequestClientes(
@@ -62,20 +56,13 @@ class JsonObjectDataSource @Inject constructor(
     }
 
     fun jsonRequestPedimap(dato: TableConfiguracion): RequestBody {
-        val json = JSONObject().apply {
-            put("empleado", dato.codigo)
-            put("empresa", dato.empresa)
+        return baseConfig(dato).apply {
             put("esquema", dato.esquema)
-        }
-        return json.toReqBody()
+        }.toReqBody()
     }
 
     fun jsonRequestBasico(dato: TableConfiguracion): RequestBody {
-        val json = JSONObject().apply {
-            put("empleado", dato.codigo)
-            put("empresa", dato.empresa)
-        }
-        return json.toReqBody()
+        return baseConfig(dato).toReqBody()
     }
 
     fun jsonRequestSimple(dato: TableConfiguracion): RequestBody {
@@ -92,9 +79,7 @@ class JsonObjectDataSource @Inject constructor(
             TipoUsuario.SUPERVISOR,
             TipoUsuario.JEFE_VENTAS -> 2
         }
-        val json = JSONObject().apply {
-            put("empleado", dato.codigo)
-            put("empresa", dato.empresa)
+        return baseConfig(dato).apply {
             put("estado", estado)
             put("fecha", baja.fecha)
             put("cliente", baja.cliente)
@@ -104,8 +89,7 @@ class JsonObjectDataSource @Inject constructor(
             put("ycoord", baja.latitud)
             put("precision", baja.precision)
             put("anulado", baja.anulado)
-        }
-        return json.toReqBody()
+        }.toReqBody()
     }
 
     fun jsonRequestBajasProcesadas(
@@ -114,6 +98,7 @@ class JsonObjectDataSource @Inject constructor(
     ): RequestBody {
         val json = JSONObject().apply {
             put("empleado", baja.empleado)
+            put("empresa", dato.empresa)
             put("fecha", baja.fecha)
             put("cliente", baja.cliente)
             put("cfecha", baja.fechaconfirmacion)
@@ -122,9 +107,134 @@ class JsonObjectDataSource @Inject constructor(
             put("xcoord", baja.longitud)
             put("ycoord", baja.latitud)
             put("confirmar", baja.procede)
-            put("empresa", dato.empresa)
         }
         return json.toReqBody()
+    }
+
+    fun jsonRequestRespuesta(
+        dato: TableConfiguracion,
+        respuesta: TableRespuesta
+    ): RequestBody {
+        return baseConfig(dato).apply {
+            put("cliente", respuesta.cliente)
+            put("encuesta", respuesta.encuesta)
+            put("pregunta", respuesta.pregunta)
+            put("respuesta", respuesta.respuesta)
+            put("xcoord", respuesta.longitud)
+            put("ycoord", respuesta.latitud)
+            put("fecha", respuesta.fecha)
+        }.toReqBody()
+    }
+
+    fun jsonRequestFoto(
+        dato: TableConfiguracion,
+        foto: TableFoto
+    ): RequestBody {
+        val decode = convertirFotoBase64(foto.rutafoto)
+
+        return baseConfig(dato).apply {
+            put("cliente", foto.cliente)
+            put("encuesta", foto.encuesta)
+            put("sucursal", dato.sucursal)
+            put("foto", decode)
+        }.toReqBody()
+    }
+
+    fun jsonRequestAlta(
+        dato: TableConfiguracion,
+        alta: TableAlta
+    ): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", alta.empleado)
+            put("empresa", dato.empresa)
+            put("fecha", alta.fecha)
+            put("id", alta.idaux)
+            put("longitud", alta.longitud)
+            put("latitud", alta.latitud)
+            put("precision", alta.precision)
+            put("sucursal", dato.sucursal)
+            put("esquema", dato.esquema)
+        }
+        return json.toReqBody()
+    }
+
+    fun jsonRequestAltaDatos(
+        dato: TableConfiguracion,
+        altadato: TableAltaDatos
+    ): RequestBody {
+        val json = JSONObject().apply {
+            put("empleado", altadato.empleado)
+            put("id", altadato.idaux)
+            put("appaterno", altadato.appaterno)
+            put("apmaterno", altadato.apmaterno)
+            put("nombre", altadato.nombre)
+            put("razon", altadato.razon)
+            put("tipo", altadato.tipo)
+            put("dnice", altadato.dnice)
+            put("ruc", altadato.ruc)
+            put("tdoc", altadato.tipodocu)
+            put("giro", altadato.giro)
+            put("movil1", altadato.movil1)
+            put("movil2", altadato.movil2)
+            put("email", altadato.correo)
+            put("urbanizacion", "${altadato.zona} ${altadato.zonanombre}")
+            put("altura", altadato.numero)
+            put("distrito", altadato.distrito)
+            put("ruta", altadato.ruta)
+            put("secuencia", altadato.secuencia)
+            put("sucursal", dato.sucursal)
+            put("esquema", dato.esquema)
+            put("empresa", dato.empresa)
+            put("observacion", altadato.observacion)
+            put("calle", altadato.buildCalle())
+        }
+        return json.toReqBody()
+    }
+
+    fun jsonRequestReport(
+        dato: TableConfiguracion,
+        linea: Int? = null,
+        marca: Int? = null
+    ): RequestBody {
+        return baseConfig(dato).apply {
+            linea?.let { put("linea", it) }
+            marca?.let { put("marca", it) }
+        }.toReqBody()
+    }
+
+    private fun baseConfig(dato: TableConfiguracion): JSONObject {
+        return JSONObject().apply {
+            put("empleado", dato.codigo)
+            put("empresa", dato.empresa)
+        }
+    }
+
+    private fun baseDevice(identificador: String): JSONObject {
+        val fabricante = ExtraInfo.obtener(InfoDispositivo.FABRICANTE).uppercase()
+        val modelo = ExtraInfo.obtener(InfoDispositivo.MODELO).uppercase()
+
+        return JSONObject().apply {
+            put("imei", "$identificador$APP_ORIGIN")
+            put("modelo", "$fabricante $modelo")
+            put("version", obtenerSistemaOperativo())
+        }
+    }
+
+    private fun TableAltaDatos.buildCalle(): String =
+        if (manzana.isEmpty()) {
+            "$via $direccion $ubicacion"
+        } else {
+            "$via $direccion MZ $manzana $ubicacion"
+        }
+
+    private fun convertirFotoBase64(ruta: String): String {
+        val bm = BitmapFactory.decodeFile(ruta) ?: return ""
+
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+
+        val byteArray = baos.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.NO_WRAP)
     }
 
     private fun obtenerSistemaOperativo(): String {

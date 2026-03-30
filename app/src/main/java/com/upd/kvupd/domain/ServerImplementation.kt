@@ -21,7 +21,9 @@ import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
 import com.upd.kvupd.data.remote.DownloadSource
+import com.upd.kvupd.data.remote.SocketSource
 import com.upd.kvupd.data.remote.UploadSource
+import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.remoteFlowCall
 import kotlinx.coroutines.flow.Flow
@@ -30,8 +32,12 @@ import javax.inject.Inject
 
 class ServerImplementation @Inject constructor(
     private val downloadSource: DownloadSource,
-    private val uploadSource: UploadSource
+    private val uploadSource: UploadSource,
+    private val socketSource: SocketSource
 ) : ServerFunctions {
+
+    override fun apiSocketUpdate(empresa: Int): Flow<SocketEvent> =
+        socketSource.executeUpdater(empresa)
 
     override fun apiDownloadConfiguracion(body: RequestBody): Flow<ResultadoApi<JsonConfiguracion>> =
         remoteFlowCall(

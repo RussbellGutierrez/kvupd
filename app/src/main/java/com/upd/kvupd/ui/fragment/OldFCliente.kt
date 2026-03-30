@@ -27,7 +27,6 @@ import com.upd.kvupd.ui.dialog.OldDSemana
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldInterface.clienteListener
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -188,14 +187,14 @@ class OldFCliente : Fragment(), SearchView.OnQueryTextListener, OldClienteAdapte
     }
 
     private fun setupList(list: List<RowCliente>) {
-        if (list.isEmpty()) {
+        /*if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvClientes.setUI("v", false)
         } else {
             bind.emptyContainer.root.setUI("v", false)
             bind.rcvClientes.setUI("v", true)
             adapter.mDiffer.submitList(list)
-        }
+        }*/
     }
 
     private fun navigateToDialog(dialog: Int, cliente: RowCliente) {

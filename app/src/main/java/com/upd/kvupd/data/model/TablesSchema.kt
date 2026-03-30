@@ -95,10 +95,18 @@ data class TableRespuesta(
     val encuesta: Int,
     val pregunta: Int,
     val respuesta: String,
-    val rutafoto: String,
-    val foto: Int,
     val longitud: Double,
     val latitud: Double,
+
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
+)
+
+@Entity(primaryKeys = ["cliente", "encuesta"])
+data class TableFoto(
+    val cliente: String,
+    val encuesta: Int,
+    val rutafoto: String,
 
     // 🔑 Nuevo control de sincronización
     var sincronizado: Boolean = false
@@ -141,7 +149,6 @@ data class TableAlta(
     val longitud: Double,
     val latitud: Double,
     val precision: Double,
-    var estado: String,
     val datos: Int,
 
     // 🔑 Nuevo control de sincronización
@@ -175,7 +182,6 @@ data class TableAltaDatos(
     val giro: String,
     val ruta: String,
     val secuencia: String,
-    val dniruta: String,
     val observacion: String,
 
     // 🔑 Nuevo control de sincronización

@@ -42,13 +42,15 @@ class ConfiguracionWorker @AssistedInject constructor(
 
                     is ResultadoApi.Exito -> {
                         val jobl = resultado.data?.jobl
-                            ?: throw Exception("No se encontro configuracion")
 
-                        setProgressAsync(workDataOf("estado" to "Guardando configuracion"))
+                        if (jobl.isNullOrEmpty()) {
+                            setProgressAsync(workDataOf("estado" to "Configuracion retorno vacia"))
+                            return@collect
+                        }
+
                         kotlinx.coroutines.delay(300)
 
-                        roomFunctions.deleteConfiguracion()
-                        roomFunctions.apiSaveConfiguracion(jobl)
+                        roomFunctions.replaceConfiguracion(jobl)
 
                         // 🔹 Guardar horarios en SharedPreferences
                         val inicio = jobl.first().horainicio

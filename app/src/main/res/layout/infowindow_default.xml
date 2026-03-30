@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
+    android:layout_width="@dimen/width_infowindow"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
@@ -14,12 +14,12 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/dodgerblue"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         tools:text="TITULO" />
 
     <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/width_infowindow"
         android:layout_height="1dp"
         android:layout_marginVertical="@dimen/separation_5" />
 
@@ -28,7 +28,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="15sp"
         tools:text="Snippet" />
 
 </LinearLayout>

@@ -3,7 +3,7 @@ package com.upd.kvupd.domain
 import android.content.Context
 import com.upd.kvupd.data.local.OperationSource
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.ui.fragment.enumClass.TipoUsuario
+import com.upd.kvupd.domain.enumFile.TipoUsuario
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import javax.inject.Inject

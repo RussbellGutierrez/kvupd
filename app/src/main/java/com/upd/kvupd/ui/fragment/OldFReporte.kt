@@ -7,31 +7,23 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFReporteBinding
-import com.upd.kvupd.ui.adapter.OldSolesAdapter
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldInterface.solesListener
 import com.upd.kvupd.utils.consume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
-    MenuProvider {
+class OldFReporte : Fragment(),MenuProvider { //OldSolesAdapter.OnSolesListener,
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFReporteBinding? = null
@@ -39,8 +31,8 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
     private lateinit var socket: Socket
     private val _tag by lazy { OldFReporte::class.java.simpleName }
 
-    @Inject
-    lateinit var solesAdapter: OldSolesAdapter
+    //@Inject
+    //lateinit var solesAdapter: OldSolesAdapter
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -49,7 +41,7 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        solesListener = this
+        //solesListener = this
     }
 
     override fun onCreateView(
@@ -65,12 +57,12 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
+        /*bind.rcvReporte.layoutManager = LinearLayoutManager(requireContext())
         bind.rcvReporte.adapter = solesAdapter
 
         if (CONF.empresa == 2) {
             bind.lnrSoloOriunda.setUI("v", false)
-        }
+        }*/
 
         launchFetchs()
 
@@ -409,7 +401,7 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
         else -> super.onOptionsItemSelected(item)
     }*/
 
-    override fun onItemClick(soles: Soles) {
+    /*override fun onItemClick(soles: Soles) {
         val bundle = bundleOf(
             "visisuper" to null,
             "soles" to soles
@@ -419,9 +411,9 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
         /*findNavController().navigate(
             FReporteDirections.actionFReporteToFDetalle(null, soles, null)
         )*/
-    }
+    }*/
 
-    override fun onItemPress(soles: Soles) {
+    /*override fun onItemPress(soles: Soles) {
         if (CONF.tipo == "S") {
             val bundle = bundleOf(
                 "informe" to 6,
@@ -443,13 +435,13 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
                 )
             )*/
         }
-    }
+    }*/
 
-    override fun onCloseItem(soles: Soles) {
+    /*override fun onCloseItem(soles: Soles) {
         val list = solesAdapter.mDiffer.currentList.toMutableList()
         list.remove(soles)
         solesAdapter.mDiffer.submitList(list)
-    }
+    }*/
 
     /*override fun onItemClick(umes: Umes) {
         findNavController().navigate(
@@ -508,7 +500,7 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
         }*/
     }
 
-    private fun controlUI(ui: Int, status: Boolean) {
+    /*private fun controlUI(ui: Int, status: Boolean) {
         when (ui) {
             0 -> {
                 bind.progress1.setUI("v", false)
@@ -558,7 +550,7 @@ class OldFReporte : Fragment(), OldSolesAdapter.OnSolesListener,
                     bind.txtMsg6.setUI("v", true)
             }
         }
-    }
+    }*/
 
     /*private fun proccessUME(list: List<Umes>) {
 

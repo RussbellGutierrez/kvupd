@@ -8,17 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.upd.kvupd.databinding.CustomDialogProgressbarBinding
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_SYNC_INIT
 import com.upd.kvupd.utils.collectFlow
+import com.upd.kvupd.utils.geo.GeoManager
+import com.upd.kvupd.utils.gone
 import com.upd.kvupd.utils.observeWorkersById
 import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.utils.visible
 import com.upd.kvupd.viewmodel.ALLViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
@@ -67,7 +72,7 @@ class DSincronizarDiario : DialogFragment() {
         }
 
         collectFlow(localViewModel.configMensaje) { mensaje ->
-            binding.txtMensaje.setUI("v", true)
+            binding.txtMensaje.visible()
             binding.txtMensaje.text = mensaje
         }
     }
@@ -131,8 +136,8 @@ class DSincronizarDiario : DialogFragment() {
                 // 🔹 Mostrar progreso en curso (solo si no hubo error)
                 if (estado.isNotBlank() && !falloDetectado) {
                     txtProgreso.text = estado
-                    linear1.setUI("v", true)
-                    txtMensaje.setUI("v", false) // Oculto hasta el final
+                    linear1.visible()
+                    txtMensaje.gone() // Oculto hasta el final
                 }
 
                 when {
@@ -170,19 +175,19 @@ class DSincronizarDiario : DialogFragment() {
             pbLinear.progress = 0
 
             // 🔹 Mostrar solo el contenedor del progress
-            linear1.setUI("v", true)
+            linear1.visible()
 
             // 🔹 Ocultar botones y mensaje final
             listOf(txtMensaje, btnProcesar, btnCancelar).forEach {
-                it.setUI("v", false)
+                it.gone()
             }
         } else {
             // 🔹 Mantener progress visible
-            linear1.setUI("v", true)
+            linear1.visible()
 
             // 🔹 Mostrar botones nuevamente
             listOf(btnProcesar, btnCancelar).forEach {
-                it.setUI("v", true)
+                it.visible()
             }
         }
     }
@@ -193,7 +198,7 @@ class DSincronizarDiario : DialogFragment() {
             txtPorcentaje.text = "0%"
             txtProgreso.text = ""
             txtMensaje.text = "❌ $mensaje"
-            txtMensaje.setUI("v", true)
+            txtMensaje.visible()
         }
         stateUI(inProgress = false)
     }
@@ -204,9 +209,14 @@ class DSincronizarDiario : DialogFragment() {
             txtPorcentaje.text = "100%"
             txtProgreso.text = ""
             txtMensaje.text = "✅ Sincronización completada exitosamente"
-            txtMensaje.setUI("v", true)
+            txtMensaje.visible()
         }
         stateUI(inProgress = false)
+
+        // 🔥 Cargar Geo
+        lifecycleScope.launch(Dispatchers.IO) {
+            GeoManager.load(requireContext())
+        }
 
         val inicializado = preferences.getBoolean(KEY_SYNC_INIT, false)
 
@@ -217,8 +227,5 @@ class DSincronizarDiario : DialogFragment() {
             // 🟢 Días siguientes: solo reprograma alarmas
             localViewModel.reprogramarUsandoConfig()
         }
-
-        // ✅ ACTUALIZA el estado global una vez que la config ya existe
-        localViewModel.tipoUsuarioActual()
     }
 }

@@ -12,13 +12,11 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFAltaBinding
 import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.ui.adapter.OldAltaAdapter
 import com.upd.kvupd.utils.OldConstant.ALTADATOS
-import com.upd.kvupd.utils.consume
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -85,7 +83,7 @@ class OldFAlta : Fragment(), MenuProvider {//, AltaAdapter.OnAltaListener, MenuP
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.manual -> consume { }//findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) }
+        //R.id.manual -> consume { findNavController().navigate(R.id.action_FAlta_to_FAltaMapa) } }
         else -> false
     }
 

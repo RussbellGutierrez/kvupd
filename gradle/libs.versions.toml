@@ -38,6 +38,7 @@ glide = "4.11.0"
 socket = "1.0.0"
 google-services = "4.4.1"
 firebase-bom = "32.7.2"
+shimmer = "0.5.0"
 
 [libraries]
 
@@ -119,6 +120,7 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 socket = { group = "io.socket", name = "socket.io-client", version.ref = "socket" }
+facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "shimmer" }
 
 [bundles]
 

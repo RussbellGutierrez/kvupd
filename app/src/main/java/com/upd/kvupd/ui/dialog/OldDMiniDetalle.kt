@@ -1,16 +1,12 @@
 package com.upd.kvupd.ui.dialog
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.upd.kvupd.R
 import com.upd.kvupd.data.model.Cambio
 import com.upd.kvupd.data.model.CoberturaCartera
 import com.upd.kvupd.data.model.Coberturados
@@ -24,13 +20,11 @@ import com.upd.kvupd.databinding.DialogMiniDetalleBinding
 import com.upd.kvupd.databinding.RowCoberturaDetalleBinding
 import com.upd.kvupd.databinding.RowMiniCobdetBinding
 import com.upd.kvupd.databinding.RowMiniDetalleBinding
-import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.databinding.RowTarjetaClienteBinding
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.percent
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
@@ -257,12 +251,12 @@ class OldDMiniDetalle : DialogFragment() {
             val avance = "Avance: ${i.avance}"
             val porcentaje = "${percent(i.avance, i.cuota)}%"
 
-            minbind.lnrTres.setUI("v", true)
+            //minbind.lnrTres.setUI("v", true)
             minbind.txtDatos.text = i.datos.descripcion
             minbind.txtCuota.text = cuota
             minbind.txtAvance.text = avance
             minbind.txtPorcentaje.text = porcentaje
-            minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
+            //minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
             bind.lnrMini.addView(minbind.root)
         }
@@ -275,12 +269,12 @@ class OldDMiniDetalle : DialogFragment() {
             val avance = "Avance: ${i.avance}"
             val porcentaje = "${percent(i.avance.toDouble(), i.cartera.toDouble())}%"
 
-            minbind.lnrTres.setUI("v", true)
+            //minbind.lnrTres.setUI("v", true)
             minbind.txtDatos.text = i.datos.descripcion
             minbind.txtCuota.text = cuota
             minbind.txtAvance.text = avance
             minbind.txtPorcentaje.text = porcentaje
-            minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
+            //minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
             /*if (CONF.tipo == "V") {
                 minbind.imgCerrar.setUI("v", false)
@@ -338,10 +332,10 @@ class OldDMiniDetalle : DialogFragment() {
             val monto = "Monto: ${i.monto}"
 
             minbind.txtDatos.text = "${i.codigo} - ${i.nombre}"
-            minbind.lnrDos.setUI("v", true)
+            //minbind.lnrDos.setUI("v", true)
             minbind.txtCambio.text = cambio
             minbind.txtMonto.text = monto
-            minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
+            //minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
             bind.lnrMini.addView(minbind.root)
         }
@@ -395,7 +389,7 @@ class OldDMiniDetalle : DialogFragment() {
     private fun setUmeSoles(list: List<Generico>?) {
         bind.lnrMini.removeAllViews()
         list?.forEach { i ->
-            val minbind = RowReporteBinding.inflate(layoutInflater, view as ViewGroup, false)
+            //val minbind = RowReporteBinding.inflate(layoutInflater, view as ViewGroup, false)
 
             val titulo = i.datos.descripcion
             val cuota = "Cuota: ${i.cuota}"
@@ -404,21 +398,21 @@ class OldDMiniDetalle : DialogFragment() {
             val porcentaje = "$percent%"
 
             if (CONF.tipo == "V") {
-                minbind.imgCerrar.setUI("v", false)
+                //minbind.imgCerrar.setUI("v", false)
             }
 
-            when {
-                percent.toDouble() > 85 -> minbind.imgFlecha.setImageResource(R.drawable.f_arriba)
+            /*when {
+                percent.toDouble() > 85 -> minbind.imgFlecha.setImageResource(R.drawable.indicador_verde)
                 percent.toDouble() in 70.0..85.0 -> {
                     ImageViewCompat.setImageTintList(
                         minbind.imgFlecha,
                         ColorStateList.valueOf(Color.parseColor("#FFAB00"))
                     )
-                    minbind.imgFlecha.setImageResource(R.drawable.f_arriba)
+                    minbind.imgFlecha.setImageResource(R.drawable.indicador_verde)
                 }
 
-                percent.toDouble() in 1.0..69.99 -> minbind.imgFlecha.setImageResource(R.drawable.f_bajo)
-                percent.toDouble() < 1 -> minbind.imgFlecha.setImageResource(R.drawable.f_neutral)
+                percent.toDouble() in 1.0..69.99 -> minbind.imgFlecha.setImageResource(R.drawable.indicador_rojo)
+                percent.toDouble() < 1 -> minbind.imgFlecha.setImageResource(R.drawable.indicador_azul)
             }
 
             minbind.txtTitulo.text = titulo
@@ -427,7 +421,7 @@ class OldDMiniDetalle : DialogFragment() {
             minbind.txtPorcentaje.text = porcentaje
             minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
-            bind.lnrMini.addView(minbind.root)
+            bind.lnrMini.addView(minbind.root)*/
         }
     }
 
@@ -455,11 +449,11 @@ class OldDMiniDetalle : DialogFragment() {
             val clientes = "Clientes: ${i.clientes}"
             val pedidos = "Pedidos: ${i.pedidos}"
 
-            minbind.lnrUno.setUI("v", true)
+            //minbind.lnrUno.setUI("v", true)
             minbind.txtDatos.text = nombre
             minbind.txtCliente.text = clientes
             minbind.txtPedido.text = pedidos
-            minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
+            //minbind.imgCerrar.setOnClickListener { minbind.cardReporte.setUI("v", false) }
 
             bind.lnrMini.addView(minbind.root)
         }

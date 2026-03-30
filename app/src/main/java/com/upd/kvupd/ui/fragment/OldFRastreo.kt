@@ -35,7 +35,7 @@ import com.upd.kvupd.utils.OldConstant.IWP
 import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.maps.settingsMap
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel

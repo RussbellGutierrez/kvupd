@@ -8,14 +8,6 @@ import com.upd.kvupd.databinding.OldInfoWindowModelBinding
 import com.upd.kvupd.utils.OldConstant.IWAM
 import com.upd.kvupd.utils.OldConstant.IWDA
 import com.upd.kvupd.utils.OldConstant.IWP
-import com.upd.kvupd.utils.OldConstant.M_ALTA
-import com.upd.kvupd.utils.OldConstant.M_CERRADO
-import com.upd.kvupd.utils.OldConstant.M_DINERO
-import com.upd.kvupd.utils.OldConstant.M_ENCARGADO
-import com.upd.kvupd.utils.OldConstant.M_NOEXISTE
-import com.upd.kvupd.utils.OldConstant.M_OCUPADO
-import com.upd.kvupd.utils.OldConstant.M_PEDIDO
-import com.upd.kvupd.utils.OldConstant.M_PRODUCTO
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 
 class OldInfoWindow(private val inflater: LayoutInflater) :
@@ -38,7 +30,7 @@ class OldInfoWindow(private val inflater: LayoutInflater) :
     }
 
     private fun setData(marker: Marker) {
-        commonParams()
+        /*commonParams()
         bind.lnrCliente.setUI("v", true)
         bind.lnrVendedor.setUI("v", false)
         bind.txtLongitud.text = marker.position.longitude.toString()
@@ -56,7 +48,7 @@ class OldInfoWindow(private val inflater: LayoutInflater) :
                 else -> M_ALTA
             }
             bind.txtMotivo.text = motivo
-        }
+        }*/
     }
 
     private fun commonParams() {
@@ -79,8 +71,8 @@ class OldInfoWindow(private val inflater: LayoutInflater) :
     }
 
     private fun dataPedimap(marker: Marker) {
-        bind.lnrCliente.setUI("v", false)
-        bind.lnrVendedor.setUI("v", true)
+        //bind.lnrCliente.setUI("v", false)
+        //bind.lnrVendedor.setUI("v", true)
         val cliente = "${IWP.codigo} - ${IWP.nombre}"
         bind.txtVendedor.text = cliente
         bind.txtPrecision.text = IWP.precision.toString()

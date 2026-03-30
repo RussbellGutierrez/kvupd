@@ -34,16 +34,15 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.data.model.TableRuta
 import com.upd.kvupd.databinding.FragmentFMapaBinding
-import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.OldConstant.FILTRO_OBS
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.OldConstant.IWAM
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldConstant.isGPSLOCinitialized
+import com.upd.kvupd.utils.OldInfoWindow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.filterObs
-import com.upd.kvupd.utils.setUI
-import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.maps.settingsMap
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -271,9 +270,9 @@ class OldFMapa : Fragment(), OnMapReadyCallback, OnMarkerClickListener,
     private fun enableChip() {
         var msg = ""
         if (FILTRO_OBS == 9) {
-            bind.chipFiltro.setUI("v", false)
+            //bind.chipFiltro.setUI("v", false)
         } else {
-            bind.chipFiltro.setUI("v", true)
+            //bind.chipFiltro.setUI("v", true)
         }
         when (FILTRO_OBS) {
             1 -> msg = "Clientes puesto cerrado"

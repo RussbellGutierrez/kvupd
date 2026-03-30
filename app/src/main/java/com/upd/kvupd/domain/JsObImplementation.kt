@@ -2,9 +2,13 @@ package com.upd.kvupd.domain
 
 import android.content.Context
 import com.upd.kvupd.data.local.JsonObjectDataSource
+import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.TableFoto
+import com.upd.kvupd.data.model.TableRespuesta
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -19,7 +23,11 @@ class JsObImplementation @Inject constructor(
     override fun jsonObjectConfiguracion(identificador: String): RequestBody =
         jsonObjectDataSource.jsonRequestConfiguracion(identificador)
 
-    override fun jsonObjectClientes(item: TableConfiguracion, vendedor: Int?, fecha: String?): RequestBody =
+    override fun jsonObjectClientes(
+        item: TableConfiguracion,
+        vendedor: Int?,
+        fecha: String?
+    ): RequestBody =
         jsonObjectDataSource.jsonRequestClientes(item, vendedor, fecha)
 
     override fun jsonObjectPedimap(item: TableConfiguracion): RequestBody =
@@ -39,4 +47,29 @@ class JsObImplementation @Inject constructor(
         bajaProcesada: TableBajaProcesada
     ): RequestBody =
         jsonObjectDataSource.jsonRequestBajasProcesadas(item, bajaProcesada)
+
+    override fun jsonObjectAltas(item: TableConfiguracion, alta: TableAlta): RequestBody =
+        jsonObjectDataSource.jsonRequestAlta(item, alta)
+
+    override fun jsonObjectAltaDatos(
+        item: TableConfiguracion,
+        altaDatos: TableAltaDatos
+    ): RequestBody =
+        jsonObjectDataSource.jsonRequestAltaDatos(item, altaDatos)
+
+    override fun jsonObjectRespuesta(
+        item: TableConfiguracion,
+        respuesta: TableRespuesta
+    ): RequestBody =
+        jsonObjectDataSource.jsonRequestRespuesta(item, respuesta)
+
+    override fun jsonObjectFoto(item: TableConfiguracion, foto: TableFoto): RequestBody =
+        jsonObjectDataSource.jsonRequestFoto(item, foto)
+
+    override fun jsonObjectReporte(
+        item: TableConfiguracion,
+        linea: Int?,
+        marca: Int?
+    ): RequestBody =
+        jsonObjectDataSource.jsonRequestReport(item, linea, marca)
 }

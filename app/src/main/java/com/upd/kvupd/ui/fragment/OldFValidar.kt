@@ -23,7 +23,7 @@ import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.OldConstant.POS_LOC
 import com.upd.kvupd.utils.OldConstant.isPOSLOCinitialized
-import com.upd.kvupd.utils.settingsMap
+import com.upd.kvupd.utils.maps.settingsMap
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel

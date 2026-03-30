@@ -19,6 +19,10 @@ object BaseDatosRoom {
     const val DB_NAME = "KventasN"
 }
 
+object DeviceConstant {
+    const val APP_ORIGIN = "-V"
+}
+
 object ConstantsExtras {
     const val NO_FIND_UUID = "/////-/////-/////-/////"
     const val GPS_FLOW = "GPS_FLOW"
@@ -130,11 +134,17 @@ object FechaHoraUtil {
     private val apiDateTimeFormatter =
         DateTimeFormatter.ofPattern("yyyy/MM/dd h:mma", Locale.ENGLISH)
 
+    private val compactDateTimeFormatter =
+        DateTimeFormatter.ofPattern("mmssSSS", Locale.getDefault())
+
     fun ahora(): String =
         LocalDateTime.now().format(dateTimeFormatter)
 
     fun dia(): String =
         LocalDate.now().format(dateFormatter)
+
+    fun timestamp(): String =
+        LocalDateTime.now().format(compactDateTimeFormatter)
 
     fun esHoy(fecha: String): Boolean =
         LocalDate.parse(fecha) == LocalDate.now()
@@ -174,6 +184,14 @@ object FirebaseKeys {
     const val NODO_PEDIMAP = "Pedimap"
     const val NODO_MENSAJE = "Mensaje"
     const val NODO_TEMPORAL = "Temporal"
+}
+
+object SocketReporte {
+    const val PORT_ORIUNDA = 8080
+    const val PORT_TERRANORTE = 80
+
+    const val PATH_ORIUNDA = "/oriunda/update"
+    const val PATH_TERRANORTE = "/terranorte/update"
 }
 
 object ApisDescargaDatos {

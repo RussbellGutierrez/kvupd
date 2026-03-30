@@ -15,7 +15,6 @@ import com.upd.kvupd.service.OldServicePosicion
 import com.upd.kvupd.utils.dismissAllDialogs
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -74,12 +73,12 @@ class OldDBaja : DialogFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(p0: AdapterView<*>, p1: View?, p2: Int, p3: Long) {
         val motivo = p0.getItemAtPosition(p2)
-        if (motivo.toString() == "DUPLICADO") {
+        /*if (motivo.toString() == "DUPLICADO") {
             bind.txtAviso.setUI("v", true)
         } else {
             bind.txtAviso.setUI("v", false)
         }
-        bind.txtMensaje.setUI("v", false)
+        bind.txtMensaje.setUI("v", false)*/
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) = Unit

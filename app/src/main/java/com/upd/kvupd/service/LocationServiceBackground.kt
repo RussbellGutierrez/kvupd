@@ -24,7 +24,7 @@ import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
 import com.upd.kvupd.utils.GPSConstants.DISTANCIA_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_RAPIDO
-import com.upd.kvupd.utils.GpsTracker
+import com.upd.kvupd.utils.gps.GpsTracker
 import com.upd.kvupd.utils.NotificationHelper.NOTIFICATION_ID
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
 import com.upd.kvupd.utils.to2Decimals

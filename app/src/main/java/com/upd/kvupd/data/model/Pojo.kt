@@ -2,6 +2,7 @@ package com.upd.kvupd.data.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.ui.fragment.type.MapData
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -25,6 +26,8 @@ data class FlowCliente(
     @IgnoredOnParcel
     override val mapId: String
         get() = cliente
+
+    override fun toString(): String = "$cliente - $nomcli"
 }
 
 @Parcelize
@@ -50,6 +53,12 @@ data class FlowBajaSupervisor(
         get() = cliente
 }
 
+data class TableWrapper<T>(
+    val data: T,
+    override val mapId: String,
+    val onInfoClick: (() -> Unit)? = null
+): MapData
+
 data class BotonesConfig(
     val vendedor: Boolean = false,
     val cartera: Boolean = false,
@@ -59,4 +68,17 @@ data class BotonesConfig(
     val alta: Boolean = false,
     val baja: Boolean = false,
     val servidor: Boolean = false
+)
+
+data class DistritoPolygon(
+    val codigo: String,
+    val nombre: String,
+    val polygons: List<List<LatLng>>
+)
+
+data class FlowHeaderEncuestas(
+    @ColumnInfo(name = "id") val id: Int,
+    @ColumnInfo(name = "nombre") val encuesta: String,
+    @ColumnInfo(name = "foto") val conFoto: Int,
+    @ColumnInfo(name = "seleccionada") val seleccionado: Int
 )

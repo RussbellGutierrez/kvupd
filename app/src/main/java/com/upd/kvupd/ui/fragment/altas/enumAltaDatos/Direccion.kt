@@ -1,0 +1,60 @@
+package com.upd.kvupd.ui.fragment.altas.enumAltaDatos
+
+enum class Via(val label: String, val code: String) {
+    NINGUNO("NINGUNO", ""),
+    AVENIDA("AVENIDA", "AV"),
+    BOULEVARD("BOULEVARD", "BLVR"),
+    CALLE("CALLE", "CL"),
+    CARRETERA("CARRETERA", "CARR"),
+    INTERIOR("INTERIOR", "INT"),
+    JIRON("JIRON", "JR"),
+    MERCADO("MERCADO", "MCDO"),
+    PASAJE("PASAJE", "PJE"),
+    PASEO("PASEO", "P"),
+    PLAZA("PLAZA", "PLZA");
+
+    override fun toString() = label
+}
+
+enum class Numeracion(val label: String, val code: String) {
+    NUMERO("NUMERO", ""),
+    INTERIOR("INTERIOR", "INT"),
+    BLOCK("BLOCK", "BLOCK"),
+    DPTO("DPTO", "DPTO"),
+    PUESTO("PUESTO", "PTO"),
+    LOTE("LOTE", "LT");
+
+    override fun toString() = label
+}
+
+enum class Zona(val label: String, val code: String) {
+    NINGUNO("NINGUNO", ""),
+    AMPLIACION("AMPLIACION", "AMPL"),
+    ANEXO("ANEXO", "ANEXO"),
+    ASENTAMIENTO_HUMANO("ASENTAMIENTO HUMANO", "AAHH"),
+    ASOCIACION("ASOCIACION", "ASOC"),
+    ASOCIACION_VIVIENDA("ASOCIACION VIVIENDA", "ASOC VIV"),
+    BARRIO("BARRIO", "BAR"),
+    CENTRO_COMERCIAL("CENTRO COMERCIAL", "CC"),
+    CENTRO_POBLADO("CENTRO POBLADO", "CP"),
+    COMITE("COMITE", "COMI"),
+    CONDOMINIO("CONDOMINIO", "COND"),
+    CONJUNTO_HABITACIONAL("CONJUNTO HABITACIONAL", "CONJ HAB"),
+    CONJUNTO_RESIDENCIAL("CONJUNTO RESIDENCIAL", "CR"),
+    COOPERATIVA("COOPERATIVA", "COOP"),
+    COOPERATIVA_VIVIENDA("COOPERATIVA VIVIENDA", "COOP VIV"),
+    HABILITACION_URBANA("HABILITACION URBANA", "HAB URB"),
+    LOTIZACION("LOTIZACION", "LOT"),
+    PARCELA("PARCELA", "PARC"),
+    POBLADO("POBLADO", "POB"),
+    PUEBLO_JOVEN("PUEBLO JOVEN", "PJ"),
+    QUINTA("QUINTA", "QUINTA"),
+    RESIDENCIAL("RESIDENCIAL", "RES"),
+    SECTOR("SECTOR", "SECT"),
+    UNIDAD_VECINAL("UNIDAD VECINAL", "UV"),
+    URBANIZACION("URBANIZACION", "URB"),
+    VILLA("VILLA", "VILLA"),
+    ZONA_INDUSTRIAL("ZONA INDUSTRIAL", "ZI");
+
+    override fun toString() = label
+}

@@ -6,14 +6,12 @@ import com.upd.kvupd.domain.OldOnInterSetup
 import com.upd.kvupd.ui.adapter.OldBajaSupervisorAdapter
 import com.upd.kvupd.ui.adapter.OldBuscarAdapter
 import com.upd.kvupd.ui.adapter.OldClienteAdapter
-import com.upd.kvupd.ui.adapter.OldGenericoAdapter
-import com.upd.kvupd.ui.adapter.OldSolesAdapter
 
 object OldInterface {
     lateinit var clienteListener: OldClienteAdapter.OnClienteListener
     //lateinit var umesListener: OldUmesAdapter.OnUmesListener
-    lateinit var solesListener: OldSolesAdapter.OnSolesListener
-    lateinit var generListener: OldGenericoAdapter.OnGenericoListener
+    //lateinit var solesListener: OldSolesAdapter.OnSolesListener
+    //lateinit var generListener: OldGenericoAdapter.OnGenericoListener
     //lateinit var visisuListener: VisisuperAdapter.OnVisisuperListener
     //lateinit var altaListener: AltaAdapter.OnAltaListener
     //lateinit var bajaListener: BajaAdapter.OnBajaListener

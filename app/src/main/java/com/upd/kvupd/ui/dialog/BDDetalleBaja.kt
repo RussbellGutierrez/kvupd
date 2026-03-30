@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.dialog
 
-import MapHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,16 +18,17 @@ import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.databinding.BottomDetallebajaBinding
-import com.upd.kvupd.ui.fragment.enumClass.Canal
-import com.upd.kvupd.ui.fragment.enumClass.MotivoBaja
+import com.upd.kvupd.ui.fragment.baja.enumFile.Canal
+import com.upd.kvupd.ui.fragment.baja.enumFile.MotivoBaja
 import com.upd.kvupd.utils.BundleConstantes.KEY_DETALLE
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.UbicacionActual
-import com.upd.kvupd.utils.awaitMap
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.expandFullHeight
-import com.upd.kvupd.utils.icono
-import com.upd.kvupd.utils.vectorToBitmapDescriptor
+import com.upd.kvupd.utils.maps.MapHelper
+import com.upd.kvupd.utils.maps.awaitMap
+import com.upd.kvupd.utils.maps.icono
+import com.upd.kvupd.utils.maps.vectorToBitmapDescriptor
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint

@@ -23,7 +23,6 @@ import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.OldInterface.bajaSuperListener
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -188,25 +187,25 @@ class OldFBajaDatos : Fragment(), SearchView.OnQueryTextListener,
     }
 
     private fun setupSupervisor(list: List<RowBaja>) {
-        if (list.isEmpty()) {
+        /*if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvBajas.setUI("v", false)
         } else {
             bind.emptyContainer.root.setUI("v", false)
             bind.rcvBajas.setUI("v", true)
             supervisor.mDiffer.submitList(list)
-        }
+        }*/
     }
 
     private fun setupVendedor(list: List<BajaVendedor>) {
-        if (list.isEmpty()) {
+        /*if (list.isEmpty()) {
             bind.emptyContainer.root.setUI("v", true)
             bind.rcvBajas.setUI("v", false)
         } else {
             bind.emptyContainer.root.setUI("v", false)
             bind.rcvBajas.setUI("v", true)
             vendedor.mDiffer.submitList(list)
-        }
+        }*/
     }
 
     private fun launchApi() {

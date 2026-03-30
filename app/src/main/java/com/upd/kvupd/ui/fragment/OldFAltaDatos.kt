@@ -2,9 +2,6 @@ package com.upd.kvupd.ui.fragment
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -18,38 +15,31 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomViewTarget
-import com.bumptech.glide.request.transition.Transition
 import com.upd.kvupd.R
-import com.upd.kvupd.databinding.FragmentFAltaDatosBinding
+import com.upd.kvupd.databinding.FragmentFAltadatosBinding
 import com.upd.kvupd.utils.checkDocumento
 import com.upd.kvupd.utils.checkEmail
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.hideprogress
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.utils.oldShowDialog
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 
 @AndroidEntryPoint
 class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFAltaDatosBinding? = null
+    private var _bind: FragmentFAltadatosBinding? = null
     private val bind get() = _bind!!
     private var tipo = ""
     private var abspath = ""
@@ -76,7 +66,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFAltaDatosBinding.inflate(inflater, container, false)
+        _bind = FragmentFAltadatosBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -104,7 +94,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
             }
         }
 
-        bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
+        //bind.imgFoto.setOnClickListener { dispatchTakePictureIntent() }
 
         /*viewmodel.distritosObs().observe(viewLifecycleOwner) {
             distrito = it.asSpinner()
@@ -204,7 +194,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
 
     private fun showFields(opt: Int) {
         cleanFields()
-        bind.lnrDetalle.setUI("v", true)
+        /*bind.lnrDetalle.setUI("v", true)
         when (opt) {
             0 -> {
                 bind.txtRazon.setUI("v", true)
@@ -215,7 +205,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.txtRazon.setUI("v", false)
                 bind.lnrCliente.setUI("v", true)
             }
-        }
+        }*/
     }
 
     private fun checkAlta() {
@@ -225,7 +215,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     }
 
     private fun processDocumento(id: Int) {
-        when (id) {
+        /*when (id) {
             0 -> {
                 bind.inlRuc.setUI("v", false)
                 bind.inlDnice.setUI("v", false)
@@ -248,7 +238,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 bind.txtMensaje.text = "* EL DNI/CARNET ES OBLIGATORIO"
                 bind.edtRuc.setText("")
             }
-        }
+        }*/
     }
 
     private fun setupFields() {
@@ -357,7 +347,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
     }
 
     private fun thumbnailPhoto(path: String, show: Boolean) {
-        val ruta: String = if (show) {
+        /*val ruta: String = if (show) {
             path
         } else {
             abspath
@@ -392,7 +382,7 @@ class OldFAltaDatos : Fragment(), MenuProvider, OnItemSelectedListener {
                 }
 
                 override fun onResourceCleared(placeholder: Drawable?) {}
-            })
+            })*/
     }
 
     private fun saveAltaDatos() {

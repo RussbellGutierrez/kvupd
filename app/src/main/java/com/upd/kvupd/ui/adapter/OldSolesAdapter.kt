@@ -1,25 +1,13 @@
 package com.upd.kvupd.ui.adapter
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.widget.ImageViewCompat
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.R
-import com.upd.kvupd.data.model.Soles
-import com.upd.kvupd.databinding.RowReporteBinding
 import com.upd.kvupd.utils.OldBaseViewHolder
-import com.upd.kvupd.utils.OldInterface.solesListener
-import com.upd.kvupd.utils.percent
 import javax.inject.Inject
 
 class OldSolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHolder<*>>() {
 
-    private val diffCallback = (object : DiffUtil.ItemCallback<Soles>() {
+    /*private val diffCallback = (object : DiffUtil.ItemCallback<Soles>() {
 
         override fun areItemsTheSame(oldItem: Soles, newItem: Soles): Boolean {
             return oldItem.linea.codigo == newItem.linea.codigo
@@ -77,13 +65,13 @@ class OldSolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHo
             }*/
 
             when{
-                percent.toDouble() > 85 -> bind.imgFlecha.setImageResource(R.drawable.f_arriba)
+                percent.toDouble() > 85 -> bind.imgFlecha.setImageResource(R.drawable.indicador_verde)
                 percent.toDouble() in 70.0..85.0 -> {
                     ImageViewCompat.setImageTintList(bind.imgFlecha, ColorStateList.valueOf(Color.parseColor("#FFAB00")))
-                    bind.imgFlecha.setImageResource(R.drawable.f_arriba)
+                    bind.imgFlecha.setImageResource(R.drawable.indicador_verde)
                 }
-                percent.toDouble() in 1.0..69.99 -> bind.imgFlecha.setImageResource(R.drawable.f_bajo)
-                percent.toDouble() < 1 -> bind.imgFlecha.setImageResource(R.drawable.f_neutral)
+                percent.toDouble() in 1.0..69.99 -> bind.imgFlecha.setImageResource(R.drawable.indicador_rojo)
+                percent.toDouble() < 1 -> bind.imgFlecha.setImageResource(R.drawable.indicador_azul)
             }
 
             bind.txtTitulo.text = titulo
@@ -103,5 +91,16 @@ class OldSolesAdapter @Inject constructor() : RecyclerView.Adapter<OldBaseViewHo
         fun onItemClick(soles: Soles)
         fun onItemPress(soles: Soles)
         fun onCloseItem(soles: Soles)
+    }*/
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OldBaseViewHolder<*> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getItemCount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun onBindViewHolder(holder: OldBaseViewHolder<*>, position: Int) {
+        TODO("Not yet implemented")
     }
 }

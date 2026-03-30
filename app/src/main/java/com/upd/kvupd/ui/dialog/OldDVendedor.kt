@@ -12,7 +12,6 @@ import com.upd.kvupd.databinding.DialogClienteVendedorBinding
 import com.upd.kvupd.utils.castDate
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -85,7 +84,7 @@ class OldDVendedor : DialogFragment() {
         val codigo = bind.txtVendedor.text.toString().split("-")[0].trim()
         val fecha = bind.txtDia.text.toString()
         if (codigo == "" || fecha == "") {
-            bind.txtMensaje.setUI("v", true)
+            //bind.txtMensaje.setUI("v", true)
             bind.txtMensaje.text = "Elija un vendedor y fecha por favor"
         } else {
             dismiss()

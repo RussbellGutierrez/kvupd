@@ -10,7 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.databinding.BottomBajaclienteBinding
-import com.upd.kvupd.ui.fragment.enumClass.MotivoBaja
+import com.upd.kvupd.ui.fragment.baja.enumFile.MotivoBaja
 import com.upd.kvupd.utils.BundleConstantes.KEY_BAJA
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.toUpper

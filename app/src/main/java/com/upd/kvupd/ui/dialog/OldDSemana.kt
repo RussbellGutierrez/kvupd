@@ -10,7 +10,6 @@ import com.upd.kvupd.databinding.DialogSemanaClienteBinding
 import com.upd.kvupd.utils.castDate
 import com.upd.kvupd.utils.setCreate
 import com.upd.kvupd.utils.setResume
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
@@ -57,21 +56,21 @@ class OldDSemana : DialogFragment() {
                 dismiss()
                 //viewmodel.setFecha(dia)
             } else {
-                bind.txtMensaje.setUI("v", true)
+                //bind.txtMensaje.setUI("v", true)
             }
         }
     }
 
     private fun setup() {
         val c = Calendar.getInstance()
-        when (c.get(Calendar.DAY_OF_WEEK)) {
+        /*when (c.get(Calendar.DAY_OF_WEEK)) {
             Calendar.MONDAY -> bind.fabLunes.setUI("e", false)
             Calendar.TUESDAY -> bind.fabMartes.setUI("e", false)
             Calendar.WEDNESDAY -> bind.fabMiercoles.setUI("e", false)
             Calendar.THURSDAY -> bind.fabJueves.setUI("e", false)
             Calendar.FRIDAY -> bind.fabViernes.setUI("e", false)
             Calendar.SATURDAY -> bind.fabSabado.setUI("e", false)
-        }
+        }*/
     }
 
     private fun dayWeek(day: Int) {

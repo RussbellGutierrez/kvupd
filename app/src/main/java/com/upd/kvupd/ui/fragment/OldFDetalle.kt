@@ -4,27 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.data.model.Soles
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
 import com.upd.kvupd.ui.adapter.OldGenericoAdapter
 import com.upd.kvupd.ui.adapter.OldVisisuperAdapter
 import com.upd.kvupd.utils.OldConstant.CONF
-import com.upd.kvupd.utils.OldInterface.generListener
 import com.upd.kvupd.utils.progress
-import com.upd.kvupd.utils.setUI
 import com.upd.kvupd.viewmodel.OldAppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OldFDetalle : Fragment(),
-    OldGenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
+class OldFDetalle : Fragment() {//,
+    //OldGenericoAdapter.OnGenericoListener/*,VisisuperAdapter.OnVisisuperListener*/ {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
     private var _bind: FragmentFDetalleBinding? = null
@@ -45,7 +41,7 @@ class OldFDetalle : Fragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        generListener = this
+        //generListener = this
         //visisuListener = this
         data = requireArguments()
     }
@@ -106,7 +102,7 @@ class OldFDetalle : Fragment(),
         }*/
     }
 
-    override fun onItemClick(generico: Generico) {
+    /*override fun onItemClick(generico: Generico) {
         if (CONF.tipo == "S") {
             val bundle = bundleOf(
                 "informe" to 7,
@@ -115,18 +111,18 @@ class OldFDetalle : Fragment(),
             )
             //findNavController().navigate(R.id.action_FDetalle_to_DMiniDetalle,bundle)
         }
-    }
+    }*/
 
-    override fun onCloseItem(generico: Generico) {
+    /*override fun onCloseItem(generico: Generico) {
         val list = generAdapter.mDiffer.currentList.toMutableList()
         list.remove(generico)
         if (list.size > 0) {
             generAdapter.mDiffer.submitList(list)
         } else {
-            bind.emptyContainer.root.setUI("v", true)
-            bind.rcvDetalle.setUI("v", false)
+            //bind.emptyContainer.root.setUI("v", true)
+            //bind.rcvDetalle.setUI("v", false)
         }
-    }
+    }*/
 
     /*override fun onItemClick(visisuper: Visisuper) {
         VISICOOLER_ID = visisuper.id

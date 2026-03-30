@@ -21,15 +21,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.upd.kvupd.R
-import com.upd.kvupd.databinding.FragmentFAltaMapaBinding
+import com.upd.kvupd.databinding.OldFragmentFAltaMapaBinding
 import com.upd.kvupd.utils.OldConstant
 import com.upd.kvupd.utils.OldConstant.ALTADATOS
 import com.upd.kvupd.utils.OldConstant.GPS_LOC
 import com.upd.kvupd.utils.OldConstant.PROCEDE
 import com.upd.kvupd.utils.OldConstant.isGPSLOCinitialized
 import com.upd.kvupd.utils.OldInfoWindow
-import com.upd.kvupd.utils.settingsMap
 import com.upd.kvupd.utils.oldShowDialog
+import com.upd.kvupd.utils.maps.settingsMap
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.toLocation
 import com.upd.kvupd.viewmodel.OldAppViewModel
@@ -40,7 +40,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
     OnInfoWindowLongClickListener, OnMarkerDragListener {
 
     private val viewmodel by activityViewModels<OldAppViewModel>()
-    private var _bind: FragmentFAltaMapaBinding? = null
+    private var _bind: OldFragmentFAltaMapaBinding? = null
     private val bind get() = _bind!!
     private var snippet = ""
     private lateinit var sup: SupportMapFragment
@@ -68,7 +68,7 @@ class OldFAltaMapa : Fragment(), OnMapReadyCallback, OnMapLongClickListener, OnM
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _bind = FragmentFAltaMapaBinding.inflate(inflater, container, false)
+        _bind = OldFragmentFAltaMapaBinding.inflate(inflater, container, false)
         return bind.root
     }
 

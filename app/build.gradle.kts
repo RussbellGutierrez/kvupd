@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.zxing)
     implementation(libs.socket) { exclude(group = "org.json", module = "json") }
+    implementation(libs.facebook.shimmer)
 
     kapt(libs.dagger.hilt.compiler)
     ksp(libs.room.compiler)

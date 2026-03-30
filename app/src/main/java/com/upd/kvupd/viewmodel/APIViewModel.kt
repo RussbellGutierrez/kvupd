@@ -1,39 +1,79 @@
 package com.upd.kvupd.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaVendedor
+import com.upd.kvupd.data.model.JsonCambio
 import com.upd.kvupd.data.model.JsonCliente
+import com.upd.kvupd.data.model.JsonCoberturaCartera
+import com.upd.kvupd.data.model.JsonEncuesta
+import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
+import com.upd.kvupd.data.model.JsonSoles
+import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableFoto
+import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
+import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.domain.search.BajaSearchSource
 import com.upd.kvupd.domain.search.ClienteSearchSource
+import com.upd.kvupd.domain.send.SendServerFunctions
+import com.upd.kvupd.ui.fragment.encuesta.mapper.toDistritoUI
+import com.upd.kvupd.ui.fragment.encuesta.mapper.toGiroUI
+import com.upd.kvupd.ui.fragment.encuesta.mapper.toRutaUI
+import com.upd.kvupd.ui.fragment.encuesta.mapper.toSubGiroUI
+import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapGenericoToSoles
+import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapToLineas
+import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapVolumenToSoles
+import com.upd.kvupd.ui.fragment.reportes.modelUI.LineaUI
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
+import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.to2Decimals
+import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.RequestBody
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class APIViewModel @Inject constructor(
     private val serverFunctions: ServerFunctions,
     private val roomFunctions: RoomFunctions,
     private val jsobFunctions: JsObFunctions,
     private val clienteSearchSource: ClienteSearchSource,
-    private val bajaSearchSource: BajaSearchSource
+    private val bajaSearchSource: BajaSearchSource,
+    private val sendServerFunctions: SendServerFunctions
 ) : ViewModel() {
 
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
@@ -44,6 +84,21 @@ class APIViewModel @Inject constructor(
 
     private val _bajaProcesadaMessage = EventFlow<String>()
     val bajaProcesadaMessage = _bajaProcesadaMessage.events
+
+    private val _altaMessage = EventFlow<String>()
+    val altaMessage = _altaMessage.events
+
+    private val _altaDatosMessage = EventFlow<String>()
+    val altaDatosMessage = _altaDatosMessage.events
+
+    private val _altaDatosSuccess = EventFlow<Unit>()
+    val altaDatosSuccess = _altaDatosSuccess.events
+
+    private val _respuestaMessage = EventFlow<String>()
+    val respuestaMessage = _respuestaMessage.events
+
+    private val _fotoMessage = EventFlow<String>()
+    val fotoMessage = _fotoMessage.events
 
     private val _pedimapEvent = EventFlow<ResultadoApi<JsonPedimap>>()
     val pedimapEvent = _pedimapEvent.events
@@ -57,36 +112,97 @@ class APIViewModel @Inject constructor(
     private val _bajaestadoEvent = EventFlow<ResultadoApi<JsonBajaVendedor>>()
     val bajaestadoEvent = _bajaestadoEvent.events
 
+    private val _encuestaEvent = EventFlow<ResultadoApi<JsonEncuesta>>()
+    val encuestaEvent = _encuestaEvent.events
+
+    private val _altaDatos = MutableStateFlow<TableAltaDatos?>(null)
+    val altaDatos = _altaDatos
+
+    ///     REPORTES
+    private val _preventaEvent = EventFlow<ResultadoApi<JsonVolumen>>()
+    val preventaEvent = _preventaEvent.events
+
+    private val _coberturaEvent = EventFlow<ResultadoApi<JsonCoberturaCartera>>()
+    val coberturaEvent = _coberturaEvent.events
+
+    private val _carteraEvent = EventFlow<ResultadoApi<JsonCoberturaCartera>>()
+    val carteraEvent = _carteraEvent.events
+
+    private val _generalEvent = EventFlow<ResultadoApi<JsonPedido>>()
+    val generalEvent = _generalEvent.events
+
+    private val _cambioEvent = EventFlow<ResultadoApi<JsonCambio>>()
+    val cambioEvent = _cambioEvent.events
+
+    private val _solesEvent = EventFlow<ResultadoApi<List<LineaUI>>>()
+    val solesEvent = _solesEvent.events
+
+    private val _socketEvent = EventFlow<SocketEvent>()
+    val socketEvent = _socketEvent.events
+
     private val flowClientes = roomFunctions.listFlowClientes()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
     private val flowBaja = roomFunctions.listFlowBajas()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
     private val flowBajaSupervisor = roomFunctions.listFlowBajaSupervisor()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val negocioFlow = roomFunctions.listFlowNegocios()
+    private val distritoFlow = roomFunctions.listFlowDistritos()
+    private val rutaFlow = roomFunctions.listFlowRutas()
 
     /// VARIABLES PRIVADAS ARRIBA ///
 
     val flowConfiguracion = roomFunctions.listFlowConfiguracion()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val flowRutas = roomFunctions.listFlowClientes()
+    val flowUIRutas = roomFunctions.listFlowClientes()
         .map { list ->
             if (list.isEmpty()) "" else list.map { it.ruta.toString() }.distinct()
                 .joinToString(" - ")
         }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
 
-    val flowPolygon = roomFunctions.listFlowPolygon()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val flowPolygon = roomFunctions.listFlowRutas()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val flowVendedores = roomFunctions.listFlowVendedores()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val flowLastGPS = roomFunctions.listFlowLastGPS()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val flowAlta = roomFunctions.listFlowAltas()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+
+    val altaFormState = combine(
+        negocioFlow,
+        distritoFlow,
+        rutaFlow,
+        altaDatos
+    ) { negocios, distritos, rutas, altaDatos ->
+
+        AltaFormState(
+            giros = negocios.toGiroUI(),
+            subgiros = negocios.toSubGiroUI(),
+            distritos = distritos.toDistritoUI(),
+            rutas = rutas.toRutaUI(),
+            alta = altaDatos
+        )
+    }
+
+    val flowPreguntas = roomFunctions.listFlowPreguntas()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val flowCabeceraEncuesta = roomFunctions.listFlowCabeceraEncuesta()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val encuestaSeleccionadaId = flowPreguntas
+        .map { lista -> lista.firstOrNull()?.id }
+        .filterNotNull().distinctUntilChanged()
+
+    val flowClientesPendientes = encuestaSeleccionadaId
+        .flatMapLatest { id ->
+            roomFunctions.listFlowClientesPendientes(id)
+        }
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
         viewModelScope.launch {
@@ -147,6 +263,151 @@ class APIViewModel @Inject constructor(
         }
     }
 
+    fun obtainAltaDatos(idaux: String, fecha: String) {
+        viewModelScope.launch {
+            _altaDatos.value = roomFunctions.queryAltaDatos(idaux, fecha)
+        }
+    }
+
+    fun downloadEncuestas() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val json = jsobFunctions.jsonObjectBasico(config)
+            serverFunctions.apiDownloadEncuesta(json).collect { result ->
+                if (result is ResultadoApi.Exito) {
+                    result.data?.jobl?.let { lista ->
+                        roomFunctions.replaceEncuesta(lista)
+                    }
+                }
+                _encuestaEvent.emit(result)
+            }
+        }
+    }
+
+    private fun apiPreventa() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportPreventa) // Pasar como parametro usando ::
+                .collect { _preventaEvent.emit(it) }
+        }
+    }
+
+    private fun apiCobertura() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportCobertura)
+                .collect { _coberturaEvent.emit(it) }
+        }
+    }
+
+    private fun apiCartera() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportCartera)
+                .collect { _carteraEvent.emit(it) }
+        }
+    }
+
+    private fun apiGeneral() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportGeneral)
+                .collect { _generalEvent.emit(it) }
+        }
+    }
+
+    private fun apiCambio() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+
+            val api = when (TipoUsuario.fromCodigo(config.tipo)) {
+                TipoUsuario.VENDEDOR -> serverFunctions::apiReportClienteCambio
+                TipoUsuario.SUPERVISOR -> serverFunctions::apiReportEmpleadoCambio
+                TipoUsuario.JEFE_VENTAS -> return@launch
+            }
+            downloadBaseReport(api)
+                .collect { _cambioEvent.emit(it) }
+        }
+    }
+
+    private fun apiSolesPorLineas() {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
+
+            // 🔹 1. Base (líneas) usando helper
+            val base = downloadBaseReport(
+                apiCall = serverFunctions::apiReportSoles
+            ).first { it !is ResultadoApi.Loading }
+
+            val lineas = mapLineasResult(base) {
+                _solesEvent.emit(it)
+            }
+
+            if (lineas.isEmpty()) return@launch
+
+            // 🔹 2. Detalle por línea (limpio con helper genérico)
+            val resultado = coroutineScope {
+
+                lineas.map { linea ->
+                    async {
+                        when (tipoUsuario) {
+
+                            TipoUsuario.VENDEDOR -> {
+
+                                val result = downloadBaseReport(
+                                    apiCall = serverFunctions::apiReportSolesGenerico,
+                                    linea = linea.codigo
+                                ).first { it !is ResultadoApi.Loading }
+
+                                val soles = mapSolesResult(result) {
+                                    mapGenericoToSoles(it)
+                                }
+
+                                linea.copy(
+                                    soles = soles,
+                                    isLoading = false
+                                )
+                            }
+
+                            TipoUsuario.SUPERVISOR -> {
+
+                                val result = downloadBaseReport(
+                                    apiCall = serverFunctions::apiReportPreventa,
+                                    marca = linea.codigo
+                                ).first { it !is ResultadoApi.Loading }
+
+                                val soles = mapSolesResult(result) {
+                                    mapVolumenToSoles(it)
+                                }
+
+                                linea.copy(
+                                    soles = soles,
+                                    isLoading = false
+                                )
+                            }
+
+                            else -> linea
+                        }
+                    }
+                }.awaitAll()
+            }
+            _solesEvent.emit(ResultadoApi.Exito(resultado))
+        }
+    }
+
+    fun setEncuestaSeleccionada(id: Int) {
+        viewModelScope.launch {
+            roomFunctions.reselectEncuesta(id.toString())
+        }
+    }
+
+    fun selectUniqueEncuesta() {
+        viewModelScope.launch {
+            val cabeceras = roomFunctions.queryCabeceraEncuesta()
+
+            if (cabeceras.size == 1) {
+                roomFunctions.updateEncuestaSeleccion(cabeceras.first().id.toString())
+            }
+        }
+    }
+
     fun flowClientesFiltrados(
         query: StateFlow<String>
     ): StateFlow<List<FlowCliente>> =
@@ -183,7 +444,11 @@ class APIViewModel @Inject constructor(
     fun saveAndSendBaja(item: TableBaja) {
         viewModelScope.launch {
             roomFunctions.saveBaja(item)
-            intentarEnviarBaja(item)
+
+            handleResult(
+                result = sendServerFunctions.enviarBaja(item),
+                onError = { _bajaMessage.emit(it) }
+            )
         }
     }
 
@@ -191,38 +456,11 @@ class APIViewModel @Inject constructor(
         viewModelScope.launch {
             val actualizado = item.copy(sincronizado = false)
             roomFunctions.updateBaja(actualizado)
-            intentarEnviarBaja(actualizado)
-        }
-    }
 
-    private suspend fun intentarEnviarBaja(item: TableBaja) {
-        val config = roomFunctions.queryConfiguracion() ?: return
-
-        val json = jsobFunctions.jsonObjectBajas(config, item)
-
-        serverFunctions.apiSendBaja(json).collect { result ->
-            when (result) {
-                is ResultadoApi.Exito -> {
-                    roomFunctions.updateBaja(
-                        item.copy(
-                            sincronizado = true
-                        )
-                    )
-                }
-
-                is ResultadoApi.ErrorHttp,
-                is ResultadoApi.Fallo -> {
-                    roomFunctions.updateBaja(
-                        item.copy(
-                            sincronizado = false
-                        )
-                    )
-                    result.mensajeUsuario()
-                        ?.let { _bajaMessage.emit(it) }
-                }
-
-                ResultadoApi.Loading -> Unit
-            }
+            handleResult(
+                result = sendServerFunctions.enviarBaja(actualizado),
+                onError = { _bajaMessage.emit(it) }
+            )
         }
     }
 
@@ -230,34 +468,209 @@ class APIViewModel @Inject constructor(
         viewModelScope.launch {
             roomFunctions.saveBajaProcesada(item)
 
+            handleResult(
+                result = sendServerFunctions.enviarBajaProcesada(item),
+                onError = { _bajaProcesadaMessage.emit(it) }
+            )
+        }
+    }
+
+    fun createAlta(location: Location) {
+        viewModelScope.launch {
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val fecha = FechaHoraUtil.ahora()
+            val timeStamp = FechaHoraUtil.timestamp()
+
+            val idaux = "${config.codigo}$timeStamp"
+
+            val item = TableAlta(
+                idaux = idaux,
+                empleado = config.codigo,
+                fecha = fecha,
+                longitud = location.longitude,
+                latitud = location.latitude,
+                precision = location.accuracy.toDouble().to2Decimals(),
+                datos = 0
+            )
+
+            saveAndSendAlta(item)
+        }
+    }
+
+    private fun marcarAltaConDatos(idaux: String, fecha: String) {
+        viewModelScope.launch {
+            val alta = roomFunctions.queryAltaSpecific(idaux, fecha) ?: return@launch
+            val actualizado = alta.copy(datos = 1)
+            roomFunctions.updateAlta(actualizado)
+        }
+    }
+
+    private fun saveAndSendAlta(item: TableAlta) {
+        viewModelScope.launch {
+            roomFunctions.saveAlta(item)
+
+            handleResult(
+                result = sendServerFunctions.enviarAlta(item),
+                onError = { _altaMessage.emit(it) }
+            )
+        }
+    }
+
+    fun retrySendAlta(item: TableAlta) {
+        viewModelScope.launch {
+            val actualizado = item.copy(sincronizado = false)
+            roomFunctions.updateAlta(actualizado)
+
+            handleResult(
+                result = sendServerFunctions.enviarAlta(actualizado),
+                onError = { _altaMessage.emit(it) }
+            )
+        }
+    }
+
+    fun saveAndSendAltaDatos(item: TableAltaDatos) {
+        viewModelScope.launch {
+            roomFunctions.saveDatosAlta(item)
+
+            // Actualizar campo datos de alta origen
+            marcarAltaConDatos(item.idaux, item.fecha)
+
+            handleResult(
+                result = sendServerFunctions.enviarAltaDatos(item),
+                onError = { _altaDatosMessage.emit(it) },
+                onSuccess = { _altaDatosSuccess.emit(Unit) }
+            )
+        }
+    }
+
+    fun retrySendAltaDatos(item: TableAltaDatos) {
+        viewModelScope.launch {
+            val actualizado = item.copy(sincronizado = false)
+            roomFunctions.updateDatosAlta(actualizado)
+
+            handleResult(
+                result = sendServerFunctions.enviarAltaDatos(actualizado),
+                onError = { _altaDatosMessage.emit(it) },
+                onSuccess = { _altaDatosSuccess.emit(Unit) }
+            )
+        }
+    }
+
+    fun saveAndSendRespuestas(item: List<TableRespuesta>) {
+        viewModelScope.launch {
+            roomFunctions.saveRespuestas(item)
+
+            handleResult(
+                result = sendServerFunctions.enviarRespuesta(item),
+                onError = { _respuestaMessage.emit(it) }
+            )
+        }
+    }
+
+    fun saveAndSendFoto(item: TableFoto) {
+        viewModelScope.launch {
+            roomFunctions.saveFoto(item)
+
+            handleResult(
+                result = sendServerFunctions.enviarFoto(item),
+                onError = { _fotoMessage.emit(it) }
+            )
+        }
+    }
+
+    fun executeUpdater() {
+        viewModelScope.launch {
             val config = roomFunctions.queryConfiguracion() ?: return@launch
 
-            val json = jsobFunctions.jsonObjectBajasProcesadas(config, item)
+            serverFunctions.apiSocketUpdate(config.empresa)
+                .collect { event ->
 
-            serverFunctions.apiSendConfirmarBaja(json).collect { result ->
-                when (result) {
-                    is ResultadoApi.Exito -> {
-                        roomFunctions.updateBajaProcesada(
-                            item.copy(
-                                sincronizado = true
-                            )
-                        )
+                    _socketEvent.emit(event)
+
+                    if (event is SocketEvent.Success) {
+                        downloadAllReports()
                     }
-
-                    is ResultadoApi.ErrorHttp,
-                    is ResultadoApi.Fallo -> {
-                        roomFunctions.updateBajaProcesada(
-                            item.copy(
-                                sincronizado = false
-                            )
-                        )
-                        result.mensajeUsuario()
-                            ?.let { _bajaProcesadaMessage.emit(it) }
-                    }
-
-                    ResultadoApi.Loading -> Unit
                 }
+        }
+    }
+
+    fun downloadAllReports() {
+        apiPreventa()
+        apiCobertura()
+        apiCartera()
+        apiGeneral()
+        apiCambio()
+        apiSolesPorLineas()
+    }
+
+    private fun <T> downloadBaseReport(
+        apiCall: suspend (RequestBody) -> Flow<ResultadoApi<T>>,
+        linea: Int? = null,
+        marca: Int? = null
+    ): Flow<ResultadoApi<T>> = flow {
+
+        val config = roomFunctions.queryConfiguracion()
+            ?: return@flow
+
+        val json = jsobFunctions.jsonObjectReporte(
+            item = config,
+            linea = linea,
+            marca = marca
+        )
+
+        emitAll(apiCall(json))
+    }
+
+    private suspend fun mapLineasResult(
+        result: ResultadoApi<JsonSoles>,
+        onError: suspend (ResultadoApi<List<LineaUI>>) -> Unit
+    ): List<LineaUI> {
+
+        return when (result) {
+
+            is ResultadoApi.Exito -> {
+                result.data?.let { mapToLineas(it) } ?: emptyList()
             }
+
+            is ResultadoApi.ErrorHttp -> {
+                onError(result)
+                emptyList()
+            }
+
+            is ResultadoApi.Fallo -> {
+                onError(result)
+                emptyList()
+            }
+
+            is ResultadoApi.Loading -> emptyList()
+        }
+    }
+
+    private fun <T, R> mapSolesResult(
+        result: ResultadoApi<T>,
+        mapper: (T) -> List<R>
+    ): List<R> {
+        return if (result is ResultadoApi.Exito) {
+            result.data?.let(mapper) ?: emptyList()
+        } else emptyList()
+    }
+
+    private suspend fun handleResult(
+        result: ResultadoApi<Unit>,
+        onError: suspend (String) -> Unit,
+        onSuccess: (suspend () -> Unit)? = null
+    ) {
+        when (result) {
+            is ResultadoApi.ErrorHttp,
+            is ResultadoApi.Fallo -> {
+                result.mensajeUsuario()?.let { onError(it) }
+            }
+
+            is ResultadoApi.Exito -> {
+                onSuccess?.invoke()
+            }
+
+            else -> Unit
         }
     }
 }

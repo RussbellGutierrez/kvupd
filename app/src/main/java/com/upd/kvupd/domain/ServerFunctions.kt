@@ -20,11 +20,14 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 
 interface ServerFunctions {
+    fun apiSocketUpdate(empresa: Int): Flow<SocketEvent>
+
     fun apiDownloadConfiguracion(body: RequestBody): Flow<ResultadoApi<JsonConfiguracion>>
     fun apiDownloadCliente(body: RequestBody): Flow<ResultadoApi<JsonCliente>>
     fun apiDownloadEmpleado(body: RequestBody): Flow<ResultadoApi<JsonVendedor>>

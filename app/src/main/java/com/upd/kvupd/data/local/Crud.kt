@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_ALTADATOS
@@ -14,6 +15,7 @@ import com.upd.kvupd.data.model.CrudConstant.DEL_CLIENTES
 import com.upd.kvupd.data.model.CrudConstant.DEL_CONFIGURACION
 import com.upd.kvupd.data.model.CrudConstant.DEL_DISTRITOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_ENCUESTA
+import com.upd.kvupd.data.model.CrudConstant.DEL_FOTO
 import com.upd.kvupd.data.model.CrudConstant.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.CrudConstant.DEL_RESPUESTA
 import com.upd.kvupd.data.model.CrudConstant.DEL_RUTAS
@@ -28,6 +30,7 @@ import com.upd.kvupd.data.model.TableCliente
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableDistrito
 import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableNegocio
 import com.upd.kvupd.data.model.TableRespuesta
 import com.upd.kvupd.data.model.TableRuta
@@ -36,6 +39,49 @@ import com.upd.kvupd.data.model.TableVendedor
 
 @Dao
 interface Crud {
+    ////  TRANSACTIONS
+    @Transaction
+    suspend fun replaceConfiguracion(configuracion: List<TableConfiguracion>) {
+        deleteConfiguracion()
+        insertConfiguracion(configuracion)
+    }
+
+    @Transaction
+    suspend fun replaceClientes(cliente: List<TableCliente>) {
+        deleteClientes()
+        insertClientes(cliente)
+    }
+
+    @Transaction
+    suspend fun replaceVendedores(empleado: List<TableVendedor>) {
+        deleteVendedores()
+        insertVendedores(empleado)
+    }
+
+    @Transaction
+    suspend fun replaceDistritos(distrito: List<TableDistrito>) {
+        deleteDistritos()
+        insertDistritos(distrito)
+    }
+
+    @Transaction
+    suspend fun replaceNegocios(negocio: List<TableNegocio>) {
+        deleteNegocios()
+        insertNegocios(negocio)
+    }
+
+    @Transaction
+    suspend fun replaceRutas(ruta: List<TableRuta>) {
+        deleteRutas()
+        insertRutas(ruta)
+    }
+
+    @Transaction
+    suspend fun replaceEncuesta(encuesta: List<TableEncuesta>) {
+        deleteEncuesta()
+        insertEncuestas(encuesta)
+    }
+
     ////  INSERTS
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConfiguracion(conf: List<TableConfiguracion>)
@@ -79,6 +125,9 @@ interface Crud {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRespuesta(rsp: List<TableRespuesta>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFoto(foto: TableFoto)
+
     //// UPDATES
     @Update(entity = TableSeguimiento::class)
     suspend fun updateSeguimiento(upd: TableSeguimiento)
@@ -94,6 +143,9 @@ interface Crud {
 
     @Update(entity = TableRespuesta::class)
     suspend fun updateRespuesta(rsp: TableRespuesta)
+
+    @Update(entity = TableFoto::class)
+    suspend fun updateFoto(foto: TableFoto)
 
     @Update(entity = TableAltaDatos::class)
     suspend fun updateAltaDatos(upd: TableAltaDatos)
@@ -140,4 +192,7 @@ interface Crud {
 
     @Query(DEL_RESPUESTA)
     suspend fun deleteRespuesta()
+
+    @Query(DEL_FOTO)
+    suspend fun deleteFoto()
 }

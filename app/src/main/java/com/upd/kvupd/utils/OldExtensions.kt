@@ -11,7 +11,6 @@ import android.location.LocationManager
 import android.text.Editable
 import android.util.Patterns
 import android.view.MenuItem
-import android.view.View
 import android.view.Window
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -24,7 +23,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.snackbar.Snackbar
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.MarkerMap
 import com.upd.kvupd.data.model.Pedimap
@@ -90,16 +88,6 @@ fun DialogFragment.dismissAllDialogs(manager: FragmentManager?) {
         this.dialog?.window?.setLayout(DL_WIDTH, D_HEIGHT)
     }
 }*/
-
-fun Fragment.snack(text: String) {
-    val view = this.requireActivity().window.decorView.findViewById<View>(android.R.id.content)
-    Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
-}
-
-fun Activity.snack(text: String) {
-    val view = this.window.decorView.findViewById<View>(android.R.id.content)
-    Snackbar.make(view, text, Snackbar.LENGTH_SHORT).show()
-}
 
 fun Context.isGPSDisabled(): Boolean {
     val locationManager =

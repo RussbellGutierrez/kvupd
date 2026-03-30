@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 18,
-    "identityHash": "34eff3896cfe357cc444cf9608a62c7c",
+    "identityHash": "7f467d67474e0d99e436f53fc938bd18",
     "entities": [
       {
         "tableName": "TableConfiguracion",
@@ -386,7 +386,7 @@
       },
       {
         "tableName": "TableRespuesta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `rutafoto` TEXT NOT NULL, `foto` INTEGER NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `pregunta` INTEGER NOT NULL, `respuesta` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`, `pregunta`))",
         "fields": [
           {
             "fieldPath": "cliente",
@@ -419,18 +419,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "rutafoto",
-            "columnName": "rutafoto",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "foto",
-            "columnName": "foto",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "longitud",
             "columnName": "longitud",
             "affinity": "REAL",
@@ -455,6 +443,43 @@
             "cliente",
             "encuesta",
             "pregunta"
+          ]
+        }
+      },
+      {
+        "tableName": "TableFoto",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `rutafoto` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`))",
+        "fields": [
+          {
+            "fieldPath": "cliente",
+            "columnName": "cliente",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encuesta",
+            "columnName": "encuesta",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rutafoto",
+            "columnName": "rutafoto",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sincronizado",
+            "columnName": "sincronizado",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cliente",
+            "encuesta"
           ]
         }
       },
@@ -704,7 +729,7 @@
       },
       {
         "tableName": "TableAlta",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` TEXT NOT NULL, `empleado` TEXT NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `estado` TEXT NOT NULL, `datos` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`fecha`, `idaux`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`idaux` TEXT NOT NULL, `empleado` TEXT NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `precision` REAL NOT NULL, `datos` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`fecha`, `idaux`))",
         "fields": [
           {
             "fieldPath": "idaux",
@@ -743,12 +768,6 @@
             "notNull": true
           },
           {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "datos",
             "columnName": "datos",
             "affinity": "INTEGER",
@@ -771,7 +790,7 @@
       },
       {
         "tableName": "TableAltaDatos",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fecha` TEXT NOT NULL, `idaux` TEXT NOT NULL, `empleado` TEXT NOT NULL, `tipo` TEXT NOT NULL, `razon` TEXT NOT NULL, `nombre` TEXT NOT NULL, `appaterno` TEXT NOT NULL, `apmaterno` TEXT NOT NULL, `ruc` TEXT NOT NULL, `dnice` TEXT NOT NULL, `tipodocu` TEXT NOT NULL, `movil1` TEXT NOT NULL, `movil2` TEXT NOT NULL, `correo` TEXT NOT NULL, `via` TEXT NOT NULL, `direccion` TEXT NOT NULL, `manzana` TEXT NOT NULL, `zona` TEXT NOT NULL, `zonanombre` TEXT NOT NULL, `ubicacion` TEXT NOT NULL, `numero` TEXT NOT NULL, `distrito` TEXT NOT NULL, `giro` TEXT NOT NULL, `ruta` TEXT NOT NULL, `secuencia` TEXT NOT NULL, `dniruta` TEXT NOT NULL, `observacion` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`fecha`, `idaux`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fecha` TEXT NOT NULL, `idaux` TEXT NOT NULL, `empleado` TEXT NOT NULL, `tipo` TEXT NOT NULL, `razon` TEXT NOT NULL, `nombre` TEXT NOT NULL, `appaterno` TEXT NOT NULL, `apmaterno` TEXT NOT NULL, `ruc` TEXT NOT NULL, `dnice` TEXT NOT NULL, `tipodocu` TEXT NOT NULL, `movil1` TEXT NOT NULL, `movil2` TEXT NOT NULL, `correo` TEXT NOT NULL, `via` TEXT NOT NULL, `direccion` TEXT NOT NULL, `manzana` TEXT NOT NULL, `zona` TEXT NOT NULL, `zonanombre` TEXT NOT NULL, `ubicacion` TEXT NOT NULL, `numero` TEXT NOT NULL, `distrito` TEXT NOT NULL, `giro` TEXT NOT NULL, `ruta` TEXT NOT NULL, `secuencia` TEXT NOT NULL, `observacion` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`fecha`, `idaux`))",
         "fields": [
           {
             "fieldPath": "fecha",
@@ -920,12 +939,6 @@
           {
             "fieldPath": "secuencia",
             "columnName": "secuencia",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dniruta",
-            "columnName": "dniruta",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1121,7 +1134,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '34eff3896cfe357cc444cf9608a62c7c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7f467d67474e0d99e436f53fc938bd18')"
     ]
   }
 }
