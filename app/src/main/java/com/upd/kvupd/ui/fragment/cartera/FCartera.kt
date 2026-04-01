@@ -125,7 +125,7 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         binding.searchview.setOnQueryTextListener(this)
 
         setupButtons()
-        collectFlows()
+        observerData()
         functionPerUserType()
 
         resultadoBajaDialogo()
@@ -229,30 +229,9 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         )
     }
 
-    private fun collectFlows() {
+    private fun observerData() {
         collectFlow(apiViewModel.clienteEvent) { resultado ->
-            when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(
-                    AppDialogType.Progreso(
-                        mensaje = "Obteniendo lista de clientes"
-                    )
-                )
-
-                is ResultadoApi.Exito -> stateSuccess(resultado.data)
-                is ResultadoApi.ErrorHttp -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
-                    )
-                )
-
-                is ResultadoApi.Fallo -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Fallo: ${resultado.mensaje}"
-                    )
-                )
-            }
+            handleClienteEvent(resultado)
         }
 
         val flow = apiViewModel.flowClientesFiltrados(localViewmodel.query)
@@ -529,6 +508,33 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             val dialog = buildMaterialDialog(requireContext(), dialogType)
             dialog.show()
             InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+        }
+    }
+
+    private fun handleClienteEvent(resultado: ResultadoApi<JsonCliente?>) {
+        when (resultado) {
+
+            is ResultadoApi.Loading -> mostrarDialog(
+                AppDialogType.Progreso(
+                    mensaje = "Obteniendo lista de clientes"
+                )
+            )
+
+            is ResultadoApi.Exito -> stateSuccess(resultado.data)
+
+            is ResultadoApi.ErrorHttp -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                )
+            )
+
+            is ResultadoApi.Fallo -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Fallo: ${resultado.mensaje}"
+                )
+            )
         }
     }
 

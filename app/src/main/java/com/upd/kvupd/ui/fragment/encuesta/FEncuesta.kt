@@ -112,7 +112,7 @@ class FEncuesta : Fragment(), MenuProvider {
         initAutoComplete()
         startGps()
         setupActionViews()
-        collectFlows()
+        observerData()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -125,7 +125,7 @@ class FEncuesta : Fragment(), MenuProvider {
         else -> false
     }
 
-    private fun collectFlows() {
+    private fun observerData() {
 
         collectFlow(
             apiViewModel.flowCabeceraEncuesta
@@ -190,32 +190,7 @@ class FEncuesta : Fragment(), MenuProvider {
         }
 
         collectFlow(apiViewModel.encuestaEvent) { resultado ->
-            when (resultado) {
-                is ResultadoApi.Loading -> mostrarDialog(
-                    AppDialogType.Progreso(
-                        mensaje = "Descargando encuestas..."
-                    )
-                )
-
-                is ResultadoApi.Exito -> {
-                    apiViewModel.selectUniqueEncuesta()
-                    stateSuccess(resultado.data)
-                }
-
-                is ResultadoApi.ErrorHttp -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
-                    )
-                )
-
-                is ResultadoApi.Fallo -> mostrarDialog(
-                    AppDialogType.Informativo(
-                        titulo = T_ERROR,
-                        mensaje = "Fallo: ${resultado.mensaje}"
-                    )
-                )
-            }
+            handleEncuestaEvent(resultado)
         }
 
         collectFlow(apiViewModel.respuestaMessage) { mensaje ->
@@ -757,6 +732,36 @@ class FEncuesta : Fragment(), MenuProvider {
             id.toString()
         } else {
             FechaHoraUtil.timestamp()
+        }
+    }
+
+    private fun handleEncuestaEvent(resultado: ResultadoApi<JsonEncuesta?>) {
+        when (resultado) {
+
+            is ResultadoApi.Loading -> mostrarDialog(
+                AppDialogType.Progreso(
+                    mensaje = "Descargando encuestas..."
+                )
+            )
+
+            is ResultadoApi.Exito -> {
+                apiViewModel.selectUniqueEncuesta()
+                stateSuccess(resultado.data)
+            }
+
+            is ResultadoApi.ErrorHttp -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Error HTTP ${resultado.code}: ${resultado.mensaje}"
+                )
+            )
+
+            is ResultadoApi.Fallo -> mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_ERROR,
+                    mensaje = "Fallo: ${resultado.mensaje}"
+                )
+            )
         }
     }
 

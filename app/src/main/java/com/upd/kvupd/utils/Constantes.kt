@@ -135,7 +135,7 @@ object FechaHoraUtil {
         DateTimeFormatter.ofPattern("yyyy/MM/dd h:mma", Locale.ENGLISH)
 
     private val compactDateTimeFormatter =
-        DateTimeFormatter.ofPattern("mmssSSS", Locale.getDefault())
+        DateTimeFormatter.ofPattern("HHmmss", Locale.getDefault())
 
     fun ahora(): String =
         LocalDateTime.now().format(dateTimeFormatter)

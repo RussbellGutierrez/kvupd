@@ -10,8 +10,11 @@ import com.upd.kvupd.data.model.JsonBajaVendedor
 import com.upd.kvupd.data.model.JsonCambio
 import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.JsonCoberturaCartera
+import com.upd.kvupd.data.model.JsonCoberturados
+import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonEncuesta
 import com.upd.kvupd.data.model.JsonPedido
+import com.upd.kvupd.data.model.JsonPedidoGeneral
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonSoles
@@ -34,9 +37,11 @@ import com.upd.kvupd.ui.fragment.encuesta.mapper.toDistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toGiroUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toRutaUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toSubGiroUI
+import com.upd.kvupd.ui.fragment.reportes.enumFile.ReportAction
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapGenericoToSoles
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapToLineas
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapVolumenToSoles
+import com.upd.kvupd.ui.fragment.reportes.modelUI.DetalleParams
 import com.upd.kvupd.ui.fragment.reportes.modelUI.LineaUI
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
@@ -136,6 +141,16 @@ class APIViewModel @Inject constructor(
 
     private val _solesEvent = EventFlow<ResultadoApi<List<LineaUI>>>()
     val solesEvent = _solesEvent.events
+
+    ///     DETALLE REPORTES
+    private val _coberturaDetalleEvent = EventFlow<ResultadoApi<JsonDetalleCobertura>>()
+    val coberturaDetalleEvent = _coberturaDetalleEvent.events
+
+    private val _coberturaPendienteEvent = EventFlow<ResultadoApi<JsonCoberturados>>()
+    val coberturaPendienteEvent = _coberturaPendienteEvent.events
+
+    private val _pedidoEmpleadoEvent = EventFlow<ResultadoApi<JsonPedidoGeneral>>()
+    val pedidoEmpleadoEvent = _pedidoEmpleadoEvent.events
 
     private val _socketEvent = EventFlow<SocketEvent>()
     val socketEvent = _socketEvent.events
@@ -284,35 +299,35 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    private fun apiPreventa() {
+    fun apiPreventa() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportPreventa) // Pasar como parametro usando ::
                 .collect { _preventaEvent.emit(it) }
         }
     }
 
-    private fun apiCobertura() {
+    fun apiCobertura() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCobertura)
                 .collect { _coberturaEvent.emit(it) }
         }
     }
 
-    private fun apiCartera() {
+    fun apiCartera() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCartera)
                 .collect { _carteraEvent.emit(it) }
         }
     }
 
-    private fun apiGeneral() {
+    fun apiGeneral() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportGeneral)
                 .collect { _generalEvent.emit(it) }
         }
     }
 
-    private fun apiCambio() {
+    fun apiCambio() {
         viewModelScope.launch {
             val config = roomFunctions.queryConfiguracion() ?: return@launch
 
@@ -326,7 +341,7 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    private fun apiSolesPorLineas() {
+    fun apiSolesPorLineas() {
         viewModelScope.launch {
             val config = roomFunctions.queryConfiguracion() ?: return@launch
             val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
@@ -389,6 +404,27 @@ class APIViewModel @Inject constructor(
                 }.awaitAll()
             }
             _solesEvent.emit(ResultadoApi.Exito(resultado))
+        }
+    }
+
+    fun apiDetalleCobertura() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportCoberturaDetalle)
+                .collect { _coberturaDetalleEvent.emit(it) }
+        }
+    }
+
+    fun apiPendienteCobertura() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportCoberturaPendiente)
+                .collect { _coberturaPendienteEvent.emit(it) }
+        }
+    }
+
+    fun apiEmpleadoPedidos() {
+        viewModelScope.launch {
+            downloadBaseReport(serverFunctions::apiReportEmpleado)
+                .collect { _pedidoEmpleadoEvent.emit(it) }
         }
     }
 
@@ -601,6 +637,23 @@ class APIViewModel @Inject constructor(
         apiGeneral()
         apiCambio()
         apiSolesPorLineas()
+    }
+
+    fun downloadDetailReport(params: DetalleParams) {
+        viewModelScope.launch {
+            val tipoAccion = params.tipo.resolveAction(params.tipoUsuario)
+
+            when (tipoAccion) {
+                ReportAction.PREVENTA -> apiPreventa()
+                ReportAction.COBERTURA_SUP -> apiCobertura()
+                ReportAction.COBERTURA_VEN -> apiDetalleCobertura()
+                ReportAction.CARTERA_SUP -> apiCartera()
+                ReportAction.CARTERA_VEN -> apiPendienteCobertura()
+                ReportAction.PEDIDOS -> apiEmpleadoPedidos()
+                ReportAction.CAMBIOS -> apiCambio()
+                ReportAction.SOLES -> Unit
+            }
+        }
     }
 
     private fun <T> downloadBaseReport(

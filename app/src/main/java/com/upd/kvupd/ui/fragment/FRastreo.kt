@@ -138,9 +138,7 @@ class FRastreo : Fragment(), MenuProvider {
 
     private fun observeData() {
         collectFlow(apiViewmodel.pedimapEvent) { resultado ->
-            handleResultadoApi(resultado) { data ->
-                stateSuccess(data)
-            }
+            handlePedimapEvent(resultado)
         }
 
         collectFlow(apiViewmodel.flowPolygon) { polygons ->
@@ -240,18 +238,16 @@ class FRastreo : Fragment(), MenuProvider {
         }
     }
 
-    private fun <T> handleResultadoApi(
-        resultado: ResultadoApi<T>,
-        onSuccess: (T?) -> Unit
-    ) {
+    private fun handlePedimapEvent(resultado: ResultadoApi<JsonPedimap?>) {
         when (resultado) {
+
             is ResultadoApi.Loading -> mostrarDialog(
                 AppDialogType.Progreso(
                     mensaje = "Obteniendo posiciones de pedimap"
                 )
             )
 
-            is ResultadoApi.Exito -> onSuccess(resultado.data)
+            is ResultadoApi.Exito -> stateSuccess(resultado.data)
 
             is ResultadoApi.ErrorHttp -> mostrarDialog(
                 AppDialogType.Informativo(

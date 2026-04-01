@@ -120,12 +120,19 @@ class FReporte : Fragment(), MenuProvider,
 
     override fun onLineaClick(linea: LineaUI) {
 
-        val action = linea.tipo.resolveAction(tipoUsuario)
+        val conf = config ?: return
 
-        when (action) {
-            ReportAction.SOLES -> {}
-            else -> return
-        }
+        if (!linea.tipo.canClick(tipoUsuario)) return
+
+        val params = DetalleParams(
+            tipo = linea.tipo,
+            tipoUsuario = tipoUsuario,
+            empleado = conf.codigo,
+            empresa = conf.empresa.toString(),
+            codigoLinea = linea.codigo
+        )
+
+        navigateToDetalle(params)
     }
 
     private fun navigateToDetalle(params: DetalleParams) {

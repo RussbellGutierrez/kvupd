@@ -110,7 +110,7 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         binding.rcvBaja.layoutManager = LinearLayoutManager(requireContext())
         binding.searchview.setOnQueryTextListener(this)
 
-        collectFlows()
+        observerData()
         functionPerUserType()
         resultadoDetalleBajaDialogo()
     }
@@ -138,7 +138,7 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
     }
 
     override fun onBajaSupervisorLongClick(bajaSupervisor: FlowBajaSupervisor) {
-        if (bajaSupervisor.procede != null) {
+        if (bajaSupervisor.procede == null) {
             val action = FBajaDirections
                 .actionFBajaToBDDetalleBaja(bajaSupervisor)
             findNavController().navigate(action)
@@ -156,7 +156,7 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         super.onStop()
     }
 
-    private fun collectFlows() {
+    private fun observerData() {
         val flowBajas = apiViewModel.flowBajasFiltrados(localViewmodel.query)
         val flowBajaSupervisor = apiViewModel.flowBajasSupervisorFiltrados(localViewmodel.query)
 

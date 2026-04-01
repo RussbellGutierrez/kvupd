@@ -102,7 +102,7 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
         startGps()
         setupButtons()
         setupMapActions()
-        collectFlows()
+        observerData()
         messageFromAltaDatos()
     }
 
@@ -189,7 +189,7 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
         )
     }
 
-    private fun collectFlows() {
+    private fun observerData() {
         collectFlow(apiViewModel.flowAlta) { lista ->
             altaCache = lista
             renderContentUI(vistaActual)

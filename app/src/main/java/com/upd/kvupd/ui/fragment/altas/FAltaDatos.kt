@@ -85,7 +85,7 @@ class FAltaDatos : Fragment() {
 
         setupUIForms()       // registra listeners
         populateSpinners()   // setea enums
-        collectFlows()       // empieza a recibir state (combine emite con al menos 1 dato disponible)
+        observerData()       // empieza a recibir state (combine emite con al menos 1 dato disponible)
         existDataPrevious()  // dispara carga suspend, busca datos previos de alta
     }
 
@@ -133,7 +133,7 @@ class FAltaDatos : Fragment() {
         apiViewModel.obtainAltaDatos(idaux, fecha)
     }
 
-    private fun collectFlows() {
+    private fun observerData() {
         collectFlow(apiViewModel.altaFormState) { state ->
             renderForm(state)
         }
