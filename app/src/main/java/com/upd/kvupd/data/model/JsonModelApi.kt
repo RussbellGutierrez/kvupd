@@ -215,19 +215,6 @@ data class Soles(
 ) : Parcelable
 
 @JsonClass(generateAdapter = true)
-data class JsonGenerico(
-    @Json(name = "data") val jobl: List<Generico>
-)
-
-@Parcelize
-@JsonClass(generateAdapter = true)
-data class Generico(
-    @Json(name = "label") val datos: ValueName,
-    @Json(name = "cuota") val cuota: Double,
-    @Json(name = "avance") val avance: Double
-): Parcelable
-
-@JsonClass(generateAdapter = true)
 data class JsonCoberturados(
     @Json(name = "data") val jobl: List<Coberturados>
 )

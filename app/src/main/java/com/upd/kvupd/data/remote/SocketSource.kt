@@ -1,7 +1,9 @@
 package com.upd.kvupd.data.remote
 
+import android.util.Log
 import com.upd.kvupd.data.remote.sealed.SocketEvent
 import io.socket.client.IO
+import io.socket.client.Socket
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -24,29 +26,52 @@ class SocketSource @Inject constructor(
 
             val socket = IO.socket(url, options)
 
-            // 🔹 Escucha respuesta del servidor
-            socket.on("response") {
-                trySend(SocketEvent.Success("Actualización completada"))
-                close() // cerramos flow
+            // 🔹 CONNECT
+            socket.on(Socket.EVENT_CONNECT) {
+                trySend(SocketEvent.Debug("Conectado al servidor"))
+
+                socket.emit("request")
+                trySend(SocketEvent.Debug("Solicitando actualización al servidor, demora entre 1min a 5min..."))
             }
 
-            // 🔹 Manejo de error
-            socket.on("connect_error") {
-                trySend(SocketEvent.Error("Error de conexión"))
+            // 🔹 RESPONSE
+            socket.on("response") { args ->
+                trySend(SocketEvent.Debug("Servidor respondió correctamente"))
+                trySend(SocketEvent.Success("Actualización completada"))
                 close()
             }
 
-            socket.connect()
-            socket.emit("request")
+            // 🔹 DISCONNECT
+            socket.on(Socket.EVENT_DISCONNECT) {
+                trySend(SocketEvent.Debug("Conexión cerrada"))
+            }
 
-            // 🔹 Limpieza cuando se cancela el Flow
+            // 🔹 ERROR CONEXIÓN
+            socket.on("connect_error") { args ->
+                val msg = args.firstOrNull()?.toString() ?: "Error desconocido"
+
+                Log.e("SOCKET", "CONNECT_ERROR: $msg")
+
+                trySend(SocketEvent.Debug("Error al conectar con el servidor"))
+                trySend(SocketEvent.Error(msg))
+                close()
+            }
+
+            // 🔹 ERROR GENERAL
+            socket.on("error") { args ->
+                val msg = args.firstOrNull()?.toString() ?: "Error interno"
+                trySend(SocketEvent.Debug("Error durante la comunicación con el servidor"))
+            }
+
+            socket.connect()
+
             awaitClose {
                 socket.disconnect()
                 socket.off()
             }
 
         } catch (e: Exception) {
-            trySend(SocketEvent.Error("Error inesperado"))
+            trySend(SocketEvent.Error("Error inesperado: ${e.message}"))
             close()
         }
     }

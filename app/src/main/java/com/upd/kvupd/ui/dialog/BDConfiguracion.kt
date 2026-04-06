@@ -13,7 +13,8 @@ import com.upd.kvupd.databinding.BottomConfiguracionBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.ConstantsExtras.NO_FIND_UUID
-import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
+import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -157,17 +158,12 @@ class BDConfiguracion : BottomSheetDialogFragment() {
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-            // Cerrar diálogo previo si existe
-            InstanciaDialog.cerrarDialogActual()
+            cerrarDialogActual()
 
-            // Crear el dialog
             val dialog = buildMaterialDialog(requireContext(), dialogType)
-
-            // Mostrarlo
             dialog.show()
 
-            // Guardar referencia
-            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+            REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }
 }

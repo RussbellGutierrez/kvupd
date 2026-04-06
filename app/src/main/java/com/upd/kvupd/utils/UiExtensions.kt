@@ -145,22 +145,21 @@ fun <T : ViewBinding> Fragment.viewBinding(bind: (View) -> T): ReadOnlyProperty<
         private var binding: T? = null
 
         override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
-            val viewLifecycle = thisRef.viewLifecycleOwner.lifecycle
-            val currentBinding = binding
 
-            if (currentBinding != null && viewLifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
-                return currentBinding
-            }
+            binding?.let { return it }
 
-            val view = thisRef.view ?: error("View no inicializada")
-            return bind(view).also {
-                binding = it
-                // Limpiar binding automáticamente cuando la vista se destruya
-                thisRef.viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-                    override fun onDestroy(owner: LifecycleOwner) {
-                        binding = null
-                    }
-                })
+            val view = thisRef.view
+                ?: throw IllegalStateException("View no inicializada o ya destruida")
+
+            return bind(view).also { newBinding ->
+                binding = newBinding
+                thisRef.viewLifecycleOwnerLiveData.observe(thisRef) { owner ->
+                    owner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                        override fun onDestroy(owner: LifecycleOwner) {
+                            binding = null
+                        }
+                    })
+                }
             }
         }
     }

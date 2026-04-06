@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.remote.sealed.SocketEvent
@@ -25,7 +27,6 @@ import com.upd.kvupd.ui.fragment.reportes.adapter.KpiAdapter
 import com.upd.kvupd.ui.fragment.reportes.adapter.KpiAdapterFactory
 import com.upd.kvupd.ui.fragment.reportes.adapter.LineasAdapter
 import com.upd.kvupd.ui.fragment.reportes.adapter.LineasAdapterFactory
-import com.upd.kvupd.ui.fragment.reportes.enumFile.ReportAction
 import com.upd.kvupd.ui.fragment.reportes.enumFile.TipoReporte
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapCambiosKpi
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapCarteraKpi
@@ -41,11 +42,11 @@ import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
+import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.viewBinding
-import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -60,17 +61,17 @@ class FReporte : Fragment(), MenuProvider,
     KpiAdapter.Listener, LineasAdapter.Listener {
 
     private val apiViewModel by activityViewModels<APIViewModel>()
-    private val localViewmodel by activityViewModels<ALLViewModel>()
     private val binding by viewBinding(FragmentFReporteBinding::bind)
 
     private lateinit var kpiAdapter: KpiAdapter
     private lateinit var lineasAdapter: LineasAdapter
     private lateinit var tipoUsuario: TipoUsuario
-    private var isInitialized = false
+
+    private var errorJob: Job? = null
     private var config: TableConfiguracion? = null
     private val kpiList = mutableListOf<KpiUI>()
     private val errores = mutableListOf<String>()
-    private var errorJob: Job? = null
+    private val pagerSnapHelper = PagerSnapHelper()
     private val _tag by lazy { FReporte::class.java.simpleName }
 
     @Inject
@@ -78,6 +79,11 @@ class FReporte : Fragment(), MenuProvider,
 
     @Inject
     lateinit var adapterLineasFactory: LineasAdapterFactory
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        errorJob?.cancel()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,7 +104,7 @@ class FReporte : Fragment(), MenuProvider,
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.actualizar -> consume { apiViewModel.executeUpdater() }
+        R.id.actualizar -> consume { launchSocket() }
         else -> false
     }
 
@@ -172,7 +178,8 @@ class FReporte : Fragment(), MenuProvider,
             )
         }
 
-        PagerSnapHelper().attachToRecyclerView(binding.rcvLineas)
+        binding.rcvLineas.onFlingListener = null
+        pagerSnapHelper.attachToRecyclerView(binding.rcvLineas)
     }
 
     private fun initShimmer() {
@@ -221,11 +228,8 @@ class FReporte : Fragment(), MenuProvider,
             config = cfg
             tipoUsuario = TipoUsuario.fromCodigo(cfg.tipo)
 
-            if (!isInitialized) {
-                initAdapters()
-                apiViewModel.downloadAllReports()
-                isInitialized = true
-            }
+            initAdapters()
+            apiViewModel.downloadAllReports()
         }
 
         collectFlow(apiViewModel.preventaEvent) { result ->
@@ -283,6 +287,15 @@ class FReporte : Fragment(), MenuProvider,
         }
     }
 
+    private fun launchSocket() {
+        mostrarDialog(AppDialogType.Informativo(
+            titulo = T_WARNING,
+            mensaje = "Actualizar datos del servidor toma algo de tiempo ¿Desea continuar?",
+            onPositive = { apiViewModel.executeUpdater() },
+            mostrarNegativo = true
+        ))
+    }
+
     private fun <T> handleResultadoApi(
         resultado: ResultadoApi<T>,
         onSuccess: (T?) -> Unit
@@ -304,21 +317,26 @@ class FReporte : Fragment(), MenuProvider,
         }
     }
 
-    private fun handleSocketEvent(
-        event: SocketEvent
-    ) {
+    private fun handleSocketEvent(event: SocketEvent) {
+
         when (event) {
 
             is SocketEvent.Loading -> mostrarDialog(
                 AppDialogType.Progreso(
-                    mensaje = "Actualizando reportes aprox 1 - 2 min, espere por favor"
+                    mensaje = "Conectando..."
                 )
             )
+
+            is SocketEvent.Debug -> updateDialogMessage(event.msg)
 
             is SocketEvent.Success -> mostrarDialog(
                 AppDialogType.Informativo(
                     titulo = T_SUCCESS,
-                    mensaje = "Reporte actualizado"
+                    mensaje = "Reporte actualizado",
+                    onPositive = {
+                        initShimmer()
+                        apiViewModel.downloadAllReports()
+                    }
                 )
             )
 
@@ -329,6 +347,15 @@ class FReporte : Fragment(), MenuProvider,
                 )
             )
         }
+    }
+
+    private fun updateDialogMessage(msg: String) {
+        val dialog = REFERENCIA_DIALOG?.get() ?: return
+
+        val view = dialog.getCustomView()
+        val txt = view.findViewById<TextView>(R.id.txt_dialog) ?: return
+
+        txt.text = msg
     }
 
     private fun addError(mensaje: String) {

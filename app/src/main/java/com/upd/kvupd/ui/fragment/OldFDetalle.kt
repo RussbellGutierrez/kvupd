@@ -57,8 +57,6 @@ class OldFDetalle : Fragment() {//,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
         bind.rcvDetalle.layoutManager = LinearLayoutManager(requireContext())
 
         checkDetalle()
@@ -159,19 +157,8 @@ class OldFDetalle : Fragment() {//,
     }
 
     private fun launchDownload() {
-        /*var linea = 0
-        var titulo = ""*/
-
         val soles = data.getParcelable<Soles>("soles")!!
 
-        /*args.ume?.let {
-            titulo = "UMES"
-            linea = it.linea.codigo
-        }
-        args.soles?.let {
-            titulo = "SOLES"
-            linea = it.linea.codigo
-        }*/
         bind.txtTitulo.text = "SOLES"
 
         val p = JSONObject()
@@ -181,30 +168,5 @@ class OldFDetalle : Fragment() {//,
         progress("Descargando informacion")
 
         //viewmodel.fetchSolesGenerico(p.toReqBody())
-        /*when (CONF.empresa) {
-            1 -> detalleUME()//viewmodel.fetchUmesGenerico(p.toReqBody())
-            2 -> viewmodel.fetchSolesGenerico(p.toReqBody())
-        }*/
     }
-
-    /*private fun detalleUME() {
-        var codigo = 0
-        val lista = arrayListOf<Generico>()
-        args.ume?.let {
-            codigo = it.marca.codigo
-        }
-        UMELISTA.forEach { i ->
-            if (i.marca.codigo == codigo) {
-                val item =
-                    Generico(ValueName(i.linea.codigo, i.linea.descripcion), i.cuota, i.avance)
-                lista.add(item)
-            }
-        }
-        Handler(Looper.getMainLooper()).postDelayed({
-            bind.emptyContainer.root.setUI("v", false)
-            bind.rcvDetalle.setUI("v", true)
-            generAdapter.mDiffer.submitList(lista)
-            showDialog("Correcto", "Datos descargados") {}
-        }, 3000)
-    }*/
 }

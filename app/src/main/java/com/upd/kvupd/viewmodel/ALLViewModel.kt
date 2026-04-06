@@ -39,6 +39,9 @@ class ALLViewModel @Inject constructor(
     private val _configMensaje = EventFlow<String>()
     val configMensaje = _configMensaje.events
 
+    private val _configFinished = EventFlow<Unit>()
+    val configFinished = _configFinished.events
+
     private val _pedimapMensaje = EventFlow<String>()
     val pedimapMensaje = _pedimapMensaje.events
 
@@ -126,6 +129,7 @@ class ALLViewModel @Inject constructor(
                 val config = roomFunctions.queryConfiguracion()
                 if (config == null) {
                     _configMensaje.emit("No se encontró configuración local")
+                    _configFinished.emit(Unit)
                     return@launch
                 }
 
@@ -134,11 +138,13 @@ class ALLViewModel @Inject constructor(
 
                 if (ids.isEmpty()) {
                     _configMensaje.emit("No se pudieron ejecutar los workers restantes")
+                    _configFinished.emit(Unit)
                 } else {
                     _remainingWorkersIds.emit(ids)
                 }
             } catch (e: Exception) {
                 _configMensaje.emit("Error: ${e.message}")
+                _configFinished.emit(Unit)
             }
         }
     }

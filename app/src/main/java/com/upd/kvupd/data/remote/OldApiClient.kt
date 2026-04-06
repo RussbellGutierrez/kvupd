@@ -1,5 +1,6 @@
 package com.upd.kvupd.data.remote
 
+//import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaVendedor
 import com.upd.kvupd.data.model.JsonCambio
@@ -10,7 +11,6 @@ import com.upd.kvupd.data.model.JsonConfiguracion
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
 import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedidoGeneral
@@ -28,7 +28,6 @@ import com.upd.kvupd.utils.OldConstant.API_COBDET
 import com.upd.kvupd.utils.OldConstant.API_COBERTURA
 import com.upd.kvupd.utils.OldConstant.API_COBPEN
 import com.upd.kvupd.utils.OldConstant.API_CONFIGURACION
-import com.upd.kvupd.utils.OldConstant.API_CONSULTA
 import com.upd.kvupd.utils.OldConstant.API_DISTRITO
 import com.upd.kvupd.utils.OldConstant.API_EMPCAMBIO
 import com.upd.kvupd.utils.OldConstant.API_EMPLEADO
@@ -40,9 +39,6 @@ import com.upd.kvupd.utils.OldConstant.API_REPOEMP
 import com.upd.kvupd.utils.OldConstant.API_REPOGEN
 import com.upd.kvupd.utils.OldConstant.API_RUTA
 import com.upd.kvupd.utils.OldConstant.API_SOLES
-import com.upd.kvupd.utils.OldConstant.API_SOLESGEN
-import com.upd.kvupd.utils.OldConstant.API_UMESDET
-import com.upd.kvupd.utils.OldConstant.API_UMESGEN
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -113,20 +109,20 @@ interface OldApiClient {
     @POST(API_SOLES)
     suspend fun getApiSoles(@Body body: RequestBody): Response<JsonSoles>//@param empleado,empresa
 
-    @POST(API_UMESGEN)
-    suspend fun getApiUmesGenerico(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
+    //@POST(API_UMESGEN)
+    //suspend fun getApiUmesGenerico(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
 
-    @POST(API_SOLESGEN)
-    suspend fun getApiSolesGenerico(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
+    //@POST(API_SOLESGEN)
+    //suspend fun getApiSolesGenerico(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
 
-    @POST(API_UMESDET)
-    suspend fun getApiUmesDetalle(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,generico
+    //@POST(API_UMESDET)
+    //suspend fun getApiUmesDetalle(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,generico
 
     @POST(API_COBDET)
     suspend fun getApiCoberturaDetalle(@Body body: RequestBody): Response<JsonDetalleCobertura>//@param empleado, empresa
 
-    @POST(API_PREVENTA)
-    suspend fun getApiSolesDetalle(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
+    //@POST(API_PREVENTA)
+    //suspend fun getApiSolesDetalle(@Body body: RequestBody): Response<JsonGenerico>//@param empleado,empresa,linea
 
     @POST(API_COBPEN)
     suspend fun getApiCoberturaPendiente(@Body body: RequestBody): Response<JsonCoberturados>//@param empleado, empresa

@@ -10,7 +10,6 @@ import com.upd.kvupd.data.model.JsonConfiguracion
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
 import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedidoGeneral
@@ -89,7 +88,7 @@ class DownloadSource @Inject constructor(
     suspend fun reportSoles(body: RequestBody): Response<JsonSoles> =
         api().reportSoles(body)
 
-    suspend fun reportSolesGenerico(body: RequestBody): Response<JsonGenerico> =
+    suspend fun reportSolesGenerico(body: RequestBody): Response<JsonVolumen> =
         api().reportSolesGenerico(body)
 
     suspend fun reportCoberturaPendiente(body: RequestBody): Response<JsonCoberturados> =

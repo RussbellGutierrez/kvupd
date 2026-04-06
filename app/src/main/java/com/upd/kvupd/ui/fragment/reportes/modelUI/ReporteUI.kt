@@ -31,3 +31,51 @@ data class SolesUI(
     val total: String = "",
     val indicador: Int = 0
 )
+
+///     Modelo para detalles
+data class SubProgresoUI(
+    val codigo: Int,
+    val descripcion: String = "",
+    val objetivo: String = "",
+    val avance: String = "",
+    val porcentaje: String = "",
+    val indicador: Int = 0,
+    val isLoading: Boolean = true
+)
+
+data class SubDetalleCoberturaUI(
+    val codigo: Int,
+    val nombre: String = "",
+    val pedidos: List<PedidosRealizados> = emptyList(),
+    val isLoading: Boolean = false
+)
+
+data class SubCoberturadosUI(
+    val codigo: Int,
+    val nombre: String = "",
+    val direccion: String = "",
+    val documento: String = "",
+    val isLoading: Boolean = true
+)
+
+data class SubPedidoGeneralUI(
+    val id: Int,
+    val nombre: String = "",
+    val clientes: String = "",
+    val pedidos: String = "",
+    val nuevos: Int = 0,
+    val isLoading: Boolean = true
+)
+
+data class SubCambioUI(
+    val codigo: Int,
+    val nombre: String = "",
+    val cambios: String = "",
+    val monto: String = "",
+    val isLoading: Boolean = true
+)
+
+data class PedidosRealizados(
+    val numero: String,
+    val importe: String
+)

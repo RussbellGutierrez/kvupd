@@ -75,6 +75,10 @@ class DSincronizarDiario : DialogFragment() {
             binding.txtMensaje.visible()
             binding.txtMensaje.text = mensaje
         }
+
+        collectFlow(localViewModel.configFinished) {
+            stateUI(inProgress = false)
+        }
     }
 
     private fun iniciarSincronizacion() {

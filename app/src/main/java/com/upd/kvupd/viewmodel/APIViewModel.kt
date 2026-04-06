@@ -38,15 +38,16 @@ import com.upd.kvupd.ui.fragment.encuesta.mapper.toGiroUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toRutaUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toSubGiroUI
 import com.upd.kvupd.ui.fragment.reportes.enumFile.ReportAction
-import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapGenericoToSoles
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapToLineas
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapVolumenToSoles
 import com.upd.kvupd.ui.fragment.reportes.modelUI.DetalleParams
 import com.upd.kvupd.ui.fragment.reportes.modelUI.LineaUI
+import com.upd.kvupd.ui.fragment.reportes.modelUI.SolesRequestConfig
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.to2Decimals
+import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -68,6 +69,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
+import org.json.JSONObject
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -151,6 +153,12 @@ class APIViewModel @Inject constructor(
 
     private val _pedidoEmpleadoEvent = EventFlow<ResultadoApi<JsonPedidoGeneral>>()
     val pedidoEmpleadoEvent = _pedidoEmpleadoEvent.events
+
+    private val _solesDetalleEvent = EventFlow<ResultadoApi<JsonVolumen>>()
+    val solesDetalleEvent = _solesDetalleEvent.events
+
+    private val _subSolesEvent = EventFlow<ResultadoApi<JsonVolumen>>()
+    val subSolesEvent = _subSolesEvent.events
 
     private val _socketEvent = EventFlow<SocketEvent>()
     val socketEvent = _socketEvent.events
@@ -343,10 +351,11 @@ class APIViewModel @Inject constructor(
 
     fun apiSolesPorLineas() {
         viewModelScope.launch {
+
             val config = roomFunctions.queryConfiguracion() ?: return@launch
             val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
 
-            // 🔹 1. Base (líneas) usando helper
+            // 🔹 1. Base (líneas)
             val base = downloadBaseReport(
                 apiCall = serverFunctions::apiReportSoles
             ).first { it !is ResultadoApi.Loading }
@@ -357,52 +366,44 @@ class APIViewModel @Inject constructor(
 
             if (lineas.isEmpty()) return@launch
 
-            // 🔹 2. Detalle por línea (limpio con helper genérico)
+            // 🔹 2. Detalle por línea
             val resultado = coroutineScope {
-
                 lineas.map { linea ->
                     async {
-                        when (tipoUsuario) {
 
-                            TipoUsuario.VENDEDOR -> {
+                        val request = when (tipoUsuario) {
 
-                                val result = downloadBaseReport(
-                                    apiCall = serverFunctions::apiReportSolesGenerico,
-                                    linea = linea.codigo
-                                ).first { it !is ResultadoApi.Loading }
+                            TipoUsuario.VENDEDOR -> SolesRequestConfig(
+                                apiCall = serverFunctions::apiReportSolesGenerico,
+                                linea = linea.codigo
+                            )
 
-                                val soles = mapSolesResult(result) {
-                                    mapGenericoToSoles(it)
-                                }
+                            TipoUsuario.SUPERVISOR -> SolesRequestConfig(
+                                apiCall = serverFunctions::apiReportPreventa,
+                                marca = linea.codigo
+                            )
 
-                                linea.copy(
-                                    soles = soles,
-                                    isLoading = false
-                                )
-                            }
-
-                            TipoUsuario.SUPERVISOR -> {
-
-                                val result = downloadBaseReport(
-                                    apiCall = serverFunctions::apiReportPreventa,
-                                    marca = linea.codigo
-                                ).first { it !is ResultadoApi.Loading }
-
-                                val soles = mapSolesResult(result) {
-                                    mapVolumenToSoles(it)
-                                }
-
-                                linea.copy(
-                                    soles = soles,
-                                    isLoading = false
-                                )
-                            }
-
-                            else -> linea
+                            else -> return@async linea
                         }
+
+                        val result = downloadBaseReport(
+                            apiCall = request.apiCall,
+                            linea = request.linea,
+                            marca = request.marca
+                        ).first { it !is ResultadoApi.Loading }
+
+                        val soles = mapSolesResult(result) {
+                            mapVolumenToSoles(it)
+                        }
+
+                        linea.copy(
+                            soles = soles,
+                            isLoading = false
+                        )
                     }
                 }.awaitAll()
             }
+
             _solesEvent.emit(ResultadoApi.Exito(resultado))
         }
     }
@@ -425,6 +426,25 @@ class APIViewModel @Inject constructor(
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportEmpleado)
                 .collect { _pedidoEmpleadoEvent.emit(it) }
+        }
+    }
+
+    fun apiSolesDetalle(linea: Int?) {
+        viewModelScope.launch {
+            val codigo = linea ?: return@launch
+            downloadBaseReport(
+                apiCall = serverFunctions::apiReportSolesGenerico,
+                linea = codigo
+            ).collect { _solesDetalleEvent.emit(it) }
+        }
+    }
+
+    fun apiSubSolesDetalle(linea: Int) {
+        viewModelScope.launch {
+            downloadBaseReport(
+                apiCall = serverFunctions::apiReportPreventa,
+                linea = linea
+            ).collect { _subSolesEvent.emit(it) }
         }
     }
 
@@ -623,8 +643,8 @@ class APIViewModel @Inject constructor(
 
                     _socketEvent.emit(event)
 
-                    if (event is SocketEvent.Success) {
-                        downloadAllReports()
+                    if (event is SocketEvent.Error) {
+                        return@collect
                     }
                 }
         }
@@ -651,7 +671,7 @@ class APIViewModel @Inject constructor(
                 ReportAction.CARTERA_VEN -> apiPendienteCobertura()
                 ReportAction.PEDIDOS -> apiEmpleadoPedidos()
                 ReportAction.CAMBIOS -> apiCambio()
-                ReportAction.SOLES -> Unit
+                ReportAction.SOLES -> apiSolesDetalle(params.codigoLinea)
             }
         }
     }
@@ -665,11 +685,22 @@ class APIViewModel @Inject constructor(
         val config = roomFunctions.queryConfiguracion()
             ?: return@flow
 
-        val json = jsobFunctions.jsonObjectReporte(
+        /*val json = jsobFunctions.jsonObjectReporte(
             item = config,
             linea = linea,
             marca = marca
-        )
+        )*/
+
+        // Momentaneo
+        val json = JSONObject().apply {
+            put("empleado", config.codigo)
+            put("empresa", config.empresa)
+            linea?.let { put("linea", it) }
+            marca?.let { put("marca", it) }
+
+            // 👇 temporal
+            put("fecha", "2026-04-01")
+        }.toReqBody()
 
         emitAll(apiCall(json))
     }

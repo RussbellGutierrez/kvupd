@@ -10,7 +10,6 @@ import com.upd.kvupd.data.model.JsonConfiguracion
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
 import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedidoGeneral
@@ -48,7 +47,7 @@ interface ServerFunctions {
     fun apiReportClienteCambio(body: RequestBody): Flow<ResultadoApi<JsonCambio>>
     fun apiReportEmpleadoCambio(body: RequestBody): Flow<ResultadoApi<JsonCambio>>
     fun apiReportSoles(body: RequestBody): Flow<ResultadoApi<JsonSoles>>
-    fun apiReportSolesGenerico(body: RequestBody): Flow<ResultadoApi<JsonGenerico>>
+    fun apiReportSolesGenerico(body: RequestBody): Flow<ResultadoApi<JsonVolumen>>
     fun apiReportCoberturaPendiente(body: RequestBody): Flow<ResultadoApi<JsonCoberturados>>
     fun apiReportEmpleado(body: RequestBody): Flow<ResultadoApi<JsonPedidoGeneral>>
 

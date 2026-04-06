@@ -10,7 +10,6 @@ import com.upd.kvupd.data.model.JsonConfiguracion
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
 import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedidoGeneral
@@ -147,7 +146,7 @@ class ServerImplementation @Inject constructor(
             block = { reportSoles(body) }
         )
 
-    override fun apiReportSolesGenerico(body: RequestBody): Flow<ResultadoApi<JsonGenerico>> =
+    override fun apiReportSolesGenerico(body: RequestBody): Flow<ResultadoApi<JsonVolumen>> =
         remoteFlowCall(
             setupHolder = { downloadSource },
             block = { reportSolesGenerico(body) }

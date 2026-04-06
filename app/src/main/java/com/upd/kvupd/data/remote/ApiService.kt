@@ -10,7 +10,6 @@ import com.upd.kvupd.data.model.JsonConfiguracion
 import com.upd.kvupd.data.model.JsonDetalleCobertura
 import com.upd.kvupd.data.model.JsonDistrito
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.JsonGenerico
 import com.upd.kvupd.data.model.JsonNegocio
 import com.upd.kvupd.data.model.JsonPedido
 import com.upd.kvupd.data.model.JsonPedidoGeneral
@@ -125,7 +124,7 @@ interface ApiService {
     @POST(REPORT_SOLES) // Parametros: empleado, empresa
     suspend fun reportSoles(@Body body: RequestBody): Response<JsonSoles>
     @POST(REPORT_SOLES_GENERICO) // Parametros: empleado, empresa, linea
-    suspend fun reportSolesGenerico(@Body body: RequestBody): Response<JsonGenerico>
+    suspend fun reportSolesGenerico(@Body body: RequestBody): Response<JsonVolumen>
     @POST(REPORT_COBERTURA_PENDIENTE) // Parametros: empleado, empresa
     suspend fun reportCoberturaPendiente(@Body body: RequestBody): Response<JsonCoberturados>
     @POST(REPORT_EMPLEADO) // Parametros: empleado, empresa

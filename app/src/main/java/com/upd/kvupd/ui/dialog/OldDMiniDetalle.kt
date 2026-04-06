@@ -11,15 +11,14 @@ import com.upd.kvupd.data.model.Cambio
 import com.upd.kvupd.data.model.CoberturaCartera
 import com.upd.kvupd.data.model.Coberturados
 import com.upd.kvupd.data.model.DetalleCobertura
-import com.upd.kvupd.data.model.Generico
 import com.upd.kvupd.data.model.OrderVenta
 import com.upd.kvupd.data.model.PedidoGeneral
 import com.upd.kvupd.data.model.Venta
 import com.upd.kvupd.data.model.Volumen
 import com.upd.kvupd.databinding.DialogMiniDetalleBinding
-import com.upd.kvupd.databinding.RowCoberturaDetalleBinding
-import com.upd.kvupd.databinding.RowMiniCobdetBinding
-import com.upd.kvupd.databinding.RowMiniDetalleBinding
+import com.upd.kvupd.databinding.OldRowCoberturaDetalleBinding
+import com.upd.kvupd.databinding.OldRowMiniCobdetBinding
+import com.upd.kvupd.databinding.OldRowMiniDetalleBinding
 import com.upd.kvupd.databinding.RowTarjetaClienteBinding
 import com.upd.kvupd.utils.OldConstant.CONF
 import com.upd.kvupd.utils.percent
@@ -246,7 +245,7 @@ class OldDMiniDetalle : DialogFragment() {
     private fun preventa(list: List<Volumen>) {
         list.forEach { i ->
             val minbind =
-                RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
+                OldRowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cuota = "Cuota: ${i.cuota}"
             val avance = "Avance: ${i.avance}"
             val porcentaje = "${percent(i.avance, i.cuota)}%"
@@ -264,7 +263,7 @@ class OldDMiniDetalle : DialogFragment() {
 
     private fun cobertura(list: List<CoberturaCartera>) {
         list.forEach { i ->
-            val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
+            val minbind = OldRowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cuota = "Cuota: ${i.cartera}"
             val avance = "Avance: ${i.avance}"
             val porcentaje = "${percent(i.avance.toDouble(), i.cartera.toDouble())}%"
@@ -312,10 +311,10 @@ class OldDMiniDetalle : DialogFragment() {
         lv.clear()
 
         lov.forEach { j ->
-            val padre = RowCoberturaDetalleBinding.inflate(layoutInflater,view as ViewGroup,false)
+            val padre = OldRowCoberturaDetalleBinding.inflate(layoutInflater,view as ViewGroup,false)
             padre.txtCliente.text = j.cliente
             j.pedidos.forEach { k ->
-                val hijo = RowMiniCobdetBinding.inflate(layoutInflater,view as ViewGroup, false)
+                val hijo = OldRowMiniCobdetBinding.inflate(layoutInflater,view as ViewGroup, false)
                 hijo.txtPedido.text = "P. ${k.numero}"
                 hijo.txtTotal.text = "s/ ${k.total}"
                 padre.flxPedidos.addView(hijo.root)
@@ -327,7 +326,7 @@ class OldDMiniDetalle : DialogFragment() {
 
     private fun cambios(list: List<Cambio>) {
         list.forEach { i ->
-            val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
+            val minbind = OldRowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
             val cambio = "Cambios: ${i.cambios}"
             val monto = "Monto: ${i.monto}"
 
@@ -386,7 +385,7 @@ class OldDMiniDetalle : DialogFragment() {
         //viewmodel.fetchSolesDetalle(p.toReqBody())
     }
 
-    private fun setUmeSoles(list: List<Generico>?) {
+    /*private fun setUmeSoles(list: List<Generico>?) {
         bind.lnrMini.removeAllViews()
         list?.forEach { i ->
             //val minbind = RowReporteBinding.inflate(layoutInflater, view as ViewGroup, false)
@@ -423,7 +422,7 @@ class OldDMiniDetalle : DialogFragment() {
 
             bind.lnrMini.addView(minbind.root)*/
         }
-    }
+    }*/
 
     private fun setCoberturaPendiente(list: List<Coberturados>?) {
         bind.lnrMini.removeAllViews()
@@ -443,7 +442,7 @@ class OldDMiniDetalle : DialogFragment() {
     private fun setPedidosRealizados(list: List<PedidoGeneral>?) {
         bind.lnrMini.removeAllViews()
         list?.forEach { i ->
-            val minbind = RowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
+            val minbind = OldRowMiniDetalleBinding.inflate(layoutInflater, view as ViewGroup, false)
 
             val nombre = "${i.id} - ${i.nombre}"
             val clientes = "Clientes: ${i.clientes}"
