@@ -382,7 +382,7 @@ class FunImpl @Inject constructor(
                 if (i.compra == 1) {
                     m.add(map.addingMarker(i, R.drawable.pin_peligro))
                 } else {
-                    if (i.venta == 0) {
+                    if (i.venta == 1) {
                         m.add(map.addingMarker(i, R.drawable.pin_venta))
                     } else {
                         when (i.observacion) {
