@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -7,6 +10,18 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
     alias(libs.plugins.parcelize)
+}
+
+// ✔️ Leer archivo secrets.properties
+secrets {
+    propertiesFileName = "secrets.properties"
+}
+
+// 🔴 cargar keystore
+val keystoreFile = rootProject.file("keystore.properties")
+val keystore = Properties()
+if (keystoreFile.exists()) {
+    keystore.load(FileInputStream(keystoreFile))
 }
 
 android {
@@ -23,7 +38,6 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        //ruta para schemas room
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments["room.schemaLocation"] = "$projectDir/schemas"
@@ -33,15 +47,28 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystore["storeFile"] as String)
+            storePassword = keystore["storePassword"] as String
+            keyAlias = keystore["keyAlias"] as String
+            keyPassword = keystore["keyPassword"] as String
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -49,17 +76,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
     }
+
     hilt {
         enableAggregatingTask = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
