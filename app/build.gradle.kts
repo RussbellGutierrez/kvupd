@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -8,6 +11,19 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.parcelize)
     alias(libs.plugins.google.services)
+}
+
+// ✔️ secrets.properties
+secrets {
+    propertiesFileName = "secrets.properties"
+}
+
+// ✔️ cargar keystore
+val keystoreFile = rootProject.file("keystore.properties")
+val keystore = Properties()
+
+if (keystoreFile.exists()) {
+    keystore.load(FileInputStream(keystoreFile))
 }
 
 android {
@@ -24,36 +40,59 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        //ruta para schemas room
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments["room.schemaLocation"] = "$projectDir/schemas"
             }
         }
+
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
+
+    // 🔐 firma release
+    signingConfigs {
+        create("release") {
+            if (keystoreFile.exists()) {
+                storeFile = file(keystore["storeFile"] as String)
+                storePassword = keystore["storePassword"] as String
+                keyAlias = keystore["keyAlias"] as String
+                keyPassword = keystore["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+
+            // ✔ aplicar firma
+            if (keystoreFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
     }
+
     hilt {
         enableAggregatingTask = true
     }

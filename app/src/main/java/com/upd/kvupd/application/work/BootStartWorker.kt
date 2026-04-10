@@ -25,7 +25,8 @@ class BootStartWorker @AssistedInject constructor(
         val config = roomFunctions.queryConfiguracion()
 
         if (config != null) {
-            operationsFunctions.syncInitial()
+            operationsFunctions.syncInitial(config)
+            operationsFunctions.reprogramBeforeConfig()
         }
 
         return Result.success()

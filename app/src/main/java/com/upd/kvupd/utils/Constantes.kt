@@ -31,6 +31,8 @@ object ConstantsExtras {
 object AlarmConstants {
     const val ALARMA_INICIO = "INICIO"
     const val ALARMA_FIN = "FINAL"
+    const val REQUEST_CODE_ALARMA_INICIO = 1001
+    const val REQUEST_CODE_ALARMA_FIN = 1002
 }
 
 object SharedPreferenceKeys {

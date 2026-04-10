@@ -25,6 +25,8 @@ import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
+import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_FIN
+import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_INICIO
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
@@ -132,8 +134,7 @@ class OperationSource @Inject constructor(
             .setConstraints(constraints)
             .build()
 
-    @SuppressLint("NewApi")
-    fun syncInicial() {
+    fun syncInicial(config: TableConfiguracion) {
         Log.e(GPS_FLOW, "[SYNC] syncInicial ejecutado")
 
         val ahora = LocalTime.now()
@@ -146,23 +147,34 @@ class OperationSource @Inject constructor(
             !ahora.isBefore(horaInicio) || ahora.isBefore(horaFin)
         }
 
-        val modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
+        // 🔥 validar config
+        val esHoy = FechaHoraUtil.esHoy(config.fecha)
 
-        // 🔴 ARRANQUE SIEMPRE
-        preferences.edit()
-            .putString(KEY_MODO_GPS, modoNuevo)
-            .putBoolean(KEY_SYNC_INIT, true)
-            .apply()
+        var modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
 
-        Log.e(GPS_FLOW, "[SYNC] forzando inicio de service → modo=$modoNuevo")
+        if (!esHoy) {
+            modoNuevo = MODO_EXTENSO
+        }
 
-        LocationServiceBackground.reiniciar(context, modoNuevo)
+        val modoActual = preferences.getString(KEY_MODO_GPS, MODO_NORMAL)
 
-        // Alarmas siempre
-        reprogramarAlarmas(horaInicio, horaFin)
+        // 🔥 solo reiniciar si cambia el modo
+        if (modoNuevo != modoActual) {
+
+            preferences.edit()
+                .putString(KEY_MODO_GPS, modoNuevo)
+                .putBoolean(KEY_SYNC_INIT, true)
+                .apply()
+
+            Log.e(GPS_FLOW, "[SYNC] reiniciando service → modo=$modoNuevo")
+
+            LocationServiceBackground.reiniciar(context, modoNuevo)
+
+        } else {
+            Log.e(GPS_FLOW, "[SYNC] modo sin cambios → no se reinicia service")
+        }
     }
 
-    @SuppressLint("NewApi")
     fun reprogramarPorNuevaConfig() {
         Log.e(GPS_FLOW, "[SYNC] reprogramarPorNuevaConfig ejecutado")
 
@@ -175,25 +187,19 @@ class OperationSource @Inject constructor(
     private fun reprogramarAlarmas(horaInicio: LocalTime, horaFin: LocalTime) {
 
         // 🔹 Cancelar alarmas previas
-        cancelarAlarma(ALARMA_INICIO)
-        cancelarAlarma(ALARMA_FIN)
+        cancelarAlarmaPorModo(MODO_NORMAL)
+        cancelarAlarmaPorModo(MODO_EXTENSO)
 
         // 🔹 Crear Intent para activar modo normal
-        val intentInicio = Intent(context, GpsReceiver::class.java).apply {
-            action = ACTION_CHANGE_MODE
-            putExtra(INTENT_EXTRA_GPS, MODO_NORMAL)
-        }
-        programarAlarma(intentInicio, horaInicio, requestCode = 1001)
+        val intentInicio = buildIntent(MODO_NORMAL)
+        programarAlarma(intentInicio, horaInicio, REQUEST_CODE_ALARMA_INICIO)
 
         // 🔹 Crear Intent para activar modo extendido
-        val intentFin = Intent(context, GpsReceiver::class.java).apply {
-            action = ACTION_CHANGE_MODE
-            putExtra(INTENT_EXTRA_GPS, MODO_EXTENSO)
-        }
-        programarAlarma(intentFin, horaFin, requestCode = 1002)
+        val intentFin = buildIntent(MODO_EXTENSO)
+        programarAlarma(intentFin, horaFin, REQUEST_CODE_ALARMA_FIN)
     }
 
-    @SuppressLint("MissingPermission", "NewApi")
+    @SuppressLint("MissingPermission")
     private fun programarAlarma(
         intent: Intent,
         hora: LocalTime,
@@ -228,13 +234,15 @@ class OperationSource @Inject constructor(
         )
     }
 
-    private fun cancelarAlarma(tipo: String) {
+    private fun cancelarAlarmaPorModo(modo: String) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val requestCode = if (tipo == ALARMA_INICIO) 1001 else 1002
 
-        val intent = Intent(context, GpsReceiver::class.java).apply {
-            action = "com.upd.kvupd.CHANGE_MODE"
-        }
+        val requestCode = if (modo == MODO_NORMAL)
+            REQUEST_CODE_ALARMA_INICIO
+        else
+            REQUEST_CODE_ALARMA_FIN
+
+        val intent = buildIntent(modo)
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -246,7 +254,7 @@ class OperationSource @Inject constructor(
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent)
             pendingIntent.cancel()
-            Log.e(GPS_FLOW, "[AlarmasGPS] ❌ Alarma cancelada ($tipo)")
+            Log.e(GPS_FLOW, "[AlarmasGPS] ❌ Alarma cancelada (modo=$modo)")
         }
     }
 
@@ -254,4 +262,61 @@ class OperationSource @Inject constructor(
         val fecha = config.fecha
         return FechaHoraUtil.esHoy(fecha)
     }
+
+    fun validarYRecrearAlarmasSiFaltan() {
+        val existeInicio = existeAlarma(MODO_NORMAL)
+        val existeFin = existeAlarma(MODO_EXTENSO)
+
+        if (!existeInicio || !existeFin) {
+            val horaInicio = preferences.getString(KEY_HORA_INICIO, "07:00:00")!!.toLocalTime()
+            val horaFin = preferences.getString(KEY_HORA_FIN, "22:00:00")!!.toLocalTime()
+
+            reprogramarAlarmas(horaInicio, horaFin)
+        }
+    }
+
+    private fun existeAlarma(modo: String): Boolean {
+        val requestCode = if (modo == MODO_NORMAL)
+            REQUEST_CODE_ALARMA_INICIO
+        else
+            REQUEST_CODE_ALARMA_FIN
+
+        val intent = buildIntent(modo)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return pendingIntent != null
+    }
+
+    fun programarSiguienteAlarma(modo: String) {
+        val horaInicio = preferences.getString(KEY_HORA_INICIO, "07:00:00")!!.toLocalTime()
+        val horaFin = preferences.getString(KEY_HORA_FIN, "22:00:00")!!.toLocalTime()
+
+        if (modo == MODO_NORMAL) {
+            programarFin(horaFin) // Se ejecutó INICIO → toca FIN
+        } else {
+            programarInicio(horaInicio) // Se ejecutó FIN → toca INICIO
+        }
+    }
+
+    private fun programarInicio(horaInicio: LocalTime) {
+        val intent = buildIntent(MODO_NORMAL)
+        programarAlarma(intent, horaInicio, REQUEST_CODE_ALARMA_INICIO)
+    }
+
+    private fun programarFin(horaFin: LocalTime) {
+        val intent = buildIntent(MODO_EXTENSO)
+        programarAlarma(intent, horaFin, REQUEST_CODE_ALARMA_FIN)
+    }
+
+    private fun buildIntent(modo: String) =
+        Intent(context, GpsReceiver::class.java).apply {
+            action = ACTION_CHANGE_MODE
+            putExtra(INTENT_EXTRA_GPS, modo)
+        }
 }

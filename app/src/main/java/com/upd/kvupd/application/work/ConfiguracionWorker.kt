@@ -44,7 +44,7 @@ class ConfiguracionWorker @AssistedInject constructor(
                         val jobl = resultado.data?.jobl
 
                         if (jobl.isNullOrEmpty()) {
-                            setProgressAsync(workDataOf("estado" to "Configuracion retorno vacia"))
+                            setProgressAsync(workDataOf("estado" to "Configuracion vacia - se mantiene la anterior"))
                             return@collect
                         }
 

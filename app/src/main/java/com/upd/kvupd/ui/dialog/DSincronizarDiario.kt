@@ -225,11 +225,10 @@ class DSincronizarDiario : DialogFragment() {
         val inicializado = preferences.getBoolean(KEY_SYNC_INIT, false)
 
         if (!inicializado) {
-            // 🔴 Primera vez: arranca todo el sistema
             localViewModel.ejecutarSyncInicial()
-        } else {
-            // 🟢 Días siguientes: solo reprograma alarmas
-            localViewModel.reprogramarUsandoConfig()
         }
+
+        // 🔥 SIEMPRE crear alarmas después de config
+        localViewModel.reprogramarUsandoConfig()
     }
 }

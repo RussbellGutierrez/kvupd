@@ -151,7 +151,8 @@ class ALLViewModel @Inject constructor(
 
     fun ejecutarSyncInicial() {
         viewModelScope.launch {
-            operationsFunctions.syncInitial()
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            operationsFunctions.syncInitial(config)
         }
     }
 
@@ -161,8 +162,10 @@ class ALLViewModel @Inject constructor(
 
     fun iniciarServiceSiHayConfiguracion() {
         viewModelScope.launch {
-            roomFunctions.queryConfiguracion() ?: return@launch
-            operationsFunctions.syncInitial()
+            val config = roomFunctions.queryConfiguracion() ?: return@launch
+
+            operationsFunctions.syncInitial(config)
+            operationsFunctions.validateAndRecreateAlarms()
         }
     }
 

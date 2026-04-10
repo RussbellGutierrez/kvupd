@@ -8,8 +8,10 @@ interface OperationsFunctions {
 
     fun initWorker(): UUID
     fun remainingWorkers(usuarioTipo: TipoUsuario): List<UUID>
-    fun syncInitial()
+    fun syncInitial(config: TableConfiguracion)
     fun reprogramBeforeConfig()
     fun initBootWorker()
     fun checkTodaySesion(config: TableConfiguracion): Boolean
+    fun validateAndRecreateAlarms()
+    fun programNextAlarm(modo: String)
 }

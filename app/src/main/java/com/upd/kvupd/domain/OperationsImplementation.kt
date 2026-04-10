@@ -21,8 +21,8 @@ class OperationsImplementation @Inject constructor(
         return operationSource.lanzarWorkersRestantes(usuarioTipo)
     }
 
-    override fun syncInitial() {
-        operationSource.syncInicial()
+    override fun syncInitial(config: TableConfiguracion) {
+        operationSource.syncInicial(config)
     }
 
     override fun reprogramBeforeConfig() {
@@ -35,4 +35,12 @@ class OperationsImplementation @Inject constructor(
 
     override fun checkTodaySesion(config: TableConfiguracion): Boolean =
         operationSource.sesionActual(config)
+
+    override fun validateAndRecreateAlarms() {
+        operationSource.validarYRecrearAlarmasSiFaltan()
+    }
+
+    override fun programNextAlarm(modo: String) {
+        operationSource.programarSiguienteAlarma(modo)
+    }
 }
