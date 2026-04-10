@@ -4,5 +4,5 @@ data class VendedorItem(
     val codigo: String,
     val nombre: String
 ) {
-    override fun toString(): String = "$codigo - $nombre"
+    override fun toString(): String = nombre
 }

@@ -13,6 +13,8 @@ import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.InitialState
 import com.upd.kvupd.ui.fragment.base.sealed.EstadoSesion
 import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
+import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -157,17 +159,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         lifecycleScope.launch(Dispatchers.Main) {
-            // Cerrar diálogo previo si existe
-            InstanciaDialog.cerrarDialogActual()
+            cerrarDialogActual()
 
-            // Crear el dialog
             val dialog = buildMaterialDialog(this@MainActivity, dialogType)
-
-            // Mostrarlo
             dialog.show()
 
-            // Guardar referencia
-            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+            REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }
 }

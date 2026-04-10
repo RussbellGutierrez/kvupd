@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/separation_2"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/separation_5">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/txt_nombre"
@@ -28,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.2"
         android:gravity="center"
-        android:textSize="12sp"
+        android:textSize="11sp"
         tools:text="C" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -43,7 +42,7 @@
         android:layout_weight="1.2"
         android:gravity="center"
         android:textColor="@color/deeporange"
-        android:textSize="12sp"
+        android:textSize="11sp"
         tools:text="A" />
 
     <com.google.android.material.divider.MaterialDivider
@@ -57,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.2"
         android:gravity="center"
-        android:textSize="12sp"
+        android:textSize="11sp"
         tools:text="T%" />
 
     <com.google.android.material.divider.MaterialDivider

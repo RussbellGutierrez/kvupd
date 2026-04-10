@@ -210,6 +210,7 @@ object ApisConsultaDatos {
     const val FETCH_CONSULTA = "empleado/movil/cliente/completo"
     const val FETCH_PEDIMAP = "empleado/movil/marker/empleado"
     const val FETCH_BAJAS_VENDEDOR = "empleado/movil/baja/lista/estado"
+    const val FETCH_API_STATUS = "status"
 }
 
 object ApisEnviarServidor {

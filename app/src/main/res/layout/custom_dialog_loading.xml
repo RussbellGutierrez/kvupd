@@ -17,10 +17,14 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_indicator"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminate="true"
+            app:indicatorColor="@color/secondaryColor"
+            app:indicatorSize="48dp"
+            app:trackThickness="4dp"/>
 
         <TextView
             android:id="@+id/txt_dialog"

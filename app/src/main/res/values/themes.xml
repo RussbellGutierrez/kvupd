@@ -12,14 +12,22 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:textViewStyle">@font/montserrat</item>
-        <item name="android:buttonStyle">@font/montserrat</item>
-        <item name="android:textColor">@color/gray</item>
+        <item name="android:textViewStyle">@style/AppTextStyle</item>
+        <item name="android:buttonStyle">@style/AppButtonStyle</item>
     </style>
     
     <style name="ShapeAppearance.App.CircleView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="AppTextStyle">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="AppButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
 </resources>
