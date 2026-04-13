@@ -76,7 +76,7 @@ class FBase : Fragment(), MenuProvider {
 
             btnReporte.navegarSeguro(R.id.action_FBase_to_FReporte)
 
-            //btnServidor.setUI("v", true)
+            btnServidor.navegarSeguro(R.id.action_FBase_to_FServidor)
         }
 
         observeData()

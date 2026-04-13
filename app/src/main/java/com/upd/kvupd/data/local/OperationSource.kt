@@ -21,10 +21,8 @@ import com.upd.kvupd.application.work.EncuestasWorker
 import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
 import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.domain.enumFile.TipoUsuario
-import com.upd.kvupd.utils.AlarmConstants.ALARMA_FIN
-import com.upd.kvupd.utils.AlarmConstants.ALARMA_INICIO
+import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_INICIO
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
@@ -156,17 +154,17 @@ class OperationSource @Inject constructor(
             modoNuevo = MODO_EXTENSO
         }
 
-        val modoActual = preferences.getString(KEY_MODO_GPS, MODO_NORMAL)
+        val modoActual = preferences.getString(KEY_MODO_GPS, null)
+        val yaInicializado = preferences.getBoolean(KEY_SYNC_INIT, false)
 
-        // 🔥 solo reiniciar si cambia el modo
-        if (modoNuevo != modoActual) {
+        if (!yaInicializado || modoNuevo != modoActual) {
 
             preferences.edit()
                 .putString(KEY_MODO_GPS, modoNuevo)
                 .putBoolean(KEY_SYNC_INIT, true)
                 .apply()
 
-            Log.e(GPS_FLOW, "[SYNC] reiniciando service → modo=$modoNuevo")
+            Log.e(GPS_FLOW, "[SYNC] iniciando/reiniciando service → modo=$modoNuevo")
 
             LocationServiceBackground.reiniciar(context, modoNuevo)
 

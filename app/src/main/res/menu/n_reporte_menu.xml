@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/actualizar"
-        android:icon="@drawable/base_datos"
+        android:icon="@drawable/basedatos_carga"
         android:title="Actualizar datos"
         app:showAsAction="ifRoom" />
 </menu>
