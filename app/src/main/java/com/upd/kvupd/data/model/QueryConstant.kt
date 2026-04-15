@@ -55,119 +55,60 @@ object QueryConstant {
     const val UPDATE_CLEAR_ENCUESTA = "UPDATE TableEncuesta SET seleccionada = 0"
     const val UPDATE_SET_SELECCION = "UPDATE TableEncuesta SET seleccionada = 1 WHERE id = :id"
 
+    ////  TOTAL EN ROOM
+    const val SEGUIMIENTO_COUNT = "SELECT COUNT(*) FROM TableSeguimiento"
+    const val ALTA_COUNT = "SELECT COUNT(*) FROM TableAlta"
+    const val ALTADATO_COUNT = "SELECT COUNT(*) FROM TableAltaDatos"
+    const val BAJA_COUNT = "SELECT COUNT(*) FROM TableBaja"
+    const val BAJA_PROCESADO_COUNT = "SELECT COUNT(*) FROM TableBajaProcesada"
+
+    const val RESPUESTA_COUNT = """
+        SELECT COUNT(*) FROM (
+            SELECT cliente, encuesta
+            FROM TableRespuesta
+            GROUP BY cliente, encuesta
+        )
+    """
+    const val FOTO_COUNT = "SELECT COUNT(*) FROM TableFoto"
+
     ////  SERVER
     const val SEGUIMIENTO_SERVER = """
         SELECT * FROM TableSeguimiento
         WHERE sincronizado = :sync
         ORDER BY fecha ASC
     """
+
     const val ALTA_SERVER = """
         SELECT * FROM TableAlta
         WHERE sincronizado = :sync
         ORDER BY fecha ASC
     """
+
     const val ALTADATO_SERVER = """
         SELECT * FROM TableAltaDatos
         WHERE sincronizado = :sync
     """
+
     const val BAJA_SERVER = """
         SELECT * FROM TableBaja
         WHERE sincronizado = :sync
         ORDER BY fecha ASC
     """
+
     const val BAJA_PROCESADO_SERVER = """
         SELECT * FROM TableBajaProcesada
         WHERE sincronizado = :sync
         ORDER BY fechaconfirmacion ASC
     """
+
     const val RESPUESTA_SERVER = """
         SELECT * FROM TableRespuesta
         WHERE sincronizado = :sync
         ORDER BY fecha ASC
     """
+
     const val FOTO_SERVER = """
         SELECT * FROM TableFoto
         WHERE sincronizado = :sync
     """
-
-
-    /***        CAMBIAR O MODIFICAR        ***/
-
-    /*
-
-    const val GET_ALTADATOS = "SELECT * FROM TADatos WHERE idaux = :alta"
-    const val GET_BAJA = "SELECT * FROM TBaja ORDER BY fecha DESC"
-    const val GET_BAJA_SUPER =
-        "SELECT * FROM TBajaSuper WHERE clicodigo = :codigo and creado = :fecha "
-
-
-    const val GET_RESPUESTA_CLIENTE = "" +
-            "SELECT encuesta " +
-            "FROM TRespuesta " +
-            "WHERE cliente = :cliente " +
-            "GROUP BY encuesta "
-
-    const val GET_RESPUESTA_HISTORICO = "" +
-            "SELECT encuestas " +
-            "FROM TClientes " +
-            "WHERE idcliente = :cliente "
-
-
-
-    const val GET_LAST_AUX = "" +
-            "SELECT * " +
-            "FROM TAAux " +
-            "ORDER BY idaux DESC LIMIT 1"
-
-    const val GET_LAST_LOCATION = "" +
-            "SELECT * " +
-            "FROM TSeguimiento " +
-            "ORDER BY fecha DESC LIMIT 1 "
-
-    const val GET_CABE_ENCUESTAS = "" +
-            "SELECT distinct e.id, e.nombre, e.foto, IFNULL(s.id,0) as seleccion " +
-            "FROM TEncuesta e " +
-            "LEFT JOIN TEncuestaSeleccionado s on e.id=s.encuesta "
-
-    const val GET_MARKERS = "" +
-            "SELECT c.ventas, c.idcliente, IFNULL(v.longitud,c.longitud) as longitud, IFNULL(v.latitud,c.latitud) as latitud, " +
-            "IFNULL(v.observacion,9) as observacion, IFNULL(e.atendido,0) as atendido, c.ventanio " +
-            "FROM TClientes c " +
-            "LEFT JOIN TEstado e on c.idcliente=e.idcliente AND c.ruta=e.ruta " +
-            "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
-            "WHERE ((:observacion <> '9' AND v.observacion = :observacion) OR :observacion = '9') " +
-            "ORDER BY c.idcliente ASC "
-
-    const val GET_DATA_CLIENTE = "" +
-            "SELECT c.idcliente, c.nomcli, c.domicli, c.ruta, c.negocio, c.telefono,IFNULL(v.observacion,9) as observacion " +
-            "FROM TClientes c " +
-            "LEFT JOIN TVisita v on c.idcliente=v.cliente " +
-            "WHERE ((:cliente <> '0' AND c.idcliente = :cliente) OR :cliente = '0') " +
-            "AND ((:observacion <> '9' AND v.observacion = :observacion) OR :observacion = '9') " +
-            "ORDER BY c.idcliente ASC "
-
-    const val GET_DATA_ALTA = "" +
-            "SELECT a.idaux as idcliente, IFNULL(d.razon,'') ||' '|| IFNULL(d.nombre||' '||d.appaterno||' '||d.apmaterno,'') as nomcli, " +
-            "IFNULL(d.via,'') ||' '|| IFNULL(d.direccion,'') ||' '|| IFNULL(d.manzana,'') ||' '|| IFNULL(d.zona,'') ||' '|| " +
-            "IFNULL(d.zonanombre,'') ||' '|| IFNULL(d.ubicacion,'') ||' '|| IFNULL(d.numero,'') as domicli," +
-            "IFNULL(d.ruta,0) as ruta, IFNULL(d.giro,'') as negocio, IFNULL(d.movil1,'') ||'/'|| IFNULL(d.movil2,'') as telefono " +
-            "FROM TAlta a " +
-            "LEFT JOIN TADatos d on a.idaux=d.idaux " +
-            "WHERE a.idaux = :alta "
-
-    const val GET_ROW_BAJAS = "" +
-            "SELECT b.clicodigo as id, b.clinombre as nombre, b.direccion, b.creado as fecha, b.dia, b.descripcion as motivo, b.negocio, IFNULL(e.procede,2) as procede " +
-            "FROM TBajaSuper b " +
-            "LEFT JOIN TBEstado e on b.clicodigo=e.cliente and b.creado=e.fecha " +
-            "WHERE e.procede ISNULL " +
-            "ORDER BY creado ASC "
-
-
-    //Tener cuidado con las consultas donde se usan operadores adicionales (LIKE '%dato_consulta%', GLOB '*dato_consulta*')
-    const val GET_CONSULTA = "" +
-            "SELECT * " +
-            "FROM TConsulta " +
-            "WHERE ((:numero <> '0' AND (cliente = :numero OR documento = :numero)) OR :numero = '0') " +
-            "AND ((:nombre <> 'NOT' AND nombre GLOB :nombre) OR :nombre = 'NOT') "
-     */
 }

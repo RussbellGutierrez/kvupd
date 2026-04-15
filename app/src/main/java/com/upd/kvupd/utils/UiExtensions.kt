@@ -35,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.upd.kvupd.R
+import com.upd.kvupd.ui.fragment.servidor.enumFile.DrawablePosition
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.utils.DimensionesDialog.DIALOG_ALTO
 import com.upd.kvupd.utils.DimensionesDialog.DIALOG_ANCHO
@@ -176,12 +177,8 @@ fun View.visibleIf(condition: Boolean) {
     visibility = if (condition) View.VISIBLE else View.GONE
 }
 
-fun View.enable() {
-    isEnabled = true
-}
-
-fun View.disable() {
-    isEnabled = false
+fun TextView.setDrawableTint(position: DrawablePosition, color: Int) {
+    compoundDrawablesRelative[position.index]?.setTint(color)
 }
 
 fun Fragment.toast(text: String, duration: Int = 0) {

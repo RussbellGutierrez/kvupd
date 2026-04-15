@@ -1,6 +1,7 @@
 package com.upd.kvupd.viewmodel
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.upd.kvupd.data.model.FlowBajaSupervisor
@@ -19,6 +20,7 @@ import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.ServerStatusResponse
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
@@ -43,6 +45,11 @@ import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapVolumenToSoles
 import com.upd.kvupd.ui.fragment.reportes.modelUI.DetalleParams
 import com.upd.kvupd.ui.fragment.reportes.modelUI.LineaUI
 import com.upd.kvupd.ui.fragment.reportes.modelUI.SolesRequestConfig
+import com.upd.kvupd.ui.fragment.servidor.enumFile.ApiServerStatus
+import com.upd.kvupd.ui.fragment.servidor.enumFile.UploadType
+import com.upd.kvupd.ui.fragment.servidor.modelUI.ServerStatusResult
+import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadConfig
+import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadItem
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.FechaHoraUtil
@@ -54,6 +61,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -124,6 +132,12 @@ class APIViewModel @Inject constructor(
 
     private val _altaDatos = MutableStateFlow<TableAltaDatos?>(null)
     val altaDatos = _altaDatos
+
+    private val _status = MutableStateFlow(ServerStatusResult(ApiServerStatus.IDLE, null))
+    val status: StateFlow<ServerStatusResult> = _status
+
+    private val _items = MutableStateFlow<List<UploadItem>>(emptyList())
+    val items: StateFlow<List<UploadItem>> = _items
 
     ///     REPORTES
     private val _preventaEvent = EventFlow<ResultadoApi<JsonVolumen>>()
@@ -307,35 +321,35 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun apiPreventa() {
+    private fun apiPreventa() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportPreventa) // Pasar como parametro usando ::
                 .collect { _preventaEvent.emit(it) }
         }
     }
 
-    fun apiCobertura() {
+    private fun apiCobertura() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCobertura)
                 .collect { _coberturaEvent.emit(it) }
         }
     }
 
-    fun apiCartera() {
+    private fun apiCartera() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCartera)
                 .collect { _carteraEvent.emit(it) }
         }
     }
 
-    fun apiGeneral() {
+    private fun apiGeneral() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportGeneral)
                 .collect { _generalEvent.emit(it) }
         }
     }
 
-    fun apiCambio() {
+    private fun apiCambio() {
         viewModelScope.launch {
             val config = roomFunctions.queryConfiguracion() ?: return@launch
 
@@ -349,7 +363,7 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun apiSolesPorLineas() {
+    private fun apiSolesPorLineas() {
         viewModelScope.launch {
 
             val config = roomFunctions.queryConfiguracion() ?: return@launch
@@ -408,28 +422,28 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun apiDetalleCobertura() {
+    private fun apiDetalleCobertura() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCoberturaDetalle)
                 .collect { _coberturaDetalleEvent.emit(it) }
         }
     }
 
-    fun apiPendienteCobertura() {
+    private fun apiPendienteCobertura() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportCoberturaPendiente)
                 .collect { _coberturaPendienteEvent.emit(it) }
         }
     }
 
-    fun apiEmpleadoPedidos() {
+    private fun apiEmpleadoPedidos() {
         viewModelScope.launch {
             downloadBaseReport(serverFunctions::apiReportEmpleado)
                 .collect { _pedidoEmpleadoEvent.emit(it) }
         }
     }
 
-    fun apiSolesDetalle(linea: Int?) {
+    private fun apiSolesDetalle(linea: Int?) {
         viewModelScope.launch {
             val codigo = linea ?: return@launch
             downloadBaseReport(
@@ -550,6 +564,24 @@ class APIViewModel @Inject constructor(
             )
 
             saveAndSendAlta(item)
+        }
+    }
+
+    fun verifyStatusServidor() {
+        viewModelScope.launch {
+            val loading = ServerStatusResult(
+                ApiServerStatus.LOADING,
+                "Consultando servidor..."
+            )
+            _status.value = loading
+
+            delay(500) // 🔥 300–600ms es suficiente
+
+            serverFunctions.apiQueryStatusServidor().collect { result ->
+
+                val mapped = mapServerStatus(result)
+                _status.value = mapped
+            }
         }
     }
 
@@ -676,6 +708,144 @@ class APIViewModel @Inject constructor(
         }
     }
 
+    fun loadServerData() {
+        viewModelScope.launch {
+
+            val itemSeguimiento = async {
+                val total = roomFunctions.apiCountSeguimiento()
+                val pendientes = roomFunctions.apiServerSeguimiento(false)
+
+                UploadItem(
+                    type = UploadType.GPS,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemAlta = async {
+                val total = roomFunctions.apiCountAlta()
+                val pendientes = roomFunctions.apiServerAltas(false)
+
+                UploadItem(
+                    type = UploadType.ALTAS,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemAltaDatos = async {
+                val total = roomFunctions.apiCountAltaDatos()
+                val pendientes = roomFunctions.apiServerAltaDatos(false)
+
+                UploadItem(
+                    type = UploadType.ALTA_DATOS,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemBaja = async {
+                val total = roomFunctions.apiCountBaja()
+                val pendientes = roomFunctions.apiServerBajas(false)
+
+                UploadItem(
+                    type = UploadType.BAJAS,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemBajaProcesada = async {
+                val total = roomFunctions.apiCountBajaProcesada()
+                val pendientes = roomFunctions.apiServerBajasProcesadas(false)
+
+                UploadItem(
+                    type = UploadType.BAJA_REVISADA,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemRespuesta = async {
+                val total = roomFunctions.apiCountRespuesta()
+                val pendientesList = roomFunctions.apiServerRespuestas(false)
+
+                val pendientes = pendientesList
+                    .map { it.cliente to it.encuesta }
+                    .distinct()
+                    .size
+
+                UploadItem(
+                    type = UploadType.ENCUESTAS,
+                    total = total,
+                    pending = pendientes,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            val itemFoto = async {
+                val total = roomFunctions.apiCountFoto()
+                val pendientes = roomFunctions.apiServerFotos(false)
+
+                UploadItem(
+                    type = UploadType.FOTOS,
+                    total = total,
+                    pending = pendientes.size,
+                    processed = 0,
+                    status = ApiServerStatus.IDLE
+                )
+            }
+
+            _items.value = awaitAll(
+                itemSeguimiento,
+                itemAlta,
+                itemAltaDatos,
+                itemBaja,
+                itemBajaProcesada,
+                itemRespuesta,
+                itemFoto
+            )
+        }
+    }
+
+    private val uploadConfigs = listOf(
+
+        UploadConfig(
+            type = UploadType.GPS,
+            getData = { roomFunctions.apiServerSeguimiento(false) },
+            send = { sendServerFunctions.enviarSeguimiento(it) }
+        ),
+
+        UploadConfig(
+            type = UploadType.ALTAS,
+            getData = { roomFunctions.apiServerAltas(false) },
+            send = { sendServerFunctions.enviarAlta(it) }
+        ),
+
+        UploadConfig(
+            type = UploadType.ALTA_DATOS,
+            getData = { roomFunctions.apiServerAltaDatos(false) },
+            send = { sendServerFunctions.enviarAltaDatos(it) }
+        ),
+
+        UploadConfig(
+            type = UploadType.FOTOS,
+            getData = { roomFunctions.apiServerFotos(false) },
+            send = { sendServerFunctions.enviarFoto(it) }
+        )
+    )
+
     private fun <T> downloadBaseReport(
         apiCall: suspend (RequestBody) -> Flow<ResultadoApi<T>>,
         linea: Int? = null,
@@ -685,14 +855,14 @@ class APIViewModel @Inject constructor(
         val config = roomFunctions.queryConfiguracion()
             ?: return@flow
 
-        /*val json = jsobFunctions.jsonObjectReporte(
+        val json = jsobFunctions.jsonObjectReporte(
             item = config,
             linea = linea,
             marca = marca
-        )*/
+        )
 
         // Momentaneo
-        val json = JSONObject().apply {
+        /*val json = JSONObject().apply {
             put("empleado", config.codigo)
             put("empresa", config.empresa)
             linea?.let { put("linea", it) }
@@ -700,7 +870,7 @@ class APIViewModel @Inject constructor(
 
             // 👇 temporal
             put("fecha", "2026-04-01")
-        }.toReqBody()
+        }.toReqBody()*/
 
         emitAll(apiCall(json))
     }
@@ -755,6 +925,36 @@ class APIViewModel @Inject constructor(
             }
 
             else -> Unit
+        }
+    }
+
+    private fun mapServerStatus(result: ResultadoApi<ServerStatusResponse>): ServerStatusResult {
+        return when (result) {
+
+            is ResultadoApi.Exito -> {
+                if (result.data?.status == "ok") {
+                    ServerStatusResult(
+                        ApiServerStatus.SUCCESS,
+                        "Servidor disponible"
+                    )
+                } else {
+                    ServerStatusResult(
+                        ApiServerStatus.ERROR,
+                        "Respuesta inválida del servidor"
+                    )
+                }
+            }
+
+            is ResultadoApi.ErrorHttp,
+            is ResultadoApi.Fallo -> ServerStatusResult(
+                ApiServerStatus.ERROR,
+                result.mensajeUsuario()
+            )
+
+            is ResultadoApi.Loading -> ServerStatusResult(
+                ApiServerStatus.LOADING,
+                "Consultando servidor..."
+            )
         }
     }
 }

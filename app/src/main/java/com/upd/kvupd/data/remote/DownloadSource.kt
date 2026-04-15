@@ -18,6 +18,7 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.ServerStatusResponse
 import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -61,6 +62,9 @@ class DownloadSource @Inject constructor(
 
     suspend fun queryVendedorBajas(body: RequestBody): Response<JsonBajaVendedor> =
         api().queryVendedorBajas(body)
+
+    suspend fun queryApiStatus(): Response<ServerStatusResponse> =
+        api().queryApiStatus()
 
 
     // SOLICITAR DATOS DE REPORTE

@@ -9,6 +9,7 @@ import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
 import javax.inject.Inject
@@ -38,6 +39,13 @@ class JsObImplementation @Inject constructor(
 
     override fun jsonObjectSimple(item: TableConfiguracion): RequestBody =
         jsonObjectDataSource.jsonRequestSimple(item)
+
+    override fun jsonObjectSeguimiento(
+        dato: TableConfiguracion,
+        gps: TableSeguimiento,
+        uuid: String
+    ): RequestBody =
+        jsonObjectDataSource.jsonRequestSeguimiento(dato, gps, uuid)
 
     override fun jsonObjectBajas(item: TableConfiguracion, baja: TableBaja): RequestBody =
         jsonObjectDataSource.jsonRequestBajas(item, baja)

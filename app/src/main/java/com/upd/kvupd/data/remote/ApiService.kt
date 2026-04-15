@@ -19,6 +19,8 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.ServerStatusResponse
+import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_API_STATUS
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_BAJAS_VENDEDOR
 import com.upd.kvupd.utils.ApisConsultaDatos.FETCH_PEDIMAP
 import com.upd.kvupd.utils.ApisDescargaDatos.API_BAJAS_SUPERVISOR
@@ -53,6 +55,7 @@ import com.upd.kvupd.utils.ApisReporteVentas.REPORT_SOLES_GENERICO
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -81,6 +84,8 @@ interface ApiService {
     suspend fun queryPedimap(@Body body: RequestBody): Response<JsonPedimap>
     @POST(FETCH_BAJAS_VENDEDOR) // Parametros: empleado, empresa
     suspend fun queryVendedorBajas(@Body body: RequestBody): Response<JsonBajaVendedor>
+    @GET(FETCH_API_STATUS)
+    suspend fun queryApiStatus(): Response<ServerStatusResponse>
 
 
     // ENVIAR DATOS AL SERVIDOR

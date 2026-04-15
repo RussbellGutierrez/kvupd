@@ -110,6 +110,15 @@ interface RoomFunctions {
     fun listFlowClientesPendientes(encuestaId: String): Flow<List<TableCliente>>
 
     ///     Room Server
+    suspend fun apiCountSeguimiento(): Int
+    suspend fun apiCountAlta(): Int
+    suspend fun apiCountAltaDatos(): Int
+    suspend fun apiCountBaja(): Int
+    suspend fun apiCountBajaProcesada(): Int
+    suspend fun apiCountRespuesta(): Int
+    suspend fun apiCountFoto(): Int
+
+    ///     Room Server
     suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento>
     suspend fun apiServerAltas(sync: Boolean): List<TableAlta>
     suspend fun apiServerAltaDatos(sync: Boolean): List<TableAltaDatos>

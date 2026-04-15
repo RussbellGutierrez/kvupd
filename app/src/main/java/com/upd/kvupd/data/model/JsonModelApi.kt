@@ -326,3 +326,8 @@ data class ClienteBaja(
     @Json(name = "LONGITUD") val longitud: Double,
     @Json(name = "LATITUD") val latitud: Double
 )
+
+@JsonClass(generateAdapter = true)
+data class ServerStatusResponse(
+    @Json(name = "status") val status: String
+)

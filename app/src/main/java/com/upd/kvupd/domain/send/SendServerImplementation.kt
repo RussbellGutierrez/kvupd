@@ -8,6 +8,7 @@ import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.ServerFunctions
@@ -83,6 +84,15 @@ class SendServerImplementation @Inject constructor(
         }
         return primerError ?: ResultadoApi.Exito(Unit)
     }
+
+    override suspend fun enviarSeguimiento(item: TableSeguimiento, identificador: String): ResultadoApi<Unit> =
+        ejecutarEnvio(
+            item,
+            buildBody = { config, it -> json.jsonObjectSeguimiento(config, it, identificador) },
+            send = { server.apiSendSeguimiento(it) },
+            onSuccess = { room.updateSeguimiento(it.copy(sincronizado = true)) },
+            onError = { room.updateSeguimiento(it.copy(sincronizado = false)) }
+        )
 
     override suspend fun enviarFoto(item: TableFoto): ResultadoApi<Unit> =
         ejecutarEnvio(

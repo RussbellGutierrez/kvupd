@@ -6,10 +6,15 @@ import androidx.room.Transaction
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
+import com.upd.kvupd.data.model.QueryConstant.ALTADATO_COUNT
 import com.upd.kvupd.data.model.QueryConstant.ALTADATO_SERVER
+import com.upd.kvupd.data.model.QueryConstant.ALTA_COUNT
 import com.upd.kvupd.data.model.QueryConstant.ALTA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.BAJA_COUNT
+import com.upd.kvupd.data.model.QueryConstant.BAJA_PROCESADO_COUNT
 import com.upd.kvupd.data.model.QueryConstant.BAJA_PROCESADO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.BAJA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.FOTO_COUNT
 import com.upd.kvupd.data.model.QueryConstant.FOTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTADATOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ALTAS
@@ -27,7 +32,9 @@ import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_BAJASUPER
 import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_CLIENTE
 import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_VENDEDORES
+import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_COUNT
 import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_SERVER
+import com.upd.kvupd.data.model.QueryConstant.SEGUIMIENTO_COUNT
 import com.upd.kvupd.data.model.QueryConstant.SEGUIMIENTO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.UPDATE_CLEAR_ENCUESTA
 import com.upd.kvupd.data.model.QueryConstant.UPDATE_SET_SELECCION
@@ -125,6 +132,28 @@ interface QueryList {
 
     @Query(UPDATE_SET_SELECCION)
     suspend fun setSeleccionEncuesta(id: String)
+
+    ////  TOTAL EN ROOM
+    @Query(SEGUIMIENTO_COUNT)
+    suspend fun seguimientoCount(): Int
+
+    @Query(ALTA_COUNT)
+    suspend fun altaCount(): Int
+
+    @Query(ALTADATO_COUNT)
+    suspend fun altaDatoCount(): Int
+
+    @Query(BAJA_COUNT)
+    suspend fun bajaCount(): Int
+
+    @Query(BAJA_PROCESADO_COUNT)
+    suspend fun bajaProcesadaCount(): Int
+
+    @Query(RESPUESTA_COUNT)
+    suspend fun respuestaCount(): Int
+
+    @Query(FOTO_COUNT)
+    suspend fun fotoCount(): Int
 
     ////  SERVER
     @Query(SEGUIMIENTO_SERVER)

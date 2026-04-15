@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -39,12 +40,13 @@ class GpsNotificationHelper @Inject constructor(
         val channel = NotificationChannel(
             channelId,
             "Servicio GPS",
-            NotificationManager.IMPORTANCE_DEFAULT
+            IMPORTANCE_DEFAULT
         ).apply {
             description = "Ubicacion en segundo plano"
-            enableLights(true)
-            enableVibration(true)
+            enableLights(true)              // ✔ luces
             lightColor = Color.BLUE
+            enableVibration(false)          // 🔥 clave
+            vibrationPattern = longArrayOf(0L) // 🔥 refuerzo
             setShowBadge(false)
         }
         notificationManager.createNotificationChannel(channel)

@@ -145,32 +145,22 @@ class OperationSource @Inject constructor(
             !ahora.isBefore(horaInicio) || ahora.isBefore(horaFin)
         }
 
-        // 🔥 validar config
         val esHoy = FechaHoraUtil.esHoy(config.fecha)
-
         var modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
 
         if (!esHoy) {
             modoNuevo = MODO_EXTENSO
         }
 
-        val modoActual = preferences.getString(KEY_MODO_GPS, null)
-        val yaInicializado = preferences.getBoolean(KEY_SYNC_INIT, false)
+        // 🔹 Persistes modo SIEMPRE
+        preferences.edit()
+            .putString(KEY_MODO_GPS, modoNuevo)
+            .apply()
 
-        if (!yaInicializado || modoNuevo != modoActual) {
+        Log.e(GPS_FLOW, "[SYNC] asegurando service → modo=$modoNuevo")
 
-            preferences.edit()
-                .putString(KEY_MODO_GPS, modoNuevo)
-                .putBoolean(KEY_SYNC_INIT, true)
-                .apply()
-
-            Log.e(GPS_FLOW, "[SYNC] iniciando/reiniciando service → modo=$modoNuevo")
-
-            LocationServiceBackground.reiniciar(context, modoNuevo)
-
-        } else {
-            Log.e(GPS_FLOW, "[SYNC] modo sin cambios → no se reinicia service")
-        }
+        // 🔥 SIEMPRE lanzas el service
+        LocationServiceBackground.reiniciar(context, modoNuevo)
     }
 
     fun reprogramarPorNuevaConfig() {

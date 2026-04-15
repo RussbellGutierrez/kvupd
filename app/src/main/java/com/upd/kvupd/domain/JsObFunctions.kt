@@ -7,6 +7,7 @@ import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import okhttp3.RequestBody
 
 interface JsObFunctions {
@@ -21,6 +22,12 @@ interface JsObFunctions {
     fun jsonObjectPedimap(item: TableConfiguracion): RequestBody
     fun jsonObjectBasico(item: TableConfiguracion): RequestBody
     fun jsonObjectSimple(item: TableConfiguracion): RequestBody
+    fun jsonObjectSeguimiento(
+        dato: TableConfiguracion,
+        gps: TableSeguimiento,
+        uuid: String
+    ): RequestBody
+
     fun jsonObjectBajas(item: TableConfiguracion, baja: TableBaja): RequestBody
     fun jsonObjectBajasProcesadas(
         item: TableConfiguracion,

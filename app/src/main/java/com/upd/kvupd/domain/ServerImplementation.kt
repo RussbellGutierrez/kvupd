@@ -19,6 +19,7 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.ServerStatusResponse
 import com.upd.kvupd.data.remote.DownloadSource
 import com.upd.kvupd.data.remote.SocketSource
 import com.upd.kvupd.data.remote.UploadSource
@@ -96,6 +97,12 @@ class ServerImplementation @Inject constructor(
         remoteFlowCall(
             setupHolder = { downloadSource },
             block = { queryVendedorBajas(body) }
+        )
+
+    override fun apiQueryStatusServidor(): Flow<ResultadoApi<ServerStatusResponse>> =
+        remoteFlowCall(
+            setupHolder = { downloadSource },
+            block = { queryApiStatus() }
         )
 
     override fun apiReportPreventa(body: RequestBody): Flow<ResultadoApi<JsonVolumen>> =

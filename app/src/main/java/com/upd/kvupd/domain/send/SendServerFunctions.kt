@@ -6,6 +6,7 @@ import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.ui.sealed.ResultadoApi
 
 interface SendServerFunctions {
@@ -15,4 +16,5 @@ interface SendServerFunctions {
     suspend fun enviarAltaDatos(item: TableAltaDatos): ResultadoApi<Unit>
     suspend fun enviarRespuesta(item: List<TableRespuesta>): ResultadoApi<Unit>
     suspend fun enviarFoto(item: TableFoto): ResultadoApi<Unit>
+    suspend fun enviarSeguimiento(item: TableSeguimiento, identificador: String): ResultadoApi<Unit>
 }

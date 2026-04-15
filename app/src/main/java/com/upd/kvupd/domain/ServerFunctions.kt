@@ -19,6 +19,7 @@ import com.upd.kvupd.data.model.JsonRuta
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVendedor
 import com.upd.kvupd.data.model.JsonVolumen
+import com.upd.kvupd.data.model.ServerStatusResponse
 import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +39,7 @@ interface ServerFunctions {
 
     fun apiQueryPedimap(body: RequestBody): Flow<ResultadoApi<JsonPedimap>>
     fun apiQueryVendedorBajas(body: RequestBody): Flow<ResultadoApi<JsonBajaVendedor>>
+    fun apiQueryStatusServidor(): Flow<ResultadoApi<ServerStatusResponse>>
 
     fun apiReportPreventa(body: RequestBody): Flow<ResultadoApi<JsonVolumen>>
     fun apiReportCobertura(body: RequestBody): Flow<ResultadoApi<JsonCoberturaCartera>>

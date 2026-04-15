@@ -97,6 +97,28 @@ class RoomQuerySource @Inject constructor(
         query.setSeleccionEncuesta(id)
     }
 
+    ////  TOTAL REGISTROS
+    suspend fun countSeguimientoTotal() =
+        query.seguimientoCount()
+
+    suspend fun countAltaTotal() =
+        query.altaCount()
+
+    suspend fun countAltaDatosTotal() =
+        query.altaDatoCount()
+
+    suspend fun countBajaTotal() =
+        query.bajaCount()
+
+    suspend fun countBajaProcesadaTotal() =
+        query.bajaProcesadaCount()
+
+    suspend fun countRespuestaTotal() =
+        query.respuestaCount()
+
+    suspend fun countFotoTotal() =
+        query.fotoCount()
+
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =
         query.serverSeguimiento(sync)

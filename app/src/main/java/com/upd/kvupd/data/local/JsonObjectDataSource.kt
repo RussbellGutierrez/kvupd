@@ -13,6 +13,7 @@ import com.upd.kvupd.data.model.TableBajaProcesada
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.utils.DeviceConstant.APP_ORIGIN
 import com.upd.kvupd.utils.ExtraInfo
@@ -68,6 +69,27 @@ class JsonObjectDataSource @Inject constructor(
     fun jsonRequestSimple(dato: TableConfiguracion): RequestBody {
         val json = JSONObject().apply {
             put("empresa", dato.empresa)
+        }
+        return json.toReqBody()
+    }
+
+    fun jsonRequestSeguimiento(
+        dato: TableConfiguracion,
+        gps: TableSeguimiento,
+        uuid: String
+    ): RequestBody {
+        val imei = "$uuid$APP_ORIGIN"
+        val json = JSONObject().apply {
+            put("sucursal", dato.sucursal)
+            put("esquema", dato.esquema)
+            put("empresa", dato.empresa)
+            put("fecha", gps.fecha)
+            put("empleado", gps.usuario)
+            put("longitud", gps.longitud)
+            put("latitud", gps.latitud)
+            put("precision", gps.precision)
+            put("imei", imei)
+            put("bateria", gps.bateria)
         }
         return json.toReqBody()
     }

@@ -303,6 +303,34 @@ class RoomImplementation @Inject constructor(
         return querySource.flowClientesExcluidos(encuestaId)
     }
 
+    override suspend fun apiCountSeguimiento(): Int {
+        return querySource.countSeguimientoTotal()
+    }
+
+    override suspend fun apiCountAlta(): Int {
+        return querySource.countAltaTotal()
+    }
+
+    override suspend fun apiCountAltaDatos(): Int {
+        return querySource.countAltaDatosTotal()
+    }
+
+    override suspend fun apiCountBaja(): Int {
+        return querySource.countBajaTotal()
+    }
+
+    override suspend fun apiCountBajaProcesada(): Int {
+        return querySource.countBajaProcesadaTotal()
+    }
+
+    override suspend fun apiCountRespuesta(): Int {
+        return querySource.countRespuestaTotal()
+    }
+
+    override suspend fun apiCountFoto(): Int {
+        return querySource.countFotoTotal()
+    }
+
     override suspend fun apiServerSeguimiento(sync: Boolean): List<TableSeguimiento> {
         return querySource.serverSeguimiento(sync)
     }

@@ -11,6 +11,7 @@
         android:id="@+id/card1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/separation_10"
         app:cardCornerRadius="5dp"
         app:cardElevation="3dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,6 +26,7 @@
             android:padding="@dimen/separation_10">
 
             <TextView
+                android:id="@+id/txt_estado"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
@@ -33,10 +35,11 @@
                 tools:text="Mensaje inicial de consulta al API" />
 
             <ImageView
+                android:id="@+id/img_estado"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                app:srcCompat="@drawable/basedatos" />
+                app:srcCompat="@drawable/nube" />
 
         </LinearLayout>
 
@@ -46,45 +49,62 @@
         android:id="@+id/linear1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/separation_10"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/card1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/card1">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_lanzar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/separation_10"
             android:layout_weight="1"
             app:cardCornerRadius="5dp"
             app:cardElevation="3dp">
 
             <TextView
+                android:id="@+id/txt_lanzar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/separation_5"
                 android:gravity="center"
                 android:text="Lanzar servidor nuevamente"
-                app:drawableStartCompat="@drawable/basedatos" />
+                app:drawableStartCompat="@drawable/servidor_basedatos" />
 
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_errores"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/separation_10"
             android:layout_weight="1"
             app:cardCornerRadius="5dp"
             app:cardElevation="3dp">
 
             <TextView
+                android:id="@+id/txt_errores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/separation_5"
                 android:gravity="center"
                 android:text="Errores durante el envio"
-                app:drawableStartCompat="@drawable/basedatos" />
+                app:drawableEndCompat="@drawable/servidor_fallo" />
 
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_servidor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/separation_5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linear1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
