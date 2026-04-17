@@ -715,6 +715,7 @@ class FEncuesta : Fragment(), MenuProvider {
         val foto = if (ruta.isNotBlank()) {
             TableFoto(
                 cliente = clienteId,
+                fecha = FechaHoraUtil.ahora(),
                 encuesta = encuestaIdActual,
                 rutafoto = ruta,
                 sincronizado = false

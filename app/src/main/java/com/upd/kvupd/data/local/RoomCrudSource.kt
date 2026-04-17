@@ -29,6 +29,14 @@ class RoomCrudSource @Inject constructor(
     private val crud: Crud
 ) {
     /////      TRANSACTION
+    suspend fun clearSessionData() {
+        crud.clearSessionData()
+    }
+
+    suspend fun clearServerUploadData(hoy: String) {
+        crud.clearServerUploadData(hoy)
+    }
+
     suspend fun replaceConfiguracion(item: List<Configuracion>) {
         crud.replaceConfiguracion(item.map { it.asTConfig() })
     }
@@ -145,66 +153,5 @@ class RoomCrudSource @Inject constructor(
 
     suspend fun actualizarFoto(actual: TableFoto) {
         crud.updateFoto(actual)
-    }
-
-    /////      DELETE
-    suspend fun borrarConfiguracion() {
-        crud.deleteConfiguracion()
-    }
-
-    suspend fun borrarClientes() {
-        crud.deleteClientes()
-    }
-
-    suspend fun borrarVendedores() {
-        crud.deleteVendedores()
-    }
-
-    suspend fun borrarDistritos() {
-        crud.deleteDistritos()
-    }
-
-    suspend fun borrarNegocios() {
-        crud.deleteNegocios()
-    }
-
-    suspend fun borrarRutas() {
-        crud.deleteRutas()
-    }
-
-    suspend fun borrarEncuesta() {
-        crud.deleteEncuesta()
-    }
-
-    suspend fun borrarSeguimiento() {
-        crud.deleteSeguimiento()
-    }
-
-    suspend fun borrarBaja() {
-        crud.deleteBaja()
-    }
-
-    suspend fun borrarBajaProcesada() {
-        crud.deleteBajaProcesada()
-    }
-
-    suspend fun borrarAlta() {
-        crud.deleteAlta()
-    }
-
-    suspend fun borrarDatosAlta() {
-        crud.deleteAltaDatos()
-    }
-
-    suspend fun borrarBajaSupervisor() {
-        crud.deleteBajaSupervisor()
-    }
-
-    suspend fun borrarRespuestas() {
-        crud.deleteRespuesta()
-    }
-
-    suspend fun borrarFoto() {
-        crud.deleteFoto()
     }
 }

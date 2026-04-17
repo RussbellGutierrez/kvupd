@@ -21,6 +21,18 @@ class OperationsImplementation @Inject constructor(
         return operationSource.lanzarWorkersRestantes(usuarioTipo)
     }
 
+    override fun startServerWorker() {
+        operationSource.lanzarServidorWorker()
+    }
+
+    override fun runCleanupNow() {
+        operationSource.lanzarCleanupNow()
+    }
+
+    override fun startCleanupWorker() {
+        operationSource.lanzarCleanupWorker()
+    }
+
     override fun syncInitial(config: TableConfiguracion) {
         operationSource.syncInicial(config)
     }

@@ -6,21 +6,21 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.upd.kvupd.data.model.CrudConstant.DEL_ALTA
-import com.upd.kvupd.data.model.CrudConstant.DEL_ALTADATOS
-import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA
-import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_PROCESADA
-import com.upd.kvupd.data.model.CrudConstant.DEL_BAJA_SUPERVISOR
-import com.upd.kvupd.data.model.CrudConstant.DEL_CLIENTES
-import com.upd.kvupd.data.model.CrudConstant.DEL_CONFIGURACION
-import com.upd.kvupd.data.model.CrudConstant.DEL_DISTRITOS
-import com.upd.kvupd.data.model.CrudConstant.DEL_ENCUESTA
-import com.upd.kvupd.data.model.CrudConstant.DEL_FOTO
-import com.upd.kvupd.data.model.CrudConstant.DEL_NEGOCIOS
-import com.upd.kvupd.data.model.CrudConstant.DEL_RESPUESTA
-import com.upd.kvupd.data.model.CrudConstant.DEL_RUTAS
-import com.upd.kvupd.data.model.CrudConstant.DEL_SEGUIMIENTO
-import com.upd.kvupd.data.model.CrudConstant.DEL_VENDEDOR
+import com.upd.kvupd.data.model.DeleteConstant.DEL_ALTA
+import com.upd.kvupd.data.model.DeleteConstant.DEL_ALTADATOS
+import com.upd.kvupd.data.model.DeleteConstant.DEL_BAJA
+import com.upd.kvupd.data.model.DeleteConstant.DEL_BAJA_PROCESADA
+import com.upd.kvupd.data.model.DeleteConstant.DEL_BAJA_SUPERVISOR
+import com.upd.kvupd.data.model.DeleteConstant.DEL_CLIENTES
+import com.upd.kvupd.data.model.DeleteConstant.DEL_CONFIGURACION
+import com.upd.kvupd.data.model.DeleteConstant.DEL_DISTRITOS
+import com.upd.kvupd.data.model.DeleteConstant.DEL_ENCUESTA
+import com.upd.kvupd.data.model.DeleteConstant.DEL_FOTO
+import com.upd.kvupd.data.model.DeleteConstant.DEL_NEGOCIOS
+import com.upd.kvupd.data.model.DeleteConstant.DEL_RESPUESTA
+import com.upd.kvupd.data.model.DeleteConstant.DEL_RUTAS
+import com.upd.kvupd.data.model.DeleteConstant.DEL_SEGUIMIENTO
+import com.upd.kvupd.data.model.DeleteConstant.DEL_VENDEDOR
 import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
@@ -40,6 +40,23 @@ import com.upd.kvupd.data.model.TableVendedor
 @Dao
 interface Crud {
     ////  TRANSACTIONS
+    @Transaction
+    suspend fun clearSessionData() {
+        ///     Agregar los datos que se descargan bajo demanda
+        deleteBajaSupervisor()
+    }
+
+    @Transaction
+    suspend fun clearServerUploadData(hoy: String) {
+        deleteSeguimiento(hoy)
+        deleteAlta(hoy)
+        deleteAltaDatos(hoy)
+        deleteBaja(hoy)
+        deleteBajaProcesada(hoy)
+        deleteRespuesta(hoy)
+        deleteFoto(hoy)
+    }
+
     @Transaction
     suspend fun replaceConfiguracion(configuracion: List<TableConfiguracion>) {
         deleteConfiguracion()
@@ -172,27 +189,27 @@ interface Crud {
     @Query(DEL_ENCUESTA)
     suspend fun deleteEncuesta()
 
-    @Query(DEL_SEGUIMIENTO)
-    suspend fun deleteSeguimiento()
-
-    @Query(DEL_BAJA)
-    suspend fun deleteBaja()
-
-    @Query(DEL_BAJA_PROCESADA)
-    suspend fun deleteBajaProcesada()
-
-    @Query(DEL_ALTA)
-    suspend fun deleteAlta()
-
-    @Query(DEL_ALTADATOS)
-    suspend fun deleteAltaDatos()
-
     @Query(DEL_BAJA_SUPERVISOR)
     suspend fun deleteBajaSupervisor()
 
+    @Query(DEL_SEGUIMIENTO)
+    suspend fun deleteSeguimiento(hoy: String)
+
+    @Query(DEL_BAJA)
+    suspend fun deleteBaja(hoy: String)
+
+    @Query(DEL_BAJA_PROCESADA)
+    suspend fun deleteBajaProcesada(hoy: String)
+
+    @Query(DEL_ALTA)
+    suspend fun deleteAlta(hoy: String)
+
+    @Query(DEL_ALTADATOS)
+    suspend fun deleteAltaDatos(hoy: String)
+
     @Query(DEL_RESPUESTA)
-    suspend fun deleteRespuesta()
+    suspend fun deleteRespuesta(hoy: String)
 
     @Query(DEL_FOTO)
-    suspend fun deleteFoto()
+    suspend fun deleteFoto(hoy: String)
 }

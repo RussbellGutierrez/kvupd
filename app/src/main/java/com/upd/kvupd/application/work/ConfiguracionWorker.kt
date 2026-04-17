@@ -51,6 +51,7 @@ class ConfiguracionWorker @AssistedInject constructor(
                         kotlinx.coroutines.delay(300)
 
                         roomFunctions.replaceConfiguracion(jobl)
+                        roomFunctions.clearSessionData()
 
                         // 🔹 Guardar horarios en SharedPreferences
                         val inicio = jobl.first().horainicio

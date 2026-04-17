@@ -170,7 +170,7 @@ class LocationServiceBackground : LifecycleService() {
         else
             gpsNotificationHelper.mostrarModoNormal()
 
-    private fun obtenerNivelBateria(): Int {
+    private fun obtenerNivelBateria(): Double {
         val batteryManager =
             getSystemService(Context.BATTERY_SERVICE) as BatteryManager
 
@@ -178,7 +178,7 @@ class LocationServiceBackground : LifecycleService() {
             BatteryManager.BATTERY_PROPERTY_CAPACITY
         )
 
-        return if (nivel >= 0) nivel else 0
+        return if (nivel >= 0) nivel.toDouble() else 0.0
     }
 
     companion object {

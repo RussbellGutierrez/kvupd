@@ -8,11 +8,15 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.receiver.GpsReceiver
 import com.upd.kvupd.application.work.BootStartWorker
+import com.upd.kvupd.application.work.CleanupWorker
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
 import com.upd.kvupd.application.work.DistritosWorker
@@ -20,6 +24,7 @@ import com.upd.kvupd.application.work.EmpleadosWorker
 import com.upd.kvupd.application.work.EncuestasWorker
 import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
+import com.upd.kvupd.application.work.ServidorWorker
 import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.service.LocationServiceBackground
@@ -40,6 +45,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalTime
 import java.util.Calendar
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class OperationSource @Inject constructor(
@@ -61,6 +67,30 @@ class OperationSource @Inject constructor(
         val configuracion = workerConfiguracion()
         workManager.enqueue(configuracion)
         return configuracion.id
+    }
+
+    fun lanzarServidorWorker() {
+        workManager.enqueueUniquePeriodicWork(
+            "servidor_worker",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workerServidor()
+        )
+    }
+
+    fun lanzarCleanupWorker() {
+        workManager.enqueueUniquePeriodicWork(
+            "cleanup_worker",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workerCleanupPeriodic()
+        )
+    }
+
+    fun lanzarCleanupNow() {
+        workManager.enqueueUniqueWork(
+            "cleanup_now",
+            ExistingWorkPolicy.REPLACE,
+            workerCleanupNow()
+        )
     }
 
     fun lanzarWorkersRestantes(usuarioTipo: TipoUsuario): List<UUID> {
@@ -129,6 +159,25 @@ class OperationSource @Inject constructor(
 
     private fun bootWorker() =
         OneTimeWorkRequestBuilder<BootStartWorker>()
+            .setConstraints(constraints)
+            .build()
+
+    private fun workerServidor() =
+        PeriodicWorkRequestBuilder<ServidorWorker>(
+            15, TimeUnit.MINUTES
+        )
+            .setConstraints(constraints)
+            .build()
+
+    private fun workerCleanupPeriodic() =
+        PeriodicWorkRequestBuilder<CleanupWorker>(
+            1, TimeUnit.DAYS
+        )
+            .setConstraints(constraints)
+            .build()
+
+    private fun workerCleanupNow() =
+        OneTimeWorkRequestBuilder<CleanupWorker>()
             .setConstraints(constraints)
             .build()
 

@@ -7,8 +7,8 @@ import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
 import com.upd.kvupd.data.model.QueryConstant.ALTADATO_COUNT
-import com.upd.kvupd.data.model.QueryConstant.ALTADATO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.ALTA_COUNT
+import com.upd.kvupd.data.model.QueryConstant.ALTA_DATO_SERVER
 import com.upd.kvupd.data.model.QueryConstant.ALTA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.BAJA_COUNT
 import com.upd.kvupd.data.model.QueryConstant.BAJA_PROCESADO_COUNT
@@ -25,6 +25,7 @@ import com.upd.kvupd.data.model.QueryConstant.GET_CLIENTES_EXCLUIDOS
 import com.upd.kvupd.data.model.QueryConstant.GET_CONFIGURACION
 import com.upd.kvupd.data.model.QueryConstant.GET_DISTRITOS
 import com.upd.kvupd.data.model.QueryConstant.GET_ENCUESTA
+import com.upd.kvupd.data.model.QueryConstant.GET_FOTO_LISTA
 import com.upd.kvupd.data.model.QueryConstant.GET_HEADER_ENCUESTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_LAST_GPS
 import com.upd.kvupd.data.model.QueryConstant.GET_NEGOCIOS
@@ -32,6 +33,20 @@ import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_BAJASUPER
 import com.upd.kvupd.data.model.QueryConstant.GET_RECYCLER_CLIENTE
 import com.upd.kvupd.data.model.QueryConstant.GET_RUTAS
 import com.upd.kvupd.data.model.QueryConstant.GET_VENDEDORES
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_ALTA
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_ALTA_DATO
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_BAJA
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_BAJA_PROCESADO
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_FOTO
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_RESPUESTA
+import com.upd.kvupd.data.model.QueryConstant.LIMPIEZA_SEGUIMIENTO
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_ALTA
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_ALTA_DATO
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_BAJA
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_BAJA_PROCESADO
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_FOTO
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_RESPUESTA
+import com.upd.kvupd.data.model.QueryConstant.PENDIENTE_SEGUIMIENTO
 import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_COUNT
 import com.upd.kvupd.data.model.QueryConstant.RESPUESTA_SERVER
 import com.upd.kvupd.data.model.QueryConstant.SEGUIMIENTO_COUNT
@@ -79,6 +94,9 @@ interface QueryList {
 
     @Query(GET_HEADER_ENCUESTAS)
     suspend fun getHeadersEncuesta(): List<FlowHeaderEncuestas>
+
+    @Query(GET_FOTO_LISTA)
+    suspend fun getListFotoRutas(hoy: String): List<String>
 
     ////  FLOW
     @Query(GET_CONFIGURACION)
@@ -162,7 +180,7 @@ interface QueryList {
     @Query(ALTA_SERVER)
     suspend fun serverAltas(sync: Boolean): List<TableAlta>
 
-    @Query(ALTADATO_SERVER)
+    @Query(ALTA_DATO_SERVER)
     suspend fun serverAltaDatos(sync: Boolean): List<TableAltaDatos>
 
     @Query(BAJA_SERVER)
@@ -177,64 +195,47 @@ interface QueryList {
     @Query(FOTO_SERVER)
     suspend fun serverFotos(sync: Boolean): List<TableFoto>
 
+    ////  PENDIENTES DE ENVIO
+    @Query(PENDIENTE_SEGUIMIENTO)
+    suspend fun hasSeguimientoPendiente(): Boolean
 
-    /////////////////////////////////////////////////          REVISAR
-    /*
+    @Query(PENDIENTE_ALTA)
+    suspend fun hasAltasPendientes(): Boolean
 
-    @Query(GET_LAST_LOCATION)
-    fun getLastLocation(): Flow<List<TSeguimiento>?>
+    @Query(PENDIENTE_ALTA_DATO)
+    suspend fun hasAltaDatosPendiente(): Boolean
 
-    @Query(GET_MARKERS)
-    fun getMarkers(observacion: String): Flow<List<MarkerMap>>
+    @Query(PENDIENTE_BAJA)
+    suspend fun hasBajasPendientes(): Boolean
 
-    @Query(GET_NEGOCIOS)
-    fun getObsNegocios(): Flow<List<TNegocio>>
+    @Query(PENDIENTE_BAJA_PROCESADO)
+    suspend fun hasBajaProcesadaPendiente(): Boolean
 
-    @Query(GET_DISTRITOS)
-    fun getObsDistritos(): Flow<List<TDistrito>>
+    @Query(PENDIENTE_RESPUESTA)
+    suspend fun hasRespuestasPendientes(): Boolean
 
-    @Query(GET_BAJA)
-    fun getBajas(): Flow<List<TBaja>>
+    @Query(PENDIENTE_FOTO)
+    suspend fun hasFotosPendientes(): Boolean
 
-    @Query(GET_ROW_BAJAS)
-    fun getRowBajas(): Flow<List<RowBaja>>
+    ////  LIMPIEZA DATOS
+    @Query(LIMPIEZA_SEGUIMIENTO)
+    suspend fun needSeguimientoLimpiar(hoy: String): Boolean
 
-    @Query(GET_RUTAS)
-    fun getObsRutas(): Flow<List<TRutas>>
+    @Query(LIMPIEZA_ALTA)
+    suspend fun needAltasLimpiar(hoy: String): Boolean
 
-    @Query(GET_INCIDENCIA)
-    fun getIncidencias(): Flow<List<TIncidencia>>
+    @Query(LIMPIEZA_ALTA_DATO)
+    suspend fun needAltaDatosLimpiar(hoy: String): Boolean
 
+    @Query(LIMPIEZA_BAJA)
+    suspend fun needBajasLimpiar(hoy: String): Boolean
 
+    @Query(LIMPIEZA_BAJA_PROCESADO)
+    suspend fun needBajaProcesadaLimpiar(hoy: String): Boolean
 
-    @Query(GET_CONSULTA)
-    suspend fun getConsulta(numero: String, nombre: String): List<TConsulta>
+    @Query(LIMPIEZA_RESPUESTA)
+    suspend fun needRespuestasLimpiar(hoy: String): Boolean
 
-    @Query(GET_DATA_CLIENTE)
-    suspend fun getDataCliente(cliente: String, observacion: String): List<DataCliente>
-
-
-
-    @Query(GET_DATA_ALTA)
-    suspend fun getDataAlta(alta: String): DataAlta
-
-    @Query(GET_ALTADATOS)
-    suspend fun getAltaDatoSpecific(alta: String): TADatos?
-
-    @Query(GET_LAST_AUX)
-    suspend fun getLastAux(): Int?
-
-    @Query(GET_BAJA_SUPER)
-    suspend fun getBajaSuper(codigo: String, fecha: String): TBajaSuper
-
-    @Query(GET_SELECCION)
-    suspend fun getSeleccionado(): TEncuestaSeleccionado?
-
-    @Query(GET_RESPUESTA_CLIENTE)
-    suspend fun getRespuesta(cliente: String): RespuestaCliente?
-
-    @Query(GET_RESPUESTA_HISTORICO)
-    suspend fun getRespuestaH(cliente: String): RespuestaHistorico
-
-    */
+    @Query(LIMPIEZA_FOTO)
+    suspend fun needFotosLimpiar(hoy: String): Boolean
 }

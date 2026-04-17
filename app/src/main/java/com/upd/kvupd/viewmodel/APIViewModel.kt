@@ -36,6 +36,7 @@ import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.domain.search.BajaSearchSource
 import com.upd.kvupd.domain.search.ClienteSearchSource
 import com.upd.kvupd.domain.send.SendServerFunctions
+import com.upd.kvupd.domain.upload.UploadManager
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toDistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toGiroUI
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toRutaUI
@@ -88,7 +89,8 @@ class APIViewModel @Inject constructor(
     private val jsobFunctions: JsObFunctions,
     private val clienteSearchSource: ClienteSearchSource,
     private val bajaSearchSource: BajaSearchSource,
-    private val sendServerFunctions: SendServerFunctions
+    private val sendServerFunctions: SendServerFunctions,
+    private val uploadManager: UploadManager
 ) : ViewModel() {
 
     private var extraParam: String? = null
@@ -847,70 +849,23 @@ class APIViewModel @Inject constructor(
 
             _errorMap.clear()
 
-            val configGlobal = roomFunctions.queryConfiguracion()
+            uploadManager.uploadAll(
+                extraParam = extraParam,
 
-            coroutineScope {
+                onStatus = { type, status ->
+                    updateStatus(type, status)
+                },
 
-                uploadConfigs.map { config ->
+                onProgress = { type, processed, pending ->
+                    updateProgress(type, processed, pending)
+                },
 
-                    launch {
-                        processUpload(config, configGlobal)
-                    }
-
-                }.joinAll()
-            }
-
-            _uploadFinished.emit(Unit)
-        }
-    }
-
-    private suspend fun processUpload(
-        config: UploadConfig,
-        configGlobal: TableConfiguracion?
-    ) {
-
-        /*if (config.type == UploadType.GPS && configGlobal?.seguimiento != 1) {
-            updateStatus(config.type, ApiServerStatus.SUCCESS)
-            return
-        }*/
-
-        val data = config.getData()
-
-        if (data.isEmpty()) {
-            updateStatus(config.type, ApiServerStatus.SUCCESS)
-            return
-        }
-
-        updateStatus(config.type, ApiServerStatus.LOADING)
-        delay(400)
-
-        val errores = mutableListOf<String>()
-
-        data.forEachIndexed { index, item ->
-
-            val result = config.send(item)
-
-            handleResult(
-                result = result,
-                onError = { errores.add(it) },
-                onSuccess = {
-                    updateProgress(
-                        type = config.type,
-                        processed = index + 1,
-                        pending = data.size - (index + 1)
-                    )
+                onError = { type, errores ->
+                    _errorMap[type] = errores
                 }
             )
-        }
 
-        val finalStatus =
-            if (errores.isEmpty()) ApiServerStatus.SUCCESS
-            else ApiServerStatus.ERROR
-
-        updateStatus(config.type, finalStatus)
-
-        if (errores.isNotEmpty()) {
-            _errorMap[config.type] = errores
+            _uploadFinished.emit(Unit)
         }
     }
 
@@ -954,69 +909,6 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    private val uploadConfigs = listOf(
-
-        UploadConfig(
-            type = UploadType.GPS,
-            getData = { roomFunctions.apiServerSeguimiento(false) },
-            send = { item ->
-
-                delay(120)
-                // 🔥 SIMULACIÓN (no envía)
-                ResultadoApi.Exito(Unit)
-
-                /* real:
-                val param = extraParam ?: return@UploadConfig ResultadoApi.Fallo(
-                    IllegalStateException("Parametro requerido")
-                )
-                sendServerFunctions.enviarSeguimiento(item as TableSeguimiento, param)
-                */
-            }
-        ),
-
-        UploadConfig(
-            type = UploadType.ALTAS,
-            getData = { roomFunctions.apiServerAltas(false) },
-            send = { sendServerFunctions.enviarAlta(it as TableAlta) }
-        ),
-
-        UploadConfig(
-            type = UploadType.ALTA_DATOS,
-            getData = { roomFunctions.apiServerAltaDatos(false) },
-            send = { sendServerFunctions.enviarAltaDatos(it as TableAltaDatos) }
-        ),
-
-        UploadConfig(
-            type = UploadType.BAJAS,
-            getData = { roomFunctions.apiServerBajas(false) },
-            send = { sendServerFunctions.enviarBaja(it as TableBaja) }
-        ),
-
-        UploadConfig(
-            type = UploadType.BAJA_REVISADA,
-            getData = { roomFunctions.apiServerBajasProcesadas(false) },
-            send = { sendServerFunctions.enviarBajaProcesada(it as TableBajaProcesada) }
-        ),
-
-        @Suppress("UNCHECKED_CAST")
-        UploadConfig(
-            type = UploadType.ENCUESTAS,
-            getData = {
-                roomFunctions.apiServerRespuestas(false)
-                    .groupBy { it.cliente to it.encuesta }
-                    .values
-                    .toList() // 🔥 ahora es List<List<TableRespuesta>>
-            },
-            send = { grupo -> sendServerFunctions.enviarRespuesta(grupo as List<TableRespuesta>) }
-        ),
-
-        UploadConfig(
-            type = UploadType.FOTOS,
-            getData = { roomFunctions.apiServerFotos(false) },
-            send = { sendServerFunctions.enviarFoto(it as TableFoto) }
-        )
-    )
-
     private fun <T> downloadBaseReport(
         apiCall: suspend (RequestBody) -> Flow<ResultadoApi<T>>,
         linea: Int? = null,
@@ -1031,17 +923,6 @@ class APIViewModel @Inject constructor(
             linea = linea,
             marca = marca
         )
-
-        // Momentaneo
-        /*val json = JSONObject().apply {
-            put("empleado", config.codigo)
-            put("empresa", config.empresa)
-            linea?.let { put("linea", it) }
-            marca?.let { put("marca", it) }
-
-            // 👇 temporal
-            put("fecha", "2026-04-01")
-        }.toReqBody()*/
 
         emitAll(apiCall(json))
     }

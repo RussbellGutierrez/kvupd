@@ -35,6 +35,14 @@ class RoomImplementation @Inject constructor(
     private val querySource: RoomQuerySource
 ) : RoomFunctions {
 
+    override suspend fun clearSessionData() {
+        crudSource.clearSessionData()
+    }
+
+    override suspend fun clearServerUploadData(hoy: String) {
+        crudSource.clearServerUploadData(hoy)
+    }
+
     override suspend fun replaceConfiguracion(item: List<Configuracion>) {
         crudSource.replaceConfiguracion(item)
     }
@@ -159,66 +167,6 @@ class RoomImplementation @Inject constructor(
         querySource.setSeleccionEncuesta(id)
     }
 
-    override suspend fun deleteConfiguracion() {
-        crudSource.borrarConfiguracion()
-    }
-
-    override suspend fun deleteClientes() {
-        crudSource.borrarClientes()
-    }
-
-    override suspend fun deleteVendedores() {
-        crudSource.borrarVendedores()
-    }
-
-    override suspend fun deleteDistritos() {
-        crudSource.borrarDistritos()
-    }
-
-    override suspend fun deleteNegocios() {
-        crudSource.borrarNegocios()
-    }
-
-    override suspend fun deleteRutas() {
-        crudSource.borrarRutas()
-    }
-
-    override suspend fun deleteEncuesta() {
-        crudSource.borrarEncuesta()
-    }
-
-    override suspend fun deleteSeguimiento() {
-        crudSource.borrarSeguimiento()
-    }
-
-    override suspend fun deleteBajas() {
-        crudSource.borrarBaja()
-    }
-
-    override suspend fun deleteBajasProcesadas() {
-        crudSource.borrarBajaProcesada()
-    }
-
-    override suspend fun deleteAltas() {
-        crudSource.borrarAlta()
-    }
-
-    override suspend fun deleteDatosAltas() {
-        crudSource.borrarDatosAlta()
-    }
-
-    override suspend fun deleteBajasSupervisor() {
-        crudSource.borrarBajaSupervisor()
-    }
-
-    override suspend fun deleteRespuestas() {
-        crudSource.borrarRespuestas()
-    }
-
-    override suspend fun deleteFoto() {
-        crudSource.borrarFoto()
-    }
-
     override suspend fun queryConfiguracion(): TableConfiguracion? {
         return querySource.roomConfiguracion()
     }
@@ -249,6 +197,10 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun queryCabeceraEncuesta(): List<FlowHeaderEncuestas> {
         return querySource.roomHeaderEncuesta()
+    }
+
+    override suspend fun queryListaRutasFoto(hoy: String): List<String> {
+        return querySource.roomListaRutaFoto(hoy)
     }
 
     override fun listFlowConfiguracion(): Flow<List<TableConfiguracion>> {
@@ -357,5 +309,13 @@ class RoomImplementation @Inject constructor(
 
     override suspend fun apiServerFotos(sync: Boolean): List<TableFoto> {
         return querySource.serverFotos(sync)
+    }
+
+    override suspend fun existDatosPendientes(): Boolean {
+        return querySource.hayPendientes()
+    }
+
+    override suspend fun needDatosLimpieza(hoy: String): Boolean {
+        return querySource.hayDatosParaLimpiar(hoy)
     }
 }

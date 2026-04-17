@@ -230,5 +230,10 @@ class DSincronizarDiario : DialogFragment() {
 
         // 🔥 SIEMPRE crear alarmas después de config
         localViewModel.reprogramarUsandoConfig()
+
+        // 🔥 ACTIVAR SISTEMA AUTOMÁTICO
+        localViewModel.iniciarServidor()
+        localViewModel.iniciarLimpieza()
+        localViewModel.limpiarAhora()
     }
 }

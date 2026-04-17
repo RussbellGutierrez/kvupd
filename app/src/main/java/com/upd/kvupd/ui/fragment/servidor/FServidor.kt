@@ -39,7 +39,6 @@ class FServidor : Fragment() {
     private val binding by viewBinding(FragmentFServidorBinding::bind)
 
     private var isUploading = false
-    private var shouldUpload = false
     private lateinit var adapter: ServidorAdapter
     private val _tag by lazy { FServidor::class.java.simpleName }
 
@@ -57,6 +56,7 @@ class FServidor : Fragment() {
         observeData()
         updateErrorUI()
 
+        apiViewmodel.clearErrors()
         apiViewmodel.resetItemsState()
         apiViewmodel.loadServerData()
         apiViewmodel.verifyStatusAndUpload()

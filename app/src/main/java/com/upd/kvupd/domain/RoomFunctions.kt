@@ -29,6 +29,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface RoomFunctions {
     ///     Room Transactions
+    suspend fun clearSessionData() ///  Eliminar datos que se descargan bajo demanda
+    suspend fun clearServerUploadData(hoy: String)
     suspend fun replaceConfiguracion(item: List<Configuracion>)
     suspend fun replaceClientes(item: List<Cliente>)
     suspend fun replaceVendedores(item: List<Vendedor>)
@@ -67,23 +69,6 @@ interface RoomFunctions {
     suspend fun updateFoto(actual: TableFoto)
     suspend fun updateEncuestaSeleccion(id: String)
 
-    ///     Room Delete
-    suspend fun deleteConfiguracion()
-    suspend fun deleteClientes()
-    suspend fun deleteVendedores()
-    suspend fun deleteDistritos()
-    suspend fun deleteNegocios()
-    suspend fun deleteRutas()
-    suspend fun deleteEncuesta()
-    suspend fun deleteSeguimiento()
-    suspend fun deleteBajas()
-    suspend fun deleteBajasProcesadas()
-    suspend fun deleteAltas()
-    suspend fun deleteDatosAltas()
-    suspend fun deleteBajasSupervisor()
-    suspend fun deleteRespuestas()
-    suspend fun deleteFoto()
-
     ///     Room Query
     suspend fun queryConfiguracion(): TableConfiguracion?
     suspend fun queryClientes(): List<TableCliente>
@@ -93,6 +78,7 @@ interface RoomFunctions {
     suspend fun queryAltaSpecific(idaux: String, fecha: String): TableAlta?
     suspend fun queryAltaDatos(idaux: String, fecha: String): TableAltaDatos?
     suspend fun queryCabeceraEncuesta(): List<FlowHeaderEncuestas>
+    suspend fun queryListaRutasFoto(hoy: String): List<String>
 
     ///     Room Flow
     fun listFlowConfiguracion(): Flow<List<TableConfiguracion>>
@@ -126,4 +112,8 @@ interface RoomFunctions {
     suspend fun apiServerBajasProcesadas(sync: Boolean): List<TableBajaProcesada>
     suspend fun apiServerRespuestas(sync: Boolean): List<TableRespuesta>
     suspend fun apiServerFotos(sync: Boolean): List<TableFoto>
+
+    ///     Room Exist
+    suspend fun existDatosPendientes(): Boolean
+    suspend fun needDatosLimpieza(hoy: String): Boolean
 }

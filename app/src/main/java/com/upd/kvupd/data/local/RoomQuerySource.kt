@@ -48,6 +48,9 @@ class RoomQuerySource @Inject constructor(
     suspend fun roomHeaderEncuesta(): List<FlowHeaderEncuestas> =
         query.getHeadersEncuesta()
 
+    suspend fun roomListaRutaFoto(hoy: String): List<String> =
+        query.getListFotoRutas(hoy)
+
     ////  FLOW
     fun flowConfiguracion(): Flow<List<TableConfiguracion>> =
         query.flowConfiguracion()
@@ -140,4 +143,25 @@ class RoomQuerySource @Inject constructor(
 
     suspend fun serverFotos(sync: Boolean): List<TableFoto> =
         query.serverFotos(sync)
+
+    ////  EXISTEN REGISTROS
+    suspend fun hayPendientes(): Boolean {
+        return query.hasSeguimientoPendiente() ||
+                query.hasAltasPendientes() ||
+                query.hasAltaDatosPendiente() ||
+                query.hasBajasPendientes() ||
+                query.hasBajaProcesadaPendiente() ||
+                query.hasRespuestasPendientes() ||
+                query.hasFotosPendientes()
+    }
+
+    suspend fun hayDatosParaLimpiar(hoy: String): Boolean {
+        return query.needSeguimientoLimpiar(hoy) ||
+                query.needAltasLimpiar(hoy) ||
+                query.needAltaDatosLimpiar(hoy) ||
+                query.needBajasLimpiar(hoy) ||
+                query.needBajaProcesadaLimpiar(hoy) ||
+                query.needRespuestasLimpiar(hoy) ||
+                query.needFotosLimpiar(hoy)
+    }
 }

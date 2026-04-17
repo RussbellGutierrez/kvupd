@@ -25,19 +25,17 @@ class ServidorAdapter :
         return ViewHolder(binding)
     }
 
-    // 🔥 bind normal (fallback)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    // 🔥 bind con payloads
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
         payloads: MutableList<Any>
     ) {
         if (payloads.isNotEmpty()) {
-            holder.updateProgress(getItem(position))
+            holder.updateCantidad(getItem(position)) // 🔥 solo texto
         } else {
             holder.bind(getItem(position))
         }
@@ -54,26 +52,22 @@ class ServidorAdapter :
 
             val color = ContextCompat.getColor(ctx, item.status.colorRes)
 
-            // 🔹 contenido completo (solo cuando cambia todo)
+            // 🔹 estructura (NO cambia seguido)
             bind.txtServidor.text = item.type.titulo
             bind.txtServidor.setDrawableTint(DrawablePosition.TOP, color)
 
-            // 🔹 delega progreso
-            updateProgress(item)
+            // 🔹 cantidad inicial
+            updateCantidad(item)
 
+            // 🔹 progress SOLO aquí
             bind.pbLinear.visibleIf(isLoading && hasData)
         }
 
-        fun updateProgress(item: UploadItem) {
-            val hasData = item.total > 0
-            val isLoading = item.status == ApiServerStatus.LOADING
-
+        fun updateCantidad(item: UploadItem) {
             bind.txtCantidad.text = when {
                 item.total == 0 -> "Sin registros"
                 else -> "${item.processed} / ${item.pending} pendientes (${item.total} total)"
             }
-
-            bind.pbLinear.visibleIf(isLoading && hasData)
         }
     }
 
@@ -84,15 +78,17 @@ class ServidorAdapter :
                 a.type == b.type
 
             override fun areContentsTheSame(a: UploadItem, b: UploadItem): Boolean =
-                a == b
+                a.status == b.status &&
+                        a.processed == b.processed &&
+                        a.pending == b.pending &&
+                        a.total == b.total
 
-            // 🔥 CLAVE: detectar solo cambios de progreso
             override fun getChangePayload(a: UploadItem, b: UploadItem): Any? {
                 return if (
-                    a.status == b.status &&
+                    a.status == b.status && // 👈 importante
                     (a.processed != b.processed || a.pending != b.pending)
                 ) {
-                    "PAYLOAD_PROGRESS"
+                    "PAYLOAD_CANTIDAD"
                 } else null
             }
         }

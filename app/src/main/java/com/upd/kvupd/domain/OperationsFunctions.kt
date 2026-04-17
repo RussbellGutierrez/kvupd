@@ -8,6 +8,9 @@ interface OperationsFunctions {
 
     fun initWorker(): UUID
     fun remainingWorkers(usuarioTipo: TipoUsuario): List<UUID>
+    fun startServerWorker()
+    fun runCleanupNow()
+    fun startCleanupWorker()
     fun syncInitial(config: TableConfiguracion)
     fun reprogramBeforeConfig()
     fun initBootWorker()

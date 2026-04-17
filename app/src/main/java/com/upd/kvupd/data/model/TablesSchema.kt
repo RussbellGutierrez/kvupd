@@ -105,6 +105,7 @@ data class TableRespuesta(
 @Entity(primaryKeys = ["cliente", "encuesta"])
 data class TableFoto(
     val cliente: String,
+    val fecha: String,
     val encuesta: Int,
     val rutafoto: String,
 
@@ -119,7 +120,7 @@ data class TableSeguimiento(
     val longitud: Double,
     val latitud: Double,
     val precision: Double,
-    val bateria: Int,
+    val bateria: Double,
 
     // 🔑 Nuevo control de sincronización
     var sincronizado: Boolean = false

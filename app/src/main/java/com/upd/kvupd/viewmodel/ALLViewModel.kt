@@ -217,4 +217,16 @@ class ALLViewModel @Inject constructor(
     fun actualizarRespuesta(pregunta: Int, valor: String) {
         encuestaState.respuestas[pregunta] = valor
     }
+
+    fun iniciarServidor() {
+        operationsFunctions.startServerWorker()
+    }
+
+    fun iniciarLimpieza() {
+        operationsFunctions.startCleanupWorker()
+    }
+
+    fun limpiarAhora() {
+        operationsFunctions.runCleanupNow()
+    }
 }

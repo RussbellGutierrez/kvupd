@@ -52,6 +52,12 @@ object QueryConstant {
         )
     """
 
+    const val GET_FOTO_LISTA = """
+        SELECT rutafoto FROM TableFoto
+        WHERE fecha NOT LIKE :hoy || '%'
+        AND sincronizado = 1
+    """
+
     const val UPDATE_CLEAR_ENCUESTA = "UPDATE TableEncuesta SET seleccionada = 0"
     const val UPDATE_SET_SELECCION = "UPDATE TableEncuesta SET seleccionada = 1 WHERE id = :id"
 
@@ -84,7 +90,7 @@ object QueryConstant {
         ORDER BY fecha ASC
     """
 
-    const val ALTADATO_SERVER = """
+    const val ALTA_DATO_SERVER = """
         SELECT * FROM TableAltaDatos
         WHERE sincronizado = :sync
     """
@@ -110,5 +116,101 @@ object QueryConstant {
     const val FOTO_SERVER = """
         SELECT * FROM TableFoto
         WHERE sincronizado = :sync
+    """
+
+    ////  CONDICIONES
+    const val CONDICION_PENDIENTE = "sincronizado = 0"
+
+    const val CONDICION_LIMPIEZA = """
+        sincronizado = 1
+        AND fecha NOT LIKE :hoy || '%'
+    """
+
+    ////  PENDIENTES DE ENVIO
+    const val PENDIENTE_SEGUIMIENTO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableSeguimiento
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_ALTA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableAlta
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_ALTA_DATO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableAltaDatos
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_BAJA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableBaja
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_BAJA_PROCESADO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableBajaProcesada
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_RESPUESTA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableRespuesta
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+    const val PENDIENTE_FOTO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableFoto
+            WHERE $CONDICION_PENDIENTE
+        )
+    """
+
+    ////  LIMPIEZA DATOS
+    const val LIMPIEZA_SEGUIMIENTO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableSeguimiento
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_ALTA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableAlta
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_ALTA_DATO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableAltaDatos
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_BAJA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableBaja
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_BAJA_PROCESADO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableBajaProcesada
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_RESPUESTA = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableRespuesta
+            WHERE $CONDICION_LIMPIEZA
+        )
+    """
+    const val LIMPIEZA_FOTO = """
+        SELECT EXISTS(
+            SELECT 1 FROM TableFoto
+            WHERE $CONDICION_LIMPIEZA
+        )
     """
 }
