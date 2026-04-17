@@ -25,8 +25,22 @@ class ServidorAdapter :
         return ViewHolder(binding)
     }
 
+    // 🔥 bind normal (fallback)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    // 🔥 bind con payloads
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNotEmpty()) {
+            holder.updateProgress(getItem(position))
+        } else {
+            holder.bind(getItem(position))
+        }
     }
 
     class ViewHolder(
@@ -38,13 +52,21 @@ class ServidorAdapter :
             val hasData = item.total > 0
             val isLoading = item.status == ApiServerStatus.LOADING
 
-            val colorRes = item.status.colorRes
+            val color = ContextCompat.getColor(ctx, item.status.colorRes)
 
-            val color = ContextCompat.getColor(ctx, colorRes)
-
-            // 🔹 1. Content
+            // 🔹 contenido completo (solo cuando cambia todo)
             bind.txtServidor.text = item.type.titulo
             bind.txtServidor.setDrawableTint(DrawablePosition.TOP, color)
+
+            // 🔹 delega progreso
+            updateProgress(item)
+
+            bind.pbLinear.visibleIf(isLoading && hasData)
+        }
+
+        fun updateProgress(item: UploadItem) {
+            val hasData = item.total > 0
+            val isLoading = item.status == ApiServerStatus.LOADING
 
             bind.txtCantidad.text = when {
                 item.total == 0 -> "Sin registros"
@@ -57,11 +79,22 @@ class ServidorAdapter :
 
     companion object {
         val Diff = object : DiffUtil.ItemCallback<UploadItem>() {
+
             override fun areItemsTheSame(a: UploadItem, b: UploadItem): Boolean =
                 a.type == b.type
 
             override fun areContentsTheSame(a: UploadItem, b: UploadItem): Boolean =
                 a == b
+
+            // 🔥 CLAVE: detectar solo cambios de progreso
+            override fun getChangePayload(a: UploadItem, b: UploadItem): Any? {
+                return if (
+                    a.status == b.status &&
+                    (a.processed != b.processed || a.pending != b.pending)
+                ) {
+                    "PAYLOAD_PROGRESS"
+                } else null
+            }
         }
     }
 }

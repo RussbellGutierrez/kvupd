@@ -82,7 +82,6 @@ class FRastreo : Fragment(), MenuProvider {
         savedInstanceState: Bundle?
     ): View = FragmentFRastreoBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

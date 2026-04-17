@@ -103,7 +103,6 @@ class FEncuesta : Fragment(), MenuProvider {
         savedInstanceState: Bundle?
     ): View = FragmentFEncuestaBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

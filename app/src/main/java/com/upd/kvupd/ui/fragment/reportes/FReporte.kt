@@ -90,7 +90,6 @@ class FReporte : Fragment(), MenuProvider,
         savedInstanceState: Bundle?
     ): View = FragmentFReporteBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

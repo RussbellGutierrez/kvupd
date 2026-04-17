@@ -75,7 +75,6 @@ class FAltaDatos : Fragment() {
         savedInstanceState: Bundle?
     ): View = FragmentFAltadatosBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

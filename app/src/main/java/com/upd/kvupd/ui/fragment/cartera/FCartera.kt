@@ -113,7 +113,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         savedInstanceState: Bundle?
     ): View = FragmentFCarteraBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

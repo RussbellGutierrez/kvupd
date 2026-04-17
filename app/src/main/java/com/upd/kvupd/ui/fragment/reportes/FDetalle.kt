@@ -70,7 +70,6 @@ class FDetalle : Fragment(), SolesDetalleAdapter.Listener {
         savedInstanceState: Bundle?
     ): View = FragmentFDetalleBinding.inflate(inflater, container, false).root
 
-    @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

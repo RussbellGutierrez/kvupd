@@ -1,7 +1,6 @@
 package com.upd.kvupd.viewmodel
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.upd.kvupd.data.model.FlowBajaSupervisor
@@ -25,8 +24,10 @@ import com.upd.kvupd.data.model.TableAlta
 import com.upd.kvupd.data.model.TableAltaDatos
 import com.upd.kvupd.data.model.TableBaja
 import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.TableConfiguracion
 import com.upd.kvupd.data.model.TableFoto
 import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.TableSeguimiento
 import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
@@ -54,7 +55,6 @@ import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.to2Decimals
-import com.upd.kvupd.utils.toReqBody
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -75,9 +75,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
-import org.json.JSONObject
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -90,6 +90,14 @@ class APIViewModel @Inject constructor(
     private val bajaSearchSource: BajaSearchSource,
     private val sendServerFunctions: SendServerFunctions
 ) : ViewModel() {
+
+    private var extraParam: String? = null
+
+    private val _errorMap = mutableMapOf<UploadType, List<String>>()
+    val errorMap: Map<UploadType, List<String>> get() = _errorMap
+
+    private val _uploadFinished = EventFlow<Unit>()
+    val uploadFinished = _uploadFinished.events
 
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
@@ -567,24 +575,6 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun verifyStatusServidor() {
-        viewModelScope.launch {
-            val loading = ServerStatusResult(
-                ApiServerStatus.LOADING,
-                "Consultando servidor..."
-            )
-            _status.value = loading
-
-            delay(500) // 🔥 300–600ms es suficiente
-
-            serverFunctions.apiQueryStatusServidor().collect { result ->
-
-                val mapped = mapServerStatus(result)
-                _status.value = mapped
-            }
-        }
-    }
-
     private fun marcarAltaConDatos(idaux: String, fecha: String) {
         viewModelScope.launch {
             val alta = roomFunctions.queryAltaSpecific(idaux, fecha) ?: return@launch
@@ -711,16 +701,20 @@ class APIViewModel @Inject constructor(
     fun loadServerData() {
         viewModelScope.launch {
 
+            val currentItems = _items.value.associateBy { it.type }
+
             val itemSeguimiento = async {
                 val total = roomFunctions.apiCountSeguimiento()
                 val pendientes = roomFunctions.apiServerSeguimiento(false)
+
+                val current = currentItems[UploadType.GPS]
 
                 UploadItem(
                     type = UploadType.GPS,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -728,12 +722,14 @@ class APIViewModel @Inject constructor(
                 val total = roomFunctions.apiCountAlta()
                 val pendientes = roomFunctions.apiServerAltas(false)
 
+                val current = currentItems[UploadType.ALTAS]
+
                 UploadItem(
                     type = UploadType.ALTAS,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -741,12 +737,14 @@ class APIViewModel @Inject constructor(
                 val total = roomFunctions.apiCountAltaDatos()
                 val pendientes = roomFunctions.apiServerAltaDatos(false)
 
+                val current = currentItems[UploadType.ALTA_DATOS]
+
                 UploadItem(
                     type = UploadType.ALTA_DATOS,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -754,12 +752,14 @@ class APIViewModel @Inject constructor(
                 val total = roomFunctions.apiCountBaja()
                 val pendientes = roomFunctions.apiServerBajas(false)
 
+                val current = currentItems[UploadType.BAJAS]
+
                 UploadItem(
                     type = UploadType.BAJAS,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -767,12 +767,14 @@ class APIViewModel @Inject constructor(
                 val total = roomFunctions.apiCountBajaProcesada()
                 val pendientes = roomFunctions.apiServerBajasProcesadas(false)
 
+                val current = currentItems[UploadType.BAJA_REVISADA]
+
                 UploadItem(
                     type = UploadType.BAJA_REVISADA,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -785,12 +787,14 @@ class APIViewModel @Inject constructor(
                     .distinct()
                     .size
 
+                val current = currentItems[UploadType.ENCUESTAS]
+
                 UploadItem(
                     type = UploadType.ENCUESTAS,
                     total = total,
                     pending = pendientes,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -798,12 +802,14 @@ class APIViewModel @Inject constructor(
                 val total = roomFunctions.apiCountFoto()
                 val pendientes = roomFunctions.apiServerFotos(false)
 
+                val current = currentItems[UploadType.FOTOS]
+
                 UploadItem(
                     type = UploadType.FOTOS,
                     total = total,
                     pending = pendientes.size,
-                    processed = 0,
-                    status = ApiServerStatus.IDLE
+                    processed = current?.processed ?: 0,
+                    status = current?.status ?: ApiServerStatus.IDLE
                 )
             }
 
@@ -819,30 +825,195 @@ class APIViewModel @Inject constructor(
         }
     }
 
+    fun setExtraParam(value: String) {
+        extraParam = value
+    }
+
+    fun resetItemsState() {
+        _items.value = _items.value.map {
+            it.copy(
+                status = ApiServerStatus.IDLE,
+                processed = 0
+            )
+        }
+    }
+
+    fun clearErrors() {
+        _errorMap.clear()
+    }
+
+    private fun uploadAll() {
+        viewModelScope.launch {
+
+            _errorMap.clear()
+
+            val configGlobal = roomFunctions.queryConfiguracion()
+
+            coroutineScope {
+
+                uploadConfigs.map { config ->
+
+                    launch {
+                        processUpload(config, configGlobal)
+                    }
+
+                }.joinAll()
+            }
+
+            _uploadFinished.emit(Unit)
+        }
+    }
+
+    private suspend fun processUpload(
+        config: UploadConfig,
+        configGlobal: TableConfiguracion?
+    ) {
+
+        /*if (config.type == UploadType.GPS && configGlobal?.seguimiento != 1) {
+            updateStatus(config.type, ApiServerStatus.SUCCESS)
+            return
+        }*/
+
+        val data = config.getData()
+
+        if (data.isEmpty()) {
+            updateStatus(config.type, ApiServerStatus.SUCCESS)
+            return
+        }
+
+        updateStatus(config.type, ApiServerStatus.LOADING)
+        delay(400)
+
+        val errores = mutableListOf<String>()
+
+        data.forEachIndexed { index, item ->
+
+            val result = config.send(item)
+
+            handleResult(
+                result = result,
+                onError = { errores.add(it) },
+                onSuccess = {
+                    updateProgress(
+                        type = config.type,
+                        processed = index + 1,
+                        pending = data.size - (index + 1)
+                    )
+                }
+            )
+        }
+
+        val finalStatus =
+            if (errores.isEmpty()) ApiServerStatus.SUCCESS
+            else ApiServerStatus.ERROR
+
+        updateStatus(config.type, finalStatus)
+
+        if (errores.isNotEmpty()) {
+            _errorMap[config.type] = errores
+        }
+    }
+
+    fun verifyStatusAndUpload() {
+        viewModelScope.launch {
+
+            serverFunctions.apiQueryStatusServidor().collect { result ->
+
+                delay(300)
+
+                val mapped = mapServerStatus(result)
+                _status.value = mapped
+
+                if (mapped.status == ApiServerStatus.SUCCESS) {
+                    uploadAll()
+                }
+            }
+        }
+    }
+
+    private fun updateStatus(type: UploadType, status: ApiServerStatus) {
+        _items.value = _items.value.map { item ->
+            if (item.type == type) {
+                item.copy(status = status)
+            } else item
+        }
+    }
+
+    private fun updateProgress(
+        type: UploadType,
+        processed: Int,
+        pending: Int
+    ) {
+        _items.value = _items.value.map {
+            if (it.type == type) {
+                it.copy(
+                    processed = processed,
+                    pending = pending
+                )
+            } else it
+        }
+    }
+
     private val uploadConfigs = listOf(
 
         UploadConfig(
             type = UploadType.GPS,
             getData = { roomFunctions.apiServerSeguimiento(false) },
-            send = { sendServerFunctions.enviarSeguimiento(it) }
+            send = { item ->
+
+                delay(120)
+                // 🔥 SIMULACIÓN (no envía)
+                ResultadoApi.Exito(Unit)
+
+                /* real:
+                val param = extraParam ?: return@UploadConfig ResultadoApi.Fallo(
+                    IllegalStateException("Parametro requerido")
+                )
+                sendServerFunctions.enviarSeguimiento(item as TableSeguimiento, param)
+                */
+            }
         ),
 
         UploadConfig(
             type = UploadType.ALTAS,
             getData = { roomFunctions.apiServerAltas(false) },
-            send = { sendServerFunctions.enviarAlta(it) }
+            send = { sendServerFunctions.enviarAlta(it as TableAlta) }
         ),
 
         UploadConfig(
             type = UploadType.ALTA_DATOS,
             getData = { roomFunctions.apiServerAltaDatos(false) },
-            send = { sendServerFunctions.enviarAltaDatos(it) }
+            send = { sendServerFunctions.enviarAltaDatos(it as TableAltaDatos) }
+        ),
+
+        UploadConfig(
+            type = UploadType.BAJAS,
+            getData = { roomFunctions.apiServerBajas(false) },
+            send = { sendServerFunctions.enviarBaja(it as TableBaja) }
+        ),
+
+        UploadConfig(
+            type = UploadType.BAJA_REVISADA,
+            getData = { roomFunctions.apiServerBajasProcesadas(false) },
+            send = { sendServerFunctions.enviarBajaProcesada(it as TableBajaProcesada) }
+        ),
+
+        @Suppress("UNCHECKED_CAST")
+        UploadConfig(
+            type = UploadType.ENCUESTAS,
+            getData = {
+                roomFunctions.apiServerRespuestas(false)
+                    .groupBy { it.cliente to it.encuesta }
+                    .values
+                    .toList() // 🔥 ahora es List<List<TableRespuesta>>
+            },
+            send = { grupo -> sendServerFunctions.enviarRespuesta(grupo as List<TableRespuesta>) }
         ),
 
         UploadConfig(
             type = UploadType.FOTOS,
             getData = { roomFunctions.apiServerFotos(false) },
-            send = { sendServerFunctions.enviarFoto(it) }
+            send = { sendServerFunctions.enviarFoto(it as TableFoto) }
         )
     )
 

@@ -41,7 +41,7 @@
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/pb_linear"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="5dp"
             android:indeterminate="true"
             app:indicatorColor="@color/secondaryColor"
             app:indicatorDirectionLinear="startToEnd"
