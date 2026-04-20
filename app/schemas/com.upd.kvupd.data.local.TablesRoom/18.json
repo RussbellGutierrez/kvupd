@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 18,
-    "identityHash": "b023d64b95c4025951bc7b4d6254708b",
+    "identityHash": "e36f8c022582a1a5c8ecef4bf89bffa2",
     "entities": [
       {
         "tableName": "TableConfiguracion",
@@ -448,11 +448,17 @@
       },
       {
         "tableName": "TableFoto",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `rutafoto` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cliente` TEXT NOT NULL, `fecha` TEXT NOT NULL, `encuesta` INTEGER NOT NULL, `rutafoto` TEXT NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`cliente`, `encuesta`))",
         "fields": [
           {
             "fieldPath": "cliente",
             "columnName": "cliente",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -1134,7 +1140,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b023d64b95c4025951bc7b4d6254708b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e36f8c022582a1a5c8ecef4bf89bffa2')"
     ]
   }
 }
