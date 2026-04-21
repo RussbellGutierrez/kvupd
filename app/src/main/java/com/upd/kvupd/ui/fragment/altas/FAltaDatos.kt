@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.altas
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.model.LatLng
-import com.upd.kvupd.data.model.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableAltaDatos
 import com.upd.kvupd.databinding.FragmentFAltadatosBinding
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Documento
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Numeracion

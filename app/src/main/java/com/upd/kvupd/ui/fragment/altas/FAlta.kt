@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.altas
 
-import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.TableWrapper
 import com.upd.kvupd.databinding.FragmentFAltaBinding
 import com.upd.kvupd.ui.fragment.altas.adapter.AltaAdapter

@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.cartera
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.Location
@@ -28,8 +27,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableVendedor
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.ui.dialog.ListaClientesMapa

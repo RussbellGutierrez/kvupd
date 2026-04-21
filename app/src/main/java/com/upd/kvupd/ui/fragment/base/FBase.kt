@@ -17,7 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.upd.kvupd.R
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.BotonesConfig
-import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.model.colorSeguimiento
 import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding

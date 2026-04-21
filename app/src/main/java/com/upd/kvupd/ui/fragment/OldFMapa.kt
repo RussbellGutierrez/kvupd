@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PolygonOptions
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.DataCliente
-import com.upd.kvupd.data.model.TableRuta
+import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.databinding.FragmentFMapaBinding
 import com.upd.kvupd.utils.OldConstant.FILTRO_OBS
 import com.upd.kvupd.utils.OldConstant.GPS_LOC

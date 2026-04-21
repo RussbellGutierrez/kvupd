@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.databinding.FlowRowBajaBinding
 import com.upd.kvupd.ui.fragment.baja.enumFile.MotivoBaja
 import com.upd.kvupd.utils.visibleIf

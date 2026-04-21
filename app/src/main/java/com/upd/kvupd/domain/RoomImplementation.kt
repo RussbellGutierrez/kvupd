@@ -12,20 +12,20 @@ import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
-import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableCliente
-import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.data.model.TableDistrito
-import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableFoto
-import com.upd.kvupd.data.model.TableNegocio
-import com.upd.kvupd.data.model.TableRespuesta
-import com.upd.kvupd.data.model.TableRuta
-import com.upd.kvupd.data.model.TableSeguimiento
-import com.upd.kvupd.data.model.TableVendedor
+import com.upd.kvupd.data.model.core.TableAlta
+import com.upd.kvupd.data.model.core.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.cache.TableCliente
+import com.upd.kvupd.data.model.core.TableConfiguracion
+import com.upd.kvupd.data.model.cache.TableDistrito
+import com.upd.kvupd.data.model.cache.TableEncuesta
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.cache.TableNegocio
+import com.upd.kvupd.data.model.core.TableRespuesta
+import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.core.TableSeguimiento
+import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.data.model.Vendedor
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -208,11 +208,11 @@ class RoomImplementation @Inject constructor(
     }
 
     override fun listFlowClientes(): Flow<List<FlowCliente>> {
-        return querySource.flowClientes()
+        return querySource.flowCombineClientes()
     }
 
     override fun listFlowBajaSupervisor(): Flow<List<FlowBajaSupervisor>> {
-        return querySource.flowBajaSupervisor()
+        return querySource.flowCombineBajasSupervisor()
     }
 
     override fun listFlowAltas(): Flow<List<TableAlta>> {
@@ -251,8 +251,8 @@ class RoomImplementation @Inject constructor(
         return querySource.flowHeaderEncuesta()
     }
 
-    override fun listFlowClientesPendientes(encuestaId: String): Flow<List<TableCliente>> {
-        return querySource.flowClientesExcluidos(encuestaId)
+    override fun listFlowClientesPendientes(encuestaId: Int): Flow<List<TableCliente>> {
+        return querySource.flowCombineClientesExcluidos(encuestaId)
     }
 
     override suspend fun apiCountSeguimiento(): Int {

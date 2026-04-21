@@ -1,7 +1,7 @@
 package com.upd.kvupd.ui.fragment.encuesta.mapper
 
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
-import com.upd.kvupd.data.model.TableCliente
+import com.upd.kvupd.data.model.cache.TableCliente
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.ClienteUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.EncuestaUI
 

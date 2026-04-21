@@ -49,13 +49,4 @@ abstract class BinderModule {
     @Singleton
     @Binds
     abstract fun bindSendServerImplementation(sendServer: SendServerImplementation): SendServerFunctions
-
-    // ELIMINAR LUEGO
-    @Singleton
-    @Binds
-    abstract fun bindRepoImpl(repo: OldRepoImpl): OldRepository
-
-    @Singleton
-    @Binds
-    abstract fun bindFunImpl(fnt: OldFunImpl): OldFunctions
 }

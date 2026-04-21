@@ -1,7 +1,7 @@
 package com.upd.kvupd.domain.search
 
 import com.upd.kvupd.data.model.FlowBajaSupervisor
-import com.upd.kvupd.data.model.TableBaja
+import com.upd.kvupd.data.model.core.TableBaja
 import javax.inject.Inject
 
 class BajaSearchSource @Inject constructor() {

@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.reportes
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -19,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.upd.kvupd.R
-import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.databinding.FragmentFReporteBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario

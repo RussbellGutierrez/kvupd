@@ -46,7 +46,7 @@ fun FlowCliente.icono(context: Context): BitmapDescriptor {
     val drawableId = when {
         baja == 1 -> R.drawable.pin_otros
         compras == 1 -> R.drawable.pin_peligro
-        ventas == 0 -> R.drawable.pin_venta
+        ventas == 1 -> R.drawable.pin_venta
         else -> R.drawable.pin_chess
     }
     return context.vectorToBitmapDescriptor(drawableId)

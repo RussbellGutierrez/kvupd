@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.encuesta
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.Location
@@ -30,8 +29,8 @@ import com.bumptech.glide.Glide
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
 import com.upd.kvupd.data.model.JsonEncuesta
-import com.upd.kvupd.data.model.TableFoto
-import com.upd.kvupd.data.model.TableRespuesta
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.databinding.FlowRowPreguntasBinding
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
 import com.upd.kvupd.ui.dialog.SeleccionEncuesta

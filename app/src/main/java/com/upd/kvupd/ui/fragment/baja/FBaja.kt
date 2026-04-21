@@ -24,8 +24,8 @@ import com.upd.kvupd.data.model.BajaVendedor
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaVendedor
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
 import com.upd.kvupd.databinding.DialogBajasVendedorBinding
 import com.upd.kvupd.databinding.FragmentFBajaBinding
 import com.upd.kvupd.databinding.RowBajavendedorBinding

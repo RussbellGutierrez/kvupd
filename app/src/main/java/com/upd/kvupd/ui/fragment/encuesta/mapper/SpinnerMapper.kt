@@ -1,8 +1,8 @@
 package com.upd.kvupd.ui.fragment.encuesta.mapper
 
-import com.upd.kvupd.data.model.TableDistrito
-import com.upd.kvupd.data.model.TableNegocio
-import com.upd.kvupd.data.model.TableRuta
+import com.upd.kvupd.data.model.cache.TableDistrito
+import com.upd.kvupd.data.model.cache.TableNegocio
+import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI

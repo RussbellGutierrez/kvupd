@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.upd.kvupd.application.GpsNotificationHelper
-import com.upd.kvupd.data.model.TableSeguimiento
+import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.FechaHoraUtil

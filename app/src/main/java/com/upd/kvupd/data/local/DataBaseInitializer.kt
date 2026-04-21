@@ -3,9 +3,14 @@ package com.upd.kvupd.data.local
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
-import com.upd.kvupd.utils.BaseDatosRoom.DB_NAME
-import com.upd.kvupd.utils.BaseDatosRoom.VERSION_BASEDATOS
-import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_ROOM
+import com.upd.kvupd.data.local.cache.CacheRoom
+import com.upd.kvupd.data.local.core.CoreRoom
+import com.upd.kvupd.utils.BaseDatosRoom.CACHE_NAME
+import com.upd.kvupd.utils.BaseDatosRoom.CORE_NAME
+import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CACHE
+import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CORE
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_ROOM_CACHE
+import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_ROOM_CORE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -13,27 +18,39 @@ class DataBaseInitializer @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: SharedPreferences
 ) {
-    fun build(): TablesRoom {
-        val oldVersion = preferences.getInt(KEY_ROOM, -1)
 
-        val existeVersionAnterior = oldVersion in 1 until CURRENT_VERSION
+    fun buildCore(): CoreRoom {
 
-        if (existeVersionAnterior) {
-            // Metodo para salvar informacion de datos importantes en csv
-            // Subir los datos salvados a traves de un worker
+        val oldVersion = preferences.getInt(KEY_ROOM_CORE, -1)
+
+        val cambioVersion =
+            oldVersion != -1 && oldVersion < VERSION_CORE
+
+        if (cambioVersion) {
+            // backup config
+            // export pendientes
+            // restore luego
         }
 
-        val db = Room.databaseBuilder(context, TablesRoom::class.java, DB_NAME)
-            .fallbackToDestructiveMigration(true)
-            .build()
+        val db = Room.databaseBuilder(context, CoreRoom::class.java, CORE_NAME).build()
 
-        // Guarda nueva versión si la DB se construyo bien
-        preferences.edit().putInt(KEY_ROOM, CURRENT_VERSION).apply()
+        preferences.edit()
+            .putInt(KEY_ROOM_CORE, VERSION_CORE)
+            .apply()
 
         return db
     }
 
-    companion object {
-        const val CURRENT_VERSION = VERSION_BASEDATOS
+    fun buildCache(): CacheRoom {
+
+        val db = Room.databaseBuilder(context, CacheRoom::class.java, CACHE_NAME)
+            .fallbackToDestructiveMigration(true)
+            .build()
+
+        preferences.edit()
+            .putInt(KEY_ROOM_CACHE, VERSION_CACHE)
+            .apply()
+
+        return db
     }
 }

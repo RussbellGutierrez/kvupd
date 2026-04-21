@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.data.model.TableAlta
+import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.databinding.FlowRowAltaBinding
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

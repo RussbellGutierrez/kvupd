@@ -1,6 +1,6 @@
 package com.upd.kvupd.viewmodel.state
 
-import com.upd.kvupd.data.model.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableAltaDatos
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI

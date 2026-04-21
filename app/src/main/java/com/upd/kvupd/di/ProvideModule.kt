@@ -10,10 +10,13 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.upd.kvupd.data.local.Crud
 import com.upd.kvupd.data.local.DataBaseInitializer
-import com.upd.kvupd.data.local.QueryList
-import com.upd.kvupd.data.local.TablesRoom
+import com.upd.kvupd.data.local.cache.CacheCrud
+import com.upd.kvupd.data.local.cache.CacheQuery
+import com.upd.kvupd.data.local.cache.CacheRoom
+import com.upd.kvupd.data.local.core.CoreCrud
+import com.upd.kvupd.data.local.core.CoreQuery
+import com.upd.kvupd.data.local.core.CoreRoom
 import com.upd.kvupd.data.remote.FirebaseHelper
 import com.upd.kvupd.data.remote.FlexibleAdapterMoshi
 import com.upd.kvupd.utils.SharedPreferenceKeys.SHARED_NOMBRE
@@ -27,23 +30,43 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ProviderModule {
+object ProvideModule {
 
     @Provides
     @Singleton
-    fun providerSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences =
         context.getSharedPreferences(SHARED_NOMBRE, Context.MODE_PRIVATE)
 
     @Singleton
     @Provides
-    fun providerDataBase(initializer: DataBaseInitializer): TablesRoom =
-        initializer.build()
+    fun provideCoreDataBase(initializer: DataBaseInitializer): CoreRoom =
+        initializer.buildCore()
+
+
+    @Singleton
+    @Provides
+    fun provideCacheDataBase(initializer: DataBaseInitializer): CacheRoom =
+        initializer.buildCache()
+
 
     @Provides
-    fun providerCrudDAO(db: TablesRoom): Crud = db.getCrudDao()
+    fun provideCoreCrudDAO(db: CoreRoom): CoreCrud =
+        db.getCrudDao()
+
 
     @Provides
-    fun providerQueryDAO(db: TablesRoom): QueryList = db.getQueryDao()
+    fun provideCacheCrudDAO(db: CacheRoom): CacheCrud =
+        db.getCrudDao()
+
+
+    @Provides
+    fun provideCoreQueryDAO(db: CoreRoom): CoreQuery =
+        db.getQueryDao()
+
+
+    @Provides
+    fun provideCacheQueryDAO(db: CacheRoom): CacheQuery =
+        db.getQueryDao()
 
     @Singleton
     @Provides
@@ -59,29 +82,29 @@ object ProviderModule {
 
     @Singleton
     @Provides
-    fun providerFirebaseDatabase(): FirebaseDatabase = FirebaseDatabase.getInstance()
+    fun provideFirebaseDatabase(): FirebaseDatabase = FirebaseDatabase.getInstance()
 
     @Singleton
     @Provides
-    fun providerFirebaseHelper(firebaseDatabase: FirebaseDatabase): FirebaseHelper =
+    fun provideFirebaseHelper(firebaseDatabase: FirebaseDatabase): FirebaseHelper =
         FirebaseHelper(firebaseDatabase)
 
     @Provides
     @Singleton
-    fun providerWorkManager(@ApplicationContext context: Context): WorkManager =
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
 
     @Provides
     @Singleton
-    fun providerFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient =
+    fun provideFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
 
     @Provides
-    fun providerNotificationManager(@ApplicationContext context: Context): NotificationManager =
+    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     @Provides
     @Singleton
-    fun providerAlarmManager(@ApplicationContext context: Context): AlarmManager =
+    fun provideAlarmManager(@ApplicationContext context: Context): AlarmManager =
         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 }

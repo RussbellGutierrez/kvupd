@@ -1,8 +1,8 @@
 package com.upd.kvupd.utils
 
-import com.upd.kvupd.data.model.TableDistrito
-import com.upd.kvupd.data.model.TableNegocio
-import com.upd.kvupd.data.model.TableRuta
+import com.upd.kvupd.data.model.cache.TableDistrito
+import com.upd.kvupd.data.model.cache.TableNegocio
+import com.upd.kvupd.data.model.cache.TableRuta
 
 fun List<TableDistrito>.asSpinner(): List<String> = this.map {
     "${it.codigo} - ${it.nombre}"

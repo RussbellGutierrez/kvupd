@@ -5,7 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.upd.kvupd.data.model.DataAlta
 import com.upd.kvupd.data.model.DataCliente
 import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableConfiguracion
 
 object OldConstant {
 

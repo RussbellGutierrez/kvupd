@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowBajaSupervisor
-import com.upd.kvupd.data.model.TableSeguimiento
+import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.databinding.BottomDetallebajaBinding
 import com.upd.kvupd.ui.fragment.baja.enumFile.Canal
 import com.upd.kvupd.ui.fragment.baja.enumFile.MotivoBaja

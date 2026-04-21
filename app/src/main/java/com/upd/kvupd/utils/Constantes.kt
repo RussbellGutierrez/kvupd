@@ -15,8 +15,10 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object BaseDatosRoom {
-    const val VERSION_BASEDATOS = 18
-    const val DB_NAME = "KventasN"
+    const val VERSION_CORE = 1
+    const val VERSION_CACHE = 1
+    const val CORE_NAME = "CoreVentas"
+    const val CACHE_NAME = "CacheVentas"
 }
 
 object DeviceConstant {
@@ -39,7 +41,8 @@ object SharedPreferenceKeys {
     const val SHARED_NOMBRE = "KVPREFERENCIA"
     const val KEY_HASH = "hash_id"
     const val KEY_UID = "android_uid"
-    const val KEY_ROOM = "version_room"
+    const val KEY_ROOM_CORE = "version_core_room"
+    const val KEY_ROOM_CACHE = "version_cache_room"
     const val KEY_MODO_GPS = "gps_mode"
     const val KEY_HORA_INICIO = "hora_inicio_gps"
     const val KEY_HORA_FIN = "hora_fin_gps"

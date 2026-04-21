@@ -1,6 +1,6 @@
 package com.upd.kvupd.ui.fragment.encuesta.mapper
 
-import com.upd.kvupd.data.model.TableEncuesta
+import com.upd.kvupd.data.model.cache.TableEncuesta
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.PreguntaUI
 import com.upd.kvupd.ui.fragment.encuesta.enumFile.TipoPregunta
 

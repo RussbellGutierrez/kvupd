@@ -1,167 +1,257 @@
 package com.upd.kvupd.data.local
 
+import com.upd.kvupd.data.local.cache.CacheQuery
+import com.upd.kvupd.data.local.core.CoreQuery
 import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.FlowHeaderEncuestas
-import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableCliente
-import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.data.model.TableDistrito
-import com.upd.kvupd.data.model.TableEncuesta
-import com.upd.kvupd.data.model.TableFoto
-import com.upd.kvupd.data.model.TableNegocio
-import com.upd.kvupd.data.model.TableRespuesta
-import com.upd.kvupd.data.model.TableRuta
-import com.upd.kvupd.data.model.TableSeguimiento
-import com.upd.kvupd.data.model.TableVendedor
+import com.upd.kvupd.data.model.cache.TableCliente
+import com.upd.kvupd.data.model.cache.TableDistrito
+import com.upd.kvupd.data.model.cache.TableEncuesta
+import com.upd.kvupd.data.model.cache.TableNegocio
+import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableVendedor
+import com.upd.kvupd.data.model.core.TableAlta
+import com.upd.kvupd.data.model.core.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableRespuesta
+import com.upd.kvupd.data.model.core.TableSeguimiento
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class RoomQuerySource @Inject constructor(
-    private val query: QueryList
+    private val coreQuery: CoreQuery,
+    private val cacheQuery: CacheQuery
 ) {
     ////  ROOM
     suspend fun roomConfiguracion(): TableConfiguracion? =
-        query.getConfiguracion()
+        coreQuery.getConfiguracion()
 
     suspend fun roomClientes(): List<TableCliente> =
-        query.getClientes()
+        cacheQuery.getClientes()
 
     suspend fun roomDistritos(): List<TableDistrito> =
-        query.getDistritos()
+        cacheQuery.getDistritos()
 
     suspend fun roomNegocios(): List<TableNegocio> =
-        query.getNegocios()
+        cacheQuery.getNegocios()
 
     suspend fun roomRutas(): List<TableRuta> =
-        query.getRutas()
+        cacheQuery.getRutas()
 
     suspend fun roomAlta(idaux: String, fecha: String): TableAlta? =
-        query.getAltaSpecific(idaux, fecha)
+        coreQuery.getAltaSpecific(idaux, fecha)
 
     suspend fun roomAltaDato(idaux: String, fecha: String): TableAltaDatos? =
-        query.getAltaDatos(idaux, fecha)
+        coreQuery.getAltaDatos(idaux, fecha)
 
     suspend fun roomHeaderEncuesta(): List<FlowHeaderEncuestas> =
-        query.getHeadersEncuesta()
+        cacheQuery.getHeadersEncuesta()
 
     suspend fun roomListaRutaFoto(hoy: String): List<String> =
-        query.getListFotoRutas(hoy)
+        coreQuery.getListFotoRutas(hoy)
 
     ////  FLOW
     fun flowConfiguracion(): Flow<List<TableConfiguracion>> =
-        query.flowConfiguracion()
+        coreQuery.flowConfiguracion()
 
-    fun flowClientes(): Flow<List<FlowCliente>> =
-        query.flowClientes()
+    fun flowCombineClientes(): Flow<List<FlowCliente>> =
+        combine(
+            cacheQuery.flowClientes(),
+            cacheQuery.flowVendedores(),
+            coreQuery.flowBajas()
+        ) { clientes, vendedores, bajas ->
 
-    fun flowBajaSupervisor(): Flow<List<FlowBajaSupervisor>> =
-        query.flowBajasSupervisor()
+            val vendedoresMap = vendedores.associateBy { it.codigo }
+
+            val bajasCount = bajas
+                .groupingBy { it.cliente }
+                .eachCount()
+
+            clientes
+                .map { c ->
+                    FlowCliente(
+                        cliente = c.idcliente,
+                        nomcli = c.nomcli,
+                        vendedor = c.empleado.toIntOrNull() ?: 0,
+                        nomemp = vendedoresMap[c.empleado]?.descripcion ?: "null",
+                        domicilio = c.domicli,
+                        longitud = c.longitud,
+                        latitud = c.latitud,
+                        ruta = c.ruta,
+                        baja = bajasCount[c.idcliente] ?: 0,
+                        ventas = c.ventas,
+                        compras = c.ventanio,
+                        fecha = c.fecha,
+                        negocio = c.negocio
+                    )
+                }
+                .sortedWith(
+                    compareBy<FlowCliente> { it.fecha }
+                        .thenBy { it.nomcli }
+                )
+        }
+
+    fun flowCombineBajasSupervisor(): Flow<List<FlowBajaSupervisor>> =
+        combine(
+            cacheQuery.flowBajasSupervisor(),
+            coreQuery.flowBajasProcesadas()
+        ) { bajasSupervisor, bajasProcesadas ->
+
+            val procesadasMap = bajasProcesadas.associateBy {
+                "${it.empleado}_${it.cliente}"
+            }
+
+            bajasSupervisor
+                .map { b ->
+
+                    val key = "${b.empleado}_${b.clicodigo}"
+                    val procesada = procesadasMap[key]
+
+                    FlowBajaSupervisor(
+                        vendedor = b.empleado,
+                        vendnom = b.nombre,
+                        creacion = b.creado,
+                        motivo = b.motivo.toIntOrNull() ?: 0,
+                        cliente = b.clicodigo,
+                        nombre = b.clinombre,
+                        direccion = b.direccion,
+                        canal = b.canal,
+                        observacion = b.observacion,
+                        negocio = b.negocio,
+                        pago = b.pago,
+                        compra = b.compra,
+                        longitud = b.clilongitud,
+                        latitud = b.clilatitud,
+                        procede = procesada?.procede
+                    )
+                }
+                .sortedByDescending { it.creacion }
+        }
+
+    fun flowCombineClientesExcluidos(encuestaId: Int): Flow<List<TableCliente>> =
+        combine(
+            cacheQuery.flowClientes(),
+            coreQuery.flowRespuestas()
+        ) { clientes, respuestas ->
+
+            val respondidos = respuestas
+                .filter { it.encuesta == encuestaId }
+                .map { it.cliente }
+                .toSet()
+
+            clientes.filter { c ->
+
+                val encuestaEnCliente =
+                    ",${c.encuestas},".contains(",$encuestaId,")
+
+                !encuestaEnCliente &&
+                        c.idcliente !in respondidos
+            }
+        }
 
     fun flowAltas(): Flow<List<TableAlta>> =
-        query.flowAltas()
+        coreQuery.flowAltas()
 
     fun flowBajas(): Flow<List<TableBaja>> =
-        query.flowBajas()
+        coreQuery.flowBajas()
 
     fun flowRutas(): Flow<List<TableRuta>> =
-        query.flowRutas()
+        cacheQuery.flowRutas()
 
     fun flowNegocios(): Flow<List<TableNegocio>> =
-        query.flowNegocios()
+        cacheQuery.flowNegocios()
 
     fun flowDistritos(): Flow<List<TableDistrito>> =
-        query.flowDistritos()
+        cacheQuery.flowDistritos()
 
     fun flowVendedores(): Flow<List<TableVendedor>> =
-        query.flowVendedores()
+        cacheQuery.flowVendedores()
 
     fun flowLastGPS(): Flow<TableSeguimiento?> =
-        query.flowLastSeguimiento()
+        coreQuery.flowLastSeguimiento()
 
     fun flowPreguntasEncuesta(): Flow<List<TableEncuesta>> =
-        query.flowPreguntaEncuestas()
+        cacheQuery.flowPreguntaEncuestas()
 
     fun flowHeaderEncuesta(): Flow<List<FlowHeaderEncuestas>> =
-        query.flowHeaderEncuestas()
-
-    fun flowClientesExcluidos(id: String): Flow<List<TableCliente>> =
-        query.flowClientesExcluidos(id)
+        cacheQuery.flowHeaderEncuestas()
 
     ////  UPDATE MANUAL
     suspend fun cleanAndSelectEncuesta(id: String) {
-        query.reselectEncuesta(id)
+        cacheQuery.reselectEncuesta(id)
     }
 
     suspend fun setSeleccionEncuesta(id: String) {
-        query.setSeleccionEncuesta(id)
+        cacheQuery.setSeleccionEncuesta(id)
     }
 
     ////  TOTAL REGISTROS
     suspend fun countSeguimientoTotal() =
-        query.seguimientoCount()
+        coreQuery.seguimientoCount()
 
     suspend fun countAltaTotal() =
-        query.altaCount()
+        coreQuery.altaCount()
 
     suspend fun countAltaDatosTotal() =
-        query.altaDatoCount()
+        coreQuery.altaDatoCount()
 
     suspend fun countBajaTotal() =
-        query.bajaCount()
+        coreQuery.bajaCount()
 
     suspend fun countBajaProcesadaTotal() =
-        query.bajaProcesadaCount()
+        coreQuery.bajaProcesadaCount()
 
     suspend fun countRespuestaTotal() =
-        query.respuestaCount()
+        coreQuery.respuestaCount()
 
     suspend fun countFotoTotal() =
-        query.fotoCount()
+        coreQuery.fotoCount()
 
     ////  SERVER
     suspend fun serverSeguimiento(sync: Boolean): List<TableSeguimiento> =
-        query.serverSeguimiento(sync)
+        coreQuery.serverSeguimiento(sync)
 
     suspend fun serverAltas(sync: Boolean): List<TableAlta> =
-        query.serverAltas(sync)
+        coreQuery.serverAltas(sync)
 
     suspend fun serverAltaDatos(sync: Boolean): List<TableAltaDatos> =
-        query.serverAltaDatos(sync)
+        coreQuery.serverAltaDatos(sync)
 
     suspend fun serverBajas(sync: Boolean): List<TableBaja> =
-        query.serverBajas(sync)
+        coreQuery.serverBajas(sync)
 
     suspend fun serverBajasProcesadas(sync: Boolean): List<TableBajaProcesada> =
-        query.serverBajaProcesado(sync)
+        coreQuery.serverBajaProcesado(sync)
 
     suspend fun serverRespuestas(sync: Boolean): List<TableRespuesta> =
-        query.serverRespuestas(sync)
+        coreQuery.serverRespuestas(sync)
 
     suspend fun serverFotos(sync: Boolean): List<TableFoto> =
-        query.serverFotos(sync)
+        coreQuery.serverFotos(sync)
 
     ////  EXISTEN REGISTROS
     suspend fun hayPendientes(): Boolean {
-        return query.hasSeguimientoPendiente() ||
-                query.hasAltasPendientes() ||
-                query.hasAltaDatosPendiente() ||
-                query.hasBajasPendientes() ||
-                query.hasBajaProcesadaPendiente() ||
-                query.hasRespuestasPendientes() ||
-                query.hasFotosPendientes()
+        return coreQuery.hasSeguimientoPendiente() ||
+                coreQuery.hasAltasPendientes() ||
+                coreQuery.hasAltaDatosPendiente() ||
+                coreQuery.hasBajasPendientes() ||
+                coreQuery.hasBajaProcesadaPendiente() ||
+                coreQuery.hasRespuestasPendientes() ||
+                coreQuery.hasFotosPendientes()
     }
 
     suspend fun hayDatosParaLimpiar(hoy: String): Boolean {
-        return query.needSeguimientoLimpiar(hoy) ||
-                query.needAltasLimpiar(hoy) ||
-                query.needAltaDatosLimpiar(hoy) ||
-                query.needBajasLimpiar(hoy) ||
-                query.needBajaProcesadaLimpiar(hoy) ||
-                query.needRespuestasLimpiar(hoy) ||
-                query.needFotosLimpiar(hoy)
+        return coreQuery.needSeguimientoLimpiar(hoy) ||
+                coreQuery.needAltasLimpiar(hoy) ||
+                coreQuery.needAltaDatosLimpiar(hoy) ||
+                coreQuery.needBajasLimpiar(hoy) ||
+                coreQuery.needBajaProcesadaLimpiar(hoy) ||
+                coreQuery.needRespuestasLimpiar(hoy) ||
+                coreQuery.needFotosLimpiar(hoy)
     }
 }

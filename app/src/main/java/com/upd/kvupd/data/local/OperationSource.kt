@@ -25,7 +25,7 @@ import com.upd.kvupd.application.work.EncuestasWorker
 import com.upd.kvupd.application.work.NegociosWorker
 import com.upd.kvupd.application.work.RutasWorker
 import com.upd.kvupd.application.work.ServidorWorker
-import com.upd.kvupd.data.model.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_FIN
@@ -39,7 +39,6 @@ import com.upd.kvupd.utils.NotificationHelper.ACTION_CHANGE_MODE
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_FIN
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_INICIO
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
-import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_SYNC_INIT
 import com.upd.kvupd.utils.toLocalTime
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalTime

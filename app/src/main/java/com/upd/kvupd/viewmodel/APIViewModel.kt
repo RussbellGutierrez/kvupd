@@ -20,14 +20,12 @@ import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.data.model.JsonSoles
 import com.upd.kvupd.data.model.JsonVolumen
 import com.upd.kvupd.data.model.ServerStatusResponse
-import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.data.model.TableFoto
-import com.upd.kvupd.data.model.TableRespuesta
-import com.upd.kvupd.data.model.TableSeguimiento
+import com.upd.kvupd.data.model.core.TableAlta
+import com.upd.kvupd.data.model.core.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.data.remote.sealed.SocketEvent
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.RoomFunctions
@@ -50,7 +48,6 @@ import com.upd.kvupd.ui.fragment.reportes.modelUI.SolesRequestConfig
 import com.upd.kvupd.ui.fragment.servidor.enumFile.ApiServerStatus
 import com.upd.kvupd.ui.fragment.servidor.enumFile.UploadType
 import com.upd.kvupd.ui.fragment.servidor.modelUI.ServerStatusResult
-import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadConfig
 import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadItem
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
@@ -76,7 +73,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import javax.inject.Inject

@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.location.Location
@@ -24,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.JsonPedimap
 import com.upd.kvupd.data.model.Pedimap
-import com.upd.kvupd.data.model.TableRuta
+import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.databinding.FragmentFRastreoBinding
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi

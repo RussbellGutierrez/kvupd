@@ -1,12 +1,12 @@
 package com.upd.kvupd.domain.upload
 
-import com.upd.kvupd.data.model.TableAlta
-import com.upd.kvupd.data.model.TableAltaDatos
-import com.upd.kvupd.data.model.TableBaja
-import com.upd.kvupd.data.model.TableBajaProcesada
-import com.upd.kvupd.data.model.TableConfiguracion
-import com.upd.kvupd.data.model.TableFoto
-import com.upd.kvupd.data.model.TableSeguimiento
+import com.upd.kvupd.data.model.core.TableAlta
+import com.upd.kvupd.data.model.core.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableConfiguracion
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.send.SendServerFunctions
 import com.upd.kvupd.ui.fragment.servidor.enumFile.ApiServerStatus

@@ -1,7 +1,13 @@
 package com.upd.kvupd.data.model
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import com.upd.kvupd.data.model.cache.TableBajaSupervisor
+import com.upd.kvupd.data.model.cache.TableCliente
+import com.upd.kvupd.data.model.cache.TableDistrito
+import com.upd.kvupd.data.model.cache.TableEncuesta
+import com.upd.kvupd.data.model.cache.TableNegocio
+import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableVendedor
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.utils.FechaHoraUtil
 
 fun Configuracion.asTConfig(): TableConfiguracion =
