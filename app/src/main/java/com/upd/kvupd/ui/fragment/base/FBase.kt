@@ -160,54 +160,6 @@ class FBase : Fragment(), MenuProvider {
             )
         }
 
-    /*override fun changeGPSstate(gps: Boolean) {
-        val color = if (gps) Color.rgb(4, 106, 97) else Color.rgb(255, 51, 51)
-        bind.fabGps.imageTintList = ColorStateList.valueOf(color)
-    }*/
-
-    private fun launchEncuesta() {
-        val p = JSONObject()
-        //p.put("empleado", CONF.codigo)
-        //p.put("empresa", CONF.empresa)
-        //progress("Descargando encuesta")
-        //viewmodel.fetchEncuesta(p.toReqBody())
-    }
-
-    /*private fun sinchroData() {
-        if (viewmodel.internetAvailable()) {
-            progress("Sincronizando datos")
-            viewmodel.fetchSinchro()
-        } else {
-            snack("No tenemos señal de internet")
-        }
-    }*/
-
-
-    /*private fun checkEncuestaSelect() {
-        lifecycleScope.launch {
-            // Esperamos resultado de la función suspendida
-            val sinEncuesta = viewmodel.isEncuestaEmpty()
-
-            if (sinEncuesta) {
-                snack("No hay encuestas disponibles para procesar")
-                return@launch
-            }
-
-            if (isCONFinitialized()) {
-                when (CONF.tipo) {
-                    "V" -> findNavController().navigate(R.id.action_FBase_to_FAlterno)
-                    "S" -> viewmodel.checkingEncuesta {
-                        if (it) {
-                            findNavController().navigate(R.id.action_FBase_to_FAlterno)
-                        } else {
-                            snack("Debe elegir una encuesta primero")
-                        }
-                    }
-                }
-            }
-        }
-    }*/
-
     private fun View.navegarSeguro(action: Int) {
         setOnClickListener {
             verificarSesionVigente {

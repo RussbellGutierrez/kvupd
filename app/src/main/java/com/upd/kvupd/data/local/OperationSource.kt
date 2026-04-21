@@ -19,6 +19,7 @@ import com.upd.kvupd.application.work.BootStartWorker
 import com.upd.kvupd.application.work.CleanupWorker
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
+import com.upd.kvupd.application.work.CoreCsvWorker
 import com.upd.kvupd.application.work.DistritosWorker
 import com.upd.kvupd.application.work.EmpleadosWorker
 import com.upd.kvupd.application.work.EncuestasWorker
@@ -89,6 +90,14 @@ class OperationSource @Inject constructor(
             "cleanup_now",
             ExistingWorkPolicy.REPLACE,
             workerCleanupNow()
+        )
+    }
+
+    fun lanzarCoreCsvWorker() {
+        workManager.enqueueUniqueWork(
+            "core_csv_worker",
+            ExistingWorkPolicy.KEEP,
+            workerCoreCsv()
         )
     }
 
@@ -177,6 +186,11 @@ class OperationSource @Inject constructor(
 
     private fun workerCleanupNow() =
         OneTimeWorkRequestBuilder<CleanupWorker>()
+            .setConstraints(constraints)
+            .build()
+
+    private fun workerCoreCsv() =
+        OneTimeWorkRequestBuilder<CoreCsvWorker>()
             .setConstraints(constraints)
             .build()
 

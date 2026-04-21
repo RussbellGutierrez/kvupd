@@ -17,8 +17,14 @@ import java.util.Locale
 object BaseDatosRoom {
     const val VERSION_CORE = 1
     const val VERSION_CACHE = 1
+
     const val CORE_NAME = "CoreVentas"
     const val CACHE_NAME = "CacheVentas"
+
+    const val PREFIJO_CSV = "VentasCore_"
+    const val FOLDER_CORE = "Core_sync"
+
+    const val SEPARADOR = ";"
 }
 
 object DeviceConstant {

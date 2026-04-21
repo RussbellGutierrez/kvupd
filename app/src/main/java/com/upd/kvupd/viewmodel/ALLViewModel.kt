@@ -229,4 +229,8 @@ class ALLViewModel @Inject constructor(
     fun limpiarAhora() {
         operationsFunctions.runCleanupNow()
     }
+
+    fun sincronizarCsvCore() {
+        operationsFunctions.syncCoreCsv()
+    }
 }

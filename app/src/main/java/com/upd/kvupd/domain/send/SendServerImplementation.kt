@@ -105,22 +105,32 @@ class SendServerImplementation @Inject constructor(
 
     private suspend fun <T> ejecutarEnvio(
         item: T,
-        buildBody: (config: TableConfiguracion, item: T) -> RequestBody,
+        buildBody: (
+            config: TableConfiguracion,
+            item: T
+        ) -> RequestBody,
         send: (RequestBody) -> Flow<ResultadoApi<*>>,
         onSuccess: suspend (T) -> Unit,
         onError: suspend (T) -> Unit
     ): ResultadoApi<Unit> {
 
         val config = room.queryConfiguracion()
-            ?: return ResultadoApi.Fallo(IllegalStateException("Sin configuración"))
+            ?: return ResultadoApi.Fallo(
+                IllegalStateException("Sin configuración")
+            )
 
         val body = buildBody(config, item)
-        var resultadoFinal: ResultadoApi<Unit> = ResultadoApi.Loading
+
+        var resultadoFinal: ResultadoApi<Unit> =
+            ResultadoApi.Fallo(
+                IllegalStateException("Sin respuesta final")
+            )
 
         send(body).collect { result ->
+
             resultadoFinal = when (result) {
 
-                is ResultadoApi.Exito -> {
+                is ResultadoApi.Exito<*> -> {
                     onSuccess(item)
                     ResultadoApi.Exito(Unit)
                 }
@@ -135,10 +145,11 @@ class SendServerImplementation @Inject constructor(
                     result
                 }
 
-                ResultadoApi.Loading -> ResultadoApi.Loading
+                is ResultadoApi.Loading -> {
+                    resultadoFinal
+                }
             }
         }
-
         return resultadoFinal
     }
 }

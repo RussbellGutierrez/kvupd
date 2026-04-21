@@ -144,7 +144,7 @@ class BDDetalleBaja : BottomSheetDialogFragment() {
     }
 
     private fun iconoUbicacion(): BitmapDescriptor =
-        requireContext().vectorToBitmapDescriptor(R.drawable.cliente_anulado)
+        requireContext().vectorToBitmapDescriptor(R.drawable.persona)
 
     private fun initViews() {
 

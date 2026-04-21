@@ -4,10 +4,6 @@ import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.IdentityImplementation
 import com.upd.kvupd.domain.JsObFunctions
 import com.upd.kvupd.domain.JsObImplementation
-import com.upd.kvupd.domain.OldFunImpl
-import com.upd.kvupd.domain.OldFunctions
-import com.upd.kvupd.domain.OldRepoImpl
-import com.upd.kvupd.domain.OldRepository
 import com.upd.kvupd.domain.OperationsFunctions
 import com.upd.kvupd.domain.OperationsImplementation
 import com.upd.kvupd.domain.RoomFunctions

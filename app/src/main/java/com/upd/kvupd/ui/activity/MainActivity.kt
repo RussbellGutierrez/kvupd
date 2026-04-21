@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         localViewmodel.iniciarServiceSiHayConfiguracion()
+        localViewmodel.sincronizarCsvCore()
 
         collectFlow(localViewmodel.sesionEstado) { estado ->
             when (estado) {

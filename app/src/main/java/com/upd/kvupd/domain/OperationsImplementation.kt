@@ -33,6 +33,10 @@ class OperationsImplementation @Inject constructor(
         operationSource.lanzarCleanupWorker()
     }
 
+    override fun syncCoreCsv() {
+        operationSource.lanzarCoreCsvWorker()
+    }
+
     override fun syncInitial(config: TableConfiguracion) {
         operationSource.syncInicial(config)
     }

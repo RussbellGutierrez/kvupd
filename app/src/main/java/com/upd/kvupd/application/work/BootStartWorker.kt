@@ -29,6 +29,8 @@ class BootStartWorker @AssistedInject constructor(
             operationsFunctions.reprogramBeforeConfig()
         }
 
+        operationsFunctions.syncCoreCsv()
+
         return Result.success()
     }
 }

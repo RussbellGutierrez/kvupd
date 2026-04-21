@@ -244,7 +244,7 @@ class APIViewModel @Inject constructor(
 
     val flowClientesPendientes = encuestaSeleccionadaId
         .flatMapLatest { id ->
-            roomFunctions.listFlowClientesPendientes(id)
+            roomFunctions.listFlowClientesPendientes(id.toInt())
         }
 
     fun registrarEquipoServidor(identificador: String, empresa: String) {
@@ -963,6 +963,7 @@ class APIViewModel @Inject constructor(
         onSuccess: (suspend () -> Unit)? = null
     ) {
         when (result) {
+
             is ResultadoApi.ErrorHttp,
             is ResultadoApi.Fallo -> {
                 result.mensajeUsuario()?.let { onError(it) }
@@ -972,7 +973,7 @@ class APIViewModel @Inject constructor(
                 onSuccess?.invoke()
             }
 
-            else -> Unit
+            is ResultadoApi.Loading -> Unit
         }
     }
 

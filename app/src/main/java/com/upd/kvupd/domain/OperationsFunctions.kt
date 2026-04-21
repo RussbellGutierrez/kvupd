@@ -11,6 +11,7 @@ interface OperationsFunctions {
     fun startServerWorker()
     fun runCleanupNow()
     fun startCleanupWorker()
+    fun syncCoreCsv()
     fun syncInitial(config: TableConfiguracion)
     fun reprogramBeforeConfig()
     fun initBootWorker()
