@@ -15,7 +15,7 @@ import com.upd.kvupd.utils.GPSConstants.DISTANCIA_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.GPT_LAPSO_EXTENSO
-import com.upd.kvupd.utils.hasLocationPermission
+import com.upd.kvupd.utils.hasFineLocationPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -108,7 +108,7 @@ class GpsTracker @Inject constructor(
         fastest: Long,
         minDistance: Float
     ): Flow<Location> = callbackFlow {
-        if (!context.hasLocationPermission()) {
+        if (!context.hasFineLocationPermission()) {
             throw GpsError.PermisosDenegados
         }
 

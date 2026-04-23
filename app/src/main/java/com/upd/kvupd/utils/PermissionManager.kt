@@ -13,41 +13,56 @@ import javax.inject.Singleton
 class PermissionManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+
     private val basePermissions: List<String> by lazy {
         buildList {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                add(Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC)
-            }
+
+            // Android 13+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.POST_NOTIFICATIONS)
             }
+
+            // Ubicación principal
             add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
+
+            // Cámara
             add(Manifest.permission.CAMERA)
         }
     }
 
-    private val backgroundLocationPermission =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        else emptyList()
+    private val backgroundLocationPermission: List<String> by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        } else {
+            emptyList()
+        }
+    }
 
-    // Verifica si TODOS los permisos base están concedidos
+    // Verifica permisos base
     fun checkBasePermissions(): Boolean {
-        return basePermissions.all { perm ->
-            ContextCompat.checkSelfPermission(context, perm) == PackageManager.PERMISSION_GRANTED
+        return basePermissions.all { permission ->
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
-    // Verifica permiso de ubicación en segundo plano
+    // Verifica ubicación en segundo plano
     fun checkBackgroundLocationPermission(): Boolean {
-        if (backgroundLocationPermission.isEmpty()) return true
-        return backgroundLocationPermission.all { perm ->
-            ContextCompat.checkSelfPermission(context, perm) == PackageManager.PERMISSION_GRANTED
+        return backgroundLocationPermission.all { permission ->
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
-    fun getBasePermissions(): Array<String> = basePermissions.toTypedArray()
+    // Para solicitar permisos base
+    fun getBasePermissions(): Array<String> =
+        basePermissions.toTypedArray()
 
+    // Para solicitar background location después
     fun getBackgroundLocationPermission(): Array<String> =
         backgroundLocationPermission.toTypedArray()
 }

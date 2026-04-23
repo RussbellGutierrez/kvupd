@@ -10,7 +10,6 @@
     <!-- Foreground services -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <!-- Notificaciones (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -38,7 +37,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:logo="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -91,7 +89,7 @@
         <receiver
             android:name=".application.receiver.WakeUpReceiver"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:directBootAware="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -103,7 +101,7 @@
         <receiver
             android:name=".application.receiver.ActionsReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />

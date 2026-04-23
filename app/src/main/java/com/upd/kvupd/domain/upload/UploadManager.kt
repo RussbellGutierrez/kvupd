@@ -6,6 +6,7 @@ import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.data.model.core.TableBajaProcesada
 import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.send.SendServerFunctions
@@ -67,6 +68,16 @@ class UploadManager @Inject constructor(
                 type = UploadType.BAJA_REVISADA,
                 getData = { roomFunctions.apiServerBajasProcesadas(false) },
                 send = { sendServerFunctions.enviarBajaProcesada(it as TableBajaProcesada) }
+            ),
+
+            UploadConfig(
+                type = UploadType.ENCUESTAS,
+                getData = { roomFunctions.apiServerRespuestas(false) },
+                send = { item ->
+                    sendServerFunctions.enviarRespuesta(
+                        listOf(item as TableRespuesta)
+                    )
+                }
             ),
 
             UploadConfig(

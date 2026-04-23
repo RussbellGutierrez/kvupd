@@ -31,6 +31,7 @@ import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_INICIO
+import com.upd.kvupd.utils.AlarmConstants.WINDOW_ALARMA_GPS
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
@@ -272,9 +273,10 @@ class OperationSource @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        alarmManager.setExactAndAllowWhileIdle(
+        alarmManager.setWindow(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
+            WINDOW_ALARMA_GPS,
             pendingIntent
         )
 

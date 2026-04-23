@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.2"
+                    android:layout_weight="0.3"
                     android:text="Vendedor:"
                     android:textColor="@color/purple_500" />
 
@@ -38,7 +38,7 @@
                     android:id="@+id/txt_vendedor"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
+                    android:layout_weight="0.7"
                     tools:text="Nombre del vendedor" />
 
             </LinearLayout>

@@ -22,12 +22,12 @@
     </style>
 
     <style name="AppTextStyle">
-        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/inter</item>
         <item name="android:textColor">@color/gray</item>
     </style>
 
     <style name="AppButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
 
 </resources>

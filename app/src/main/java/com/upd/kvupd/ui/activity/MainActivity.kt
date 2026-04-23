@@ -1,6 +1,8 @@
 package com.upd.kvupd.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,10 +11,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.upd.kvupd.databinding.ActivityMainBinding
+import com.upd.kvupd.ui.fragment.base.sealed.EstadoSesion
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.InitialState
-import com.upd.kvupd.ui.fragment.base.sealed.EstadoSesion
-import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
@@ -21,6 +22,7 @@ import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import com.upd.kvupd.utils.PermissionManager
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
+import com.upd.kvupd.utils.hasNotificationPermission
 import com.upd.kvupd.utils.toast
 import com.upd.kvupd.viewmodel.ALLViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +47,12 @@ class MainActivity : AppCompatActivity() {
     ) {
         val baseOk = permissionManager.checkBasePermissions()
         val backgroundOk = permissionManager.checkBackgroundLocationPermission()
+
+        if (!baseOk) {
+            mostrarDialogNotificacionesSiFalta()
+            return@registerForActivityResult
+        }
+
         localViewmodel.iniciarFlujo(this, baseOk, backgroundOk)
     }
 
@@ -150,6 +158,31 @@ class MainActivity : AppCompatActivity() {
                 InitialState.HasUUID -> toast("Bienvenido")
             }
         }
+    }
+
+    private fun mostrarDialogNotificacionesSiFalta() {
+        if (!hasNotificationPermission()) {
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_WARNING,
+                    mensaje = "KVentas necesita notificaciones para mantener activo el GPS.",
+                    mostrarNegativo = true,
+                    onPositive = {
+                        permisosLauncher.launch(permissionManager.getBasePermissions())
+                    },
+                    onNegative = {
+                        abrirAjustesNotificaciones()
+                    }
+                )
+            )
+        }
+    }
+
+    private fun abrirAjustesNotificaciones() {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        }
+        startActivity(intent)
     }
 
     private fun configurarNavegacion() {
