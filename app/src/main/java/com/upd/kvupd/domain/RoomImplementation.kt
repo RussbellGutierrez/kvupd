@@ -47,8 +47,8 @@ class RoomImplementation @Inject constructor(
         crudSource.replaceConfiguracion(item)
     }
 
-    override suspend fun replaceClientes(item: List<Cliente>) {
-        crudSource.replaceClientes(item)
+    override suspend fun replaceClientesAndRutas(item: List<Cliente>) {
+        crudSource.replaceClientesAndRutas(item)
     }
 
     override suspend fun replaceVendedores(item: List<Vendedor>) {

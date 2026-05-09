@@ -32,7 +32,7 @@ interface RoomFunctions {
     suspend fun clearSessionData() ///  Eliminar datos que se descargan bajo demanda
     suspend fun clearServerUploadData(hoy: String)
     suspend fun replaceConfiguracion(item: List<Configuracion>)
-    suspend fun replaceClientes(item: List<Cliente>)
+    suspend fun replaceClientesAndRutas(item: List<Cliente>)
     suspend fun replaceVendedores(item: List<Vendedor>)
     suspend fun replaceDistritos(item: List<Distrito>)
     suspend fun replaceNegocios(item: List<Negocio>)

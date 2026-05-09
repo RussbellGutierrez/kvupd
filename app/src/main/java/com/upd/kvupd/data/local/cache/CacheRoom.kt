@@ -8,6 +8,7 @@ import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableEncuesta
 import com.upd.kvupd.data.model.cache.TableNegocio
 import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CACHE
 
@@ -20,7 +21,8 @@ import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CACHE
         TableNegocio::class,
         TableEncuesta::class,
         TableRuta::class,
-        TableBajaSupervisor::class
+        TableBajaSupervisor::class,
+        TableRutaProgramacion::class
     ],
     exportSchema = true
 )

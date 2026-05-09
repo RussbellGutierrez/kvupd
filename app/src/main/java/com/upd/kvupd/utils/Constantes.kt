@@ -184,6 +184,25 @@ object FechaHoraUtil {
             0
         }
     }
+
+    fun diaNumero(fecha: String): Int {
+        return try {
+            val day = LocalDate.parse(fecha).dayOfWeek.value
+            if (day == 7) 0 else day + 1
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    fun diaTexto(dia: Int): String = when (dia) {
+        2 -> "Lunes"
+        3 -> "Martes"
+        4 -> "Miércoles"
+        5 -> "Jueves"
+        6 -> "Viernes"
+        7 -> "Sábado"
+        else -> ""
+    }
 }
 
 object FirebaseKeys {

@@ -273,7 +273,7 @@ class APIViewModel @Inject constructor(
             serverFunctions.apiDownloadCliente(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
-                        roomFunctions.apiSaveClientes(lista)
+                        roomFunctions.replaceClientesAndRutas(lista)
                     }
                 }
                 _clienteEvent.emit(result)

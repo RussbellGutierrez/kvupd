@@ -99,3 +99,10 @@ data class TableBajaSupervisor(
     val latitud: Double,
     val compra: String
 )
+
+@Entity(primaryKeys = ["ruta"])
+data class TableRutaProgramacion(
+    val ruta: Int,
+    val fecha: String,
+    val dia: String
+)
