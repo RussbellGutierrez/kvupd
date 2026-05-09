@@ -40,7 +40,7 @@ class ClientesWorker @AssistedInject constructor(
                         setProgressAsync(workDataOf("estado" to "Almacenando clientes"))
                         kotlinx.coroutines.delay(300)
 
-                        roomFunctions.replaceClientes(jobl)
+                        roomFunctions.replaceClientesAndRutas(jobl)
 
                         setProgressAsync(workDataOf("estado" to "Registros de clientes: ${jobl.size}"))
                         kotlinx.coroutines.delay(300)

@@ -9,13 +9,6 @@ import com.upd.kvupd.data.model.Distrito
 import com.upd.kvupd.data.model.Encuesta
 import com.upd.kvupd.data.model.Negocio
 import com.upd.kvupd.data.model.Ruta
-import com.upd.kvupd.data.model.core.TableAlta
-import com.upd.kvupd.data.model.core.TableAltaDatos
-import com.upd.kvupd.data.model.core.TableBaja
-import com.upd.kvupd.data.model.core.TableBajaProcesada
-import com.upd.kvupd.data.model.core.TableFoto
-import com.upd.kvupd.data.model.core.TableRespuesta
-import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.data.model.Vendedor
 import com.upd.kvupd.data.model.asTBajaSuper
 import com.upd.kvupd.data.model.asTCliente
@@ -25,6 +18,15 @@ import com.upd.kvupd.data.model.asTEncuesta
 import com.upd.kvupd.data.model.asTNegocio
 import com.upd.kvupd.data.model.asTRutas
 import com.upd.kvupd.data.model.asTVendedor
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
+import com.upd.kvupd.data.model.core.TableAlta
+import com.upd.kvupd.data.model.core.TableAltaDatos
+import com.upd.kvupd.data.model.core.TableBaja
+import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableFoto
+import com.upd.kvupd.data.model.core.TableRespuesta
+import com.upd.kvupd.data.model.core.TableSeguimiento
+import com.upd.kvupd.utils.FechaHoraUtil
 import javax.inject.Inject
 
 class RoomCrudSource @Inject constructor(
@@ -44,8 +46,26 @@ class RoomCrudSource @Inject constructor(
         coreCrud.replaceConfiguracion(item.map { it.asTConfig() })
     }
 
-    suspend fun replaceClientes(item: List<Cliente>) {
+    suspend fun replaceClientesAndRutas(item: List<Cliente>) {
         cacheCrud.replaceClientes(item.map { it.asTCliente() })
+
+        val rutas = item
+            .mapNotNull { cliente ->
+
+                val fecha = FechaHoraUtil.castApi(cliente.fecha)
+                val dia = FechaHoraUtil.diaNumero(fecha)
+
+                if (dia == 0) return@mapNotNull null
+
+                TableRutaProgramacion(
+                    ruta = cliente.ruta,
+                    fecha = fecha,
+                    dia = dia.toString()
+                )
+            }
+            .distinctBy { it.ruta }
+
+        cacheCrud.replaceRutasProgramacion(rutas)
     }
 
     suspend fun replaceVendedores(item: List<Vendedor>) {

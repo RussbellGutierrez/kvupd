@@ -18,6 +18,7 @@ import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableEncuesta
 import com.upd.kvupd.data.model.cache.TableNegocio
 import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import com.upd.kvupd.data.model.cache.TableVendedor
 
 @Dao
@@ -64,6 +65,12 @@ interface CacheCrud {
         insertEncuestas(data)
     }
 
+    @Transaction
+    suspend fun replaceRutasProgramacion(data: List<TableRutaProgramacion>) {
+        deleteRutaProgramacion()
+        insertRutaProgramacion(data)
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClientes(data: List<TableCliente>)
 
@@ -85,6 +92,9 @@ interface CacheCrud {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBajaSupervisor(data: List<TableBajaSupervisor>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRutaProgramacion(data: List<TableRutaProgramacion>)
+
     @Query(DEL_CLIENTES)
     suspend fun deleteClientes()
 
@@ -105,4 +115,7 @@ interface CacheCrud {
 
     @Query(DEL_BAJA_SUPERVISOR)
     suspend fun deleteBajaSupervisor()
+
+    @Query(DEL_BAJA_SUPERVISOR)
+    suspend fun deleteRutaProgramacion()
 }

@@ -23,4 +23,7 @@ object DeleteCacheConstants {
 
     const val DEL_BAJA_SUPERVISOR =
         "DELETE FROM TableBajaSupervisor"
+
+    const val DEL_RUTA_PROGRAMACION =
+        "DELETE FROM TableRutaProgramacion"
 }
