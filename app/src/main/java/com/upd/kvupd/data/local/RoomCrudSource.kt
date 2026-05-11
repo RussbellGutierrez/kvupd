@@ -58,9 +58,9 @@ class RoomCrudSource @Inject constructor(
                 if (dia == 0) return@mapNotNull null
 
                 TableRutaProgramacion(
-                    ruta = cliente.ruta,
+                    ruta = cliente.ruta.toString(),
                     fecha = fecha,
-                    dia = dia.toString()
+                    dia = dia
                 )
             }
             .distinctBy { it.ruta }

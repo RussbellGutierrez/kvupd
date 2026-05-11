@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.data.model.core.TableAltaDatos
@@ -20,6 +21,12 @@ import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.SubGiroUI
+import com.upd.kvupd.ui.sealed.AppDialogType
+import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
+import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
+import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
+import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.geo.GeoManager
 import com.upd.kvupd.utils.gone
@@ -40,6 +47,9 @@ import com.upd.kvupd.utils.visibleIf
 import com.upd.kvupd.viewmodel.APIViewModel
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 @AndroidEntryPoint
 class FAltaDatos : Fragment() {
@@ -55,6 +65,7 @@ class FAltaDatos : Fragment() {
     private var distritoAutoSeteado = false
     private var empleadoActual: String = ""
     private var initializedAltaDatos = false
+    private var distritoSugerido: String? = null
     private var currentState: AltaFormState? = null
     private var tipoPersona: TipoPersona = TipoPersona.NATURAL
     private val _tag by lazy { FAltaDatos::class.java.simpleName }
@@ -96,14 +107,7 @@ class FAltaDatos : Fragment() {
 
             if (!validateAlta()) return@setOnClickListener
 
-            val item = buildAltaDatos()
-            val isEdit = currentState?.alta != null
-
-            if (isEdit) {
-                apiViewModel.retrySendAltaDatos(item)
-            } else {
-                apiViewModel.saveAndSendAltaDatos(item)
-            }
+            validateDistritoAndSave()
         }
 
         binding.rbGrupo.setOnCheckedChangeListener { _, id ->
@@ -129,6 +133,47 @@ class FAltaDatos : Fragment() {
 
     private fun existDataPrevious() {
         apiViewModel.obtainAltaDatos(idaux, fecha)
+    }
+
+    private fun validateDistritoAndSave() {
+
+        val distritoActual = binding.spnDistrito
+            .selectedItemTyped<DistritoUI>()
+            ?.codigo
+
+        val cambioDistrito =
+            distritoSugerido != null &&
+                    distritoActual != distritoSugerido
+
+        if (cambioDistrito) {
+
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_WARNING,
+                    mensaje = "El distrito seleccionado es diferente al distrito detectado por ubicación. ¿Desea continuar?",
+                    mostrarNegativo = true,
+                    onPositive = {
+                        saveAltaDatos()
+                    }
+                )
+            )
+
+            return
+        }
+
+        saveAltaDatos()
+    }
+
+    private fun saveAltaDatos() {
+
+        val item = buildAltaDatos()
+        val isEdit = currentState?.alta != null
+
+        if (isEdit) {
+            apiViewModel.retrySendAltaDatos(item)
+        } else {
+            apiViewModel.saveAndSendAltaDatos(item)
+        }
     }
 
     private fun observerData() {
@@ -213,6 +258,8 @@ class FAltaDatos : Fragment() {
         val codigoGeo = GeoManager.findDistrito(latLng)
 
         codigoGeo?.let { codigo ->
+
+            distritoSugerido = codigo
 
             binding.spnDistrito.post {
                 binding.spnDistrito.selectItem<DistritoUI> {
@@ -361,7 +408,6 @@ class FAltaDatos : Fragment() {
     private fun validateAlta(): Boolean {
 
         val tipo = tipoPersona
-        val doc = binding.spnDocumento.selectedItemTyped<Documento>() ?: return false
 
         val razon = binding.edtRazon.text.toString().trim()
         val paterno = binding.edtPaterno.text.toString().trim()
@@ -375,8 +421,10 @@ class FAltaDatos : Fragment() {
         val numero = binding.edtNumero.text.toString().trim()
         val secuencia = binding.edtSecuencia.text.toString().trim()
 
-        val via = binding.spnVia.selectedItem as? Via
-        val zona = binding.spnZona.selectedItem as? Zona
+        val doc = binding.spnDocumento.selectedItemTyped<Documento>() ?: return false
+        val via = binding.spnVia.selectedItemTyped<Via>() ?: return false
+        val zona = binding.spnZona.selectedItemTyped<Zona>() ?: return false
+        val numeracion = binding.spnNumero.selectedItemTyped<Numeracion>() ?: return false
 
         val subgiro = binding.spnSubgiro
             .selectedItemTyped<SubGiroUI>()?.codigo.orEmpty()
@@ -432,15 +480,19 @@ class FAltaDatos : Fragment() {
                 snack("Secuencia inválida"); return false
             }
 
-            subgiro.isEmpty() -> {
+            numeracion == Numeracion.NINGUNO -> {
+                snack("Seleccione numeración"); return false
+            }
+
+            subgiro == "0" || subgiro.isEmpty() -> {
                 snack("Seleccione subgiro"); return false
             }
 
-            via == null || via == Via.NINGUNO -> {
+            via == Via.NINGUNO -> {
                 snack("Seleccione una vía válida"); return false
             }
 
-            zona == null || zona == Zona.NINGUNO -> {
+            zona == Zona.NINGUNO -> {
                 snack("Seleccione una zona válida"); return false
             }
 
@@ -503,5 +555,14 @@ class FAltaDatos : Fragment() {
             secuencia = binding.edtSecuencia.text.toString().toUpper(),
             observacion = binding.edtObservacion.text.toString().toUpper()
         )
+    }
+
+    private fun mostrarDialog(dialogType: AppDialogType) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            cerrarDialogActual()
+            val dialog = buildMaterialDialog(requireContext(), dialogType)
+            dialog.show()
+            REFERENCIA_DIALOG = WeakReference(dialog)
+        }
     }
 }

@@ -46,6 +46,7 @@ import com.upd.kvupd.utils.MaterialDialogTexto.TEXT_POSITIVO_B
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -137,6 +138,22 @@ fun <T> ComponentActivity.collectFlow(
         repeatOnLifecycle(Lifecycle.State.STARTED) {
             flow.collect { collector(it) }
         }
+    }
+}
+
+fun Fragment.launchCoroutine(
+    block: suspend CoroutineScope.() -> Unit
+) {
+    viewLifecycleOwner.lifecycleScope.launch {
+        block()
+    }
+}
+
+fun ComponentActivity.launchCoroutine(
+    block: suspend CoroutineScope.() -> Unit
+) {
+    lifecycleScope.launch {
+        block()
     }
 }
 

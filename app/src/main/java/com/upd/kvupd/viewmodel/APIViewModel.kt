@@ -35,10 +35,10 @@ import com.upd.kvupd.domain.search.BajaSearchSource
 import com.upd.kvupd.domain.search.ClienteSearchSource
 import com.upd.kvupd.domain.send.SendServerFunctions
 import com.upd.kvupd.domain.upload.UploadManager
-import com.upd.kvupd.ui.fragment.encuesta.mapper.toDistritoUI
-import com.upd.kvupd.ui.fragment.encuesta.mapper.toGiroUI
-import com.upd.kvupd.ui.fragment.encuesta.mapper.toRutaUI
-import com.upd.kvupd.ui.fragment.encuesta.mapper.toSubGiroUI
+import com.upd.kvupd.ui.fragment.altas.mapper.toDistritoUI
+import com.upd.kvupd.ui.fragment.altas.mapper.toGiroUI
+import com.upd.kvupd.ui.fragment.altas.mapper.toRutaUI
+import com.upd.kvupd.ui.fragment.altas.mapper.toSubGiroUI
 import com.upd.kvupd.ui.fragment.reportes.enumFile.ReportAction
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapToLineas
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapVolumenToSoles
@@ -189,7 +189,7 @@ class APIViewModel @Inject constructor(
 
     private val negocioFlow = roomFunctions.listFlowNegocios()
     private val distritoFlow = roomFunctions.listFlowDistritos()
-    private val rutaFlow = roomFunctions.listFlowRutas()
+    private val rutaProgramacionFlow = roomFunctions.listFlowRutasProgramacion()
 
     /// VARIABLES PRIVADAS ARRIBA ///
 
@@ -219,7 +219,7 @@ class APIViewModel @Inject constructor(
     val altaFormState = combine(
         negocioFlow,
         distritoFlow,
-        rutaFlow,
+        rutaProgramacionFlow,
         altaDatos
     ) { negocios, distritos, rutas, altaDatos ->
 
@@ -668,6 +668,11 @@ class APIViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    suspend fun haveClientes(): Boolean {
+        val clientes = roomFunctions.queryClientes()
+        return (clientes.isNotEmpty())
     }
 
     fun downloadAllReports() {

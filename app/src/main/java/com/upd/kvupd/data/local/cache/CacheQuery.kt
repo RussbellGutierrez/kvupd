@@ -11,6 +11,7 @@ import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_ENCUESTA
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_HEADER_ENCUESTAS
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_NEGOCIOS
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_RUTAS
+import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_RUTAS_PROGRAMACION
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.GET_VENDEDORES
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.UPDATE_CLEAR_ENCUESTA
 import com.upd.kvupd.data.model.cache.QueryCacheConstants.UPDATE_SET_SELECCION
@@ -20,6 +21,7 @@ import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableEncuesta
 import com.upd.kvupd.data.model.cache.TableNegocio
 import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import com.upd.kvupd.data.model.cache.TableVendedor
 import kotlinx.coroutines.flow.Flow
 
@@ -43,6 +45,9 @@ interface CacheQuery {
 
     @Query(GET_RUTAS)
     fun flowRutas(): Flow<List<TableRuta>>
+
+    @Query(GET_RUTAS_PROGRAMACION)
+    fun flowRutaProgramacion(): Flow<List<TableRutaProgramacion>>
 
     @Query(GET_NEGOCIOS)
     fun flowNegocios(): Flow<List<TableNegocio>>

@@ -17,7 +17,8 @@ enum class Via(val label: String, val code: String) {
 }
 
 enum class Numeracion(val label: String, val code: String) {
-    NUMERO("NUMERO", ""),
+    NINGUNO("NINGUNO", ""),
+    NUMERO("NUMERO", "N"),
     INTERIOR("INTERIOR", "INT"),
     BLOCK("BLOCK", "BLOCK"),
     DPTO("DPTO", "DPTO"),

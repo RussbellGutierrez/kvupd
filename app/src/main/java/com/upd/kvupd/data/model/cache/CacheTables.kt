@@ -102,7 +102,7 @@ data class TableBajaSupervisor(
 
 @Entity(primaryKeys = ["ruta"])
 data class TableRutaProgramacion(
-    val ruta: Int,
+    val ruta: String,
     val fecha: String,
-    val dia: String
+    val dia: Int
 )

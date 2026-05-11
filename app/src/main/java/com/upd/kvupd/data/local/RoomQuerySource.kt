@@ -10,6 +10,7 @@ import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableEncuesta
 import com.upd.kvupd.data.model.cache.TableNegocio
 import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
@@ -162,6 +163,9 @@ class RoomQuerySource @Inject constructor(
 
     fun flowRutas(): Flow<List<TableRuta>> =
         cacheQuery.flowRutas()
+
+    fun flowRutaProgramacion(): Flow<List<TableRutaProgramacion>> =
+        cacheQuery.flowRutaProgramacion()
 
     fun flowNegocios(): Flow<List<TableNegocio>> =
         cacheQuery.flowNegocios()
