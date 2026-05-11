@@ -7,6 +7,7 @@ object QueryCacheConstants {
     const val GET_DISTRITOS = "SELECT * FROM TableDistrito ORDER BY CAST(codigo AS INTEGER) ASC"
     const val GET_NEGOCIOS = "SELECT * FROM TableNegocio ORDER BY CAST(codigo AS INTEGER) ASC"
     const val GET_RUTAS = "SELECT * FROM TableRuta"
+    const val GET_RUTAS_PROGRAMACION = "SELECT * FROM TableRutaProgramacion"
     const val GET_ENCUESTA = "SELECT * FROM TableEncuesta WHERE seleccionada = 1 ORDER BY pregunta ASC"
     const val GET_BAJA_SUPERVISOR = "SELECT * FROM TableBajaSupervisor"
 

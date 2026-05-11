@@ -197,10 +197,10 @@ object FechaHoraUtil {
     fun diaTexto(dia: Int): String = when (dia) {
         2 -> "Lunes"
         3 -> "Martes"
-        4 -> "Miércoles"
+        4 -> "Miercoles"
         5 -> "Jueves"
         6 -> "Viernes"
-        7 -> "Sábado"
+        7 -> "Sabado"
         else -> ""
     }
 }

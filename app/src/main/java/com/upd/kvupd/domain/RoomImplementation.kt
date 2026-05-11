@@ -27,6 +27,7 @@ import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.data.model.Vendedor
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -229,6 +230,10 @@ class RoomImplementation @Inject constructor(
 
     override fun listFlowRutas(): Flow<List<TableRuta>> {
         return querySource.flowRutas()
+    }
+
+    override fun listFlowRutasProgramacion(): Flow<List<TableRutaProgramacion>> {
+        return querySource.flowRutaProgramacion()
     }
 
     override fun listFlowNegocios(): Flow<List<TableNegocio>> {

@@ -11,6 +11,7 @@ import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_DISTRITOS
 import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_ENCUESTA
 import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_NEGOCIOS
 import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_RUTAS
+import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_RUTA_PROGRAMACION
 import com.upd.kvupd.data.model.cache.DeleteCacheConstants.DEL_VENDEDOR
 import com.upd.kvupd.data.model.cache.TableBajaSupervisor
 import com.upd.kvupd.data.model.cache.TableCliente
@@ -116,6 +117,6 @@ interface CacheCrud {
     @Query(DEL_BAJA_SUPERVISOR)
     suspend fun deleteBajaSupervisor()
 
-    @Query(DEL_BAJA_SUPERVISOR)
+    @Query(DEL_RUTA_PROGRAMACION)
     suspend fun deleteRutaProgramacion()
 }

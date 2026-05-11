@@ -25,6 +25,7 @@ import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.data.model.Vendedor
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import kotlinx.coroutines.flow.Flow
 
 interface RoomFunctions {
@@ -87,6 +88,7 @@ interface RoomFunctions {
     fun listFlowAltas(): Flow<List<TableAlta>>
     fun listFlowBajas(): Flow<List<TableBaja>>
     fun listFlowRutas(): Flow<List<TableRuta>>
+    fun listFlowRutasProgramacion(): Flow<List<TableRutaProgramacion>>
     fun listFlowNegocios(): Flow<List<TableNegocio>>
     fun listFlowDistritos(): Flow<List<TableDistrito>>
     fun listFlowVendedores(): Flow<List<TableVendedor>>

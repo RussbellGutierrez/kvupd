@@ -1,15 +1,16 @@
-package com.upd.kvupd.ui.fragment.encuesta.mapper
+package com.upd.kvupd.ui.fragment.altas.mapper
 
 import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableNegocio
-import com.upd.kvupd.data.model.cache.TableRuta
+import com.upd.kvupd.data.model.cache.TableRutaProgramacion
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI
 import com.upd.kvupd.ui.fragment.encuesta.modelUI.SubGiroUI
 
 fun List<TableNegocio>.toGiroUI(): List<GiroUI> {
-    return this
+
+    val list = this
         .distinctBy { it.giro }
         .map {
             GiroUI(
@@ -17,12 +18,22 @@ fun List<TableNegocio>.toGiroUI(): List<GiroUI> {
                 descripcion = it.descripcion
             )
         }
+
+    return listOf(
+        GiroUI(
+            codigo = "0",
+            descripcion = "NINGUNO"
+        )
+    ) + list
 }
 
 fun List<TableNegocio>.toSubGiroUI(): Map<String, List<SubGiroUI>> {
-    return groupBy { it.giro }
+
+    val map = groupBy { it.giro }
         .mapValues { (_, lista) ->
+
             lista.map {
+
                 val descripcion = it.nombre
                     .substringAfter("-")
                     .substringAfter(" ")
@@ -34,6 +45,15 @@ fun List<TableNegocio>.toSubGiroUI(): Map<String, List<SubGiroUI>> {
                 )
             }
         }
+
+    return map + mapOf(
+        "0" to listOf(
+            SubGiroUI(
+                codigo = "0",
+                descripcion = "NINGUNO"
+            )
+        )
+    )
 }
 
 fun List<TableDistrito>.toDistritoUI(): List<DistritoUI> {
@@ -42,11 +62,11 @@ fun List<TableDistrito>.toDistritoUI(): List<DistritoUI> {
     }
 }
 
-fun List<TableRuta>.toRutaUI(): List<RutaUI> {
+fun List<TableRutaProgramacion>.toRutaUI(): List<RutaUI> {
     return map {
         RutaUI(
             codigo = it.ruta,
-            dia = it.visita.toInt()
+            dia = it.dia
         )
     }
 }

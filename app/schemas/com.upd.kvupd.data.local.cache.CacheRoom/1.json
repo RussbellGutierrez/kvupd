@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2a35deb5e9763b77e0e03267079f3174",
+    "identityHash": "87e8ea9b230f8c75d210f5b994d7c9df",
     "entities": [
       {
         "tableName": "TableCliente",
@@ -497,11 +497,41 @@
             "creado"
           ]
         }
+      },
+      {
+        "tableName": "TableRutaProgramacion",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ruta` TEXT NOT NULL, `fecha` TEXT NOT NULL, `dia` INTEGER NOT NULL, PRIMARY KEY(`ruta`))",
+        "fields": [
+          {
+            "fieldPath": "ruta",
+            "columnName": "ruta",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fecha",
+            "columnName": "fecha",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dia",
+            "columnName": "dia",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "ruta"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a35deb5e9763b77e0e03267079f3174')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '87e8ea9b230f8c75d210f5b994d7c9df')"
     ]
   }
 }

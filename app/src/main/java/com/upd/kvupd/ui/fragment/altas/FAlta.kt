@@ -40,6 +40,7 @@ import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.gps.GpsTracker
+import com.upd.kvupd.utils.launchCoroutine
 import com.upd.kvupd.utils.maps.MapHelper
 import com.upd.kvupd.utils.maps.awaitMap
 import com.upd.kvupd.utils.maps.icono
@@ -122,7 +123,9 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
     }
 
     override fun onLongClick(alta: TableAlta) {
-        navigateTo(alta)
+        checkIfHaveClientesStored {
+            navigateTo(alta)
+        }
     }
 
     private fun setupButtons() {
@@ -141,20 +144,24 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
             }
 
             btnAlta.setOnClickListener {
-                passParameters()
+                checkIfHaveClientesStored {
+                    passParameters()
+                }
             }
         }
     }
 
     private fun setupMapActions() {
         mapHelper.setOnMapClickListener { latLng ->
-            val location = Location("").apply {
-                latitude = latLng.latitude
-                longitude = latLng.longitude
-                accuracy = getLocation?.accuracy ?: 0f
-            }
+            checkIfHaveClientesStored {
+                val location = Location("").apply {
+                    latitude = latLng.latitude
+                    longitude = latLng.longitude
+                    accuracy = getLocation?.accuracy ?: 0f
+                }
 
-            preventAltaRandom(location)
+                preventAltaRandom(location)
+            }
         }
 
         mapHelper.setOnInfoWindowClickListener(
@@ -230,6 +237,25 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
                     )
                 }
             }
+        }
+    }
+
+    private fun checkIfHaveClientesStored(
+        action: () -> Unit
+    ) {
+        launchCoroutine {
+
+            if (!apiViewModel.haveClientes()) {
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_WARNING,
+                        mensaje = "Descargue primero una cartera de clientes"
+                    )
+                )
+                return@launchCoroutine
+            }
+
+            action()
         }
     }
 

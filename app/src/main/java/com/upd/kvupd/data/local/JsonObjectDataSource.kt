@@ -242,12 +242,24 @@ class JsonObjectDataSource @Inject constructor(
         }
     }
 
-    private fun TableAltaDatos.buildCalle(): String =
-        if (manzana.isEmpty()) {
-            "$via $direccion $ubicacion"
-        } else {
-            "$via $direccion MZ $manzana $ubicacion"
+    private fun TableAltaDatos.buildCalle(): String {
+
+        val parts = mutableListOf(
+            via,
+            direccion
+        )
+
+        if (manzana.isNotEmpty()) {
+            parts.add("MZ")
+            parts.add(manzana)
         }
+
+        if (ubicacion != "N") {
+            parts.add(ubicacion)
+        }
+
+        return parts.joinToString(" ").trim()
+    }
 
     private fun convertirFotoBase64(ruta: String): String {
         val bm = BitmapFactory.decodeFile(ruta) ?: return ""
