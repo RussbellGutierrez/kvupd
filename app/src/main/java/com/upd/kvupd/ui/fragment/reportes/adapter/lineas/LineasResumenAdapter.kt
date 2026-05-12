@@ -1,37 +1,32 @@
-package com.upd.kvupd.ui.fragment.reportes.adapter
+package com.upd.kvupd.ui.fragment.reportes.adapter.lineas
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.upd.kvupd.databinding.RowLineasBinding
-import com.upd.kvupd.domain.enumFile.TipoUsuario
-import com.upd.kvupd.ui.fragment.reportes.enumFile.TipoReporte
+import com.upd.kvupd.databinding.RowLineasResumenBinding
 import com.upd.kvupd.ui.fragment.reportes.modelUI.LineaUI
 import com.upd.kvupd.utils.gone
 import com.upd.kvupd.utils.visible
-import com.upd.kvupd.utils.visibleIf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
-class LineasAdapter @AssistedInject constructor(
-    @Assisted private val listener: Listener,
-    @Assisted private val tipoUsuario: TipoUsuario
-) : ListAdapter<LineaUI, LineasAdapter.ViewHolder>(Diff) {
+class LineasResumenAdapter @AssistedInject constructor(
+    @Assisted private val listener: Listener
+) : ListAdapter<LineaUI, LineasResumenAdapter.ViewHolder>(Diff) {
 
     interface Listener {
-        fun onLineaClick(linea: LineaUI)
+        fun onResumenLongClick(linea: LineaUI, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = RowLineasBinding.inflate(
+        val binding = RowLineasResumenBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
-        return ViewHolder(binding, tipoUsuario)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -39,19 +34,12 @@ class LineasAdapter @AssistedInject constructor(
     }
 
     class ViewHolder(
-        private val bind: RowLineasBinding,
-        private val tipoUsuario: TipoUsuario
+        private val bind: RowLineasResumenBinding
     ) : RecyclerView.ViewHolder(bind.root) {
 
-        private val solesAdapter = SolesAdapter()
-
-        init {
-            bind.rcvSoles.adapter = solesAdapter
-            bind.rcvSoles.layoutManager = LinearLayoutManager(bind.root.context)
-            bind.rcvSoles.itemAnimator = null
-        }
-
         fun bind(item: LineaUI, listener: Listener) {
+
+            val position = adapterPosition
 
             // 🔹 1. Loading
             if (item.isLoading) {
@@ -66,19 +54,19 @@ class LineasAdapter @AssistedInject constructor(
             bind.shimmer.gone()
             bind.lnrContenido.visible()
 
-            val canClick = TipoReporte.SOLES.canClick(tipoUsuario)
-
-            bind.txtLinea.text = item.titulo
-            bind.txtOjito.visibleIf(canClick)
             bind.txtCuota.text = item.cuota
             bind.txtAvance.text = item.avance
             bind.txtTotal.text = item.total
             bind.imgIndicador.setImageResource(item.indicador)
 
-            solesAdapter.submitList(item.soles.toList())
-
-            bind.lnrContenido.setOnClickListener {
-                if (canClick) listener.onLineaClick(item)
+            bind.lnrContenido.setOnLongClickListener {
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onResumenLongClick(
+                        item,
+                        position
+                    )
+                }
+                true
             }
         }
     }

@@ -16,13 +16,13 @@ import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Numeracion
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.TipoPersona
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Via
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Zona
+import com.upd.kvupd.ui.fragment.altas.modelUI.DistritoUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.GiroUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.RutaUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.SubGiroUI
 import com.upd.kvupd.ui.fragment.altas.sealed.AltaResult
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.SubGiroUI
 import com.upd.kvupd.ui.sealed.AppDialogType
-import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -107,7 +107,7 @@ class FAltaDatos : Fragment() {
 
             if (!validateAlta()) return@setOnClickListener
 
-            validateDistritoAndSave()
+            validateWarningsAndSave()
         }
 
         binding.rbGrupo.setOnCheckedChangeListener { _, id ->
@@ -135,8 +135,11 @@ class FAltaDatos : Fragment() {
         apiViewModel.obtainAltaDatos(idaux, fecha)
     }
 
-    private fun validateDistritoAndSave() {
+    private fun validateWarningsAndSave() {
 
+        val warnings = mutableListOf<String>()
+
+        // -------- Distrito --------
         val distritoActual = binding.spnDistrito
             .selectedItemTyped<DistritoUI>()
             ?.codigo
@@ -146,11 +149,40 @@ class FAltaDatos : Fragment() {
                     distritoActual != distritoSugerido
 
         if (cambioDistrito) {
+            warnings.add(
+                "• El distrito seleccionado es diferente al distrito detectado por ubicación."
+            )
+        }
+
+        // -------- Día ruta --------
+        val ruta = binding.spnRuta
+            .selectedItemTyped<RutaUI>()
+
+        val diaActual = FechaHoraUtil
+            .diaNumero(FechaHoraUtil.dia())
+
+        ruta?.let {
+
+            if (it.dia != diaActual) {
+
+                warnings.add(
+                    "• La ruta seleccionada corresponde a ${FechaHoraUtil.diaTexto(it.dia)} y hoy es ${
+                        FechaHoraUtil.diaTexto(
+                            diaActual
+                        )
+                    }."
+                )
+            }
+        }
+
+        // -------- Advertencias --------
+        if (warnings.isNotEmpty()) {
 
             mostrarDialog(
                 AppDialogType.Informativo(
                     titulo = T_WARNING,
-                    mensaje = "El distrito seleccionado es diferente al distrito detectado por ubicación. ¿Desea continuar?",
+                    mensaje = warnings.joinToString("\n\n") +
+                            "\n\n¿Desea continuar?",
                     mostrarNegativo = true,
                     onPositive = {
                         saveAltaDatos()

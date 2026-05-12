@@ -3,10 +3,10 @@ package com.upd.kvupd.ui.fragment.altas.mapper
 import com.upd.kvupd.data.model.cache.TableDistrito
 import com.upd.kvupd.data.model.cache.TableNegocio
 import com.upd.kvupd.data.model.cache.TableRutaProgramacion
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.DistritoUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.GiroUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.RutaUI
-import com.upd.kvupd.ui.fragment.encuesta.modelUI.SubGiroUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.DistritoUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.GiroUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.RutaUI
+import com.upd.kvupd.ui.fragment.altas.modelUI.SubGiroUI
 
 fun List<TableNegocio>.toGiroUI(): List<GiroUI> {
 
