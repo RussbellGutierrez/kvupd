@@ -54,6 +54,7 @@ class LineasResumenAdapter @AssistedInject constructor(
             bind.shimmer.gone()
             bind.lnrContenido.visible()
 
+            bind.txtLinea.text = item.titulo
             bind.txtCuota.text = item.cuota
             bind.txtAvance.text = item.avance
             bind.txtTotal.text = item.total
