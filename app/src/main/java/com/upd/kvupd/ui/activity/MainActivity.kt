@@ -3,9 +3,13 @@ package com.upd.kvupd.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -59,6 +63,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        heightToolbar()
+        heightChildFragment()
         setSupportActionBar(binding.toolbar)
         observarEstadosEventosUUID()
         configurarNavegacion()
@@ -189,6 +195,39 @@ class MainActivity : AppCompatActivity() {
         navController = binding.navHostFragment
             .getFragment<NavHostFragment>().navController
         NavigationUI.setupActionBarWithNavController(this, navController)
+    }
+
+    private fun heightToolbar() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.toolbar) { view, insets ->
+
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+            )
+
+            view.setPadding(
+                view.paddingLeft,
+                bars.top,
+                view.paddingRight,
+                view.paddingBottom
+            )
+
+            insets
+        }
+    }
+
+    private fun heightChildFragment() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navHostFragment) { view, insets ->
+
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+            )
+
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = bars.bottom
+            }
+
+            insets
+        }
     }
 
     private fun mostrarDialog(dialogType: AppDialogType) {
