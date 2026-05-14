@@ -8,7 +8,7 @@
     <color name="secondaryLightColor">#ff5c8d</color>
     <color name="secondaryDarkColor">#a00037</color>
     <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#0277BD</color>
     <!--Base colors-->
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>

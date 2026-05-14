@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.textfield.TextInputEditText
 import com.upd.kvupd.data.model.core.TableAltaDatos
 import com.upd.kvupd.databinding.FragmentFAltadatosBinding
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.Documento
@@ -39,7 +40,7 @@ import com.upd.kvupd.utils.popWithResult
 import com.upd.kvupd.utils.selectItem
 import com.upd.kvupd.utils.selectedItemTyped
 import com.upd.kvupd.utils.setAdapterList
-import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.setErrorBorder
 import com.upd.kvupd.utils.toUpper
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.utils.visible
@@ -363,6 +364,28 @@ class FAltaDatos : Fragment() {
         }
     }
 
+    private fun clearAltaErrors() {
+
+        with(binding) {
+            edtRazon.setErrorBorder(false)
+
+            edtPaterno.setErrorBorder(false)
+            edtMaterno.setErrorBorder(false)
+            edtNombre.setErrorBorder(false)
+
+            edtRuc.setErrorBorder(false)
+            edtDnice.setErrorBorder(false)
+
+            edtMovil1.setErrorBorder(false)
+            edtMovil2.setErrorBorder(false)
+
+            edtCorreo.setErrorBorder(false)
+
+            edtNumero.setErrorBorder(false)
+            edtSecuencia.setErrorBorder(false)
+        }
+    }
+
     private fun setupFields(item: TableAltaDatos) {
 
         val state = currentState ?: return
@@ -439,6 +462,10 @@ class FAltaDatos : Fragment() {
 
     private fun validateAlta(): Boolean {
 
+        clearAltaErrors()
+
+        val errores = mutableListOf<String>()
+
         val tipo = tipoPersona
 
         val razon = binding.edtRazon.text.toString().trim()
@@ -453,89 +480,177 @@ class FAltaDatos : Fragment() {
         val numero = binding.edtNumero.text.toString().trim()
         val secuencia = binding.edtSecuencia.text.toString().trim()
 
-        val doc = binding.spnDocumento.selectedItemTyped<Documento>() ?: return false
-        val via = binding.spnVia.selectedItemTyped<Via>() ?: return false
-        val zona = binding.spnZona.selectedItemTyped<Zona>() ?: return false
-        val numeracion = binding.spnNumero.selectedItemTyped<Numeracion>() ?: return false
+        val doc = binding.spnDocumento.selectedItemTyped<Documento>()
+        val via = binding.spnVia.selectedItemTyped<Via>()
+        val zona = binding.spnZona.selectedItemTyped<Zona>()
+        val numeracion = binding.spnNumero.selectedItemTyped<Numeracion>()
 
         val subgiro = binding.spnSubgiro
             .selectedItemTyped<SubGiroUI>()?.codigo.orEmpty()
 
-        when {
+        // ===== VALIDACIONES =====
 
-            tipo == TipoPersona.JURIDICA && razon.isEmpty() -> {
-                snack("Ingrese razón social"); return false
-            }
-
-            tipo == TipoPersona.NATURAL &&
-                    (paterno.isEmpty() || materno.isEmpty() || nombre.isEmpty()) -> {
-                snack("Ingrese nombre y apellidos"); return false
-            }
-
-            tipo == TipoPersona.JURIDICA && ruc.isEmpty() -> {
-                snack("Debe ingresar RUC"); return false
-            }
-
-            tipo == TipoPersona.NATURAL && ruc.isEmpty() && dnice.isEmpty() -> {
-                snack("Debe ingresar documento"); return false
-            }
-
-            movil1.isEmpty() && movil2.isEmpty() -> {
-                snack("Ingrese celular"); return false
-            }
-
-            movil1.isNotEmpty() && !movil1.isValidPhone() -> {
-                snack("Celular inválido"); return false
-            }
-
-            movil2.isNotEmpty() && !movil2.isValidPhone() -> {
-                snack("Celular inválido"); return false
-            }
-
-            correo.isNotEmpty() && !correo.isValidEmail() -> {
-                snack("Correo inválido"); return false
-            }
-
-            doc == Documento.RUC && ruc.isEmpty() -> {
-                snack("Debe completar RUC"); return false
-            }
-
-            (doc == Documento.DNI || doc == Documento.CARNET) && dnice.isEmpty() -> {
-                snack("Debe completar DNI/Carnet"); return false
-            }
-
-            !numero.isValidPositiveNumber() -> {
-                snack("Número inválido"); return false
-            }
-
-            !secuencia.isValidPositiveNumber() -> {
-                snack("Secuencia inválida"); return false
-            }
-
-            numeracion == Numeracion.NINGUNO -> {
-                snack("Seleccione numeración"); return false
-            }
-
-            subgiro == "0" || subgiro.isEmpty() -> {
-                snack("Seleccione subgiro"); return false
-            }
-
-            via == Via.NINGUNO -> {
-                snack("Seleccione una vía válida"); return false
-            }
-
-            zona == Zona.NINGUNO -> {
-                snack("Seleccione una zona válida"); return false
-            }
-
-            ruc.isNotEmpty() && !ruc.isValidDocumento(tipo) -> {
-                snack("RUC inválido"); return false
-            }
-
-            dnice.isNotEmpty() && !dnice.isValidDocumento(tipo) -> {
-                snack("DNI/Carnet inválido"); return false
-            }
+        if (doc == null) {
+            errores.add("• Seleccione documento")
         }
+
+        if (tipo == TipoPersona.JURIDICA && razon.isEmpty()) {
+            markError(
+                binding.edtRazon,
+                "Ingrese razón social",
+                errores
+            )
+        }
+
+        if (
+            tipo == TipoPersona.NATURAL &&
+            (paterno.isEmpty() || materno.isEmpty() || nombre.isEmpty())
+        ) {
+
+            if (paterno.isEmpty()) {
+                binding.edtPaterno.setErrorBorder(true)
+            }
+
+            if (materno.isEmpty()) {
+                binding.edtMaterno.setErrorBorder(true)
+            }
+
+            if (nombre.isEmpty()) {
+                binding.edtNombre.setErrorBorder(true)
+            }
+
+            errores.add("• Ingrese nombre y apellidos")
+        }
+
+        if (tipo == TipoPersona.JURIDICA && ruc.isEmpty()) {
+            markError(
+                binding.edtRuc,
+                "Debe ingresar RUC",
+                errores
+            )
+        }
+
+        if (
+            tipo == TipoPersona.NATURAL &&
+            ruc.isEmpty() &&
+            dnice.isEmpty()
+        ) {
+
+            binding.edtRuc.setErrorBorder(true)
+            binding.edtDnice.setErrorBorder(true)
+
+            errores.add("• Debe ingresar documento")
+        }
+
+        if (movil1.isEmpty() && movil2.isEmpty()) {
+
+            binding.edtMovil1.setErrorBorder(true)
+            binding.edtMovil2.setErrorBorder(true)
+
+            errores.add("• Ingrese celular")
+        }
+
+        if (movil1.isNotEmpty() && !movil1.isValidPhone()) {
+            markError(
+                binding.edtMovil1,
+                "Celular 1 inválido",
+                errores
+            )
+        }
+
+        if (movil2.isNotEmpty() && !movil2.isValidPhone()) {
+            markError(
+                binding.edtMovil2,
+                "Celular 2 inválido",
+                errores
+            )
+        }
+
+        if (correo.isNotEmpty() && !correo.isValidEmail()) {
+            markError(
+                binding.edtCorreo,
+                "Correo inválido",
+                errores
+            )
+        }
+
+        if (doc == Documento.RUC && ruc.isEmpty()) {
+            markError(
+                binding.edtRuc,
+                "Debe completar RUC",
+                errores
+            )
+        }
+
+        if (
+            (doc == Documento.DNI || doc == Documento.CARNET) &&
+            dnice.isEmpty()
+        ) {
+            markError(
+                binding.edtDnice,
+                "Debe completar DNI/Carnet",
+                errores
+            )
+        }
+
+        if (!numero.isValidPositiveNumber()) {
+            markError(
+                binding.edtNumero,
+                "Número inválido",
+                errores
+            )
+        }
+
+        if (!secuencia.isValidPositiveNumber()) {
+            markError(
+                binding.edtSecuencia,
+                "Secuencia inválida",
+                errores
+            )
+        }
+
+        if (numeracion == null || numeracion == Numeracion.NINGUNO) {
+            errores.add("• Seleccione numeración")
+        }
+
+        if (subgiro == "0" || subgiro.isEmpty()) {
+            errores.add("• Seleccione subgiro")
+        }
+
+        if (via == null || via == Via.NINGUNO) {
+            errores.add("• Seleccione una vía válida")
+        }
+
+        if (zona == null || zona == Zona.NINGUNO) {
+            errores.add("• Seleccione una zona válida")
+        }
+
+        if (ruc.isNotEmpty() && !ruc.isValidDocumento(tipo)) {
+            markError(
+                binding.edtRuc,
+                "RUC inválido",
+                errores
+            )
+        }
+
+        if (dnice.isNotEmpty() && !dnice.isValidDocumento(tipo)) {
+            markError(
+                binding.edtDnice,
+                "DNI/Carnet inválido",
+                errores
+            )
+        }
+
+        if (errores.isNotEmpty()) {
+            mostrarDialog(
+                AppDialogType.Informativo(
+                    titulo = T_WARNING,
+                    mensaje = errores.joinToString("\n")
+                )
+            )
+            return false
+        }
+
         return true
     }
 
@@ -596,5 +711,14 @@ class FAltaDatos : Fragment() {
             dialog.show()
             REFERENCIA_DIALOG = WeakReference(dialog)
         }
+    }
+
+    private fun markError(
+        field: TextInputEditText,
+        message: String,
+        errors: MutableList<String>
+    ) {
+        field.setErrorBorder(true)
+        errors.add("• $message")
     }
 }

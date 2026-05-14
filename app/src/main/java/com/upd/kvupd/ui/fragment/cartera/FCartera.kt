@@ -13,14 +13,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -32,17 +30,13 @@ import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.ui.dialog.ListaClientesMapa
-import com.upd.kvupd.ui.fragment.cartera.adapter.ClienteAdapter
-import com.upd.kvupd.ui.fragment.cartera.adapter.ClienteAdapterFactory
 import com.upd.kvupd.ui.fragment.cartera.behavior.CarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.SupervisorCarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.VendedorCarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.enumFile.EstadoBaja
-import com.upd.kvupd.ui.fragment.cartera.enumFile.VistaCartera
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.BundleConstantes.KEY_BAJA
-import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.GT_SIN_INTERVALO
@@ -74,28 +68,22 @@ import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
-    MenuProvider {
+class FCartera : Fragment(), MenuProvider {
 
     private val apiViewModel by activityViewModels<APIViewModel>()
     private val localViewmodel by activityViewModels<ALLViewModel>()
     private val binding by viewBinding(FragmentFCarteraBinding::bind)
 
-    private lateinit var adapter: ClienteAdapter
     private lateinit var carteraBehavior: CarteraBehavior
     private val mapHelper by lazy { MapHelper(layoutInflater) }
 
     private var bajaEstado: EstadoBaja = EstadoBaja.Reposo
-    private var vistaActual: VistaCartera = VistaCartera.LISTA
     private var getLocation: Location? = null
     private var clientesCache: List<FlowCliente> = emptyList()
     private var vendedorList: List<TableVendedor> = emptyList()
     private var movedOnce = false
     private var mapaInicializado = false
     private val _tag by lazy { FCartera::class.java.simpleName }
-
-    @Inject
-    lateinit var adapterFactory: ClienteAdapterFactory
 
     @Inject
     lateinit var gpsTracker: GpsTracker
@@ -117,16 +105,12 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
 
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        adapter = adapterFactory.create(listener = this, hoy = FechaHoraUtil.dia())
-        binding.rcvCartera.layoutManager = LinearLayoutManager(requireContext())
-        binding.rcvCartera.adapter = adapter
-        binding.searchview.setOnQueryTextListener(this)
-
         setupButtons()
         observerData()
         functionPerUserType()
 
         resultadoBajaDialogo()
+        drawMarkers()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -136,41 +120,7 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.descargar -> consume { downloadCartera() }
         R.id.voz -> consume { searchVoice() }
-        R.id.cambiar -> consume { toggleVista() }
         else -> false
-    }
-
-    override fun onQueryTextSubmit(p0: String) = false
-    override fun onQueryTextChange(p0: String): Boolean {
-        localViewmodel.setQuery(p0)
-        return true
-    }
-
-    override fun onClick(cliente: FlowCliente) {
-        mostrarDialog(AppDialogType.Informativo(
-            titulo = "Ubicar en mapa",
-            mensaje = "¿Desea ubicar el cliente en el mapa?",
-            mostrarNegativo = true,
-            onPositive = {
-                toggleVista()
-                movedOnce = true
-                mapHelper.focus(cliente)
-            }
-        ))
-    }
-
-    override fun onLongClick(cliente: FlowCliente) {
-        if (cliente.baja > 0) {
-            mostrarClienteDadoDeBaja()
-            return
-        }
-
-        navegarABaja(cliente)
-    }
-
-    override fun onStop() {
-        localViewmodel.clearQuery()
-        super.onStop()
     }
 
     private fun functionPerUserType() {
@@ -219,9 +169,15 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         mapHelper.setOnInfoWindowClickListener(
             FlowCliente::class.java,
             object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
+
                 override fun onClick(data: FlowCliente) {
-                    val action = FCarteraDirections.actionFCarteraToBDBajaCliente(data)
-                    findNavController().navigate(action)
+
+                    if (data.baja > 0) {
+                        mostrarClienteDadoDeBaja()
+                        return
+                    }
+
+                    navegarABaja(data)
                 }
             }
         )
@@ -232,10 +188,11 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             handleClienteEvent(resultado)
         }
 
+        // Modificar clientes obtenidos
         val flow = apiViewModel.flowClientesFiltrados(localViewmodel.query)
         collectFlow(flow) { lista ->
             clientesCache = lista
-            renderCurrentView()
+            drawMarkers()
         }
 
         collectFlow(apiViewModel.flowVendedores) { lista ->
@@ -329,31 +286,15 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             precision = location.accuracy.toDouble().to2Decimals()
         )
 
-        if (vistaActual == VistaCartera.MAPA) {
-            val clienteMapa = clientesCache
-                .firstOrNull { it.cliente == baja.cliente }
+        val clienteMapa = clientesCache
+            .firstOrNull { it.cliente == baja.cliente }
 
-            clienteMapa?.let {
-                mapHelper.hideInfoWindow(it)
-            }
+        clienteMapa?.let {
+            mapHelper.hideInfoWindow(it)
         }
 
         snack("Cliente ${item.nombre} dado de baja")
         apiViewModel.saveAndSendBaja(item)
-    }
-
-    private fun renderCurrentView() {
-        when (vistaActual) {
-            VistaCartera.LISTA -> renderLista()
-            VistaCartera.MAPA -> drawMarkers()
-        }
-    }
-
-    private fun renderLista() {
-        val hayDatos = clientesCache.isNotEmpty()
-        binding.rcvCartera.visibleIf(hayDatos)
-        binding.emptyContainer.root.visibleIf(!hayDatos)
-        adapter.submitList(clientesCache)
     }
 
     private fun drawMarkers() {
@@ -377,33 +318,6 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
             requireContext()
         ) {
             snack(it)
-        }
-    }
-
-    private fun toggleVista() {
-        val siguiente =
-            if (vistaActual == VistaCartera.LISTA) VistaCartera.MAPA else VistaCartera.LISTA
-        cambiarVista(siguiente)
-    }
-
-    private fun cambiarVista(nuevaVista: VistaCartera) {
-        if (vistaActual == nuevaVista) return
-        vistaActual = nuevaVista
-
-        binding.lnrCartera.visibleIf(nuevaVista == VistaCartera.LISTA)
-        binding.rltMapa.visibleIf(nuevaVista == VistaCartera.MAPA)
-
-        when (nuevaVista) {
-            VistaCartera.LISTA -> {
-                stopGps()
-                renderLista()
-            }
-
-            VistaCartera.MAPA -> {
-                localViewmodel.clearQuery()
-                binding.searchview.setQuery("", false)
-                drawMarkers()
-            }
         }
     }
 
@@ -491,13 +405,10 @@ class FCartera : Fragment(), OnQueryTextListener, ClienteAdapter.Listener,
         }
 
     private fun buscarClienteVoz(codigo: String) {
-        when (vistaActual) {
-            VistaCartera.LISTA -> binding.searchview.setQuery(codigo, true)
-            VistaCartera.MAPA -> focusClienteEnMapa(
-                filtro = codigo,
-                forzadoDirecto = true
-            )
-        }
+        focusClienteEnMapa(
+            filtro = codigo,
+            forzadoDirecto = true
+        )
     }
 
     private fun mostrarDialog(dialogType: AppDialogType) {
