@@ -8,7 +8,7 @@
     <color name="secondaryLightColor">#ff5c8d</color>
     <color name="secondaryDarkColor">#a00037</color>
     <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#ffffff</color>
+    <color name="secondaryTextColor">#0277BD</color>
     <!--Base colors-->
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>
@@ -23,7 +23,8 @@
     <color name="lightcrimson">#DF3E5F</color>
     <color name="dodgerblue">#1E90FF</color>
     <color name="gray">#555555</color>
-    <color name="lightgray">#B6B6B6</color>
+    <color name="lightgray">#E1E1E1</color>
+    <color name="superlightgray">#EAE8E8</color>
     <color name="lightorange">#F4F0ED</color>
     <color name="deeporange">#f4511e</color>
     <color name="green">#046A61</color>

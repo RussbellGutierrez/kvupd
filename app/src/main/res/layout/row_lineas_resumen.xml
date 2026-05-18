@@ -32,7 +32,14 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/txt_detalle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:gravity="center"
+                    android:text="👆" />
+
+                <TextView
+                    android:id="@+id/txt_linea"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.9"
@@ -40,13 +47,6 @@
                     android:textColor="@color/teal_700"
                     android:textStyle="bold"
                     tools:text="Titulo Linea" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
-                    android:gravity="center"
-                    android:text="👁️" />
 
             </LinearLayout>
 

@@ -9,13 +9,16 @@ class ClienteSearchSource @Inject constructor() {
         lista: List<FlowCliente>,
         query: String
     ): List<FlowCliente> {
+
         if (query.isBlank()) return lista
 
-        val q = query.lowercase()
+        val q = query.trim()
 
         return lista.filter {
-            it.cliente.contains(q) ||
-                    it.nomcli.lowercase().contains(q)
+
+            it.cliente.contains(q, true) ||
+                    it.nomcli.contains(q, true) ||
+                    it.negocio.contains(q, true)
         }
     }
 }

@@ -6,7 +6,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.upd.kvupd.application.work.processor.CoreCsvProcessor
 import com.upd.kvupd.application.work.processor.enumFile.CsvSendResult
+import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.utils.BaseDatosRoom.FOLDER_CORE
+import com.upd.kvupd.utils.ConstantsExtras
+import com.upd.kvupd.utils.ConstantsExtras.NO_FIND_UUID
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.File
@@ -15,7 +18,8 @@ import java.io.File
 class CoreCsvWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
-    private val processor: CoreCsvProcessor
+    private val processor: CoreCsvProcessor,
+    private val identityFunctions: IdentityFunctions
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -32,6 +36,11 @@ class CoreCsvWorker @AssistedInject constructor(
             ?.sortedBy { it.name }
             .orEmpty()
 
+        // 🔹 Obtener UUID
+        val extraParam = identityFunctions.obtenerIdentificador()
+            .takeUnless { it.isNullOrBlank() }
+            ?: NO_FIND_UUID
+
         var necesitaRetry = false
 
         files.forEach { file ->
@@ -41,7 +50,7 @@ class CoreCsvWorker @AssistedInject constructor(
                 when {
 
                     file.name.contains("seguimiento") ->
-                        processor.procesarSeguimiento(file)
+                        processor.procesarSeguimiento(file, extraParam)
 
                     file.name.contains("altadatos") ->
                         processor.procesarAltaDatos(file)

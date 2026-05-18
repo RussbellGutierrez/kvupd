@@ -75,7 +75,7 @@ class MapInfoWindow(
                     txtCompras.setTextColor(Color.parseColor("#3700B3"))
                 }
 
-                data.ventas == 0 -> {
+                data.ventas == 1 -> {
                     txtCompras.setTextColor(Color.parseColor("#B6B6B6"))
                     txtVentas.setTextColor(Color.parseColor("#3700B3"))
                 }

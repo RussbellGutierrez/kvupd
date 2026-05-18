@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginHorizontal="20dp"
+    android:background="@color/white"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     tools:context=".ui.dialog.SeleccionEncuesta">
@@ -44,10 +45,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/separation_5"
             android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider1"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

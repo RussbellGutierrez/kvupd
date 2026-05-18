@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginHorizontal="20dp"
+    android:background="@color/white"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     tools:context=".ui.dialog.DSincronizarDiario">
@@ -23,8 +24,8 @@
             android:layout_height="wrap_content"
             android:text="Sincronizacion Diaria"
             android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.divider.MaterialDivider
@@ -32,21 +33,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text1" />
 
         <TextView
             android:id="@+id/text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:breakStrategy="simple"
             android:layout_marginTop="5dp"
+            android:breakStrategy="simple"
             android:lineSpacingExtra="2dp"
             android:singleLine="false"
             android:text="Descarga los datos actuales, reemplazando los anteriores para iniciar la jornada."
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider1" />
 
         <TextView
@@ -57,8 +58,8 @@
             android:lineSpacingExtra="2dp"
             android:singleLine="false"
             android:text="¿Desea continuar con el proceso?"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text2" />
 
         <TextView
@@ -70,8 +71,8 @@
             android:textSize="11sp"
             android:textStyle="italic"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text3"
             tools:text="Mensaje final" />
 
@@ -96,12 +97,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:indeterminate="false"
-                app:indicatorColor="@color/secondaryColor"
-                app:trackColor="@color/lightgray"
-                app:trackThickness="4dp"
-                app:indicatorDirectionLinear="startToEnd"
+                android:max="100"
                 android:progress="0"
-                android:max="100"/>
+                app:indicatorColor="@color/secondaryColor"
+                app:indicatorDirectionLinear="startToEnd"
+                app:trackColor="@color/lightgray"
+                app:trackThickness="4dp" />
 
             <TextView
                 android:id="@+id/txt_progreso"

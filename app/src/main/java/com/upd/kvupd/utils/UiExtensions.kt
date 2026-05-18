@@ -2,11 +2,13 @@ package com.upd.kvupd.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -34,6 +36,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.upd.kvupd.R
 import com.upd.kvupd.ui.fragment.servidor.enumFile.DrawablePosition
 import com.upd.kvupd.ui.sealed.AppDialogType
@@ -234,6 +238,34 @@ fun BottomSheetDialogFragment.expandFullHeight(
 
     if (fullHeight) {
         bottomSheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+    }
+}
+
+fun TextInputEditText.setErrorBorder(
+    hasError: Boolean
+) {
+
+    var current = parent
+
+    while (current != null && current !is TextInputLayout) {
+        current = current.parent
+    }
+
+    val textInputLayout = current as? TextInputLayout ?: return
+
+    if (hasError) {
+
+        val errorColor = ColorStateList.valueOf(
+            context.getColor(R.color.lightcrimson)
+        )
+
+        textInputLayout.boxStrokeErrorColor = errorColor
+        textInputLayout.isErrorEnabled = true
+        textInputLayout.error = " "
+
+    } else {
+        textInputLayout.error = null
+        textInputLayout.isErrorEnabled = false
     }
 }
 

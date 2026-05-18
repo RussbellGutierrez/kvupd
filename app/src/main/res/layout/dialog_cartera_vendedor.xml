@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginHorizontal="20dp"
+    android:background="@color/white"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     tools:context=".ui.dialog.CarteraSupervisor">
@@ -67,8 +68,8 @@
             android:id="@+id/txt_fecha"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/background_underline"
             android:clickable="false"
             android:focusable="false"

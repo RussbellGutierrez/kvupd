@@ -32,22 +32,29 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:gravity="center"
+                    android:text="👆" />
+
+                <TextView
+                    android:id="@+id/txt_linea"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.8"
+                    android:gravity="center"
+                    android:textColor="@color/teal_700"
+                    android:textStyle="bold"
+                    tools:text="Titulo Linea" />
+
+                <TextView
                     android:id="@+id/txt_ojito"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
                     android:text="👁️"
                     android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/txt_linea"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
-                    android:gravity="center"
-                    android:textColor="@color/teal_700"
-                    android:textStyle="bold"
-                    tools:text="Titulo Linea" />
 
             </LinearLayout>
 

@@ -13,10 +13,4 @@
         android:icon="@drawable/microfono"
         android:title="Busqueda por voz"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/cambiar"
-        android:icon="@drawable/intercambiar"
-        android:title="Cambiar mapa/lista"
-        app:showAsAction="ifRoom" />
 </menu>

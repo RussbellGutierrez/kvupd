@@ -247,6 +247,27 @@ class APIViewModel @Inject constructor(
             roomFunctions.listFlowClientesPendientes(id.toInt())
         }
 
+    val flowNegocios: StateFlow<List<String>> =
+        flowClientes
+            .map { lista ->
+
+                lista.asSequence().map {
+                    it.negocio.trim()
+                }
+                    .filter { it.isNotBlank() }
+                    .distinct()
+                    .sorted()
+                    .toMutableList()
+                    .apply {
+                        add(0, "TODOS")
+                    }
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                emptyList()
+            )
+
     fun registrarEquipoServidor(identificador: String, empresa: String) {
         viewModelScope.launch {
             val json = jsobFunctions.jsonRegistrarEquipo(identificador, empresa)

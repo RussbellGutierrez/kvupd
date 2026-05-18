@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginHorizontal="20dp"
+    android:background="@color/white"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
     tools:context=".ui.dialog.CarteraSupervisor">
@@ -21,13 +22,36 @@
             android:id="@+id/text1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Elija un cliente"
+            android:text="Clientes"
             android:textColor="@color/purple_500"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txt_busqueda"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/separation_10"
+            android:layout_marginVertical="@dimen/separation_5"
+            app:boxBackgroundColor="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text1">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_busqueda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Busque o elija un cliente"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ListView
             android:id="@+id/list_clientes"
@@ -36,7 +60,7 @@
             android:layout_marginTop="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text1" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_busqueda" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancelar"

@@ -24,8 +24,10 @@ import com.upd.kvupd.databinding.FragmentFReporteBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.ui.fragment.reportes.adapter.KpiAdapter
 import com.upd.kvupd.ui.fragment.reportes.adapter.KpiAdapterFactory
-import com.upd.kvupd.ui.fragment.reportes.adapter.LineasAdapter
-import com.upd.kvupd.ui.fragment.reportes.adapter.LineasAdapterFactory
+import com.upd.kvupd.ui.fragment.reportes.adapter.lineas.LineasAdapter
+import com.upd.kvupd.ui.fragment.reportes.adapter.lineas.LineasAdapterFactory
+import com.upd.kvupd.ui.fragment.reportes.adapter.lineas.LineasResumenAdapter
+import com.upd.kvupd.ui.fragment.reportes.adapter.lineas.LineasResumenAdapterFactory
 import com.upd.kvupd.ui.fragment.reportes.enumFile.TipoReporte
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapCambiosKpi
 import com.upd.kvupd.ui.fragment.reportes.mapper.ReporteMapper.mapCarteraKpi
@@ -57,13 +59,14 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FReporte : Fragment(), MenuProvider,
-    KpiAdapter.Listener, LineasAdapter.Listener {
+    KpiAdapter.Listener, LineasAdapter.Listener, LineasResumenAdapter.Listener {
 
     private val apiViewModel by activityViewModels<APIViewModel>()
     private val binding by viewBinding(FragmentFReporteBinding::bind)
 
     private lateinit var kpiAdapter: KpiAdapter
     private lateinit var lineasAdapter: LineasAdapter
+    private lateinit var lineasResumenAdapter: LineasResumenAdapter
     private lateinit var tipoUsuario: TipoUsuario
 
     private var errorJob: Job? = null
@@ -78,6 +81,9 @@ class FReporte : Fragment(), MenuProvider,
 
     @Inject
     lateinit var adapterLineasFactory: LineasAdapterFactory
+
+    @Inject
+    lateinit var adapterLineasResumenFactory: LineasResumenAdapterFactory
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -139,6 +145,14 @@ class FReporte : Fragment(), MenuProvider,
         navigateToDetalle(params)
     }
 
+    override fun onLineaLongClick(linea: LineaUI, position: Int) {
+        showResumen(position)
+    }
+
+    override fun onResumenLongClick(linea: LineaUI, position: Int) {
+        showDetalle(position)
+    }
+
     private fun navigateToDetalle(params: DetalleParams) {
         val action = FReporteDirections
             .actionFReporteToFDetalle(params)
@@ -149,6 +163,10 @@ class FReporte : Fragment(), MenuProvider,
         kpiAdapter = adapterKpiFactory.create(
             listener = this,
             tipoUsuario = tipoUsuario
+        )
+
+        lineasResumenAdapter = adapterLineasResumenFactory.create(
+            listener = this
         )
 
         lineasAdapter = adapterLineasFactory.create(
@@ -167,17 +185,7 @@ class FReporte : Fragment(), MenuProvider,
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        binding.rcvLineas.apply {
-            adapter = lineasAdapter
-            layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-        }
-
-        binding.rcvLineas.onFlingListener = null
-        pagerSnapHelper.attachToRecyclerView(binding.rcvLineas)
+        showResumen()
     }
 
     private fun initShimmer() {
@@ -194,15 +202,16 @@ class FReporte : Fragment(), MenuProvider,
 
         kpiAdapter.submitList(kpiList.toList())
 
-        lineasAdapter.submitList(
-            List(5) { index ->
-                LineaUI(
-                    tipo = TipoReporte.SOLES,
-                    codigo = -index - 1, // 👈 IDs negativos únicos
-                    isLoading = true
-                )
-            }
-        )
+        val shimmerList = List(5) { index ->
+            LineaUI(
+                tipo = TipoReporte.SOLES,
+                codigo = -index - 1,
+                isLoading = true
+            )
+        }
+
+        lineasAdapter.submitList(shimmerList)
+        lineasResumenAdapter.submitList(shimmerList)
     }
 
     private fun updateKpi(kpi: KpiUI) {
@@ -217,6 +226,47 @@ class FReporte : Fragment(), MenuProvider,
                 .filter { !it.isEmpty }
                 .toList()
         )
+    }
+
+    private fun showResumen(position: Int = 0) {
+
+        binding.rcvLineas.apply {
+
+            adapter = lineasResumenAdapter
+
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        }
+
+        pagerSnapHelper.attachToRecyclerView(null)
+
+        binding.rcvLineas.post {
+            binding.rcvLineas.smoothScrollToPosition(position)
+        }
+    }
+
+    private fun showDetalle(position: Int = 0) {
+
+        binding.rcvLineas.apply {
+
+            adapter = lineasAdapter
+
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        }
+
+        binding.rcvLineas.onFlingListener = null
+        pagerSnapHelper.attachToRecyclerView(binding.rcvLineas)
+
+        binding.rcvLineas.post {
+            binding.rcvLineas.scrollToPosition(position)
+        }
     }
 
     private fun observerData() {
@@ -267,7 +317,10 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.solesEvent) { result ->
             handleResultadoApi(result) { lista ->
-                lineasAdapter.submitList(lista ?: emptyList())
+                val data = lista ?: emptyList()
+
+                lineasAdapter.submitList(data)
+                lineasResumenAdapter.submitList(data)
             }
         }
 
@@ -286,12 +339,14 @@ class FReporte : Fragment(), MenuProvider,
     }
 
     private fun launchSocket() {
-        mostrarDialog(AppDialogType.Informativo(
-            titulo = T_WARNING,
-            mensaje = "Actualizar datos del servidor toma algo de tiempo ¿Desea continuar?",
-            onPositive = { apiViewModel.executeUpdater() },
-            mostrarNegativo = true
-        ))
+        mostrarDialog(
+            AppDialogType.Informativo(
+                titulo = T_WARNING,
+                mensaje = "Actualizar datos del servidor toma algo de tiempo ¿Desea continuar?",
+                onPositive = { apiViewModel.executeUpdater() },
+                mostrarNegativo = true
+            )
+        )
     }
 
     private fun <T> handleResultadoApi(

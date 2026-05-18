@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.fragment.encuesta.modelUI
+package com.upd.kvupd.ui.fragment.altas.modelUI
 
 data class GiroUI(
     val codigo: String,
