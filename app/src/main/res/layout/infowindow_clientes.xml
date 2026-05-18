@@ -53,7 +53,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="NO COMPRA 3 MESES"
-            android:textColor="@color/lightgray" />
+            android:textColor="@color/superlightgray" />
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="1dp"
@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="NO COMPRA 1 AÑO"
-            android:textColor="@color/lightgray" />
+            android:textColor="@color/superlightgray" />
     </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider

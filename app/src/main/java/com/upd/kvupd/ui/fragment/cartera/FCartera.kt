@@ -25,11 +25,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
+import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.data.model.cache.TableVendedor
 import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.ui.dialog.ListaClientesMapa
+import com.upd.kvupd.ui.dialog.NegocioFiltro
 import com.upd.kvupd.ui.fragment.cartera.behavior.CarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.SupervisorCarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.VendedorCarteraBehavior
@@ -50,6 +52,7 @@ import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
 import com.upd.kvupd.utils.buildMaterialDialog
 import com.upd.kvupd.utils.collectFlow
 import com.upd.kvupd.utils.consume
+import com.upd.kvupd.utils.gone
 import com.upd.kvupd.utils.gps.GpsTracker
 import com.upd.kvupd.utils.maps.MapHelper
 import com.upd.kvupd.utils.maps.awaitMap
@@ -57,6 +60,7 @@ import com.upd.kvupd.utils.maps.icono
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
+import com.upd.kvupd.utils.visible
 import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,7 +128,7 @@ class FCartera : Fragment(), MenuProvider {
     }
 
     override fun onStop() {
-        localViewmodel.clearQuery()
+        limpiarFiltroNegocio()
         super.onStop()
     }
 
@@ -155,6 +159,10 @@ class FCartera : Fragment(), MenuProvider {
     }
 
     private fun setupButtons() {
+        binding.fabFiltro.setOnClickListener {
+            mostrarFiltroNegocio()
+        }
+
         binding.fabLista.setOnClickListener {
             focusClienteEnMapa()
         }
@@ -169,6 +177,10 @@ class FCartera : Fragment(), MenuProvider {
             getLocation?.let {
                 mapHelper.moveCamera(it)
             }
+        }
+
+        binding.chipFiltro.setOnCloseIconClickListener {
+            limpiarFiltroNegocio()
         }
 
         mapHelper.setOnInfoWindowClickListener(
@@ -215,6 +227,52 @@ class FCartera : Fragment(), MenuProvider {
                 )
             )
         }
+
+        collectFlow(apiViewModel.flowPolygon) { polygons ->
+            drawPolygons(polygons)
+        }
+    }
+
+    private fun drawPolygons(
+        polygons: List<TableRuta>
+    ) {
+
+        initMapaSiEsNecesario {
+
+            mapHelper.clearPolygons()
+
+            polygons.forEach { ruta ->
+
+                val latLngs = parsePolygon(ruta.corte)
+
+                if (latLngs.isNotEmpty()) {
+                    mapHelper.drawPolygon(latLngs)
+                }
+            }
+        }
+    }
+
+    private fun parsePolygon(
+        corte: String
+    ): List<LatLng> {
+
+        return corte.split(",")
+            .mapNotNull { punto ->
+
+                val parts = punto.trim().split(" ")
+
+                if (parts.size < 2) {
+                    return@mapNotNull null
+                }
+
+                val lng = parts[0].toDoubleOrNull()
+                val lat = parts[1].toDoubleOrNull()
+
+                if (lat != null && lng != null) {
+                    LatLng(lat, lng)
+                } else
+                    null
+            }
     }
 
     private fun resultadoBajaDialogo() {
@@ -303,6 +361,50 @@ class FCartera : Fragment(), MenuProvider {
 
         snack("Cliente ${item.nombre} dado de baja")
         apiViewModel.saveAndSendBaja(item)
+    }
+
+    private fun mostrarFiltroNegocio() {
+
+        if (clientesCache.isEmpty()) {
+            snack("No hay clientes para filtrar")
+            return
+        }
+
+        NegocioFiltro(
+            requireContext(),
+            negociosCache
+        ) { negocio ->
+
+            if (negocio == "TODOS") {
+                limpiarFiltroNegocio()
+            } else {
+                aplicarFiltroNegocio(
+                    negocio
+                )
+            }
+        }.show()
+    }
+
+    private fun aplicarFiltroNegocio(
+        negocio: String
+    ) {
+
+        localViewmodel.setQuery(negocio)
+
+        binding.chipFiltro.apply {
+            text = negocio
+            visible()
+        }
+    }
+
+    private fun limpiarFiltroNegocio() {
+
+        localViewmodel.clearQuery()
+
+        binding.chipFiltro.apply {
+            text = ""
+            gone()
+        }
     }
 
     private fun drawMarkers() {

@@ -28,6 +28,20 @@
             android:elevation="3dp">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_filtro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fab_lista"
+                android:layout_alignStart="@+id/fab_ubicacion"
+                android:layout_marginBottom="5dp"
+                android:src="@drawable/filtro"
+                app:backgroundTint="@color/white"
+                app:elevation="1dp"
+                app:rippleColor="@color/lightgray"
+                app:tint="@color/primaryDarkColor"
+                app:useCompatPadding="true" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_lista"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,5 +87,20 @@
         </RelativeLayout>
 
     </RelativeLayout>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_filtro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/separation_10"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:chipBackgroundColor="@color/primaryDarkColor"
+        app:closeIconTint="@color/white"
+        app:closeIconVisible="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="BODEGA" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
