@@ -293,7 +293,7 @@ class FAlta : Fragment(), AltaAdapter.Listener, MenuProvider {
 
     private fun renderLista() {
         val hayDatos = altaCache.isNotEmpty()
-        binding.rcvAlta.visibleIf(hayDatos)
+        binding.consRecycler.visibleIf(hayDatos)
         binding.emptyContainer.root.visibleIf(!hayDatos)
         adapter.submitList(altaCache)
     }

@@ -18,14 +18,14 @@ class CoreCsvProcessor @Inject constructor(
     private val sendServerFunctions: SendServerFunctions
 ) {
 
-    suspend fun procesarSeguimiento(file: File): CsvSendResult =
+    suspend fun procesarSeguimiento(file: File, uuid: String): CsvSendResult =
         procesarIndividual(
             file = file,
             parser = ::parseSeguimiento,
             sender = {
                 sendServerFunctions.enviarSeguimiento(
                     it,
-                    it.usuario
+                    uuid
                 )
             }
         )

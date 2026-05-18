@@ -25,8 +25,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
-import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.data.model.cache.TableVendedor
+import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.ui.dialog.ListaClientesMapa
@@ -57,7 +57,6 @@ import com.upd.kvupd.utils.maps.icono
 import com.upd.kvupd.utils.snack
 import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
-import com.upd.kvupd.utils.visibleIf
 import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,6 +79,7 @@ class FCartera : Fragment(), MenuProvider {
     private var bajaEstado: EstadoBaja = EstadoBaja.Reposo
     private var getLocation: Location? = null
     private var clientesCache: List<FlowCliente> = emptyList()
+    private var negociosCache: List<String> = emptyList()
     private var vendedorList: List<TableVendedor> = emptyList()
     private var movedOnce = false
     private var mapaInicializado = false
@@ -121,6 +121,11 @@ class FCartera : Fragment(), MenuProvider {
         R.id.descargar -> consume { downloadCartera() }
         R.id.voz -> consume { searchVoice() }
         else -> false
+    }
+
+    override fun onStop() {
+        localViewmodel.clearQuery()
+        super.onStop()
     }
 
     private fun functionPerUserType() {
@@ -188,7 +193,10 @@ class FCartera : Fragment(), MenuProvider {
             handleClienteEvent(resultado)
         }
 
-        // Modificar clientes obtenidos
+        collectFlow(apiViewModel.flowNegocios) { lista ->
+            negociosCache = lista
+        }
+
         val flow = apiViewModel.flowClientesFiltrados(localViewmodel.query)
         collectFlow(flow) { lista ->
             clientesCache = lista

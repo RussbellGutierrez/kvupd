@@ -12,21 +12,25 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.upd.kvupd.application.GpsNotificationHelper
 import com.upd.kvupd.data.model.core.TableSeguimiento
+import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.RoomFunctions
+import com.upd.kvupd.domain.send.SendServerFunctions
+import com.upd.kvupd.utils.ConstantsExtras
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
+import com.upd.kvupd.utils.ConstantsExtras.NO_FIND_UUID
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.GPSConstants.DISTANCIA_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.DISTANCIA_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_NORMAL
+import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_RAPIDO
+import com.upd.kvupd.utils.GPSConstants.GPT_LAPSO_EXTENSO
+import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
 import com.upd.kvupd.utils.GPSConstants.MODO_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.TRACKER_GPS
-import com.upd.kvupd.utils.GPSConstants.GPT_LAPSO_EXTENSO
-import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
-import com.upd.kvupd.utils.GPSConstants.DISTANCIA_EXTENSO
-import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_NORMAL
-import com.upd.kvupd.utils.GPSConstants.GPT_INTERVALO_RAPIDO
-import com.upd.kvupd.utils.gps.GpsTracker
 import com.upd.kvupd.utils.NotificationHelper.NOTIFICATION_ID
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
+import com.upd.kvupd.utils.gps.GpsTracker
 import com.upd.kvupd.utils.to2Decimals
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +58,12 @@ class LocationServiceBackground : LifecycleService() {
 
     @Inject
     lateinit var roomFunction: RoomFunctions
+
+    @Inject
+    lateinit var sendServerFunctions: SendServerFunctions
+
+    @Inject
+    lateinit var identityFunctions: IdentityFunctions
 
     override fun onCreate() {
         super.onCreate()
@@ -136,6 +146,7 @@ class LocationServiceBackground : LifecycleService() {
                                 bateria = bateria
                             )
                             roomFunction.saveSeguimiento(item)
+                            enviarSeguimientoDirecto(item)
                         } catch (e: Exception) {
                             Log.e(_tag, "❌ Error guardando seguimiento", e)
                         }
@@ -162,6 +173,17 @@ class LocationServiceBackground : LifecycleService() {
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
         return null
+    }
+
+    private suspend fun enviarSeguimientoDirecto(item: TableSeguimiento) {
+        val extraParam = identityFunctions.obtenerIdentificador()
+            .takeUnless { it.isNullOrBlank() }
+            ?: NO_FIND_UUID
+
+        if (modoActual == MODO_NORMAL) {
+            sendServerFunctions.enviarSeguimiento(item, extraParam)
+            Log.d(_tag, "Seguimiento enviado")
+        }
     }
 
     private fun obtenerNotificacionPorModo(modo: String): Notification =
