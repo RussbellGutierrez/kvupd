@@ -328,7 +328,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="La direccion tiene..."
+                    android:text="Seleccione una via..."
                     android:textColor="@color/lightcrimson" />
 
                 <Spinner
@@ -435,7 +435,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.3"
-                    android:text="La zona es..."
+                    android:text="Tipo de zona..."
                     android:textColor="@color/lightcrimson" />
 
                 <Spinner

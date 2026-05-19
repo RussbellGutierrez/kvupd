@@ -63,6 +63,7 @@ class MapInfoWindow(
             txtCliente.text = data.nomcli
             txtDireccion.text = data.domicilio
             txtNegocio.text = data.negocio
+            txtFecha.text = data.fecha
             txtRuta.text = data.ruta.toString()
             txtVendedor.text = "V - ${data.vendedor}"
 
@@ -71,12 +72,12 @@ class MapInfoWindow(
 
             when {
                 data.compras == 1 -> {
-                    txtVentas.setTextColor(Color.parseColor("#B6B6B6"))
+                    txtVentas.setTextColor(Color.parseColor("#FFFFFF"))
                     txtCompras.setTextColor(Color.parseColor("#3700B3"))
                 }
 
                 data.ventas == 1 -> {
-                    txtCompras.setTextColor(Color.parseColor("#B6B6B6"))
+                    txtCompras.setTextColor(Color.parseColor("#FFFFFF"))
                     txtVentas.setTextColor(Color.parseColor("#3700B3"))
                 }
             }

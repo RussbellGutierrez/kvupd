@@ -233,7 +233,7 @@ class APIViewModel @Inject constructor(
     }
 
     val flowPreguntas = roomFunctions.listFlowPreguntas()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val flowCabeceraEncuesta = roomFunctions.listFlowCabeceraEncuesta()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

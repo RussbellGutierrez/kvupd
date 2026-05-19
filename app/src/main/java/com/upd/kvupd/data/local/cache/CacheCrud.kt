@@ -38,6 +38,9 @@ interface CacheCrud {
 
     @Transaction
     suspend fun replaceVendedores(data: List<TableVendedor>) {
+        deleteClientes()
+        deleteRutaProgramacion()
+
         deleteVendedores()
         insertVendedores(data)
     }

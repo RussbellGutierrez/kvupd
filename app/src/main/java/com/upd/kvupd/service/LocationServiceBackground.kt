@@ -176,11 +176,13 @@ class LocationServiceBackground : LifecycleService() {
     }
 
     private suspend fun enviarSeguimientoDirecto(item: TableSeguimiento) {
+        val config = roomFunction.queryConfiguracion()?: return
+
         val extraParam = identityFunctions.obtenerIdentificador()
             .takeUnless { it.isNullOrBlank() }
             ?: NO_FIND_UUID
 
-        if (modoActual == MODO_NORMAL) {
+        if (modoActual == MODO_NORMAL && config.seguimiento == 1) {
             sendServerFunctions.enviarSeguimiento(item, extraParam)
             Log.d(_tag, "Seguimiento enviado")
         }

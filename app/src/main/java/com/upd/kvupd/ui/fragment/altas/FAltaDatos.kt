@@ -130,6 +130,45 @@ class FAltaDatos : Fragment() {
             val subgiros = currentState?.subgiros?.get(giro.codigo).orEmpty()
             binding.spnSubgiro.setAdapterList(subgiros)
         }
+
+        binding.spnVia.onItemSelectedItem<Via> { via ->
+
+            updateFieldState(
+                enabled = via != Via.NINGUNO,
+                editText = binding.edtDireccion
+            )
+        }
+
+        binding.spnNumero.onItemSelectedItem<Numeracion> { numero ->
+
+            updateFieldState(
+                enabled = numero != Numeracion.NINGUNO,
+                editText = binding.edtNumero
+            )
+        }
+
+        binding.spnZona.onItemSelectedItem<Zona> { zona ->
+
+            updateFieldState(
+                enabled = zona != Zona.NINGUNO,
+                editText = binding.edtZona
+            )
+        }
+
+        updateFieldState(
+            enabled = false,
+            editText = binding.edtDireccion
+        )
+
+        updateFieldState(
+            enabled = false,
+            editText = binding.edtNumero
+        )
+
+        updateFieldState(
+            enabled = false,
+            editText = binding.edtZona
+        )
     }
 
     private fun existDataPrevious() {
@@ -256,6 +295,16 @@ class FAltaDatos : Fragment() {
             spnVia.setAdapterList(Via.entries)
             spnZona.setAdapterList(Zona.entries)
             spnNumero.setAdapterList(Numeracion.entries)
+        }
+    }
+
+    private fun updateFieldState(enabled: Boolean, editText: TextInputEditText) {
+
+        editText.isEnabled = enabled
+
+        if (!enabled) {
+            editText.setText("")
+            editText.setErrorBorder(false)
         }
     }
 
@@ -609,20 +658,53 @@ class FAltaDatos : Fragment() {
             )
         }
 
-        if (numeracion == null || numeracion == Numeracion.NINGUNO) {
-            errores.add("• Seleccione numeración")
-        }
-
         if (subgiro == "0" || subgiro.isEmpty()) {
             errores.add("• Seleccione subgiro")
         }
 
-        if (via == null || via == Via.NINGUNO) {
-            errores.add("• Seleccione una vía válida")
+        if (
+            via != null &&
+            via != Via.NINGUNO &&
+            binding.edtDireccion.text
+                .toString()
+                .trim()
+                .isEmpty()
+        ) {
+
+            markError(
+                binding.edtDireccion,
+                "Ingrese dirección",
+                errores
+            )
         }
 
-        if (zona == null || zona == Zona.NINGUNO) {
-            errores.add("• Seleccione una zona válida")
+        if (
+            numeracion != null &&
+            numeracion != Numeracion.NINGUNO &&
+            numero.isEmpty()
+        ) {
+
+            markError(
+                binding.edtNumero,
+                "Ingrese número",
+                errores
+            )
+        }
+
+        if (
+            zona != null &&
+            zona != Zona.NINGUNO &&
+            binding.edtZona.text
+                .toString()
+                .trim()
+                .isEmpty()
+        ) {
+
+            markError(
+                binding.edtZona,
+                "Ingrese zona",
+                errores
+            )
         }
 
         if (ruc.isNotEmpty() && !ruc.isValidDocumento(tipo)) {
