@@ -182,7 +182,7 @@ class LocationServiceBackground : LifecycleService() {
             .takeUnless { it.isNullOrBlank() }
             ?: NO_FIND_UUID
 
-        if (modoActual == MODO_NORMAL && config.seguimiento == 1) {
+        if (config.seguimiento == 1) {
             sendServerFunctions.enviarSeguimiento(item, extraParam)
             Log.d(_tag, "Seguimiento enviado")
         }
