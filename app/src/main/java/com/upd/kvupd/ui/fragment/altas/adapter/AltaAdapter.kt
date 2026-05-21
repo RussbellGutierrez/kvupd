@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.upd.kvupd.R
 import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.databinding.FlowRowAltaBinding
 import dagger.assisted.Assisted
@@ -39,17 +41,17 @@ class AltaAdapter @AssistedInject constructor(
 
         @SuppressLint("SetTextI18n")
         fun bind(item: TableAlta, listener: Listener) {
-            var color = ""
+            var color = 0
 
             when (item.datos) {
-                0 -> color = "#B6B6B6"
-                1 -> color = "#3700B3"
+                0 -> color = ContextCompat.getColor(itemView.context, R.color.sin_datos)
+                1 -> color = ContextCompat.getColor(itemView.context, R.color.con_datos)
             }
 
             bind.txtEmpleado.text = "Empleado - ${item.empleado}"
             bind.txtCodigo.text = item.idaux
             bind.txtFecha.text = item.fecha
-            bind.txtDatos.setTextColor(Color.parseColor(color))
+            bind.txtDatos.setTextColor(color)
 
             bind.lnrAlta.setOnLongClickListener {
                 listener.onLongClick(item)

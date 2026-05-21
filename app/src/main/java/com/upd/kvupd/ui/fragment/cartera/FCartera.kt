@@ -46,6 +46,8 @@ import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
 import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
 import com.upd.kvupd.utils.GPSConstants.TRACKER_TEMPORAL
 import com.upd.kvupd.utils.InstanciaDialog
+import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
+import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -183,11 +185,11 @@ class FCartera : Fragment(), MenuProvider {
             limpiarFiltroNegocio()
         }
 
-        mapHelper.setOnInfoWindowClickListener(
+        mapHelper.setOnInfoWindowLongClickListener(
             FlowCliente::class.java,
-            object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
+            object : MapHelper.OnInfoWindowLongClickListener<FlowCliente> {
 
-                override fun onClick(data: FlowCliente) {
+                override fun onLongClick(data: FlowCliente) {
 
                     if (data.baja > 0) {
                         mostrarClienteDadoDeBaja()
@@ -523,10 +525,10 @@ class FCartera : Fragment(), MenuProvider {
 
     private fun mostrarDialog(dialogType: AppDialogType) {
         lifecycleScope.launch(Dispatchers.Main) {
-            InstanciaDialog.cerrarDialogActual()
+            cerrarDialogActual()
             val dialog = buildMaterialDialog(requireContext(), dialogType)
             dialog.show()
-            InstanciaDialog.REFERENCIA_DIALOG = WeakReference(dialog)
+            REFERENCIA_DIALOG = WeakReference(dialog)
         }
     }
 
