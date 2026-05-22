@@ -94,31 +94,37 @@ class LocationServiceBackground : LifecycleService() {
                 }
             }
 
-            val trackingActivo = gpsTracker.isTracking(TRACKER_GPS)
-
-            Log.i(
-                _tag,
-                "Modo GPS: $modoPrevio -> $nuevoModo | tracking=${trackingActivo}"
+            gestionarTracking(
+                nuevoModo = nuevoModo,
+                modoPrevio = modoPrevio,
+                notification = notification
             )
-
-            // 🔹 Early-exit solo de la coroutine
-            if (modoPrevio == nuevoModo && trackingActivo) {
-                Log.i(_tag, "Sin cambios de modo y tracking activo")
-                return@launch
-            }
-
-            if (trackingActivo) {
-                gpsTracker.updateTrackingConfig(
-                    TRACKER_GPS,
-                    nuevoModo == MODO_EXTENSO
-                )
-                gpsNotificationHelper.actualizarNotificacion(notification)
-            } else {
-                iniciarRastreo(nuevoModo)
-            }
         }
 
         return START_STICKY
+    }
+
+    private fun gestionarTracking(
+        nuevoModo: String,
+        modoPrevio: String?,
+        notification: Notification
+    ) {
+
+        val trackingActivo = gpsTracker.isTracking(TRACKER_GPS)
+        Log.i(_tag, "Modo GPS: $modoPrevio -> $nuevoModo | tracking=$trackingActivo")
+
+        if (trackingActivo) {
+
+            Log.i(_tag, "Reaplicando config GPS: modo=$nuevoModo")
+            gpsTracker.updateTrackingConfig(
+                TRACKER_GPS,
+                nuevoModo == MODO_EXTENSO
+            )
+
+            gpsNotificationHelper.actualizarNotificacion(notification)
+        } else {
+            iniciarRastreo(nuevoModo)
+        }
     }
 
     private fun iniciarRastreo(modo: String) {
@@ -176,7 +182,7 @@ class LocationServiceBackground : LifecycleService() {
     }
 
     private suspend fun enviarSeguimientoDirecto(item: TableSeguimiento) {
-        val config = roomFunction.queryConfiguracion()?: return
+        val config = roomFunction.queryConfiguracion() ?: return
 
         val extraParam = identityFunctions.obtenerIdentificador()
             .takeUnless { it.isNullOrBlank() }

@@ -253,10 +253,8 @@ class OperationSource @Inject constructor(
             set(Calendar.HOUR_OF_DAY, hora.hour)
             set(Calendar.MINUTE, hora.minute)
             set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) add(
-                Calendar.DATE,
-                1
-            ) // programar para mañana si ya pasó
+            if (before(Calendar.getInstance()))
+                add(Calendar.DATE, 1) // programar para mañana si ya pasó
         }
 
         val pendingIntent = PendingIntent.getBroadcast(

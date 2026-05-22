@@ -97,14 +97,6 @@ class GpsReceiver : BroadcastReceiver() {
 
                 Log.e(GPS_FLOW, "[GPS_RECEIVER] ⏰ ALARM EJECUTADO → modo=$modo")
 
-                // 🔥 validar si la config es de hoy
-                val config = roomFunctions.queryConfiguracion()
-                val esHoy = config != null && FechaHoraUtil.esHoy(config.fecha)
-
-                if (!esHoy) {
-                    modo = MODO_EXTENSO
-                }
-
                 // 🔹 guardar modo final
                 preference.edit()
                     .putString(KEY_MODO_GPS, modo)

@@ -77,10 +77,10 @@ object GPSConstants {
     const val GPS_NOTIF_ID = 101
 
     const val TRACKER_GPS = "rastreo_gps"
-    const val GPT_INTERVALO_NORMAL = 120_000L
-    const val GPT_INTERVALO_RAPIDO = 60_000L
+    const val GPT_INTERVALO_NORMAL = 20_000L//120_000L
+    const val GPT_INTERVALO_RAPIDO = 10_000L//60_000L
     const val DISTANCIA_NORMAL = 2.0f
-    const val GPT_LAPSO_EXTENSO = 3_600_000L
+    const val GPT_LAPSO_EXTENSO = 60_000L//3_600_000L
     const val DISTANCIA_EXTENSO = 50f
 
     const val MODO_NORMAL = "normal"
