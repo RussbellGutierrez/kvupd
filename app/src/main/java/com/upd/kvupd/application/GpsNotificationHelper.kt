@@ -9,16 +9,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.upd.kvupd.R
 import com.upd.kvupd.application.receiver.GpsReceiver
+import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.GPSConstants.GPS_CHANNEL
 import com.upd.kvupd.utils.GPSConstants.GPS_NOTIF_ID
-import com.upd.kvupd.utils.NotificationHelper.ACTION_OPEN_APP
 import com.upd.kvupd.utils.NotificationHelper.ACTION_RECREATE_NOTIFICATION
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -53,14 +51,20 @@ class GpsNotificationHelper @Inject constructor(
     }
 
     private fun pendingIntentAbrirApp(): PendingIntent {
-        val intent = Intent(ctx, GpsReceiver::class.java).apply {
-            action = ACTION_OPEN_APP
+
+        val intent = Intent(ctx, MainActivity::class.java).apply {
+            flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
-        return PendingIntent.getBroadcast(
+
+        return PendingIntent.getActivity(
             ctx,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or
+                    PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
 

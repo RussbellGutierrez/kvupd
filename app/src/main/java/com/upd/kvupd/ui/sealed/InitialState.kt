@@ -5,6 +5,7 @@ sealed class InitialState {
     object NoGooglePlay : InitialState()
     object NoBasePermissions : InitialState()
     object NoBackgroundLocationPermission : InitialState()
+    object NoExactAlarmPermission : InitialState()
     object NoUUID : InitialState()
     object CreatedUUID : InitialState()
     object FailCreateUUID : InitialState()

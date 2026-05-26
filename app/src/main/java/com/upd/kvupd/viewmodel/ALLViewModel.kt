@@ -63,24 +63,35 @@ class ALLViewModel @Inject constructor(
     fun iniciarFlujo(
         activity: ComponentActivity,
         permisosBaseOtorgados: Boolean,
-        permisoBackgroundOtorgado: Boolean
+        permisoBackgroundOtorgado: Boolean,
+        permisoExactAlarmOtorgado: Boolean
     ) {
         if (!playServicesChecker.hayServiciosGoogle(activity)) {
             _uuidEstados.value = InitialState.NoGooglePlay
             return
         }
+
         if (!permisosBaseOtorgados) {
             _uuidEstados.value = InitialState.NoBasePermissions
             return
         }
+
         if (!permisoBackgroundOtorgado) {
             _uuidEstados.value = InitialState.NoBackgroundLocationPermission
             return
         }
+
+        if (!permisoExactAlarmOtorgado) {
+            _uuidEstados.value =
+                InitialState.NoExactAlarmPermission
+            return
+        }
+
         if (!identityFunctions.existeIdentificador()) {
             _uuidEstados.value = InitialState.NoUUID
             return
         }
+
         _uuidEstados.value = InitialState.HasUUID
     }
 

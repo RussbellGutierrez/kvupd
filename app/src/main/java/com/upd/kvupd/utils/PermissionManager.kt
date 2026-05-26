@@ -65,4 +65,7 @@ class PermissionManager @Inject constructor(
     // Para solicitar background location después
     fun getBackgroundLocationPermission(): Array<String> =
         backgroundLocationPermission.toTypedArray()
+
+    fun checkExactAlarmPermission(): Boolean =
+        context.hasExactAlarmPermission()
 }

@@ -10,14 +10,11 @@ import com.upd.kvupd.application.GpsNotificationHelper
 import com.upd.kvupd.domain.OperationsFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.service.LocationServiceBackground
-import com.upd.kvupd.ui.activity.MainActivity
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
-import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
 import com.upd.kvupd.utils.GPSConstants.MODO_EXTENSO
 import com.upd.kvupd.utils.GPSConstants.MODO_NORMAL
 import com.upd.kvupd.utils.NotificationHelper.ACTION_CHANGE_MODE
-import com.upd.kvupd.utils.NotificationHelper.ACTION_OPEN_APP
 import com.upd.kvupd.utils.NotificationHelper.ACTION_RECREATE_NOTIFICATION
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,7 +52,7 @@ class GpsReceiver : BroadcastReceiver() {
         }
     }
 
-    private suspend fun handleIntent(context: Context, intent: Intent) {
+    private fun handleIntent(context: Context, intent: Intent) {
 
         Log.e(
             GPS_FLOW,
@@ -63,13 +60,6 @@ class GpsReceiver : BroadcastReceiver() {
         )
 
         when (intent.action) {
-
-            ACTION_OPEN_APP -> {
-                val launchIntent = Intent(context, MainActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                }
-                context.startActivity(launchIntent)
-            }
 
             ACTION_RECREATE_NOTIFICATION -> {
                 val modo = preference.getString(KEY_MODO_GPS, MODO_NORMAL) ?: MODO_NORMAL

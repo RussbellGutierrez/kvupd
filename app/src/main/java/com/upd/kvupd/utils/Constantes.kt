@@ -37,11 +37,6 @@ object ConstantsExtras {
 }
 
 object AlarmConstants {
-    const val ALARMA_INICIO = "INICIO"
-    const val ALARMA_FIN = "FINAL"
-
-    const val WINDOW_ALARMA_GPS = 300000L
-
     const val REQUEST_CODE_ALARMA_INICIO = 1001
     const val REQUEST_CODE_ALARMA_FIN = 1002
 }
@@ -60,7 +55,6 @@ object SharedPreferenceKeys {
 
 object NotificationHelper {
     const val NOTIFICATION_ID = 101
-    const val ACTION_OPEN_APP = "com.upd.kvupd.OPEN_APP"
     const val ACTION_RECREATE_NOTIFICATION = "com.upd.kvupd.RECREATE_NOTIFICATION"
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
 }
@@ -77,10 +71,10 @@ object GPSConstants {
     const val GPS_NOTIF_ID = 101
 
     const val TRACKER_GPS = "rastreo_gps"
-    const val GPT_INTERVALO_NORMAL = 20_000L//120_000L
-    const val GPT_INTERVALO_RAPIDO = 10_000L//60_000L
+    const val GPT_INTERVALO_NORMAL = 120_000L
+    const val GPT_INTERVALO_RAPIDO = 60_000L
     const val DISTANCIA_NORMAL = 2.0f
-    const val GPT_LAPSO_EXTENSO = 60_000L//3_600_000L
+    const val GPT_LAPSO_EXTENSO = 3_600_000L
     const val DISTANCIA_EXTENSO = 50f
 
     const val MODO_NORMAL = "normal"
@@ -133,6 +127,13 @@ object ExtraInfo {
             InfoDispositivo.MODELO -> Build.MODEL
             InfoDispositivo.SDK_INT -> Build.VERSION.SDK_INT.toString()
             InfoDispositivo.VERSION_APP -> BuildConfig.VERSION_NAME
+            InfoDispositivo.BUILD_TYPE -> {
+                if (BuildConfig.DEBUG) {
+                    "DEBUG"
+                } else {
+                    "RELEASE"
+                }
+            }
         }
     }
 }
@@ -214,6 +215,7 @@ object FirebaseKeys {
     const val NODO_MODELO = "Modelo"
     const val NODO_FABRICANTE = "Fabricante"
     const val NODO_FECHAHORA = "FechaHora"
+    const val NODO_TIPOINSTALACION = "TipoInstalacion"
     const val NODO_PEDIMAP = "Pedimap"
     const val NODO_MENSAJE = "Mensaje"
     const val NODO_TEMPORAL = "Temporal"

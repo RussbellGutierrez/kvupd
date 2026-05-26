@@ -1,6 +1,8 @@
 package com.upd.kvupd.ui.activity
 
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.ViewGroup
@@ -46,19 +48,25 @@ class MainActivity : AppCompatActivity() {
     lateinit var permissionManager: PermissionManager
 
     // Launcher centralizado
-    private val permisosLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        val baseOk = permissionManager.checkBasePermissions()
-        val backgroundOk = permissionManager.checkBackgroundLocationPermission()
+    private val permisosLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
 
-        if (!baseOk) {
-            mostrarDialogNotificacionesSiFalta()
-            return@registerForActivityResult
+            if (!permissionManager.checkBasePermissions()) {
+                mostrarDialogNotificacionesSiFalta()
+                return@registerForActivityResult
+            }
+
+            validarFlujoInicial()
         }
 
-        localViewmodel.iniciarFlujo(this, baseOk, backgroundOk)
-    }
+    private val exactAlarmLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            validarFlujoInicial()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,11 +77,7 @@ class MainActivity : AppCompatActivity() {
         observarEstadosEventosUUID()
         configurarNavegacion()
 
-        localViewmodel.iniciarFlujo(
-            this,
-            permissionManager.checkBasePermissions(),
-            permissionManager.checkBackgroundLocationPermission()
-        )
+        validarFlujoInicial()
 
         localViewmodel.iniciarServiceSiHayConfiguracion()
         localViewmodel.sincronizarCsvCore()
@@ -133,6 +137,20 @@ class MainActivity : AppCompatActivity() {
                     permisosLauncher.launch(permissionManager.getBackgroundLocationPermission())
                 }
 
+                InitialState.NoExactAlarmPermission -> mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_WARNING,
+                        mensaje = "KVentas necesita permiso de alarmas para un correcto funcionamiento.",
+                        mostrarNegativo = true,
+                        onPositive = {
+                            solicitarPermisoExactAlarm()
+                        },
+                        onNegative = {
+                            finishAndRemoveTask()
+                        }
+                    )
+                )
+
                 InitialState.NoUUID ->
                     mostrarDialog(
                         AppDialogType.Informativo(
@@ -171,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             mostrarDialog(
                 AppDialogType.Informativo(
                     titulo = T_WARNING,
-                    mensaje = "KVentas necesita notificaciones para mantener activo el GPS.",
+                    mensaje = "KVentas necesita notificaciones para el correcto funcionamiento.",
                     mostrarNegativo = true,
                     onPositive = {
                         permisosLauncher.launch(permissionManager.getBasePermissions())
@@ -189,6 +207,20 @@ class MainActivity : AppCompatActivity() {
             putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
         }
         startActivity(intent)
+    }
+
+    private fun solicitarPermisoExactAlarm() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+            val intent = Intent(
+                Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+            ).apply {
+                data = Uri.parse("package:$packageName")
+            }
+
+            exactAlarmLauncher.launch(intent)
+        }
     }
 
     private fun configurarNavegacion() {
@@ -228,6 +260,15 @@ class MainActivity : AppCompatActivity() {
 
             insets
         }
+    }
+
+    private fun validarFlujoInicial() {
+        localViewmodel.iniciarFlujo(
+            this,
+            permissionManager.checkBasePermissions(),
+            permissionManager.checkBackgroundLocationPermission(),
+            permissionManager.checkExactAlarmPermission()
+        )
     }
 
     private fun mostrarDialog(dialogType: AppDialogType) {
