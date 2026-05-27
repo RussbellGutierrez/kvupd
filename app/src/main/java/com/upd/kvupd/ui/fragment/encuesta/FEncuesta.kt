@@ -67,6 +67,7 @@ import com.upd.kvupd.viewmodel.ALLViewModel
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
@@ -81,6 +82,7 @@ class FEncuesta : Fragment(), MenuProvider {
     private val binding by viewBinding(FragmentFEncuestaBinding::bind)
 
     private var requiereFoto = false
+    private var encuestaInitialized = false
     private var clienteActual: ClienteUI? = null
     private var getLocation: Location? = null
     private var estadoEncuesta = EstadoEncuesta.INIT
@@ -110,6 +112,8 @@ class FEncuesta : Fragment(), MenuProvider {
         initAutoComplete()
         startGps()
         setupActionViews()
+        estadoEncuesta =
+            EstadoEncuesta.INIT
         observerData()
     }
 
@@ -134,46 +138,55 @@ class FEncuesta : Fragment(), MenuProvider {
 
             cabecerasCache = cabeceras
 
-            if (cabeceras.size == 1) {
-                val id = cabeceras.first().id
+            handleEncuestaUnica(cabeceras)
 
-                if (localViewmodel.encuestaState.encuestaId != id) {
-                    localViewmodel.encuestaState.encuestaId = id
-                }
-            }
-
-            // 🔥 ignorar estado inicial (0,0)
-            if (estadoEncuesta == EstadoEncuesta.INIT &&
-                cabeceras.isEmpty() && preguntas.isEmpty()
-            ) {
-                return@collectFlow
-            }
-
-            // 🔥 bloquear estados intermedios cuando cambia encuesta
+            // 🔥 bloquear estados intermedios
             if (estadoEncuesta == EstadoEncuesta.LOADING && preguntas.isEmpty()) {
                 return@collectFlow
             }
 
-            // 🔥 prioridad absoluta → render
+            // 🔥 prioridad render
             if (preguntas.isNotEmpty()) {
+
                 estadoEncuesta = EstadoEncuesta.RENDER
                 setTituloEncuesta()
                 renderFormulario(preguntas.toPreguntaUI())
                 return@collectFlow
             }
 
-            // 🔥 sin datos reales
+            // 🔥 sin datos (evitar falso vacio inicial)
             if (cabeceras.isEmpty()) {
-                estadoEncuesta = EstadoEncuesta.SIN_DATOS
-                mostrarSinEncuestas()
+
+                viewLifecycleOwner.lifecycleScope.launch {
+
+                    delay(300)
+
+                    val cabecerasActuales =
+                        apiViewModel
+                            .flowCabeceraEncuesta
+                            .value
+
+                    val preguntasActuales =
+                        apiViewModel
+                            .flowPreguntas
+                            .value
+
+                    if (
+                        cabecerasActuales.isEmpty() &&
+                        preguntasActuales.isEmpty()
+                    ) {
+
+                        estadoEncuesta =
+                            EstadoEncuesta.SIN_DATOS
+
+                        mostrarSinEncuestas()
+                    }
+                }
+
                 return@collectFlow
             }
 
-            // 🔥 selector
-            if (cabeceras.size > 1) {
-                estadoEncuesta = EstadoEncuesta.SELECCION
-                mostrarSelector()
-            }
+            handleEncuestasMultiples(cabeceras)
         }
 
         collectFlow(apiViewModel.flowClientesPendientes) { lista ->
@@ -207,6 +220,48 @@ class FEncuesta : Fragment(), MenuProvider {
                     mensaje = mensaje
                 )
             )
+        }
+    }
+
+    private fun handleEncuestaUnica(
+        cabeceras: List<FlowHeaderEncuestas>
+    ) {
+
+        if (cabeceras.size != 1) return
+
+        val id = cabeceras.first().id
+
+        if (localViewmodel.encuestaState.encuestaId == id) {
+            return
+        }
+
+        localViewmodel.encuestaState.encuestaId = id
+        estadoEncuesta = EstadoEncuesta.LOADING
+        apiViewModel.setEncuestaSeleccionada(id)
+    }
+
+    private fun handleEncuestasMultiples(
+        cabeceras: List<FlowHeaderEncuestas>
+    ) {
+
+        if (cabeceras.size <= 1) {
+            return
+        }
+
+        val encuestaIdActual = localViewmodel.encuestaState.encuestaId
+
+        val existeEncuesta =
+            cabeceras.any {
+                it.id == encuestaIdActual
+            }
+
+        if (encuestaIdActual > 0 && existeEncuesta) {
+            estadoEncuesta = EstadoEncuesta.LOADING
+            apiViewModel.setEncuestaSeleccionada(encuestaIdActual)
+
+        } else {
+            estadoEncuesta = EstadoEncuesta.SELECCION
+            mostrarSelector()
         }
     }
 
@@ -379,13 +434,46 @@ class FEncuesta : Fragment(), MenuProvider {
     }
 
     private fun mostrarSinEncuestas() {
+
+        // 🔥 limpiar estado previo
+        limpiarEncuestaUI()
+
         mostrarDialog(AppDialogType.Informativo(
             titulo = T_WARNING,
             mensaje = "No descargo encuestas aún. Desea descargarlo?",
             onPositive = {
                 launchApiDownload()
             }
-        ))
+        )
+        )
+    }
+
+    private fun limpiarEncuestaUI() {
+
+        localViewmodel.limpiarEncuesta()
+
+        preguntasActuales = emptyList()
+        clienteActual = null
+        requiereFoto = false
+
+        binding.lnrPreguntas.removeAllViews()
+
+        binding.lnrPreguntas.gone()
+        binding.btnGuardar.gone()
+        binding.cardFoto.gone()
+
+        binding.imgFoto.setImageResource(R.drawable.camara)
+
+        binding.txtRuta.text = ""
+        binding.txtTitulo.text = ""
+
+        binding.autoCliente.setText(
+            "",
+            false
+        )
+
+        adapterAutoComplete.clear()
+        adapterAutoComplete.notifyDataSetChanged()
     }
 
     private fun mostrarSelector() {
@@ -419,16 +507,28 @@ class FEncuesta : Fragment(), MenuProvider {
             encuestas.jobl.isEmpty() -> mostrarDialog(
                 AppDialogType.Informativo(
                     titulo = T_ERROR,
-                    mensaje = "No se encontraron clientes"
+                    mensaje = "No se encontraron encuestas"
                 )
             )
 
-            else -> mostrarDialog(
-                AppDialogType.Informativo(
-                    titulo = MaterialDialogTexto.T_SUCCESS,
-                    mensaje = "Se descargaron ${encuestas.jobl.size} encuestas"
+            else -> {
+                val totalEncuestas = encuestas
+                    .jobl.distinctBy { it.id }
+                    .size
+
+                val mensaje =
+                    if (totalEncuestas == 1)
+                        "Se descargó 1 encuesta"
+                    else
+                        "Se descargaron $totalEncuestas encuestas"
+
+                mostrarDialog(
+                    AppDialogType.Informativo(
+                        titulo = T_SUCCESS,
+                        mensaje = mensaje
+                    )
                 )
-            )
+            }
         }
     }
 

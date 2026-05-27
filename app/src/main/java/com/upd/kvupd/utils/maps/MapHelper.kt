@@ -23,11 +23,16 @@ class MapHelper(
         fun onClick(data: T)
     }
 
+    interface OnInfoWindowLongClickListener<T : MapData> {
+        fun onLongClick(data: T)
+    }
+
     interface OnMarkerMovedListener<T : MapData> {
         fun onMoved(data: T, position: LatLng)
     }
 
     private var infoWindowClickListener: ((MapData) -> Unit)? = null
+    private var infoWindowLongClickListener: ((MapData) -> Unit)? = null
 
     private var googleMap: GoogleMap? = null
     private var myLocationEnabled = false
@@ -64,6 +69,13 @@ class MapHelper(
                 ?: return@setOnInfoWindowClickListener
 
             infoWindowClickListener?.invoke(data)
+        }
+
+        map.setOnInfoWindowLongClickListener { marker ->
+            val data = marker.tag as? MapData
+                ?: return@setOnInfoWindowLongClickListener
+
+            infoWindowLongClickListener?.invoke(data)
         }
 
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
@@ -115,6 +127,18 @@ class MapHelper(
             if (clazz.isInstance(data)) {
                 @Suppress("UNCHECKED_CAST")
                 listener.onClick(data as T)
+            }
+        }
+    }
+
+    fun <T : MapData> setOnInfoWindowLongClickListener(
+        clazz: Class<T>,
+        listener: OnInfoWindowLongClickListener<T>
+    ) {
+        infoWindowLongClickListener = { data ->
+            if (clazz.isInstance(data)) {
+                @Suppress("UNCHECKED_CAST")
+                listener.onLongClick(data as T)
             }
         }
     }

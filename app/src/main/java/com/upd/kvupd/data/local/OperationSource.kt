@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -31,7 +32,6 @@ import com.upd.kvupd.domain.enumFile.TipoUsuario
 import com.upd.kvupd.service.LocationServiceBackground
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_FIN
 import com.upd.kvupd.utils.AlarmConstants.REQUEST_CODE_ALARMA_INICIO
-import com.upd.kvupd.utils.AlarmConstants.WINDOW_ALARMA_GPS
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants.INTENT_EXTRA_GPS
@@ -208,21 +208,14 @@ class OperationSource @Inject constructor(
             !ahora.isBefore(horaInicio) || ahora.isBefore(horaFin)
         }
 
-        val esHoy = FechaHoraUtil.esHoy(config.fecha)
-        var modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
+        val modoNuevo = if (dentroHorario) MODO_NORMAL else MODO_EXTENSO
 
-        if (!esHoy) {
-            modoNuevo = MODO_EXTENSO
-        }
-
-        // 🔹 Persistes modo SIEMPRE
         preferences.edit()
             .putString(KEY_MODO_GPS, modoNuevo)
             .apply()
 
         Log.e(GPS_FLOW, "[SYNC] asegurando service → modo=$modoNuevo")
 
-        // 🔥 SIEMPRE lanzas el service
         LocationServiceBackground.reiniciar(context, modoNuevo)
     }
 
@@ -256,14 +249,16 @@ class OperationSource @Inject constructor(
         hora: LocalTime,
         requestCode: Int
     ) {
+
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, hora.hour)
             set(Calendar.MINUTE, hora.minute)
             set(Calendar.SECOND, 0)
-            if (before(Calendar.getInstance())) add(
-                Calendar.DATE,
-                1
-            ) // programar para mañana si ya pasó
+            set(Calendar.MILLISECOND, 0)
+
+            if (before(Calendar.getInstance())) {
+                add(Calendar.DATE, 1)
+            }
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -273,16 +268,23 @@ class OperationSource @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        alarmManager.setWindow(
+        // Android 12+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            !alarmManager.canScheduleExactAlarms()) {
+
+            Log.e(GPS_FLOW, "[AlarmasGPS] ❌ Exact alarms no permitidas")
+            return
+        }
+
+        alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
-            WINDOW_ALARMA_GPS,
             pendingIntent
         )
 
         Log.e(
             GPS_FLOW,
-            "[AlarmasGPS] ⏰ Alarma programada: ${intent.getStringExtra(INTENT_EXTRA_GPS)} -> ${calendar.time}"
+            "[AlarmasGPS] ⏰ Alarma EXACTA programada: ${intent.getStringExtra(INTENT_EXTRA_GPS)} -> ${calendar.time}"
         )
     }
 

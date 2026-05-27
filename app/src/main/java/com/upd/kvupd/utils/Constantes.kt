@@ -37,11 +37,6 @@ object ConstantsExtras {
 }
 
 object AlarmConstants {
-    const val ALARMA_INICIO = "INICIO"
-    const val ALARMA_FIN = "FINAL"
-
-    const val WINDOW_ALARMA_GPS = 300000L
-
     const val REQUEST_CODE_ALARMA_INICIO = 1001
     const val REQUEST_CODE_ALARMA_FIN = 1002
 }
@@ -60,7 +55,6 @@ object SharedPreferenceKeys {
 
 object NotificationHelper {
     const val NOTIFICATION_ID = 101
-    const val ACTION_OPEN_APP = "com.upd.kvupd.OPEN_APP"
     const val ACTION_RECREATE_NOTIFICATION = "com.upd.kvupd.RECREATE_NOTIFICATION"
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
 }
@@ -133,6 +127,13 @@ object ExtraInfo {
             InfoDispositivo.MODELO -> Build.MODEL
             InfoDispositivo.SDK_INT -> Build.VERSION.SDK_INT.toString()
             InfoDispositivo.VERSION_APP -> BuildConfig.VERSION_NAME
+            InfoDispositivo.BUILD_TYPE -> {
+                if (BuildConfig.DEBUG) {
+                    "DEBUG"
+                } else {
+                    "RELEASE"
+                }
+            }
         }
     }
 }
@@ -210,10 +211,13 @@ object FirebaseKeys {
     const val NODO_DIRECCION = "Direccion"
     const val NODO_IP = "Ip"
     const val NODO_KVENTAS = "Kventas"
+    const val NODO_DEBUG = "Debug"
+    const val NODO_RELEASE = "Release"
     const val NODO_UUID = "Uuid"
     const val NODO_MODELO = "Modelo"
     const val NODO_FABRICANTE = "Fabricante"
     const val NODO_FECHAHORA = "FechaHora"
+    const val NODO_TIPOINSTALACION = "TipoInstalacion"
     const val NODO_PEDIMAP = "Pedimap"
     const val NODO_MENSAJE = "Mensaje"
     const val NODO_TEMPORAL = "Temporal"

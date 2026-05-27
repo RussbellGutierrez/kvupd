@@ -12,6 +12,7 @@ import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.FirebaseKeys.NODO_FABRICANTE
 import com.upd.kvupd.utils.FirebaseKeys.NODO_FECHAHORA
 import com.upd.kvupd.utils.FirebaseKeys.NODO_MODELO
+import com.upd.kvupd.utils.FirebaseKeys.NODO_TIPOINSTALACION
 import com.upd.kvupd.utils.FirebaseKeys.NODO_UUID
 import com.upd.kvupd.utils.SharedPreferenceKeys
 import java.security.MessageDigest
@@ -36,7 +37,8 @@ class IdentificadorSource @Inject constructor(
             NODO_UUID to uuid,
             NODO_MODELO to ExtraInfo.obtener(InfoDispositivo.MODELO),
             NODO_FABRICANTE to ExtraInfo.obtener(InfoDispositivo.FABRICANTE),
-            NODO_FECHAHORA to FechaHoraUtil.ahora()
+            NODO_FECHAHORA to FechaHoraUtil.ahora(),
+            NODO_TIPOINSTALACION to ExtraInfo.obtener(InfoDispositivo.BUILD_TYPE)
         )
     }
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -45,6 +46,15 @@ class GpsTracker @Inject constructor(
         onError: (GpsError) -> Unit = {}
     ) {
         stopTracking(id)
+
+        Log.e(
+            "GPS_TRACK",
+            "START_TRACKING " +
+                    "id=$id | " +
+                    "interval=$interval | " +
+                    "fastest=$fastest | " +
+                    "minDistance=$minDistance"
+        )
 
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         trackers[id] = scope

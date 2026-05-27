@@ -1,6 +1,7 @@
 package com.upd.kvupd.utils
 
 import android.Manifest
+import android.app.AlarmManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -44,3 +45,15 @@ fun Context.hasCameraPermission(): Boolean =
         this,
         Manifest.permission.CAMERA
     ) == PackageManager.PERMISSION_GRANTED
+
+fun Context.hasExactAlarmPermission(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+        val alarmManager =
+            getSystemService(Context.ALARM_SERVICE)
+                    as AlarmManager
+
+        alarmManager.canScheduleExactAlarms()
+
+    } else true
+}

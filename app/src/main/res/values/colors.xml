@@ -24,7 +24,6 @@
     <color name="dodgerblue">#1E90FF</color>
     <color name="gray">#555555</color>
     <color name="lightgray">#E1E1E1</color>
-    <color name="superlightgray">#EAE8E8</color>
     <color name="lightorange">#F4F0ED</color>
     <color name="deeporange">#f4511e</color>
     <color name="green">#046A61</color>
@@ -38,6 +37,8 @@
 
     <color name="shimmer_placeholder">#CCCCCC</color>
 
+    <color name="sin_datos">#FFFFFF</color>
+    <color name="con_datos">#B30062</color>
 
     <color name="opacity">#99000000</color>
     <color name="transparent">#0fff</color>

@@ -1,11 +1,12 @@
 package com.upd.kvupd.utils.maps
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
+import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.Pedimap
 import com.upd.kvupd.databinding.InfowindowClientesBinding
@@ -59,10 +60,13 @@ class MapInfoWindow(
     private fun bindFlowClientes(data: FlowCliente): View {
         val binding = InfowindowClientesBinding.inflate(inflater)
         binding.apply {
+            val context = root.context
+
             txtCodigo.text = data.cliente
             txtCliente.text = data.nomcli
             txtDireccion.text = data.domicilio
             txtNegocio.text = data.negocio
+            txtFecha.text = data.fecha
             txtRuta.text = data.ruta.toString()
             txtVendedor.text = "V - ${data.vendedor}"
 
@@ -71,13 +75,21 @@ class MapInfoWindow(
 
             when {
                 data.compras == 1 -> {
-                    txtVentas.setTextColor(Color.parseColor("#B6B6B6"))
-                    txtCompras.setTextColor(Color.parseColor("#3700B3"))
+                    txtVentas.setTextColor(
+                        ContextCompat.getColor(context, R.color.sin_datos)
+                    )
+                    txtCompras.setTextColor(
+                        ContextCompat.getColor(context, R.color.con_datos)
+                    )
                 }
 
                 data.ventas == 1 -> {
-                    txtCompras.setTextColor(Color.parseColor("#B6B6B6"))
-                    txtVentas.setTextColor(Color.parseColor("#3700B3"))
+                    txtVentas.setTextColor(
+                        ContextCompat.getColor(context, R.color.con_datos)
+                    )
+                    txtCompras.setTextColor(
+                        ContextCompat.getColor(context, R.color.sin_datos)
+                    )
                 }
             }
         }

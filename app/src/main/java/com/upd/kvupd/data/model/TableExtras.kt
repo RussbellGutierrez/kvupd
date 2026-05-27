@@ -7,4 +7,4 @@ fun TableConfiguracion.nombreEmpresa() =
     if (empresa == 1) "ORIUNDA" else "TERRANORTE"
 
 fun TableConfiguracion.colorSeguimiento() =
-    if (seguimiento > 0) R.color.darkgreen else R.color.lightcrimson
+    if (seguimiento > 0) R.color.green else R.color.lightcrimson
