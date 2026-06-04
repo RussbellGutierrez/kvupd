@@ -44,7 +44,7 @@ fun Pedimap.icono(context: Context): BitmapDescriptor {
 
 fun FlowCliente.icono(context: Context): BitmapDescriptor {
     val drawableId = when {
-        baja == 1 -> R.drawable.pin_otros
+        baja == 1 -> R.drawable.pin_baja
         compras == 1 -> R.drawable.pin_peligro
         ventas == 1 -> R.drawable.pin_venta
         else -> R.drawable.pin_chess
@@ -57,7 +57,7 @@ fun <T> TableWrapper<T>.icono(context: Context, drawableId: Int): BitmapDescript
 }
 
 fun FlowBajaSupervisor.icono(context: Context): BitmapDescriptor {
-    val drawableId = R.drawable.pin_bajas
+    val drawableId = R.drawable.pin_ubicado
     return context.vectorToBitmapDescriptor(drawableId)
 }
 

@@ -220,6 +220,7 @@ object FirebaseKeys {
     const val NODO_TIPOINSTALACION = "TipoInstalacion"
     const val NODO_PEDIMAP = "Pedimap"
     const val NODO_MENSAJE = "Mensaje"
+    const val NODO_SOLICITUDES = "Solicitudes"
     const val NODO_TEMPORAL = "Temporal"
 }
 

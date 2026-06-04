@@ -2,11 +2,15 @@ package com.upd.kvupd.data.remote
 
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
+import com.upd.kvupd.data.local.enumClass.InfoDispositivo
+import com.upd.kvupd.utils.ExtraInfo
+import com.upd.kvupd.utils.FirebaseKeys.NODO_DEBUG
 import com.upd.kvupd.utils.FirebaseKeys.NODO_DIRECCION
 import com.upd.kvupd.utils.FirebaseKeys.NODO_IP
 import com.upd.kvupd.utils.FirebaseKeys.NODO_KVENTAS
 import com.upd.kvupd.utils.FirebaseKeys.NODO_MENSAJE
 import com.upd.kvupd.utils.FirebaseKeys.NODO_PEDIMAP
+import com.upd.kvupd.utils.FirebaseKeys.NODO_RELEASE
 import com.upd.kvupd.utils.FirebaseKeys.NODO_UUID
 import com.upd.kvupd.utils.FirebaseKeys.NO_EXISTE
 import kotlinx.coroutines.tasks.await
@@ -36,8 +40,7 @@ class FirebaseHelper @Inject constructor(
 
     suspend fun existeHashFirebase(hash: String): Boolean {
         return try {
-            val snapshot = firebaseDatabase
-                .getReference(NODO_KVENTAS)
+            val snapshot = getKventasReference()
                 .child(hash)
                 .get()
                 .await()
@@ -50,8 +53,7 @@ class FirebaseHelper @Inject constructor(
 
     suspend fun obtenerUUIDFirebase(hash: String): String {
         return try {
-            val snapshot = firebaseDatabase
-                .getReference(NODO_KVENTAS)
+            val snapshot = getKventasReference()
                 .child(hash)
                 .child(NODO_UUID)
                 .get()
@@ -65,8 +67,7 @@ class FirebaseHelper @Inject constructor(
 
     suspend fun guardarHashFirebase(hash: String, contenido: Map<String, String>): Boolean {
         return try {
-            firebaseDatabase
-                .getReference(NODO_KVENTAS)
+            getKventasReference()
                 .child(hash)
                 .setValue(contenido)
                 .await()
@@ -84,7 +85,6 @@ class FirebaseHelper @Inject constructor(
                 .get()
                 .await()
 
-            //snapshot.getValue(String::class.java) ?: "0.0.0.0"
             val mensaje = snapshot.getValue(String::class.java) ?: "No hay mensaje"
             Log.d("FirebaseHelper", "Mensaje obtenido: $mensaje")
             mensaje
@@ -93,4 +93,15 @@ class FirebaseHelper @Inject constructor(
             "No se pudo obtener el mensaje"
         }
     }
+
+    private fun obtenerNodoBuild() =
+        if (ExtraInfo.obtener(InfoDispositivo.BUILD_TYPE) == "DEBUG")
+            NODO_DEBUG
+        else
+            NODO_RELEASE
+
+    private fun getKventasReference() =
+        firebaseDatabase
+            .getReference(NODO_KVENTAS)
+            .child(obtenerNodoBuild())
 }
