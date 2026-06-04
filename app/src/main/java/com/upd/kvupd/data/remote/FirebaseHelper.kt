@@ -85,7 +85,6 @@ class FirebaseHelper @Inject constructor(
                 .get()
                 .await()
 
-            //snapshot.getValue(String::class.java) ?: "0.0.0.0"
             val mensaje = snapshot.getValue(String::class.java) ?: "No hay mensaje"
             Log.d("FirebaseHelper", "Mensaje obtenido: $mensaje")
             mensaje
