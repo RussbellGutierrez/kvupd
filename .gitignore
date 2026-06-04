@@ -11,3 +11,6 @@ local.properties
 # secretos
 secrets.properties
 keystore.properties
+
+# Codex continuidad local
+docs/codex-worklog.md
