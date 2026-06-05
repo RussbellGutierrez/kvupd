@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bicolor_dialog"
     android:gravity="center"
-    android:padding="10dp"
+    android:padding="@dimen/separation_10"
     tools:context=".ui.dialog.BDDetalleBaja">
 
     <com.google.android.material.card.MaterialCardView

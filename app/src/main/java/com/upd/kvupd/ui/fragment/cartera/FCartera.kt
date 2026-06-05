@@ -160,6 +160,15 @@ class FCartera : Fragment(), MenuProvider {
         findNavController().navigate(action)
     }
 
+    private fun solicitarBajaCliente(cliente: FlowCliente) {
+        if (cliente.baja > 0) {
+            mostrarClienteDadoDeBaja()
+            return
+        }
+
+        navegarABaja(cliente)
+    }
+
     private fun setupButtons() {
         binding.fabFiltro.setOnClickListener {
             mostrarFiltroNegocio()
@@ -185,18 +194,22 @@ class FCartera : Fragment(), MenuProvider {
             limpiarFiltroNegocio()
         }
 
+        mapHelper.setOnInfoWindowClickListener(
+            FlowCliente::class.java,
+            object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
+
+                override fun onClick(data: FlowCliente) {
+                    //solicitarBajaCliente(data)
+                }
+            }
+        )
+
         mapHelper.setOnInfoWindowLongClickListener(
             FlowCliente::class.java,
             object : MapHelper.OnInfoWindowLongClickListener<FlowCliente> {
 
                 override fun onLongClick(data: FlowCliente) {
-
-                    if (data.baja > 0) {
-                        mostrarClienteDadoDeBaja()
-                        return
-                    }
-
-                    navegarABaja(data)
+                    solicitarBajaCliente(data)
                 }
             }
         )
