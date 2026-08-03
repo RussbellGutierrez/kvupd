@@ -27,25 +27,19 @@ import com.upd.kvupd.data.model.FlowCliente
 import com.upd.kvupd.data.model.JsonCliente
 import com.upd.kvupd.data.model.cache.TableRuta
 import com.upd.kvupd.data.model.cache.TableVendedor
-import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.databinding.FragmentFCarteraBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
-import com.upd.kvupd.ui.dialog.ListaClientesMapa
-import com.upd.kvupd.ui.dialog.NegocioFiltro
 import com.upd.kvupd.ui.fragment.cartera.behavior.CarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.SupervisorCarteraBehavior
 import com.upd.kvupd.ui.fragment.cartera.behavior.VendedorCarteraBehavior
-import com.upd.kvupd.ui.fragment.cartera.enumFile.EstadoBaja
+import com.upd.kvupd.ui.fragment.cartera.dialog.ListaClientesMapa
+import com.upd.kvupd.ui.fragment.cartera.dialog.NegocioFiltro
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.utils.BundleConstantes.KEY_BAJA
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_NORMAL
 import com.upd.kvupd.utils.GPSConstants.GPS_INTERVALO_RAPIDO
-import com.upd.kvupd.utils.GPSConstants.GT_SIN_INTERVALO
 import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
 import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
-import com.upd.kvupd.utils.GPSConstants.TRACKER_TEMPORAL
-import com.upd.kvupd.utils.InstanciaDialog
 import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
@@ -60,7 +54,7 @@ import com.upd.kvupd.utils.maps.MapHelper
 import com.upd.kvupd.utils.maps.awaitMap
 import com.upd.kvupd.utils.maps.icono
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.to2Decimals
+import com.upd.kvupd.utils.toast
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.utils.visible
 import com.upd.kvupd.viewmodel.ALLViewModel
@@ -82,7 +76,6 @@ class FCartera : Fragment(), MenuProvider {
     private lateinit var carteraBehavior: CarteraBehavior
     private val mapHelper by lazy { MapHelper(layoutInflater) }
 
-    private var bajaEstado: EstadoBaja = EstadoBaja.Reposo
     private var getLocation: Location? = null
     private var clientesCache: List<FlowCliente> = emptyList()
     private var negociosCache: List<String> = emptyList()
@@ -115,7 +108,6 @@ class FCartera : Fragment(), MenuProvider {
         observerData()
         functionPerUserType()
 
-        resultadoBajaDialogo()
         drawMarkers()
     }
 
@@ -154,10 +146,57 @@ class FCartera : Fragment(), MenuProvider {
         )
     }
 
-    private fun navegarABaja(cliente: FlowCliente) {
-        val action = FCarteraDirections
-            .actionFCarteraToBDBajaCliente(cliente)
-        findNavController().navigate(action)
+    private fun navegarABaja(
+        cliente: FlowCliente
+    ) {
+        withCurrentLocation { location ->
+
+            val action = FCarteraDirections
+                .actionFCarteraToBDBajaCliente(
+                    cliente = cliente,
+                    latitud = location.latitude.toFloat(),
+                    longitud = location.longitude.toFloat(),
+                    precision = location.accuracy
+                )
+
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun navegarASolicitud(
+        cliente: FlowCliente
+    ) {
+        withCurrentLocation { location ->
+            val action = FCarteraDirections
+                .actionFCarteraToBDSolicitudes(
+                    cliente = cliente,
+                    latitud = location.latitude.toFloat(),
+                    longitud = location.longitude.toFloat()
+                )
+
+            findNavController().navigate(action)
+        }
+    }
+
+    private inline fun withCurrentLocation(
+        block: (Location) -> Unit
+    ) {
+
+        val location = getLocation
+
+        if (location == null) {
+            snack("Esperando ubicación GPS")
+            return
+        }
+
+        block(location)
+    }
+
+    private fun realizarSolicitudCliente(cliente: FlowCliente) {
+        //codigo para detectar si el cliente tiene solicitudes generadas
+        // si tiene mas de 1, mostrar mensaje indicando la cantidad
+        // esperar la decision del usuario si desea continuar o no
+        navegarASolicitud(cliente)
     }
 
     private fun solicitarBajaCliente(cliente: FlowCliente) {
@@ -194,15 +233,15 @@ class FCartera : Fragment(), MenuProvider {
             limpiarFiltroNegocio()
         }
 
-        mapHelper.setOnInfoWindowClickListener(
+        /*mapHelper.setOnInfoWindowClickListener(
             FlowCliente::class.java,
             object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
 
                 override fun onClick(data: FlowCliente) {
-                    //solicitarBajaCliente(data)
+                    realizarSolicitudCliente(data)
                 }
             }
-        )
+        )*/
 
         mapHelper.setOnInfoWindowLongClickListener(
             FlowCliente::class.java,
@@ -290,94 +329,6 @@ class FCartera : Fragment(), MenuProvider {
             }
     }
 
-    private fun resultadoBajaDialogo() {
-        parentFragmentManager.setFragmentResultListener(
-            KEY_BAJA,
-            viewLifecycleOwner
-        ) { _, bundle ->
-
-            if (bajaEstado != EstadoBaja.Reposo) return@setFragmentResultListener
-
-            val cliente = bundle.getString("cliente") ?: return@setFragmentResultListener
-            val nombre = bundle.getString("nombre") ?: return@setFragmentResultListener
-            val motivo = bundle.getInt("motivo")
-            val comentario = bundle.getString("comentario") ?: ""
-            val fecha = bundle.getString("fecha") ?: return@setFragmentResultListener
-
-            val baja = TableBaja(
-                cliente = cliente,
-                nombre = nombre,
-                motivo = motivo,
-                comentario = comentario,
-                longitud = 0.0,
-                latitud = 0.0,
-                precision = 0.0,
-                fecha = fecha,
-                anulado = 0
-            )
-
-            val location = getLocation
-            if (location == null) {
-                bajaEstado = EstadoBaja.ObteniendoUbicacion
-                obtenerUbicacionParaBaja(baja)
-                return@setFragmentResultListener
-            }
-
-            bajaEstado = EstadoBaja.Procesada
-            procesarBaja(baja, location)
-            bajaEstado = EstadoBaja.Reposo
-        }
-    }
-
-    private fun obtenerUbicacionParaBaja(baja: TableBaja) {
-        snack("Obteniendo ubicación…")
-
-        gpsTracker.startTracking(
-            id = TRACKER_TEMPORAL,
-            interval = GT_SIN_INTERVALO,
-            fastest = GT_SIN_INTERVALO,
-            minDistance = IGNORAR_METROS,
-            onLocation = { location ->
-                if (bajaEstado != EstadoBaja.ObteniendoUbicacion) return@startTracking
-
-                gpsTracker.stopTracking(TRACKER_TEMPORAL)
-                getLocation = location
-
-                bajaEstado = EstadoBaja.Procesada
-                procesarBaja(baja, location)
-                bajaEstado = EstadoBaja.Reposo
-            },
-            onError = {
-                if (bajaEstado != EstadoBaja.ObteniendoUbicacion) return@startTracking
-
-                bajaEstado = EstadoBaja.Error
-                snack("No se pudo obtener ubicación")
-                bajaEstado = EstadoBaja.Reposo
-            }
-        )
-    }
-
-    private fun procesarBaja(
-        baja: TableBaja,
-        location: Location
-    ) {
-        val item = baja.copy(
-            longitud = location.longitude,
-            latitud = location.latitude,
-            precision = location.accuracy.toDouble().to2Decimals()
-        )
-
-        val clienteMapa = clientesCache
-            .firstOrNull { it.cliente == baja.cliente }
-
-        clienteMapa?.let {
-            mapHelper.hideInfoWindow(it)
-        }
-
-        snack("Cliente ${item.nombre} dado de baja")
-        apiViewModel.saveAndSendBaja(item)
-    }
-
     private fun mostrarFiltroNegocio() {
 
         if (clientesCache.isEmpty()) {
@@ -442,7 +393,7 @@ class FCartera : Fragment(), MenuProvider {
         carteraBehavior.onDescargar(
             requireContext()
         ) {
-            snack(it)
+            toast(it)
         }
     }
 

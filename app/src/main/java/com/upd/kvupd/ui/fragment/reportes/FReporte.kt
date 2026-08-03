@@ -1,6 +1,7 @@
 package com.upd.kvupd.ui.fragment.reportes
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -282,6 +283,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.preventaEvent) { result ->
             handleResultadoApi(result) {
+                Log.d(_tag,"Preventa $it")
                 val kpi = mapOrEmpty(it, TipoReporte.PREVENTA, ::mapPreventaKpi)
                 updateKpi(kpi)
             }
@@ -289,6 +291,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.coberturaEvent) { result ->
             handleResultadoApi(result) {
+                Log.d(_tag,"Cobertura $it")
                 val kpi = mapOrEmpty(it, TipoReporte.COBERTURA, ::mapCoberturaKpi)
                 updateKpi(kpi)
             }
@@ -296,6 +299,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.carteraEvent) { result ->
             handleResultadoApi(result) {
+                Log.d(_tag,"Cartera $it")
                 val kpi = mapOrEmpty(it, TipoReporte.CARTERA, ::mapCarteraKpi)
                 updateKpi(kpi)
             }
@@ -303,6 +307,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.generalEvent) { result ->
             handleResultadoApi(result) {
+                Log.d(_tag,"Pedidos $it")
                 val kpi = mapOrEmpty(it, TipoReporte.PEDIDOS, ::mapPedidosKpi)
                 updateKpi(kpi)
             }
@@ -310,6 +315,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.cambioEvent) { result ->
             handleResultadoApi(result) {
+                Log.d(_tag,"Cambios $it")
                 val kpi = mapOrEmpty(it, TipoReporte.CAMBIOS, ::mapCambiosKpi)
                 updateKpi(kpi)
             }
@@ -317,6 +323,7 @@ class FReporte : Fragment(), MenuProvider,
 
         collectFlow(apiViewModel.solesEvent) { result ->
             handleResultadoApi(result) { lista ->
+                Log.d(_tag,"Soles $lista")
                 val data = lista ?: emptyList()
 
                 lineasAdapter.submitList(data)

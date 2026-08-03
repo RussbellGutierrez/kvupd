@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.dialog
+package com.upd.kvupd.ui.fragment.cartera.dialog
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,7 +12,8 @@ import com.upd.kvupd.ui.picker.DatePickerHelper
 class CarteraSupervisor(
     private val context: Context,
     private val vendedores: List<VendedorItem>,
-    private val onConfirm: (codigoVendedor: String, fecha: String?) -> Unit
+    private val onConfirm: (codigoVendedor: String, fecha: String?) -> Unit,
+    private val onError: (String) -> Unit
 ) {
 
     fun show() {
@@ -49,9 +50,10 @@ class CarteraSupervisor(
 
         // Boton Descargar
         binding.btnDescargar.setOnClickListener {
-            val vendedor = vendedorSeleccionado ?: return@setOnClickListener
-            onConfirm(vendedor.codigo, fechaSeleccionada)
-            dialog.dismiss()
+            vendedorSeleccionado?.let { vendedor ->
+                onConfirm(vendedor.codigo, fechaSeleccionada)
+                dialog.dismiss()
+            } ?: onError("Seleccione un vendedor")
         }
 
         // Boton Cerrar

@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.dialog
+package com.upd.kvupd.ui.fragment.reportes.dialog
 
 import android.os.Bundle
 import android.util.Log

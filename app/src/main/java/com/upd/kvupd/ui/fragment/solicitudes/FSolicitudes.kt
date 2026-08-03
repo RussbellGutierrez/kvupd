@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFServidorBinding
-import com.upd.kvupd.ui.fragment.servidor.adapter.GridSpacingItemDecoration
+import com.upd.kvupd.utils.GridSpacingItemDecoration
 import com.upd.kvupd.ui.fragment.servidor.adapter.ServidorAdapter
 import com.upd.kvupd.ui.fragment.servidor.enumFile.ApiServerStatus
 import com.upd.kvupd.ui.fragment.servidor.enumFile.DrawablePosition
@@ -50,7 +50,7 @@ class FSolicitudes : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setUUIDparam()
+        /*setUUIDparam()
         uiButtons()
         initAdapter()
         observeData()
@@ -59,7 +59,7 @@ class FSolicitudes : Fragment() {
         apiViewmodel.clearErrors()
         apiViewmodel.resetItemsState()
         apiViewmodel.loadServerData()
-        apiViewmodel.verifyStatusAndUpload()
+        apiViewmodel.verifyStatusAndUpload()*/
     }
 
     private fun uiButtons() {
@@ -95,7 +95,7 @@ class FSolicitudes : Fragment() {
 
     private fun observeData() {
 
-        collectFlow(apiViewmodel.items) { list ->
+        /*collectFlow(apiViewmodel.items) { list ->
             adapter.submitList(list)
         }
 
@@ -118,7 +118,7 @@ class FSolicitudes : Fragment() {
         collectFlow(apiViewmodel.uploadFinished) {
             isUploading = false
             updateErrorUI()
-        }
+        }*/
     }
 
     private fun setUUIDparam() {

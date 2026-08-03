@@ -262,6 +262,7 @@ data class Pedimap(
     @Json(name = "bateria") val bateria: String,
     @Json(name = "fecha") val fecha: String,
     @Json(name = "hora") val hora: String,
+    @Json(name = "cargo") val cargo: String,
     @Json(name = "estado") val emitiendo: Int,
     @Json(name = "position") val posicion: Position
 ): MapData {

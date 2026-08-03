@@ -61,31 +61,19 @@ class SendServerImplementation @Inject constructor(
             onError = { room.updateDatosAlta(it.copy(sincronizado = false)) }
         )
 
-    override suspend fun enviarRespuesta(item: List<TableRespuesta>): ResultadoApi<Unit> {
+    override suspend fun enviarRespuesta(item: TableRespuesta): ResultadoApi<Unit> =
+        ejecutarEnvio(
+            item,
+            buildBody = { config, it -> json.jsonObjectRespuesta(config, it) },
+            send = { server.apiSendRespuesta(it) },
+            onSuccess = { room.updateRespuesta(it.copy(sincronizado = true)) },
+            onError = { room.updateRespuesta(it.copy(sincronizado = false)) }
+        )
 
-        var primerError: ResultadoApi<Nothing>? = null
-
-        item.forEach { respuesta ->
-            val result = ejecutarEnvio(
-                respuesta,
-                buildBody = { config, it -> json.jsonObjectRespuesta(config, it) },
-                send = { server.apiSendRespuesta(it) },
-                onSuccess = { room.updateRespuesta(it.copy(sincronizado = true)) },
-                onError = { room.updateRespuesta(it.copy(sincronizado = false)) }
-            )
-
-            if (primerError == null) {
-                when (result) {
-                    is ResultadoApi.ErrorHttp -> primerError = result
-                    is ResultadoApi.Fallo -> primerError = result
-                    else -> {}
-                }
-            }
-        }
-        return primerError ?: ResultadoApi.Exito(Unit)
-    }
-
-    override suspend fun enviarSeguimiento(item: TableSeguimiento, identificador: String): ResultadoApi<Unit> =
+    override suspend fun enviarSeguimiento(
+        item: TableSeguimiento,
+        identificador: String
+    ): ResultadoApi<Unit> =
         ejecutarEnvio(
             item,
             buildBody = { config, it -> json.jsonObjectSeguimiento(config, it, identificador) },

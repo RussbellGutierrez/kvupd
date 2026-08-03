@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.baja
 
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -25,7 +24,6 @@ import com.upd.kvupd.data.model.FlowBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaSupervisor
 import com.upd.kvupd.data.model.JsonBajaVendedor
 import com.upd.kvupd.data.model.core.TableBaja
-import com.upd.kvupd.data.model.core.TableBajaProcesada
 import com.upd.kvupd.databinding.DialogBajasVendedorBinding
 import com.upd.kvupd.databinding.FragmentFBajaBinding
 import com.upd.kvupd.databinding.RowBajavendedorBinding
@@ -37,13 +35,14 @@ import com.upd.kvupd.ui.fragment.baja.adapter.supervisor.BajaSuperAdapterFactory
 import com.upd.kvupd.ui.fragment.baja.behavior.BajaBehavior
 import com.upd.kvupd.ui.fragment.baja.behavior.SupervisorBajaBehavior
 import com.upd.kvupd.ui.fragment.baja.behavior.VendedorBajaBehavior
-import com.upd.kvupd.ui.fragment.baja.enumFile.EstadoBajaDetalle
 import com.upd.kvupd.ui.fragment.baja.enumFile.VistaBaja
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.ui.sealed.ResultadoApi
-import com.upd.kvupd.utils.BundleConstantes.KEY_DETALLE
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.GPSConstants
+import com.upd.kvupd.utils.GPSConstants.GT_SIN_INTERVALO
+import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
+import com.upd.kvupd.utils.GPSConstants.TRACKER_TEMPORAL
 import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
@@ -54,7 +53,6 @@ import com.upd.kvupd.utils.consume
 import com.upd.kvupd.utils.gone
 import com.upd.kvupd.utils.gps.GpsTracker
 import com.upd.kvupd.utils.snack
-import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.utils.visible
 import com.upd.kvupd.viewmodel.ALLViewModel
@@ -81,7 +79,6 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
     private val esVendedor get() = tipoUsuario == TipoUsuario.VENDEDOR
     private val esSupervisor get() = tipoUsuario == TipoUsuario.SUPERVISOR
     private var vistaActual: VistaBaja = VistaBaja.GENERADO
-    private var detallebajaEstado: EstadoBajaDetalle = EstadoBajaDetalle.Reposo
     private var bajaCache: List<TableBaja> = emptyList()
     private var bajaSuperCache: List<FlowBajaSupervisor> = emptyList()
     private val _tag by lazy { FBaja::class.java.simpleName }
@@ -112,7 +109,6 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
 
         observerData()
         functionPerUserType()
-        resultadoDetalleBajaDialogo()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -137,12 +133,49 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
         )
     }
 
-    override fun onBajaSupervisorLongClick(bajaSupervisor: FlowBajaSupervisor) {
+    override fun onBajaSupervisorLongClick(
+        bajaSupervisor: FlowBajaSupervisor
+    ) {
         if (bajaSupervisor.procede == null) {
-            val action = FBajaDirections
-                .actionFBajaToBDDetalleBaja(bajaSupervisor)
-            findNavController().navigate(action)
+            obtenerUbicacionParaAbrirDetalle(bajaSupervisor)
         }
+    }
+
+    private fun obtenerUbicacionParaAbrirDetalle(
+        bajaSupervisor: FlowBajaSupervisor
+    ) {
+
+        gpsTracker.startTracking(
+            id = TRACKER_TEMPORAL,
+            interval = GT_SIN_INTERVALO,
+            fastest = GT_SIN_INTERVALO,
+            minDistance = IGNORAR_METROS,
+
+            onLocation = { location ->
+
+                gpsTracker.stopTracking(
+                    TRACKER_TEMPORAL
+                )
+
+                val action = FBajaDirections
+                    .actionFBajaToBDDetalleBaja(
+                        detalle = bajaSupervisor,
+                        latitud = location.latitude.toFloat(),
+                        longitud = location.longitude.toFloat(),
+                        precision = location.accuracy
+                    )
+
+                findNavController().navigate(action)
+            },
+
+            onError = {
+                gpsTracker.stopTracking(
+                    TRACKER_TEMPORAL
+                )
+
+                snack("No se pudo obtener ubicación")
+            }
+        )
     }
 
     override fun onQueryTextSubmit(p0: String) = false
@@ -208,80 +241,6 @@ class FBaja : Fragment(), MenuProvider, OnQueryTextListener,
                 TipoUsuario.SUPERVISOR -> SupervisorBajaBehavior(apiViewModel)
             }
         }
-    }
-
-    private fun resultadoDetalleBajaDialogo() {
-        parentFragmentManager.setFragmentResultListener(
-            KEY_DETALLE,
-            viewLifecycleOwner
-        ) { _, bundle ->
-            if (detallebajaEstado != EstadoBajaDetalle.Reposo) return@setFragmentResultListener
-
-            val empleado = bundle.getString("empleado") ?: return@setFragmentResultListener
-            val cliente = bundle.getString("cliente") ?: return@setFragmentResultListener
-            val procede = bundle.getInt("procede")
-            val creacion = bundle.getString("fecha") ?: return@setFragmentResultListener
-            val confirmacion =
-                bundle.getString("fechaconfirmacion") ?: return@setFragmentResultListener
-            val observacion = bundle.getString("observacion") ?: ""
-
-            val detalleBaja = TableBajaProcesada(
-                empleado = empleado,
-                cliente = cliente,
-                procede = procede,
-                fecha = creacion,
-                precision = 0.0,
-                longitud = 0.0,
-                latitud = 0.0,
-                fechaconfirmacion = confirmacion,
-                observacion = observacion
-            )
-
-            detallebajaEstado = EstadoBajaDetalle.ObteniendoUbicacion
-            obtenerUbicacionDetalleBaja(detalleBaja)
-            return@setFragmentResultListener
-        }
-    }
-
-    private fun obtenerUbicacionDetalleBaja(baja: TableBajaProcesada) {
-        snack("Obteniendo ubicación…")
-
-        gpsTracker.startTracking(
-            id = GPSConstants.TRACKER_TEMPORAL,
-            interval = GPSConstants.GT_SIN_INTERVALO,
-            fastest = GPSConstants.GT_SIN_INTERVALO,
-            minDistance = GPSConstants.IGNORAR_METROS,
-            onLocation = { location ->
-                if (detallebajaEstado != EstadoBajaDetalle.ObteniendoUbicacion) return@startTracking
-
-                gpsTracker.stopTracking(GPSConstants.TRACKER_TEMPORAL)
-
-                detallebajaEstado = EstadoBajaDetalle.Procesada
-                procesarDetalleBaja(baja, location)
-                detallebajaEstado = EstadoBajaDetalle.Reposo
-            },
-            onError = {
-                if (detallebajaEstado != EstadoBajaDetalle.ObteniendoUbicacion) return@startTracking
-
-                detallebajaEstado = EstadoBajaDetalle.Error
-                snack("No se pudo obtener ubicación")
-                detallebajaEstado = EstadoBajaDetalle.Reposo
-            }
-        )
-    }
-
-    private fun procesarDetalleBaja(
-        baja: TableBajaProcesada,
-        location: Location
-    ) {
-        val item = baja.copy(
-            longitud = location.longitude,
-            latitud = location.latitude,
-            precision = location.accuracy.toDouble().to2Decimals()
-        )
-
-        snack("Baja de cliente ${item.cliente} revisado")
-        apiViewModel.saveAndSendBajaProcesada(item)
     }
 
     private fun toggleVista() {

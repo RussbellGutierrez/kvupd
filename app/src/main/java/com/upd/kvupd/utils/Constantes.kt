@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object BaseDatosRoom {
-    const val VERSION_CORE = 1
+    const val VERSION_CORE = 2
     const val VERSION_CACHE = 1
 
     const val CORE_NAME = "CoreVentas"
@@ -57,11 +57,6 @@ object NotificationHelper {
     const val NOTIFICATION_ID = 101
     const val ACTION_RECREATE_NOTIFICATION = "com.upd.kvupd.RECREATE_NOTIFICATION"
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
-}
-
-object BundleConstantes {
-    const val KEY_BAJA = "baja_resultado"
-    const val KEY_DETALLE = "bajadetalle_resultado"
 }
 
 object GPSConstants {

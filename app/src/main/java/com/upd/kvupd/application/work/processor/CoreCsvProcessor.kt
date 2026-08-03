@@ -1,5 +1,6 @@
 package com.upd.kvupd.application.work.processor
 
+import androidx.core.util.AtomicFile
 import com.upd.kvupd.application.work.processor.enumFile.CsvSendResult
 import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
@@ -12,7 +13,10 @@ import com.upd.kvupd.domain.send.SendServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.BaseDatosRoom.SEPARADOR
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class CoreCsvProcessor @Inject constructor(
     private val sendServerFunctions: SendServerFunctions
@@ -65,42 +69,12 @@ class CoreCsvProcessor @Inject constructor(
             sender = { sendServerFunctions.enviarFoto(it) }
         )
 
-    suspend fun procesarRespuesta(file: File): CsvSendResult {
-
-        return runCatching {
-
-            val lista = obtenerFilas(file).map(::parseRespuesta)
-
-            if (lista.isEmpty()) {
-                borrarArchivo(file)
-                return CsvSendResult.SUCCESS
-            }
-
-            when (
-                sendServerFunctions
-                    .enviarRespuesta(lista)
-                    .toCsvResult()
-            ) {
-
-                CsvSendResult.SUCCESS -> {
-                    borrarArchivo(file)
-                    CsvSendResult.SUCCESS
-                }
-
-                CsvSendResult.RETRY ->
-                    CsvSendResult.RETRY
-
-                CsvSendResult.DISCARD -> {
-                    borrarArchivo(file)
-                    CsvSendResult.DISCARD
-                }
-            }
-
-        }.getOrElse {
-            borrarArchivo(file)
-            CsvSendResult.DISCARD
-        }
-    }
+    suspend fun procesarRespuesta(file: File): CsvSendResult =
+        procesarIndividual(
+            file = file,
+            parser = ::parseRespuesta,
+            sender = { sendServerFunctions.enviarRespuesta(it) }
+        )
 
     private suspend fun <T> procesarIndividual(
         file: File,
@@ -108,29 +82,96 @@ class CoreCsvProcessor @Inject constructor(
         sender: suspend (T) -> ResultadoApi<Unit>
     ): CsvSendResult {
 
-        return runCatching {
+        return try {
+            val lineas = file.readLines(Charsets.UTF_8)
 
-            val lista = obtenerFilas(file).map(parser)
-
-            if (lista.isEmpty()) {
-                borrarArchivo(file)
-                return CsvSendResult.SUCCESS
+            if (lineas.size <= 1) {
+                return finalizarArchivo(
+                    file = file,
+                    resultado = CsvSendResult.SUCCESS
+                )
             }
 
-            val retry = lista.any { item ->
-                sender(item).toCsvResult() == CsvSendResult.RETRY
+            val encabezado = lineas.first()
+            val filas = lineas.drop(1)
+
+            // Se realiza un parseo total antes de enviar.
+            // Si alguna fila es inválida, no se habrá enviado nada.
+            val elementos = filas.map { linea ->
+                linea to parser(linea)
             }
 
-            if (retry) {
-                CsvSendResult.RETRY
-            } else {
-                borrarArchivo(file)
-                CsvSendResult.SUCCESS
+            for (indice in elementos.indices) {
+                val (_, item) = elementos[indice]
+
+                val resultado = try {
+                    sender(item).toCsvResult()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    CsvSendResult.RETRY
+                }
+
+                when (resultado) {
+                    CsvSendResult.SUCCESS,
+                    CsvSendResult.DISCARD -> Unit
+
+                    CsvSendResult.RETRY -> {
+                        val pendientes = elementos
+                            .drop(indice)
+                            .map { it.first }
+
+                        reescribirCsv(
+                            file = file,
+                            encabezado = encabezado,
+                            filas = pendientes
+                        )
+
+                        return CsvSendResult.RETRY
+                    }
+                }
             }
 
-        }.getOrElse {
-            borrarArchivo(file)
-            CsvSendResult.DISCARD
+            finalizarArchivo(
+                file = file,
+                resultado = CsvSendResult.SUCCESS
+            )
+
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            CsvSendResult.RETRY
+        }
+    }
+
+    private fun reescribirCsv(
+        file: File,
+        encabezado: String,
+        filas: List<String>
+    ) {
+        val atomicFile = AtomicFile(file)
+        var output: FileOutputStream? = null
+
+        try {
+            output = atomicFile.startWrite()
+
+            val writer = OutputStreamWriter(
+                output,
+                Charsets.UTF_8
+            ).buffered()
+
+            writer.appendLine(encabezado)
+
+            filas.forEach { fila ->
+                writer.appendLine(fila)
+            }
+
+            writer.flush()
+            atomicFile.finishWrite(output)
+
+        } catch (e: Exception) {
+            output?.let(atomicFile::failWrite)
+            throw e
         }
     }
 
@@ -147,23 +188,21 @@ class CoreCsvProcessor @Inject constructor(
                 CsvSendResult.DISCARD
 
             is ResultadoApi.Loading ->
-                CsvSendResult.DISCARD
+                CsvSendResult.RETRY
         }
 
-    private fun obtenerFilas(file: File): List<String> {
+    private fun finalizarArchivo(
+        file: File,
+        resultado: CsvSendResult
+    ): CsvSendResult {
 
-        val lineas = file.readLines(Charsets.UTF_8)
+        val eliminado = !file.exists() || file.delete()
 
-        if (lineas.size <= 1) {
-            borrarArchivo(file)
-            return emptyList()
+        return if (eliminado) {
+            resultado
+        } else {
+            CsvSendResult.RETRY
         }
-
-        return lineas.drop(1)
-    }
-
-    private fun borrarArchivo(file: File) {
-        if (file.exists()) file.delete()
     }
 
     private fun parseSeguimiento(linea: String): TableSeguimiento {

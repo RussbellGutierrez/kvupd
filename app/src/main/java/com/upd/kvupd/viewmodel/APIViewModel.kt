@@ -56,6 +56,7 @@ import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -90,12 +91,10 @@ class APIViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var extraParam: String? = null
+    private var uploadJob: Job? = null
 
     private val _errorMap = mutableMapOf<UploadType, List<String>>()
     val errorMap: Map<UploadType, List<String>> get() = _errorMap
-
-    private val _uploadFinished = EventFlow<Unit>()
-    val uploadFinished = _uploadFinished.events
 
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
@@ -144,6 +143,9 @@ class APIViewModel @Inject constructor(
 
     private val _items = MutableStateFlow<List<UploadItem>>(emptyList())
     val items: StateFlow<List<UploadItem>> = _items
+
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading
 
     ///     REPORTES
     private val _preventaEvent = EventFlow<ResultadoApi<JsonVolumen>>()
@@ -382,8 +384,8 @@ class APIViewModel @Inject constructor(
 
             val api = when (TipoUsuario.fromCodigo(config.tipo)) {
                 TipoUsuario.VENDEDOR -> serverFunctions::apiReportClienteCambio
-                TipoUsuario.SUPERVISOR -> serverFunctions::apiReportEmpleadoCambio
-                TipoUsuario.JEFE_VENTAS -> return@launch
+                TipoUsuario.SUPERVISOR,
+                TipoUsuario.JEFE_VENTAS -> serverFunctions::apiReportEmpleadoCambio
             }
             downloadBaseReport(api)
                 .collect { _cambioEvent.emit(it) }
@@ -401,11 +403,10 @@ class APIViewModel @Inject constructor(
                 apiCall = serverFunctions::apiReportSoles
             ).first { it !is ResultadoApi.Loading }
 
-            val lineas = mapLineasResult(base) {
-                _solesEvent.emit(it)
-            }
-
-            if (lineas.isEmpty()) return@launch
+            val lineas = resolveLineasResult(
+                result = base,
+                onTerminal = _solesEvent::emit
+            ) ?: return@launch
 
             // 🔹 2. Detalle por línea
             val resultado = coroutineScope {
@@ -419,12 +420,11 @@ class APIViewModel @Inject constructor(
                                 linea = linea.codigo
                             )
 
-                            TipoUsuario.SUPERVISOR -> SolesRequestConfig(
+                            TipoUsuario.SUPERVISOR,
+                            TipoUsuario.JEFE_VENTAS -> SolesRequestConfig(
                                 apiCall = serverFunctions::apiReportPreventa,
                                 marca = linea.codigo
                             )
-
-                            else -> return@async linea
                         }
 
                         val result = downloadBaseReport(
@@ -653,14 +653,33 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun saveAndSendRespuestas(item: List<TableRespuesta>) {
+    fun saveAndSendRespuestas(
+        items: List<TableRespuesta>
+    ) {
         viewModelScope.launch {
-            roomFunctions.saveRespuestas(item)
+            roomFunctions.saveRespuestas(items)
 
-            handleResult(
-                result = sendServerFunctions.enviarRespuesta(item),
-                onError = { _respuestaMessage.emit(it) }
-            )
+            var primerError: ResultadoApi<Unit>? = null
+
+            for (respuesta in items) {
+                val resultado =
+                    sendServerFunctions.enviarRespuesta(respuesta)
+
+                if (primerError == null &&
+                    (resultado is ResultadoApi.ErrorHttp || resultado is ResultadoApi.Fallo)
+                ) {
+                    primerError = resultado
+                }
+            }
+
+            primerError?.let { resultado ->
+                handleResult(
+                    result = resultado,
+                    onError = { mensaje ->
+                        _respuestaMessage.emit(mensaje)
+                    }
+                )
+            }
         }
     }
 
@@ -837,6 +856,10 @@ class APIViewModel @Inject constructor(
                 )
             }
 
+            /*val itemSolicitud = async {
+                val total = roomFunctions.apiCountSolicitud()
+            }*/
+
             _items.value = awaitAll(
                 itemSeguimiento,
                 itemAlta,
@@ -866,44 +889,54 @@ class APIViewModel @Inject constructor(
         _errorMap.clear()
     }
 
-    private fun uploadAll() {
-        viewModelScope.launch {
+    private suspend fun uploadAll() {
+        _errorMap.clear()
 
-            _errorMap.clear()
+        uploadManager.uploadAll(
+            extraParam = extraParam,
 
-            uploadManager.uploadAll(
-                extraParam = extraParam,
+            onStatus = { type, status ->
+                updateStatus(type, status)
+            },
 
-                onStatus = { type, status ->
-                    updateStatus(type, status)
-                },
+            onProgress = { type, processed, pending ->
+                updateProgress(type, processed, pending)
+            },
 
-                onProgress = { type, processed, pending ->
-                    updateProgress(type, processed, pending)
-                },
-
-                onError = { type, errores ->
-                    _errorMap[type] = errores
-                }
-            )
-
-            _uploadFinished.emit(Unit)
-        }
+            onError = { type, errores ->
+                _errorMap[type] = errores
+            }
+        )
     }
 
     fun verifyStatusAndUpload() {
-        viewModelScope.launch {
+        if (uploadJob?.isActive == true) return
 
-            serverFunctions.apiQueryStatusServidor().collect { result ->
+        _status.value = ServerStatusResult(
+            status = ApiServerStatus.LOADING,
+            message = "Consultando servidor..."
+        )
+        _isUploading.value = true
 
-                delay(300)
+        uploadJob = viewModelScope.launch {
+            clearErrors()
+            resetItemsState()
 
-                val mapped = mapServerStatus(result)
-                _status.value = mapped
+            try {
+                serverFunctions.apiQueryStatusServidor().collect { result ->
 
-                if (mapped.status == ApiServerStatus.SUCCESS) {
-                    uploadAll()
+                    delay(300)
+
+                    val mapped = mapServerStatus(result)
+                    _status.value = mapped
+
+                    if (mapped.status == ApiServerStatus.SUCCESS) {
+                        uploadAll()
+                    }
                 }
+            } finally {
+                _isUploading.value = false
+                uploadJob = null
             }
         }
     }
@@ -949,28 +982,35 @@ class APIViewModel @Inject constructor(
         emitAll(apiCall(json))
     }
 
-    private suspend fun mapLineasResult(
+    private suspend fun resolveLineasResult(
         result: ResultadoApi<JsonSoles>,
-        onError: suspend (ResultadoApi<List<LineaUI>>) -> Unit
-    ): List<LineaUI> {
+        onTerminal: suspend (ResultadoApi<List<LineaUI>>) -> Unit
+    ): List<LineaUI>? {
 
         return when (result) {
 
             is ResultadoApi.Exito -> {
-                result.data?.let { mapToLineas(it) } ?: emptyList()
+                val lineas = result.data
+                    ?.let(::mapToLineas)
+                    .orEmpty()
+
+                lineas.ifEmpty {
+                    onTerminal(ResultadoApi.Exito(emptyList()))
+                    null
+                }
             }
 
             is ResultadoApi.ErrorHttp -> {
-                onError(result)
-                emptyList()
+                onTerminal(result)
+                null
             }
 
             is ResultadoApi.Fallo -> {
-                onError(result)
-                emptyList()
+                onTerminal(result)
+                null
             }
 
-            is ResultadoApi.Loading -> emptyList()
+            is ResultadoApi.Loading -> null
         }
     }
 

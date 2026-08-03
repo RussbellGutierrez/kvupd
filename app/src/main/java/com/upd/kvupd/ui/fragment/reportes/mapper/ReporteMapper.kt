@@ -111,11 +111,13 @@ object ReporteMapper {
                 isLoading = false,
                 isEmpty = true
             )
+        val inicio = last.inicio.ifBlank { "0" }
+        val ultimo = last.ultimo.ifBlank { "0" }
 
         return KpiUI(
             tipo = TipoReporte.PEDIDOS,
-            cuota = "Ini: ${last.inicio}",
-            avance = "Ult: ${last.ultimo}",
+            cuota = "Ini: $inicio",
+            avance = "Ult: $ultimo",
             total = "Pedi: ${last.pedido}",
             isLoading = false
         )
@@ -173,7 +175,7 @@ object ReporteMapper {
 
     fun mapVolumenToSoles(json: JsonVolumen): List<SolesUI> {
         return json.jobl
-            .sortedBy { it.datos.descripcion.lowercase() }
+            .sortedByDescending { it.avance }
             .map { it.toSolesUI() }
     }
 

@@ -33,6 +33,7 @@ object QueryCoreConstants {
     """
 
     const val FOTO_COUNT = "SELECT COUNT(*) FROM TableFoto"
+    const val SOLICITUD_COUNT = "SELECT COUNT(*) FROM TableSolicitud"
 
     //// SERVER
     const val SEGUIMIENTO_SERVER = """

@@ -60,9 +60,8 @@ data class TableWrapper<T>(
 ): MapData
 
 data class BotonesConfig(
-    val vendedor: Boolean = false,
+    val rastreo: Boolean = false,
     val cartera: Boolean = false,
-    val cliente: Boolean = false,
     val reporte: Boolean = false,
     val encuesta: Boolean = false,
     val alta: Boolean = false,

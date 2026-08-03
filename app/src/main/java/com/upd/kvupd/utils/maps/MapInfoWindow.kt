@@ -36,10 +36,11 @@ class MapInfoWindow(
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun bindPedimap(data: Pedimap): View {
         val binding = InfowindowPedimapBinding.inflate(inflater)
         binding.apply {
-            txtCodigo.text = data.codigo
+            txtCodigo.text = "${data.cargo} - ${data.codigo}"
             if (data.emitiendo > 0) {
                 txtEmite.visible()
                 txtNoemite.gone()

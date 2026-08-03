@@ -7,7 +7,7 @@
     android:background="@drawable/bicolor_dialog"
     android:gravity="center"
     android:padding="@dimen/separation_10"
-    tools:context=".ui.dialog.BDSolicitudes">
+    tools:context=".ui.fragment.solicitudes.dialog.BDSolicitudes">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

@@ -14,7 +14,7 @@ interface SendServerFunctions {
     suspend fun enviarBajaProcesada(item: TableBajaProcesada): ResultadoApi<Unit>
     suspend fun enviarAlta(item: TableAlta): ResultadoApi<Unit>
     suspend fun enviarAltaDatos(item: TableAltaDatos): ResultadoApi<Unit>
-    suspend fun enviarRespuesta(item: List<TableRespuesta>): ResultadoApi<Unit>
+    suspend fun enviarRespuesta(item: TableRespuesta): ResultadoApi<Unit>
     suspend fun enviarFoto(item: TableFoto): ResultadoApi<Unit>
     suspend fun enviarSeguimiento(item: TableSeguimiento, identificador: String): ResultadoApi<Unit>
 }

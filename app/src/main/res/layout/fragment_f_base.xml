@@ -43,7 +43,7 @@
             android:paddingTop="5dp">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_vendedor"
+                android:id="@+id/btn_rastreo"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,9 +51,7 @@
                 android:layout_marginVertical="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="Control de vendedores"
                 android:visibility="gone"
-                app:icon="@drawable/radar"
                 app:strokeWidth="1dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -65,23 +63,7 @@
                 android:layout_marginVertical="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="Visualizar clientes por vendedor"
                 android:visibility="gone"
-                app:icon="@drawable/alzamano"
-                app:strokeWidth="1dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cliente"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginVertical="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="Administrar clientes"
-                android:visibility="gone"
-                app:icon="@drawable/clientes"
                 app:strokeWidth="1dp" />
 
             <com.google.android.material.button.MaterialButton

@@ -1,7 +1,7 @@
 package com.upd.kvupd.ui.fragment.cartera.behavior
 
 import android.content.Context
-import com.upd.kvupd.ui.dialog.CarteraSupervisor
+import com.upd.kvupd.ui.fragment.cartera.dialog.CarteraSupervisor
 import com.upd.kvupd.ui.fragment.cartera.modelUI.VendedorItem
 import com.upd.kvupd.viewmodel.APIViewModel
 
@@ -17,15 +17,25 @@ class SupervisorCarteraBehavior(
             return
         }
 
-        val lista = vendedores.map {
-            VendedorItem(
-                codigo = it.codigo,
-                nombre = it.descripcion
-            )
-        }
+        val lista = vendedores
+            .filter { it.cargo == "V" }
+            .map {
+                VendedorItem(
+                    codigo = it.codigo,
+                    nombre = it.descripcion,
+                    cargo = it.cargo
+                )
+            }
 
-        CarteraSupervisor(context, lista) { codigo, fecha ->
-            api.downloadClientes(codigo.toInt(), fecha)
-        }.show()
+        CarteraSupervisor(
+            context,
+            lista,
+            onConfirm = { codigo, fecha ->
+                api.downloadClientes(codigo.toInt(), fecha)
+            },
+            onError = { mensaje ->
+                showMessage(mensaje)
+            }
+        ).show()
     }
 }

@@ -111,8 +111,8 @@ class OperationSource @Inject constructor(
 
         val especificos = when (usuarioTipo) {
             TipoUsuario.VENDEDOR -> listOf(workerClientes())
-            TipoUsuario.SUPERVISOR -> listOf(workerEmpleados())
-            TipoUsuario.JEFE_VENTAS -> emptyList()
+            TipoUsuario.SUPERVISOR,
+            TipoUsuario.JEFE_VENTAS-> listOf(workerEmpleados())
         }
 
         val lista = especificos + comunes
