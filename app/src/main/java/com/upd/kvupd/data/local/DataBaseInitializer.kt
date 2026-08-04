@@ -398,6 +398,8 @@ class DataBaseInitializer @Inject constructor(
                     "Falló la actualización de CoreRoom " +
                             "en ${error.stage}"
                 )
+
+                recordException(error)
             }
         }.onFailure { reportError ->
             Log.e(
