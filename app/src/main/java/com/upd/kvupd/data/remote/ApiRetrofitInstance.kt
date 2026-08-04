@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiRetrofitInstance {
 
-    private const val API_TIMEOUT_SECONDS = 120L
+    private const val API_TIMEOUT_SECONDS = 180L
 
     private val okHttpClient = OkHttpClient.Builder()
         .callTimeout(API_TIMEOUT_SECONDS, TimeUnit.SECONDS)

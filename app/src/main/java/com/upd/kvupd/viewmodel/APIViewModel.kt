@@ -301,7 +301,17 @@ class APIViewModel @Inject constructor(
 
     fun downloadClientes(vendedor: Int? = null, fecha: String? = null) {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _clienteEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val json = jsobFunctions.jsonObjectClientes(config, vendedor, fecha)
             serverFunctions.apiDownloadCliente(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
@@ -316,7 +326,17 @@ class APIViewModel @Inject constructor(
 
     fun downloadBajasSupervisor() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _bajasuperEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val json = jsobFunctions.jsonObjectBasico(config)
             serverFunctions.apiDownloadSupervisorBajas(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
@@ -331,7 +351,17 @@ class APIViewModel @Inject constructor(
 
     fun downloadAndShowBajas() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _bajaestadoEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val json = jsobFunctions.jsonObjectBasico(config)
             serverFunctions.apiQueryVendedorBajas(json).collect {
                 _bajaestadoEvent.emit(it)
@@ -347,7 +377,17 @@ class APIViewModel @Inject constructor(
 
     fun downloadEncuestas() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _encuestaEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val json = jsobFunctions.jsonObjectBasico(config)
             serverFunctions.apiDownloadEncuesta(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
