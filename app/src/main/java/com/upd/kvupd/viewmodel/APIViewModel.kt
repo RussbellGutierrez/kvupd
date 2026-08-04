@@ -404,10 +404,12 @@ class APIViewModel @Inject constructor(
                     serverFunctions::apiReportEmpleadoCambio
             }
 
-            downloadBaseReport(api)
-                .collect {
-                    _cambioEvent.emit(it)
-                }
+            downloadBaseReport(
+                apiCall = api,
+                config = config
+            ).collect { result ->
+                _cambioEvent.emit(result)
+            }
         }
     }
 
@@ -417,7 +419,8 @@ class APIViewModel @Inject constructor(
 
             // 🔹 1. Base (líneas)
             val base = downloadBaseReport(
-                apiCall = serverFunctions::apiReportSoles
+                apiCall = serverFunctions::apiReportSoles,
+                config = config
             ).first { it !is ResultadoApi.Loading }
 
             val lineas = resolveLineasResult(
@@ -446,6 +449,7 @@ class APIViewModel @Inject constructor(
 
                         val result = downloadBaseReport(
                             apiCall = request.apiCall,
+                            config = config,
                             linea = request.linea,
                             marca = request.marca
                         ).first { it !is ResultadoApi.Loading }
@@ -1019,11 +1023,13 @@ class APIViewModel @Inject constructor(
 
     private fun <T> downloadBaseReport(
         apiCall: suspend (RequestBody) -> Flow<ResultadoApi<T>>,
+        config: TableConfiguracion? = null,
         linea: Int? = null,
         marca: Int? = null
     ): Flow<ResultadoApi<T>> = flow {
 
-        val config = roomFunctions.queryConfiguracion()
+        val reportConfig = config
+            ?: roomFunctions.queryConfiguracion()
             ?: run {
                 emit(
                     ResultadoApi.Fallo(
@@ -1036,7 +1042,7 @@ class APIViewModel @Inject constructor(
             }
 
         val json = jsobFunctions.jsonObjectReporte(
-            item = config,
+            item = reportConfig,
             linea = linea,
             marca = marca
         )
