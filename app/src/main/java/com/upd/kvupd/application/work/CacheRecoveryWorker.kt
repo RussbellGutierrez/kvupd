@@ -10,6 +10,7 @@ import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.enumFile.TipoUsuario
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltWorker
 class CacheRecoveryWorker @AssistedInject constructor(
@@ -29,22 +30,26 @@ class CacheRecoveryWorker @AssistedInject constructor(
                 )
 
             val tipoUsuario = TipoUsuario.fromCodigo(configuracion.tipo)
+
             val workerIds = operationsFunctions.remainingWorkers(tipoUsuario)
 
             if (workerIds.isEmpty()) {
                 Result.failure(
                     workDataOf(
-                        "error" to "No se pudieron programar los Workers de CacheRoom"
+                        "error" to
+                                "No se pudieron programar los Workers de CacheRoom"
                     )
                 )
             } else {
                 Result.success(
                     workDataOf(
-                        "resultado" to "Recuperación de CacheRoom programada"
+                        "resultado" to
+                                "Recuperación de CacheRoom programada"
                     )
                 )
             }
-
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: Exception) {
             Result.failure(
                 workDataOf(
