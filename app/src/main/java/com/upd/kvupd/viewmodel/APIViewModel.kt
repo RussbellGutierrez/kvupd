@@ -971,7 +971,16 @@ class APIViewModel @Inject constructor(
     ): Flow<ResultadoApi<T>> = flow {
 
         val config = roomFunctions.queryConfiguracion()
-            ?: return@flow
+            ?: run {
+                emit(
+                    ResultadoApi.Fallo(
+                        IllegalStateException(
+                            "No se encontró la configuración local"
+                        )
+                    )
+                )
+                return@flow
+            }
 
         val json = jsobFunctions.jsonObjectReporte(
             item = config,
