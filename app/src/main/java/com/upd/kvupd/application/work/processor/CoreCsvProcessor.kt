@@ -1,6 +1,8 @@
 package com.upd.kvupd.application.work.processor
 
+import android.util.Log
 import androidx.core.util.AtomicFile
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.upd.kvupd.application.work.processor.enumFile.CsvSendResult
 import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
@@ -82,33 +84,40 @@ class CoreCsvProcessor @Inject constructor(
         sender: suspend (T) -> ResultadoApi<Unit>
     ): CsvSendResult {
 
-        return try {
-            val lineas = file.readLines(Charsets.UTF_8)
+        val lineas = try {
+            file.readLines(Charsets.UTF_8)
+        } catch (error: Exception) {
+            // Un fallo de lectura podría ser temporal.
+            return CsvSendResult.RETRY
+        }
 
-            if (lineas.size <= 1) {
-                return finalizarArchivo(
-                    file = file,
-                    resultado = CsvSendResult.SUCCESS
-                )
-            }
+        if (lineas.size <= 1) {
+            return finalizarArchivo(
+                file = file,
+                resultado = CsvSendResult.SUCCESS
+            )
+        }
 
-            val encabezado = lineas.first()
-            val filas = lineas.drop(1)
+        val encabezado = lineas.first()
+        val filas = lineas.drop(1)
 
-            // Se realiza un parseo total antes de enviar.
-            // Si alguna fila es inválida, no se habrá enviado nada.
-            val elementos = filas.map { linea ->
+        val elementos = try {
+            filas.map { linea ->
                 linea to parser(linea)
             }
+        } catch (error: Exception) {
+            return descartarCsvCorrupto(file, error)
+        }
 
+        return try {
             for (indice in elementos.indices) {
                 val (_, item) = elementos[indice]
 
                 val resultado = try {
                     sender(item).toCsvResult()
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (error: Exception) {
                     CsvSendResult.RETRY
                 }
 
@@ -137,9 +146,49 @@ class CoreCsvProcessor @Inject constructor(
                 resultado = CsvSendResult.SUCCESS
             )
 
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            CsvSendResult.RETRY
+        }
+    }
+
+    private fun descartarCsvCorrupto(
+        file: File,
+        cause: Exception
+    ): CsvSendResult {
+
+        val report = IllegalArgumentException(
+            "CSV corrupto o incompatible: ${file.name}",
+            cause
+        )
+
+        Log.e(
+            CoreCsvProcessor::class.java.simpleName,
+            report.message,
+            report
+        )
+
+        runCatching {
+            FirebaseCrashlytics.getInstance().recordException(report)
+        }
+
+        if (!file.exists() || file.delete()) {
+            return CsvSendResult.DISCARD
+        }
+
+        /*
+         * Si no se puede eliminar, se cambia la extensión para impedir
+         * que el Worker vuelva a procesarlo como CSV.
+         */
+        val quarantinedFile = File(
+            file.parentFile,
+            "${file.name}.invalid"
+        )
+
+        return if (file.renameTo(quarantinedFile)) {
+            CsvSendResult.DISCARD
+        } else {
             CsvSendResult.RETRY
         }
     }
@@ -338,6 +387,7 @@ class CoreCsvProcessor @Inject constructor(
 
     private fun csv(linea: String): List<String> {
 
+        val separator = SEPARADOR.single()
         val resultado = mutableListOf<String>()
         val actual = StringBuilder()
 
@@ -362,7 +412,7 @@ class CoreCsvProcessor @Inject constructor(
                     }
                 }
 
-                c.toString() == SEPARADOR && !enComillas -> {
+                c == separator && !enComillas -> {
                     resultado.add(actual.toString().trim())
                     actual.clear()
                 }
@@ -371,6 +421,11 @@ class CoreCsvProcessor @Inject constructor(
             }
             i++
         }
+
+        require(!enComillas) {
+            "Campo CSV con comillas sin cerrar"
+        }
+
         resultado.add(actual.toString().trim())
         return resultado
     }
