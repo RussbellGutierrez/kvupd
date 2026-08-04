@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f5422f73c75fe6b060f6f7ec0a1a5215",
+    "identityHash": "ab03851acece55fb0db0a8e3e94a40c5",
     "entities": [
       {
         "tableName": "TableConfiguracion",
@@ -642,89 +642,11 @@
             "encuesta"
           ]
         }
-      },
-      {
-        "tableName": "TableSolicitud",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identificador` TEXT NOT NULL, `cliente` TEXT NOT NULL, `nombre` TEXT NOT NULL, `rutaFoto` TEXT NOT NULL, `solicitudes` TEXT NOT NULL, `comentario` TEXT NOT NULL, `fecha` TEXT NOT NULL, `longitud` REAL NOT NULL, `latitud` REAL NOT NULL, `estado` INTEGER NOT NULL, `sincronizado` INTEGER NOT NULL, PRIMARY KEY(`identificador`))",
-        "fields": [
-          {
-            "fieldPath": "identificador",
-            "columnName": "identificador",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "cliente",
-            "columnName": "cliente",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "nombre",
-            "columnName": "nombre",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "rutaFoto",
-            "columnName": "rutaFoto",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "solicitudes",
-            "columnName": "solicitudes",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "comentario",
-            "columnName": "comentario",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fecha",
-            "columnName": "fecha",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "longitud",
-            "columnName": "longitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "latitud",
-            "columnName": "latitud",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "estado",
-            "columnName": "estado",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sincronizado",
-            "columnName": "sincronizado",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "identificador"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f5422f73c75fe6b060f6f7ec0a1a5215')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab03851acece55fb0db0a8e3e94a40c5')"
     ]
   }
 }
