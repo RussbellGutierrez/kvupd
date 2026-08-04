@@ -18,6 +18,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.receiver.GpsReceiver
 import com.upd.kvupd.application.work.BootStartWorker
+import com.upd.kvupd.application.work.CacheRecoveryWorker
 import com.upd.kvupd.application.work.CleanupWorker
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
@@ -130,6 +131,22 @@ class OperationSource @Inject constructor(
 
             lista.map { it.id } + encuestas.id
         }
+    }
+
+    fun lanzarRecuperacionCache() {
+        val configuracion = workerConfiguracion()
+
+        val recuperacion = OneTimeWorkRequestBuilder<CacheRecoveryWorker>()
+            .build()
+
+        workManager
+            .beginUniqueWork(
+                "cache_recovery_worker",
+                ExistingWorkPolicy.KEEP,
+                configuracion
+            )
+            .then(recuperacion)
+            .enqueue()
     }
 
     private fun workerConfiguracion() =

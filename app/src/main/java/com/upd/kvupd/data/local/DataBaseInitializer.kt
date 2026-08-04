@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.core.util.AtomicFile
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.upd.kvupd.data.local.cache.CacheRoom
 import com.upd.kvupd.data.local.core.CoreRoom
@@ -27,7 +29,8 @@ import java.io.OutputStreamWriter
 import javax.inject.Inject
 
 class DataBaseInitializer @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val operationSource: OperationSource
 ) {
     private val _tag by lazy { DataBaseInitializer::class.java.simpleName }
 
@@ -119,6 +122,17 @@ class DataBaseInitializer @Inject constructor(
             CACHE_NAME
         )
             .fallbackToDestructiveMigration(true)
+            .addCallback(
+                object : RoomDatabase.Callback() {
+
+                    override fun onDestructiveMigration(
+                        db: SupportSQLiteDatabase
+                    ) {
+                        super.onDestructiveMigration(db)
+                        operationSource.lanzarRecuperacionCache()
+                    }
+                }
+            )
             .build()
     }
 
