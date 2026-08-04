@@ -11,6 +11,7 @@ import com.upd.kvupd.domain.ServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltWorker
 class EncuestasWorker @AssistedInject constructor(
@@ -59,8 +60,14 @@ class EncuestasWorker @AssistedInject constructor(
             }
 
             Result.success(workDataOf("resultado" to "OK"))
-        } catch (e: Exception) {
-            Result.failure(workDataOf("error" to (e.message ?: "Error desconocido")))
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(
+                workDataOf(
+                    "error" to (error.message ?: "Error desconocido")
+                )
+            )
         }
     }
 }

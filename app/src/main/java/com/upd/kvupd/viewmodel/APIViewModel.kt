@@ -489,7 +489,17 @@ class APIViewModel @Inject constructor(
 
     private fun apiSolesDetalle(linea: Int?) {
         viewModelScope.launch {
-            val codigo = linea ?: return@launch
+            val codigo = linea
+                ?: run {
+                    _solesDetalleEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalArgumentException(
+                                "No se encontró la línea seleccionada"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             downloadBaseReport(
                 apiCall = serverFunctions::apiReportSolesGenerico,
                 linea = codigo

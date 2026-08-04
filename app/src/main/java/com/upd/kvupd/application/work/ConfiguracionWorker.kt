@@ -15,6 +15,7 @@ import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_FIN
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_HORA_INICIO
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltWorker
 class ConfiguracionWorker @AssistedInject constructor(
@@ -78,8 +79,14 @@ class ConfiguracionWorker @AssistedInject constructor(
             }
 
             Result.success(workDataOf("resultado" to "OK"))
-        } catch (e: Exception) {
-            Result.failure(workDataOf("error" to (e.message ?: "Error desconocido")))
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            Result.failure(
+                workDataOf(
+                    "error" to (error.message ?: "Error desconocido")
+                )
+            )
         }
     }
 }
