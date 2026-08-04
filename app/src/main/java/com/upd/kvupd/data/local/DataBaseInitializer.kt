@@ -279,7 +279,12 @@ class DataBaseInitializer @Inject constructor(
                             cursor.getColumnIndexOrThrow(column)
                         ).orEmpty()
 
-                        "\"${value.replace("\"", "\"\"")}\""
+                        val normalizedValue = value
+                            .replace("\r\n", " ")
+                            .replace('\r', ' ')
+                            .replace('\n', ' ')
+
+                        "\"${normalizedValue.replace("\"", "\"\"")}\""
                     }
 
                     writer.appendLine(row)
