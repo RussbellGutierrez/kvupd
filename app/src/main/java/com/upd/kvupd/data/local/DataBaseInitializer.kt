@@ -1,7 +1,6 @@
 package com.upd.kvupd.data.local
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.room.Room
@@ -11,13 +10,11 @@ import com.upd.kvupd.data.local.modelbd.CoreBackup
 import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.utils.BaseDatosRoom.CACHE_NAME
 import com.upd.kvupd.utils.BaseDatosRoom.CORE_NAME
+import com.upd.kvupd.utils.BaseDatosRoom.DATABASE_NOT_FOUND
 import com.upd.kvupd.utils.BaseDatosRoom.FOLDER_CORE
 import com.upd.kvupd.utils.BaseDatosRoom.PREFIJO_CSV
 import com.upd.kvupd.utils.BaseDatosRoom.SEPARADOR
-import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CACHE
 import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CORE
-import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_ROOM_CACHE
-import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_ROOM_CORE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -25,55 +22,88 @@ import java.io.FileWriter
 import javax.inject.Inject
 
 class DataBaseInitializer @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val preferences: SharedPreferences
+    @ApplicationContext private val context: Context
 ) {
     private val _tag by lazy { DataBaseInitializer::class.java.simpleName }
 
     fun buildCore(): CoreRoom {
 
-        val oldVersion = preferences.getInt(KEY_ROOM_CORE, -1)
-        val cambioVersion = oldVersion != -1 && oldVersion < VERSION_CORE
+        val installedVersion = getDatabaseVersion(CORE_NAME)
+
+        if (
+            installedVersion != DATABASE_NOT_FOUND &&
+            installedVersion > VERSION_CORE
+        ) {
+            throw IllegalStateException(
+                "Downgrade de CoreRoom no soportado: " +
+                        "$installedVersion -> $VERSION_CORE"
+            )
+        }
+
+        val cambioVersion =
+            installedVersion != DATABASE_NOT_FOUND &&
+                    installedVersion < VERSION_CORE
 
         var backup: CoreBackup? = null
 
         if (cambioVersion) {
+            Log.i(
+                _tag,
+                "Actualizando CoreRoom: $installedVersion -> $VERSION_CORE"
+            )
 
             backup = backupCoreData()
-
             exportPendientes()
 
-            val deleted = deleteCoreDatabase()
-
-            if (!deleted) {
-                Log.e(_tag, "No se pudo eliminar la BD antigua")
+            check(deleteCoreDatabase()) {
+                "No se pudo eliminar la base de datos antigua: $CORE_NAME"
             }
         }
 
-        val db = Room.databaseBuilder(context, CoreRoom::class.java, CORE_NAME).build()
+        val db = Room.databaseBuilder(
+            context,
+            CoreRoom::class.java,
+            CORE_NAME
+        ).build()
 
         backup?.let {
             restoreCoreData(db, it)
         }
 
-        preferences.edit()
-            .putInt(KEY_ROOM_CORE, VERSION_CORE)
-            .apply()
-
         return db
     }
 
     fun buildCache(): CacheRoom {
-
-        val db = Room.databaseBuilder(context, CacheRoom::class.java, CACHE_NAME)
+        return Room.databaseBuilder(
+            context,
+            CacheRoom::class.java,
+            CACHE_NAME
+        )
             .fallbackToDestructiveMigration(true)
             .build()
+    }
 
-        preferences.edit()
-            .putInt(KEY_ROOM_CACHE, VERSION_CACHE)
-            .apply()
+    /**
+     * Obtiene la versión real almacenada por SQLite en PRAGMA user_version.
+     *
+     * Retorna DATABASE_NOT_FOUND cuando el archivo todavía no existe,
+     * como sucede en una instalación nueva.
+     */
+    private fun getDatabaseVersion(databaseName: String): Int {
 
-        return db
+        val databaseFile = context.getDatabasePath(databaseName)
+
+        if (!databaseFile.exists()) {
+            return DATABASE_NOT_FOUND
+        }
+
+        return SQLiteDatabase.openDatabase(
+            databaseFile.path,
+            null,
+            SQLiteDatabase.OPEN_READONLY
+        ).use { database ->
+            database.version
+        }
     }
 
     private fun backupCoreData(): CoreBackup =
