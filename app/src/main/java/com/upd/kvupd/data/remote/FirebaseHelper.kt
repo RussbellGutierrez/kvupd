@@ -14,28 +14,39 @@ import com.upd.kvupd.utils.FirebaseKeys.NODO_RELEASE
 import com.upd.kvupd.utils.FirebaseKeys.NODO_UUID
 import com.upd.kvupd.utils.FirebaseKeys.NO_EXISTE
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 class FirebaseHelper @Inject constructor(
     private val firebaseDatabase: FirebaseDatabase
 ) {
     suspend fun obtenerIpFirebase(): String {
-        return try {
-            Log.d("FirebaseHelper", "Consultando IP en Firebase...")
-            val snapshot = firebaseDatabase
+        Log.d("FirebaseHelper", "Consultando IP en Firebase...")
+
+        val snapshot = withTimeoutOrNull(FIREBASE_TIMEOUT_MS) {
+            firebaseDatabase
                 .getReference(NODO_DIRECCION)
                 .child(NODO_IP)
                 .get()
                 .await()
+        } ?: throw SocketTimeoutException(
+            "Tiempo de espera agotado obteniendo la IP"
+        )
 
-            //snapshot.getValue(String::class.java) ?: "0.0.0.0"
-            val ip = snapshot.getValue(String::class.java) ?: "0.0.0.0"
-            Log.d("FirebaseHelper", "IP obtenida: $ip")
-            ip
-        } catch (e: Exception) {
-            Log.e("FirebaseHelper", "Error obteniendo IP", e)
-            "0.0.0.0"
+        val ip = snapshot
+            .getValue(String::class.java)
+            ?.trim()
+            .orEmpty()
+
+        if (ip.isBlank() || ip == "0.0.0.0") {
+            throw IllegalStateException(
+                "Firebase no proporcionó una IP válida"
+            )
         }
+
+        Log.d("FirebaseHelper", "IP obtenida: $ip")
+        return ip
     }
 
     suspend fun existeHashFirebase(hash: String): Boolean {
@@ -104,4 +115,8 @@ class FirebaseHelper @Inject constructor(
         firebaseDatabase
             .getReference(NODO_KVENTAS)
             .child(obtenerNodoBuild())
+
+    companion object {
+        private const val FIREBASE_TIMEOUT_MS = 15_000L
+    }
 }

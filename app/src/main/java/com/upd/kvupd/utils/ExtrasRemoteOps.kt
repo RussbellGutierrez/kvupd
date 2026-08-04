@@ -3,7 +3,10 @@ package com.upd.kvupd.utils
 import android.util.Log
 import com.upd.kvupd.data.model.JsonResponseAny
 import com.upd.kvupd.ui.sealed.ResultadoApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -29,18 +32,36 @@ inline fun <reified T, reified H> remoteFlowCall(
 ): Flow<ResultadoApi<T>> = flow {
     emit(ResultadoApi.Loading)
 
-    try {
+    val resultadoTerminal: ResultadoApi<T> = try {
         val holder = setupHolder()
-        val response = block(holder) // ejecuta en el mismo contexto del flow
+        val response = block(holder)
+
         if (response.isSuccessful) {
-            emit(ResultadoApi.Exito(response.body()))
+            ResultadoApi.Exito(response.body())
         } else {
-            emit(ResultadoApi.ErrorHttp(response.code(), response.errorBody()?.string()))
+            ResultadoApi.ErrorHttp(
+                code = response.code(),
+                mensaje = response.errorBody()?.string()
+            )
         }
-    } catch (e: Exception) {
-        Log.e("RemoteFlowCall", "Error atrapado en Flow", e)
-        emit(ResultadoApi.Fallo(e))
+    } catch (error: CancellationException) {
+        currentCoroutineContext().ensureActive()
+
+        ResultadoApi.Fallo(
+            throwable = error,
+            mensaje = "Operación cancelada"
+        )
+    } catch (error: Exception) {
+        Log.e(
+            "RemoteFlowCall",
+            "Error atrapado en Flow",
+            error
+        )
+
+        ResultadoApi.Fallo(error)
     }
+
+    emit(resultadoTerminal)
 }.flowOn(Dispatchers.IO)
 
 
