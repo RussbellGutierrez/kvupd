@@ -90,6 +90,10 @@ class DataBaseInitializer @Inject constructor(
                 restoreCoreData(newDatabase, it)
             }
 
+            if (cambioVersion) {
+                limpiarArchivosCoreObsoletos()
+            }
+
             return newDatabase
 
         } catch (error: Exception) {
@@ -147,6 +151,38 @@ class DataBaseInitializer @Inject constructor(
             val config = readConfiguracion(db)
             CoreBackup(config)
         }
+
+    private fun limpiarArchivosCoreObsoletos() {
+        val folder = File(context.filesDir, FOLDER_CORE)
+
+        if (!folder.isDirectory) {
+            return
+        }
+
+        folder.listFiles()
+            .orEmpty()
+            .forEach { file ->
+
+                val debeEliminar = when {
+                    file.name.endsWith(".failed") -> true
+                    file.name.endsWith(".invalid") -> true
+
+                    file.name.endsWith(".retry") -> {
+                        val csvName = file.name.removeSuffix(".retry")
+                        !File(folder, csvName).exists()
+                    }
+
+                    else -> false
+                }
+
+                if (debeEliminar && file.exists() && !file.delete()) {
+                    Log.w(
+                        _tag,
+                        "No se pudo eliminar el archivo obsoleto: ${file.name}"
+                    )
+                }
+            }
+    }
 
     private fun exportPendientes(installedVersion: Int) {
         val prefix = "${PREFIJO_CSV}${installedVersion}_"
