@@ -3,6 +3,7 @@ package com.upd.kvupd.data.local
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import androidx.core.util.AtomicFile
 import androidx.room.Room
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.upd.kvupd.data.local.cache.CacheRoom
@@ -21,7 +22,8 @@ import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CORE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.io.FileWriter
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import javax.inject.Inject
 
 class DataBaseInitializer @Inject constructor(
@@ -66,7 +68,7 @@ class DataBaseInitializer @Inject constructor(
                 backup = backupCoreData()
 
                 stage = CoreUpdateStage.EXPORT_PENDING
-                exportPendientes()
+                exportPendientes(installedVersion)
 
                 stage = CoreUpdateStage.DELETE_OLD_DATABASE
 
@@ -146,16 +148,17 @@ class DataBaseInitializer @Inject constructor(
             CoreBackup(config)
         }
 
-    private fun exportPendientes() {
-        openOldCoreDb().use { db ->
+    private fun exportPendientes(installedVersion: Int) {
+        val prefix = "${PREFIJO_CSV}${installedVersion}_"
 
-            exportCsv(db, "TableSeguimiento", "${PREFIJO_CSV}seguimiento.csv")
-            exportCsv(db, "TableAlta", "${PREFIJO_CSV}alta.csv")
-            exportCsv(db, "TableAltaDatos", "${PREFIJO_CSV}altadatos.csv")
-            exportCsv(db, "TableBaja", "${PREFIJO_CSV}baja.csv")
-            exportCsv(db, "TableBajaProcesada", "${PREFIJO_CSV}bajaprocesada.csv")
-            exportCsv(db, "TableRespuesta", "${PREFIJO_CSV}respuesta.csv")
-            exportCsv(db, "TableFoto", "${PREFIJO_CSV}foto.csv")
+        openOldCoreDb().use { db ->
+            exportCsv(db, "TableSeguimiento", "${prefix}seguimiento.csv")
+            exportCsv(db, "TableAlta", "${prefix}alta.csv")
+            exportCsv(db, "TableAltaDatos", "${prefix}altadatos.csv")
+            exportCsv(db, "TableBaja", "${prefix}baja.csv")
+            exportCsv(db, "TableBajaProcesada", "${prefix}bajaprocesada.csv")
+            exportCsv(db, "TableRespuesta", "${prefix}respuesta.csv")
+            exportCsv(db, "TableFoto", "${prefix}foto.csv")
         }
     }
 
@@ -217,45 +220,116 @@ class DataBaseInitializer @Inject constructor(
         }
     }
 
-    private fun exportCsv(db: SQLiteDatabase, table: String, fileName: String) {
-
+    private fun exportCsv(
+        db: SQLiteDatabase,
+        table: String,
+        fileName: String
+    ) {
         val folder = File(context.filesDir, FOLDER_CORE)
 
-        if (!folder.exists()) folder.mkdirs()
+        check(folder.exists() || folder.mkdirs()) {
+            "No se pudo crear la carpeta de respaldo: ${folder.path}"
+        }
 
-        val file = File(folder, fileName)
+        val finalFile = File(folder, fileName)
 
         db.rawQuery(
             "SELECT * FROM $table WHERE sincronizado = 0",
             null
-        ).use { c ->
+        ).use { cursor ->
 
-            if (c.count == 0) return@use
+            val expectedRows = cursor.count
 
-            FileWriter(file).use { writer ->
+            if (expectedRows == 0) {
+                return
+            }
 
-                val cols = c.columnNames
+            val columns = cursor.columnNames
+            val expectedHeader = columns.joinToString(SEPARADOR)
 
-                writer.appendLine(
-                    cols.joinToString(SEPARADOR)
+            if (
+                finalFile.exists() &&
+                isValidCsv(
+                    file = finalFile,
+                    expectedHeader = expectedHeader,
+                    expectedRows = expectedRows
                 )
+            ) {
+                return
+            }
 
-                while (c.moveToNext()) {
+            val atomicFile = AtomicFile(finalFile)
+            var output: FileOutputStream? = null
 
-                    val row = cols.joinToString(SEPARADOR) { col ->
+            try {
+                output = atomicFile.startWrite()
 
-                        val value =
-                            c.getString(
-                                c.getColumnIndexOrThrow(col)
-                            ) ?: ""
+                val writer = OutputStreamWriter(
+                    output,
+                    Charsets.UTF_8
+                ).buffered()
+
+                writer.appendLine(expectedHeader)
+
+                var writtenRows = 0
+
+                while (cursor.moveToNext()) {
+                    val row = columns.joinToString(SEPARADOR) { column ->
+                        val value = cursor.getString(
+                            cursor.getColumnIndexOrThrow(column)
+                        ).orEmpty()
 
                         "\"${value.replace("\"", "\"\"")}\""
                     }
 
                     writer.appendLine(row)
+                    writtenRows++
                 }
+
+                check(writtenRows == expectedRows) {
+                    "Exportación incompleta de $table: " +
+                            "$writtenRows de $expectedRows registros"
+                }
+
+                writer.flush()
+                atomicFile.finishWrite(output)
+                output = null
+
+            } catch (error: Exception) {
+                output?.let(atomicFile::failWrite)
+                throw error
+            }
+
+            check(
+                isValidCsv(
+                    file = finalFile,
+                    expectedHeader = expectedHeader,
+                    expectedRows = expectedRows
+                )
+            ) {
+                "El respaldo final de $table no superó la validación"
             }
         }
+    }
+
+    private fun isValidCsv(
+        file: File,
+        expectedHeader: String,
+        expectedRows: Int
+    ): Boolean {
+        if (!file.isFile || file.length() == 0L) {
+            return false
+        }
+
+        return runCatching {
+            file.bufferedReader(Charsets.UTF_8).use { reader ->
+                val header = reader.readLine()
+                val rows = reader.lineSequence().count()
+
+                header == expectedHeader &&
+                        rows == expectedRows
+            }
+        }.getOrDefault(false)
     }
 
     private fun reportCoreUpdateFailure(
