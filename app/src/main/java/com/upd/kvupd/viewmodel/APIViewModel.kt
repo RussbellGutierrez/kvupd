@@ -24,6 +24,7 @@ import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
 import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.model.core.TableFoto
 import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.data.remote.sealed.SocketEvent
@@ -52,9 +53,11 @@ import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadItem
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.respuestaUsuario
 import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -280,92 +283,59 @@ class APIViewModel @Inject constructor(
     }
 
     fun downloadPedimap() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _pedimapEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
+        launchApiWithConfig(_pedimapEvent) { config ->
             val json = jsobFunctions.jsonObjectPedimap(config)
-            serverFunctions.apiQueryPedimap(json).collect {
-                _pedimapEvent.emit(it)
-            }
+
+            serverFunctions.apiQueryPedimap(json)
+                .collect(_pedimapEvent::emit)
         }
     }
 
-    fun downloadClientes(vendedor: Int? = null, fecha: String? = null) {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _clienteEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
-            val json = jsobFunctions.jsonObjectClientes(config, vendedor, fecha)
+    fun downloadClientes(
+        vendedor: Int? = null,
+        fecha: String? = null
+    ) {
+        launchApiWithConfig(_clienteEvent) { config ->
+            val json = jsobFunctions.jsonObjectClientes(
+                config,
+                vendedor,
+                fecha
+            )
+
             serverFunctions.apiDownloadCliente(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.replaceClientesAndRutas(lista)
                     }
                 }
+
                 _clienteEvent.emit(result)
             }
         }
     }
 
     fun downloadBajasSupervisor() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _bajasuperEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
+        launchApiWithConfig(_bajasuperEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
+
             serverFunctions.apiDownloadSupervisorBajas(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.apiSaveBajaSupervisor(lista)
                     }
                 }
+
                 _bajasuperEvent.emit(result)
             }
         }
     }
 
     fun downloadAndShowBajas() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _bajaestadoEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
+        launchApiWithConfig(_bajaestadoEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiQueryVendedorBajas(json).collect {
-                _bajaestadoEvent.emit(it)
-            }
+
+            serverFunctions.apiQueryVendedorBajas(json)
+                .collect(_bajaestadoEvent::emit)
         }
     }
 
@@ -376,25 +346,16 @@ class APIViewModel @Inject constructor(
     }
 
     fun downloadEncuestas() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _encuestaEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
+        launchApiWithConfig(_encuestaEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
+
             serverFunctions.apiDownloadEncuesta(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.replaceEncuesta(lista)
                     }
                 }
+
                 _encuestaEvent.emit(result)
             }
         }
@@ -429,43 +390,23 @@ class APIViewModel @Inject constructor(
     }
 
     private fun apiCambio() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _cambioEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
-
+        launchApiWithConfig(_cambioEvent) { config ->
             val api = when (TipoUsuario.fromCodigo(config.tipo)) {
-                TipoUsuario.VENDEDOR -> serverFunctions::apiReportClienteCambio
+                TipoUsuario.VENDEDOR ->
+                    serverFunctions::apiReportClienteCambio
+
                 TipoUsuario.SUPERVISOR,
-                TipoUsuario.JEFE_VENTAS -> serverFunctions::apiReportEmpleadoCambio
+                TipoUsuario.JEFE_VENTAS ->
+                    serverFunctions::apiReportEmpleadoCambio
             }
+
             downloadBaseReport(api)
-                .collect { _cambioEvent.emit(it) }
+                .collect(_cambioEvent::emit)
         }
     }
 
     private fun apiSolesPorLineas() {
-        viewModelScope.launch {
-
-            val config = roomFunctions.queryConfiguracion()
-                ?: run {
-                    _solesEvent.emit(
-                        ResultadoApi.Fallo(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
-                    )
-                    return@launch
-                }
+        launchApiWithConfig(_solesEvent) { config ->
             val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
 
             // 🔹 1. Base (líneas)
@@ -476,7 +417,7 @@ class APIViewModel @Inject constructor(
             val lineas = resolveLineasResult(
                 result = base,
                 onTerminal = _solesEvent::emit
-            ) ?: return@launch
+            ) ?: return@launchApiWithConfig
 
             // 🔹 2. Detalle por línea
             val resultado = coroutineScope {
@@ -643,15 +584,17 @@ class APIViewModel @Inject constructor(
     }
 
     fun createAlta(location: Location) {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchWithConfig(
+            event = _altaMessage,
+            failure = { error ->
+                error.respuestaUsuario()
+            }
+        ) { config ->
             val fecha = FechaHoraUtil.ahora()
             val timeStamp = FechaHoraUtil.timestamp()
 
-            val idaux = "${config.codigo}$timeStamp"
-
             val item = TableAlta(
-                idaux = idaux,
+                idaux = "${config.codigo}$timeStamp",
                 empleado = config.codigo,
                 fecha = fecha,
                 longitud = location.longitude,
@@ -765,18 +708,14 @@ class APIViewModel @Inject constructor(
     }
 
     fun executeUpdater() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
-
+        launchWithConfig(
+            event = _socketEvent,
+            failure = { error ->
+                SocketEvent.Error(error.respuestaUsuario())
+            }
+        ) { config ->
             serverFunctions.apiSocketUpdate(config.empresa)
-                .collect { event ->
-
-                    _socketEvent.emit(event)
-
-                    if (event is SocketEvent.Error) {
-                        return@collect
-                    }
-                }
+                .collect(_socketEvent::emit)
         }
     }
 
@@ -1150,5 +1089,48 @@ class APIViewModel @Inject constructor(
                 "Consultando servidor..."
             )
         }
+    }
+
+    private fun <E> launchWithConfig(
+        event: EventFlow<E>,
+        failure: (Throwable) -> E,
+        block: suspend (TableConfiguracion) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val config = roomFunctions.queryConfiguracion()
+
+                if (config == null) {
+                    event.emit(
+                        failure(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
+
+                block(config)
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                event.emit(failure(error))
+            }
+        }
+    }
+
+    private fun <T> launchApiWithConfig(
+        event: EventFlow<ResultadoApi<T>>,
+        block: suspend (TableConfiguracion) -> Unit
+    ) {
+        launchWithConfig(
+            event = event,
+            failure = { error ->
+                ResultadoApi.Fallo(error)
+            },
+            block = block
+        )
     }
 }
