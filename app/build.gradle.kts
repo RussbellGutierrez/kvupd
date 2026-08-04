@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.parcelize)
     alias(libs.plugins.google.services)
+
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 // ✔️ secrets.properties
@@ -118,6 +120,8 @@ dependencies {
     implementation(libs.zxing)
     implementation(libs.socket) { exclude(group = "org.json", module = "json") }
     implementation(libs.facebook.shimmer)
+
+    implementation(libs.firebase.crashlytics)
 
     kapt(libs.dagger.hilt.compiler)
     ksp(libs.room.compiler)

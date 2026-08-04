@@ -4,8 +4,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import androidx.room.Room
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.upd.kvupd.data.local.cache.CacheRoom
 import com.upd.kvupd.data.local.core.CoreRoom
+import com.upd.kvupd.data.local.enumClass.CoreUpdateStage
+import com.upd.kvupd.data.local.localClass.CoreUpdateException
 import com.upd.kvupd.data.local.modelbd.CoreBackup
 import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.utils.BaseDatosRoom.CACHE_NAME
@@ -28,49 +31,79 @@ class DataBaseInitializer @Inject constructor(
 
     fun buildCore(): CoreRoom {
 
-        val installedVersion = getDatabaseVersion(CORE_NAME)
+        var stage = CoreUpdateStage.READ_VERSION
+        var installedVersion = DATABASE_NOT_FOUND
+        var newDatabase: CoreRoom? = null
 
-        if (
-            installedVersion != DATABASE_NOT_FOUND &&
-            installedVersion > VERSION_CORE
-        ) {
-            throw IllegalStateException(
-                "Downgrade de CoreRoom no soportado: " +
-                        "$installedVersion -> $VERSION_CORE"
-            )
-        }
+        try {
+            installedVersion = getDatabaseVersion(CORE_NAME)
 
-        val cambioVersion =
-            installedVersion != DATABASE_NOT_FOUND &&
-                    installedVersion < VERSION_CORE
+            stage = CoreUpdateStage.VALIDATE_VERSION
 
-        var backup: CoreBackup? = null
-
-        if (cambioVersion) {
-            Log.i(
-                _tag,
-                "Actualizando CoreRoom: $installedVersion -> $VERSION_CORE"
-            )
-
-            backup = backupCoreData()
-            exportPendientes()
-
-            check(deleteCoreDatabase()) {
-                "No se pudo eliminar la base de datos antigua: $CORE_NAME"
+            if (
+                installedVersion != DATABASE_NOT_FOUND &&
+                installedVersion > VERSION_CORE
+            ) {
+                throw IllegalStateException(
+                    "Downgrade de CoreRoom no soportado: " +
+                            "$installedVersion -> $VERSION_CORE"
+                )
             }
+
+            val cambioVersion =
+                installedVersion != DATABASE_NOT_FOUND &&
+                        installedVersion < VERSION_CORE
+
+            var backup: CoreBackup? = null
+
+            if (cambioVersion) {
+                Log.i(
+                    _tag,
+                    "Actualizando CoreRoom: $installedVersion -> $VERSION_CORE"
+                )
+
+                stage = CoreUpdateStage.BACKUP_CONFIGURATION
+                backup = backupCoreData()
+
+                stage = CoreUpdateStage.EXPORT_PENDING
+                exportPendientes()
+
+                stage = CoreUpdateStage.DELETE_OLD_DATABASE
+
+                check(deleteCoreDatabase()) {
+                    "No se pudo eliminar la base de datos antigua: $CORE_NAME"
+                }
+            }
+
+            stage = CoreUpdateStage.CREATE_NEW_DATABASE
+
+            newDatabase = Room.databaseBuilder(
+                context,
+                CoreRoom::class.java,
+                CORE_NAME
+            ).build()
+
+            backup?.let {
+                stage = CoreUpdateStage.RESTORE_CONFIGURATION
+                restoreCoreData(newDatabase, it)
+            }
+
+            return newDatabase
+
+        } catch (error: Exception) {
+            newDatabase?.close()
+
+            val updateError = CoreUpdateException(
+                stage = stage,
+                installedVersion = installedVersion,
+                targetVersion = VERSION_CORE,
+                cause = error
+            )
+
+            reportCoreUpdateFailure(updateError)
+
+            throw updateError
         }
-
-        val db = Room.databaseBuilder(
-            context,
-            CoreRoom::class.java,
-            CORE_NAME
-        ).build()
-
-        backup?.let {
-            restoreCoreData(db, it)
-        }
-
-        return db
     }
 
     fun buildCache(): CacheRoom {
@@ -156,36 +189,32 @@ class DataBaseInitializer @Inject constructor(
         db: SQLiteDatabase
     ): TableConfiguracion? {
 
-        return runCatching {
+        return db.rawQuery(
+            "SELECT * FROM TableConfiguracion LIMIT 1",
+            null
+        ).use { cursor ->
 
-            db.rawQuery(
-                "SELECT * FROM TableConfiguracion LIMIT 1",
-                null
-            ).use { c ->
-
-                if (!c.moveToFirst()) {
-                    null
-                } else {
-                    TableConfiguracion(
-                        codigo = c.getString(c.getColumnIndexOrThrow("codigo")),
-                        empresa = c.getInt(c.getColumnIndexOrThrow("empresa")),
-                        esquema = c.getInt(c.getColumnIndexOrThrow("esquema")),
-                        fecha = c.getString(c.getColumnIndexOrThrow("fecha")),
-                        nombre = c.getString(c.getColumnIndexOrThrow("nombre")),
-                        codsuper = c.getInt(c.getColumnIndexOrThrow("codsuper")),
-                        supervisor = c.getString(c.getColumnIndexOrThrow("supervisor")),
-                        horafin = c.getString(c.getColumnIndexOrThrow("horafin")),
-                        horainicio = c.getString(c.getColumnIndexOrThrow("horainicio")),
-                        ipp = c.getString(c.getColumnIndexOrThrow("ipp")),
-                        ips = c.getString(c.getColumnIndexOrThrow("ips")),
-                        seguimiento = c.getInt(c.getColumnIndexOrThrow("seguimiento")),
-                        sucursal = c.getInt(c.getColumnIndexOrThrow("sucursal")),
-                        tipo = c.getString(c.getColumnIndexOrThrow("tipo"))
-                    )
-                }
+            if (!cursor.moveToFirst()) {
+                return@use null
             }
 
-        }.getOrNull()
+            TableConfiguracion(
+                codigo = cursor.getString(cursor.getColumnIndexOrThrow("codigo")),
+                empresa = cursor.getInt(cursor.getColumnIndexOrThrow("empresa")),
+                esquema = cursor.getInt(cursor.getColumnIndexOrThrow("esquema")),
+                fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha")),
+                nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre")),
+                codsuper = cursor.getInt(cursor.getColumnIndexOrThrow("codsuper")),
+                supervisor = cursor.getString(cursor.getColumnIndexOrThrow("supervisor")),
+                horafin = cursor.getString(cursor.getColumnIndexOrThrow("horafin")),
+                horainicio = cursor.getString(cursor.getColumnIndexOrThrow("horainicio")),
+                ipp = cursor.getString(cursor.getColumnIndexOrThrow("ipp")),
+                ips = cursor.getString(cursor.getColumnIndexOrThrow("ips")),
+                seguimiento = cursor.getInt(cursor.getColumnIndexOrThrow("seguimiento")),
+                sucursal = cursor.getInt(cursor.getColumnIndexOrThrow("sucursal")),
+                tipo = cursor.getString(cursor.getColumnIndexOrThrow("tipo"))
+            )
+        }
     }
 
     private fun exportCsv(db: SQLiteDatabase, table: String, fileName: String) {
@@ -226,6 +255,41 @@ class DataBaseInitializer @Inject constructor(
                     writer.appendLine(row)
                 }
             }
+        }
+    }
+
+    private fun reportCoreUpdateFailure(
+        error: CoreUpdateException
+    ) {
+        Log.e(
+            _tag,
+            "Falló CoreRoom en ${error.stage}",
+            error
+        )
+
+        runCatching {
+            FirebaseCrashlytics.getInstance().apply {
+                setCustomKey("operation", "core_room_update")
+                setCustomKey("stage", error.stage.name)
+                setCustomKey(
+                    "installed_version",
+                    error.installedVersion
+                )
+                setCustomKey(
+                    "target_version",
+                    error.targetVersion
+                )
+                log(
+                    "Falló la actualización de CoreRoom " +
+                            "en ${error.stage}"
+                )
+            }
+        }.onFailure { reportError ->
+            Log.e(
+                _tag,
+                "No se pudo agregar contexto a Crashlytics",
+                reportError
+            )
         }
     }
 }

@@ -89,7 +89,6 @@ class FBase : Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
         R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
-        R.id.encuesta -> consume { }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
