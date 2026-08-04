@@ -304,7 +304,7 @@ class CoreCsvProcessor @Inject constructor(
         v: Map<String, String>
     ): TableSeguimiento =
         TableSeguimiento(
-            fecha =  v.valor("fecha"),
+            fecha = v.valor("fecha"),
             usuario = v.valor("usuario"),
             longitud = v.valor("longitud").toDouble(),
             latitud = v.valor("latitud").toDouble(),
