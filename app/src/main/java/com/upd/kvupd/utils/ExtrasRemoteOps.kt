@@ -22,6 +22,13 @@ fun JSONObject.toReqBody(): RequestBody =
 fun Throwable.respuestaUsuario(): String = when (this) {
     is java.net.UnknownHostException -> "No hay conexión a Internet"
     is java.net.SocketTimeoutException -> "Tiempo de espera agotado"
+    is java.io.InterruptedIOException ->
+        if (message.equals("timeout", ignoreCase = true)) {
+            "Tiempo de espera agotado"
+        } else {
+            message ?: "Operación interrumpida"
+        }
+
     is retrofit2.HttpException -> "Error del servidor: ${this.code()}"
     else -> this.message ?: "Error desconocido"
 }

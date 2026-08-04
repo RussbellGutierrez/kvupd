@@ -281,7 +281,17 @@ class APIViewModel @Inject constructor(
 
     fun downloadPedimap() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _pedimapEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val json = jsobFunctions.jsonObjectPedimap(config)
             serverFunctions.apiQueryPedimap(json).collect {
                 _pedimapEvent.emit(it)
