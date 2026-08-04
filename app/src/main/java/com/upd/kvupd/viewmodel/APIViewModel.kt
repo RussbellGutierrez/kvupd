@@ -287,7 +287,7 @@ class APIViewModel @Inject constructor(
             val json = jsobFunctions.jsonObjectPedimap(config)
 
             serverFunctions.apiQueryPedimap(json)
-                .collect{
+                .collect {
                     _pedimapEvent.emit(it)
                 }
         }
@@ -337,7 +337,7 @@ class APIViewModel @Inject constructor(
             val json = jsobFunctions.jsonObjectBasico(config)
 
             serverFunctions.apiQueryVendedorBajas(json)
-                .collect{
+                .collect {
                     _bajaestadoEvent.emit(it)
                 }
         }
@@ -405,7 +405,7 @@ class APIViewModel @Inject constructor(
             }
 
             downloadBaseReport(api)
-                .collect{
+                .collect {
                     _cambioEvent.emit(it)
                 }
         }
@@ -590,26 +590,36 @@ class APIViewModel @Inject constructor(
     }
 
     fun createAlta(location: Location) {
-        launchWithConfig(
-            event = _altaMessage,
-            failure = { error ->
-                error.respuestaUsuario()
+        viewModelScope.launch {
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                    ?: run {
+                        _altaMessage.emit(
+                            "No se encontró la configuración local"
+                        )
+                        return@launch
+                    }
+
+                val fecha = FechaHoraUtil.ahora()
+                val timeStamp = FechaHoraUtil.timestamp()
+
+                val item = TableAlta(
+                    idaux = "${config.codigo}$timeStamp",
+                    empleado = config.codigo,
+                    fecha = fecha,
+                    longitud = location.longitude,
+                    latitud = location.latitude,
+                    precision = location.accuracy.toDouble().to2Decimals(),
+                    datos = 0
+                )
+
+                saveAndSendAlta(item)
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _altaMessage.emit(error.respuestaUsuario())
             }
-        ) { config ->
-            val fecha = FechaHoraUtil.ahora()
-            val timeStamp = FechaHoraUtil.timestamp()
-
-            val item = TableAlta(
-                idaux = "${config.codigo}$timeStamp",
-                empleado = config.codigo,
-                fecha = fecha,
-                longitud = location.longitude,
-                latitud = location.latitude,
-                precision = location.accuracy.toDouble().to2Decimals(),
-                datos = 0
-            )
-
-            saveAndSendAlta(item)
         }
     }
 
@@ -714,16 +724,32 @@ class APIViewModel @Inject constructor(
     }
 
     fun executeUpdater() {
-        launchWithConfig(
-            event = _socketEvent,
-            failure = { error ->
-                SocketEvent.Error(error.respuestaUsuario())
+        viewModelScope.launch {
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                    ?: run {
+                        _socketEvent.emit(
+                            SocketEvent.Error(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                        return@launch
+                    }
+
+                serverFunctions.apiSocketUpdate(config.empresa)
+                    .collect { result ->
+                        _socketEvent.emit(result)
+                    }
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _socketEvent.emit(
+                    SocketEvent.Error(
+                        error.respuestaUsuario()
+                    )
+                )
             }
-        ) { config ->
-            serverFunctions.apiSocketUpdate(config.empresa)
-                .collect{
-                    _socketEvent.emit(it)
-                }
         }
     }
 
@@ -1099,46 +1125,24 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    private fun <E> launchWithConfig(
-        event: EventFlow<E>,
-        failure: (Throwable) -> E,
+    private fun <T> launchApiWithConfig(
+        event: EventFlow<ResultadoApi<T>>,
         block: suspend (TableConfiguracion) -> Unit
     ) {
         viewModelScope.launch {
             try {
                 val config = roomFunctions.queryConfiguracion()
-
-                if (config == null) {
-                    event.emit(
-                        failure(
-                            IllegalStateException(
-                                "No se encontró la configuración local"
-                            )
-                        )
+                    ?: throw IllegalStateException(
+                        "No se encontró la configuración local"
                     )
-                    return@launch
-                }
 
                 block(config)
 
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {
-                event.emit(failure(error))
+                event.emit(ResultadoApi.Fallo(error))
             }
         }
-    }
-
-    private fun <T> launchApiWithConfig(
-        event: EventFlow<ResultadoApi<T>>,
-        block: suspend (TableConfiguracion) -> Unit
-    ) {
-        launchWithConfig(
-            event = event,
-            failure = { error ->
-                ResultadoApi.Fallo(error)
-            },
-            block = block
-        )
     }
 }
