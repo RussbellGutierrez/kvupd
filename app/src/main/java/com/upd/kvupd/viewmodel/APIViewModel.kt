@@ -287,7 +287,9 @@ class APIViewModel @Inject constructor(
             val json = jsobFunctions.jsonObjectPedimap(config)
 
             serverFunctions.apiQueryPedimap(json)
-                .collect(_pedimapEvent::emit)
+                .collect{
+                    _pedimapEvent.emit(it)
+                }
         }
     }
 
@@ -335,7 +337,9 @@ class APIViewModel @Inject constructor(
             val json = jsobFunctions.jsonObjectBasico(config)
 
             serverFunctions.apiQueryVendedorBajas(json)
-                .collect(_bajaestadoEvent::emit)
+                .collect{
+                    _bajaestadoEvent.emit(it)
+                }
         }
     }
 
@@ -401,7 +405,9 @@ class APIViewModel @Inject constructor(
             }
 
             downloadBaseReport(api)
-                .collect(_cambioEvent::emit)
+                .collect{
+                    _cambioEvent.emit(it)
+                }
         }
     }
 
@@ -715,7 +721,9 @@ class APIViewModel @Inject constructor(
             }
         ) { config ->
             serverFunctions.apiSocketUpdate(config.empresa)
-                .collect(_socketEvent::emit)
+                .collect{
+                    _socketEvent.emit(it)
+                }
         }
     }
 
