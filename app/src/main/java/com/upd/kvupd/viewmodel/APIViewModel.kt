@@ -430,7 +430,17 @@ class APIViewModel @Inject constructor(
 
     private fun apiCambio() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _cambioEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
 
             val api = when (TipoUsuario.fromCodigo(config.tipo)) {
                 TipoUsuario.VENDEDOR -> serverFunctions::apiReportClienteCambio
@@ -445,7 +455,17 @@ class APIViewModel @Inject constructor(
     private fun apiSolesPorLineas() {
         viewModelScope.launch {
 
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+            val config = roomFunctions.queryConfiguracion()
+                ?: run {
+                    _solesEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalStateException(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
 
             // 🔹 1. Base (líneas)
