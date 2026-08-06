@@ -198,7 +198,7 @@ object ReporteMapper {
     fun JsonVolumen.toSubUI(): List<SubProgresoUI> =
         jobl
             .map { it.toSubUI() }
-            .sortedBy { it.descripcion }
+            .sortedByDescending { it.avance }
 
     private fun Volumen.toSubUI(): SubProgresoUI {
         val porcentaje = if (cuota == 0.0) 0.0 else (avance * 100) / cuota
@@ -217,7 +217,7 @@ object ReporteMapper {
     fun JsonCoberturaCartera.toSubUI(): List<SubProgresoUI> =
         jobl
             .map { it.toSubUI() }
-            .sortedBy { it.descripcion }
+            .sortedByDescending { it.avance }
 
     private fun CoberturaCartera.toSubUI(): SubProgresoUI {
         val cuota = cartera.toDouble()
