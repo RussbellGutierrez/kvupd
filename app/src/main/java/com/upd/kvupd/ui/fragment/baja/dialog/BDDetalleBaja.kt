@@ -1,10 +1,9 @@
-package com.upd.kvupd.ui.dialog
+package com.upd.kvupd.ui.fragment.baja.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -16,11 +15,11 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.upd.kvupd.R
 import com.upd.kvupd.data.model.FlowBajaSupervisor
+import com.upd.kvupd.data.model.core.TableBajaProcesada
 import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.databinding.BottomDetallebajaBinding
 import com.upd.kvupd.ui.fragment.baja.enumFile.Canal
 import com.upd.kvupd.ui.fragment.baja.enumFile.MotivoBaja
-import com.upd.kvupd.utils.BundleConstantes.KEY_DETALLE
 import com.upd.kvupd.utils.FechaHoraUtil
 import com.upd.kvupd.utils.UbicacionActual
 import com.upd.kvupd.utils.collectFlow
@@ -29,6 +28,8 @@ import com.upd.kvupd.utils.maps.MapHelper
 import com.upd.kvupd.utils.maps.awaitMap
 import com.upd.kvupd.utils.maps.icono
 import com.upd.kvupd.utils.maps.vectorToBitmapDescriptor
+import com.upd.kvupd.utils.snack
+import com.upd.kvupd.utils.toUpper
 import com.upd.kvupd.utils.viewBinding
 import com.upd.kvupd.viewmodel.APIViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,12 +47,18 @@ class BDDetalleBaja : BottomSheetDialogFragment() {
     private var markerCliente: Marker? = null
     private var markerUbicacion: Marker? = null
     private lateinit var detalle: FlowBajaSupervisor
+    private var longitud = 0.0f
+    private var latitud = 0.0f
+    private var precision = 0.0f
     private val mapHelper by lazy { MapHelper(layoutInflater) }
     private val _tag by lazy { BDDetalleBaja::class.java.simpleName }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         detalle = args.detalle
+        longitud = args.longitud
+        latitud = args.latitud
+        precision = args.precision
     }
 
     override fun onDestroyView() {
@@ -171,25 +178,31 @@ class BDDetalleBaja : BottomSheetDialogFragment() {
                 canal.iconRes, 0, 0, 0
             )
 
-            binding.btnDenegar.setOnClickListener { devolverDatosFragment(0) }
-            binding.btnValidar.setOnClickListener { devolverDatosFragment(1) }
+            binding.btnDenegar.setOnClickListener { procesarBaja(0) }
+            binding.btnValidar.setOnClickListener { procesarBaja(1) }
         }
     }
 
-    private fun devolverDatosFragment(confirmacion: Int) {
-        val comentario = binding.edtComentario.text.toString().trim()
+    private fun procesarBaja(confirmacion: Int) {
 
-        parentFragmentManager.setFragmentResult(
-            KEY_DETALLE,
-            bundleOf(
-                "empleado" to detalle.vendedor,
-                "cliente" to detalle.cliente,
-                "procede" to confirmacion,
-                "fecha" to detalle.creacion,
-                "fechaconfirmacion" to FechaHoraUtil.ahora(),
-                "observacion" to comentario
-            )
+        val comentario = binding.edtComentario.text
+            .toString()
+            .trim()
+
+        val item = TableBajaProcesada(
+            empleado = detalle.vendedor,
+            cliente = detalle.cliente,
+            procede = confirmacion,
+            fecha = detalle.creacion,
+            precision = precision.toDouble(),
+            longitud = longitud.toDouble(),
+            latitud = latitud.toDouble(),
+            fechaconfirmacion = FechaHoraUtil.ahora(),
+            observacion = comentario.toUpper()
         )
+
+        snack("Baja de cliente ${item.cliente} revisado")
+        apiViewModel.saveAndSendBajaProcesada(item)
 
         dismiss()
     }

@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.dialog
+package com.upd.kvupd.ui.fragment.base.dialog
 
 import android.content.Intent
 import android.os.Bundle

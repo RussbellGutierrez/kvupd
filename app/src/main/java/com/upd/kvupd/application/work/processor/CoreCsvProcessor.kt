@@ -1,5 +1,8 @@
 package com.upd.kvupd.application.work.processor
 
+import android.util.Log
+import androidx.core.util.AtomicFile
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.upd.kvupd.application.work.processor.enumFile.CsvSendResult
 import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
@@ -12,7 +15,10 @@ import com.upd.kvupd.domain.send.SendServerFunctions
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.BaseDatosRoom.SEPARADOR
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class CoreCsvProcessor @Inject constructor(
     private val sendServerFunctions: SendServerFunctions
@@ -65,240 +71,355 @@ class CoreCsvProcessor @Inject constructor(
             sender = { sendServerFunctions.enviarFoto(it) }
         )
 
-    suspend fun procesarRespuesta(file: File): CsvSendResult {
-
-        return runCatching {
-
-            val lista = obtenerFilas(file).map(::parseRespuesta)
-
-            if (lista.isEmpty()) {
-                borrarArchivo(file)
-                return CsvSendResult.SUCCESS
-            }
-
-            when (
-                sendServerFunctions
-                    .enviarRespuesta(lista)
-                    .toCsvResult()
-            ) {
-
-                CsvSendResult.SUCCESS -> {
-                    borrarArchivo(file)
-                    CsvSendResult.SUCCESS
-                }
-
-                CsvSendResult.RETRY ->
-                    CsvSendResult.RETRY
-
-                CsvSendResult.DISCARD -> {
-                    borrarArchivo(file)
-                    CsvSendResult.DISCARD
-                }
-            }
-
-        }.getOrElse {
-            borrarArchivo(file)
-            CsvSendResult.DISCARD
-        }
-    }
+    suspend fun procesarRespuesta(file: File): CsvSendResult =
+        procesarIndividual(
+            file = file,
+            parser = ::parseRespuesta,
+            sender = { sendServerFunctions.enviarRespuesta(it) }
+        )
 
     private suspend fun <T> procesarIndividual(
         file: File,
-        parser: (String) -> T,
+        parser: (Map<String, String>) -> T,
         sender: suspend (T) -> ResultadoApi<Unit>
     ): CsvSendResult {
 
-        return runCatching {
+        val lineas = try {
+            file.readLines(Charsets.UTF_8)
+        } catch (error: Exception) {
+            // Un fallo de lectura podría ser temporal.
+            return CsvSendResult.RETRY
+        }
 
-            val lista = obtenerFilas(file).map(parser)
+        if (lineas.size <= 1) {
+            return finalizarArchivo(
+                file = file,
+                resultado = CsvSendResult.SUCCESS
+            )
+        }
 
-            if (lista.isEmpty()) {
-                borrarArchivo(file)
-                return CsvSendResult.SUCCESS
+        val encabezado = lineas.first()
+        val filas = lineas.drop(1)
+
+        val elementos = try {
+            val columnas = parseEncabezado(encabezado)
+
+            filas.map { linea ->
+                val valores = parseFila(
+                    columnas = columnas,
+                    linea = linea
+                )
+
+                linea to parser(valores)
+            }
+        } catch (error: Exception) {
+            return descartarCsvCorrupto(file, error)
+        }
+
+        return try {
+            for (indice in elementos.indices) {
+                val (_, item) = elementos[indice]
+
+                val resultado = try {
+                    sender(item).toCsvResult()
+                } catch (error: CancellationException) {
+                    throw error
+                } catch (error: Exception) {
+                    CsvSendResult.RETRY
+                }
+
+                when (resultado) {
+                    CsvSendResult.SUCCESS,
+                    CsvSendResult.DISCARD -> Unit
+
+                    CsvSendResult.RETRY -> {
+                        val pendientes = elementos
+                            .drop(indice)
+                            .map { it.first }
+
+                        reescribirCsv(
+                            file = file,
+                            encabezado = encabezado,
+                            filas = pendientes
+                        )
+
+                        return CsvSendResult.RETRY
+                    }
+                }
             }
 
-            val retry = lista.any { item ->
-                sender(item).toCsvResult() == CsvSendResult.RETRY
-            }
+            finalizarArchivo(
+                file = file,
+                resultado = CsvSendResult.SUCCESS
+            )
 
-            if (retry) {
-                CsvSendResult.RETRY
-            } else {
-                borrarArchivo(file)
-                CsvSendResult.SUCCESS
-            }
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            CsvSendResult.RETRY
+        }
+    }
 
-        }.getOrElse {
-            borrarArchivo(file)
+    private fun parseEncabezado(
+        encabezado: String
+    ): List<String> {
+        val columnas = csv(encabezado)
+            .map(String::trim)
+
+        require(columnas.isNotEmpty()) {
+            "El CSV no contiene encabezados"
+        }
+
+        require(columnas.none(String::isBlank)) {
+            "El CSV contiene encabezados vacíos"
+        }
+
+        require(columnas.distinct().size == columnas.size) {
+            "El CSV contiene encabezados duplicados"
+        }
+
+        return columnas
+    }
+
+    private fun parseFila(
+        columnas: List<String>,
+        linea: String
+    ): Map<String, String> {
+        val valores = csv(linea)
+
+        require(valores.size == columnas.size) {
+            "La fila contiene ${valores.size} valores, " +
+                    "pero el encabezado define ${columnas.size} columnas"
+        }
+
+        return columnas.zip(valores).toMap()
+    }
+
+    private fun Map<String, String>.valor(
+        columna: String
+    ): String =
+        get(columna)
+            ?: throw IllegalArgumentException(
+                "Falta la columna obligatoria: $columna"
+            )
+
+    private fun descartarCsvCorrupto(
+        file: File,
+        cause: Exception
+    ): CsvSendResult {
+
+        val report = IllegalArgumentException(
+            "CSV corrupto o incompatible: ${file.name}",
+            cause
+        )
+
+        Log.e(
+            CoreCsvProcessor::class.java.simpleName,
+            report.message,
+            report
+        )
+
+        runCatching {
+            FirebaseCrashlytics.getInstance().recordException(report)
+        }
+
+        if (!file.exists() || file.delete()) {
+            return CsvSendResult.DISCARD
+        }
+
+        /*
+         * Si no se puede eliminar, se cambia la extensión para impedir
+         * que el Worker vuelva a procesarlo como CSV.
+         */
+        val quarantinedFile = File(
+            file.parentFile,
+            "${file.name}.invalid"
+        )
+
+        return if (file.renameTo(quarantinedFile)) {
             CsvSendResult.DISCARD
+        } else {
+            CsvSendResult.RETRY
+        }
+    }
+
+    private fun reescribirCsv(
+        file: File,
+        encabezado: String,
+        filas: List<String>
+    ) {
+        val atomicFile = AtomicFile(file)
+        var output: FileOutputStream? = null
+
+        try {
+            output = atomicFile.startWrite()
+
+            val writer = OutputStreamWriter(
+                output,
+                Charsets.UTF_8
+            ).buffered()
+
+            writer.appendLine(encabezado)
+
+            filas.forEach { fila ->
+                writer.appendLine(fila)
+            }
+
+            writer.flush()
+            atomicFile.finishWrite(output)
+
+        } catch (e: Exception) {
+            output?.let(atomicFile::failWrite)
+            throw e
         }
     }
 
     private fun ResultadoApi<Unit>.toCsvResult(): CsvSendResult =
         when (this) {
 
-            is ResultadoApi.Exito ->
-                CsvSendResult.SUCCESS
+            is ResultadoApi.Exito -> CsvSendResult.SUCCESS
 
-            is ResultadoApi.Fallo ->
-                CsvSendResult.RETRY
+            is ResultadoApi.Fallo -> CsvSendResult.RETRY
 
-            is ResultadoApi.ErrorHttp ->
-                CsvSendResult.DISCARD
+            is ResultadoApi.ErrorHttp -> CsvSendResult.DISCARD
 
-            is ResultadoApi.Loading ->
-                CsvSendResult.DISCARD
+            is ResultadoApi.Loading -> CsvSendResult.RETRY
         }
 
-    private fun obtenerFilas(file: File): List<String> {
+    private fun finalizarArchivo(
+        file: File,
+        resultado: CsvSendResult
+    ): CsvSendResult {
 
-        val lineas = file.readLines(Charsets.UTF_8)
+        val eliminado = !file.exists() || file.delete()
 
-        if (lineas.size <= 1) {
-            borrarArchivo(file)
-            return emptyList()
+        return if (eliminado) {
+            resultado
+        } else {
+            CsvSendResult.RETRY
         }
-
-        return lineas.drop(1)
     }
 
-    private fun borrarArchivo(file: File) {
-        if (file.exists()) file.delete()
-    }
-
-    private fun parseSeguimiento(linea: String): TableSeguimiento {
-        val v = csv(linea)
-        require(v.size >= 6)
-
-        return TableSeguimiento(
-            fecha = v[0],
-            usuario = v[1],
-            longitud = v[2].toDouble(),
-            latitud = v[3].toDouble(),
-            precision = v[4].toDouble(),
-            bateria = v[5].toDouble(),
+    private fun parseSeguimiento(
+        v: Map<String, String>
+    ): TableSeguimiento =
+        TableSeguimiento(
+            fecha = v.valor("fecha"),
+            usuario = v.valor("usuario"),
+            longitud = v.valor("longitud").toDouble(),
+            latitud = v.valor("latitud").toDouble(),
+            precision = v.valor("precision").toDouble(),
+            bateria = v.valor("bateria").toDouble(),
             sincronizado = false
         )
-    }
 
-    private fun parseAlta(linea: String): TableAlta {
-        val v = csv(linea)
-        require(v.size >= 7)
-
-        return TableAlta(
-            idaux = v[0],
-            empleado = v[1],
-            fecha = v[2],
-            longitud = v[3].toDouble(),
-            latitud = v[4].toDouble(),
-            precision = v[5].toDouble(),
-            datos = v[6].toInt(),
+    private fun parseAlta(
+        v: Map<String, String>
+    ): TableAlta =
+        TableAlta(
+            idaux = v.valor("idaux"),
+            empleado = v.valor("empleado"),
+            fecha = v.valor("fecha"),
+            longitud = v.valor("longitud").toDouble(),
+            latitud = v.valor("latitud").toDouble(),
+            precision = v.valor("precision").toDouble(),
+            datos = v.valor("datos").toInt(),
             sincronizado = false
         )
-    }
 
-    private fun parseAltaDatos(linea: String): TableAltaDatos {
-        val v = csv(linea)
-        require(v.size >= 26)
-
-        return TableAltaDatos(
-            fecha = v[0],
-            idaux = v[1],
-            empleado = v[2],
-            tipo = v[3],
-            razon = v[4],
-            nombre = v[5],
-            appaterno = v[6],
-            apmaterno = v[7],
-            ruc = v[8],
-            dnice = v[9],
-            tipodocu = v[10],
-            movil1 = v[11],
-            movil2 = v[12],
-            correo = v[13],
-            via = v[14],
-            direccion = v[15],
-            manzana = v[16],
-            zona = v[17],
-            zonanombre = v[18],
-            ubicacion = v[19],
-            numero = v[20],
-            distrito = v[21],
-            giro = v[22],
-            ruta = v[23],
-            secuencia = v[24],
-            observacion = v[25],
+    private fun parseAltaDatos(
+        v: Map<String, String>
+    ): TableAltaDatos =
+        TableAltaDatos(
+            fecha = v.valor("fecha"),
+            idaux = v.valor("idaux"),
+            empleado = v.valor("empleado"),
+            tipo = v.valor("tipo"),
+            razon = v.valor("razon"),
+            nombre = v.valor("nombre"),
+            appaterno = v.valor("appaterno"),
+            apmaterno = v.valor("apmaterno"),
+            ruc = v.valor("ruc"),
+            dnice = v.valor("dnice"),
+            tipodocu = v.valor("tipodocu"),
+            movil1 = v.valor("movil1"),
+            movil2 = v.valor("movil2"),
+            correo = v.valor("correo"),
+            via = v.valor("via"),
+            direccion = v.valor("direccion"),
+            manzana = v.valor("manzana"),
+            zona = v.valor("zona"),
+            zonanombre = v.valor("zonanombre"),
+            ubicacion = v.valor("ubicacion"),
+            numero = v.valor("numero"),
+            distrito = v.valor("distrito"),
+            giro = v.valor("giro"),
+            ruta = v.valor("ruta"),
+            secuencia = v.valor("secuencia"),
+            observacion = v.valor("observacion"),
             sincronizado = false
         )
-    }
 
-    private fun parseBaja(linea: String): TableBaja {
-        val v = csv(linea)
-        require(v.size >= 9)
-
-        return TableBaja(
-            cliente = v[0],
-            nombre = v[1],
-            motivo = v[2].toInt(),
-            comentario = v[3],
-            longitud = v[4].toDouble(),
-            latitud = v[5].toDouble(),
-            precision = v[6].toDouble(),
-            fecha = v[7],
-            anulado = v[8].toInt(),
+    private fun parseBaja(
+        v: Map<String, String>
+    ): TableBaja =
+        TableBaja(
+            cliente = v.valor("cliente"),
+            nombre = v.valor("nombre"),
+            motivo = v.valor("motivo").toInt(),
+            comentario = v.valor("comentario"),
+            longitud = v.valor("longitud").toDouble(),
+            latitud = v.valor("latitud").toDouble(),
+            precision = v.valor("precision").toDouble(),
+            fecha = v.valor("fecha"),
+            anulado = v.valor("anulado").toInt(),
             sincronizado = false
         )
-    }
 
-    private fun parseBajaProcesada(linea: String): TableBajaProcesada {
-        val v = csv(linea)
-        require(v.size >= 9)
-
-        return TableBajaProcesada(
-            empleado = v[0],
-            cliente = v[1],
-            procede = v[2].toInt(),
-            fecha = v[3],
-            precision = v[4].toDouble(),
-            longitud = v[5].toDouble(),
-            latitud = v[6].toDouble(),
-            fechaconfirmacion = v[7],
-            observacion = v[8],
+    private fun parseBajaProcesada(
+        v: Map<String, String>
+    ): TableBajaProcesada =
+        TableBajaProcesada(
+            empleado = v.valor("empleado"),
+            cliente = v.valor("cliente"),
+            procede = v.valor("procede").toInt(),
+            fecha = v.valor("fecha"),
+            precision = v.valor("precision").toDouble(),
+            longitud = v.valor("longitud").toDouble(),
+            latitud = v.valor("latitud").toDouble(),
+            fechaconfirmacion = v.valor("fechaconfirmacion"),
+            observacion = v.valor("observacion"),
             sincronizado = false
         )
-    }
 
-    private fun parseRespuesta(linea: String): TableRespuesta {
-        val v = csv(linea)
-        require(v.size >= 7)
-
-        return TableRespuesta(
-            cliente = v[0],
-            fecha = v[1],
-            encuesta = v[2].toInt(),
-            pregunta = v[3].toInt(),
-            respuesta = v[4],
-            longitud = v[5].toDouble(),
-            latitud = v[6].toDouble(),
+    private fun parseRespuesta(
+        v: Map<String, String>
+    ): TableRespuesta =
+        TableRespuesta(
+            cliente = v.valor("cliente"),
+            fecha = v.valor("fecha"),
+            encuesta = v.valor("encuesta").toInt(),
+            pregunta = v.valor("pregunta").toInt(),
+            respuesta = v.valor("respuesta"),
+            longitud = v.valor("longitud").toDouble(),
+            latitud = v.valor("latitud").toDouble(),
             sincronizado = false
         )
-    }
 
-    private fun parseFoto(linea: String): TableFoto {
-        val v = csv(linea)
-        require(v.size >= 4)
-
-        return TableFoto(
-            cliente = v[0],
-            fecha = v[1],
-            encuesta = v[2].toInt(),
-            rutafoto = v[3],
+    private fun parseFoto(
+        v: Map<String, String>
+    ): TableFoto =
+        TableFoto(
+            cliente = v.valor("cliente"),
+            fecha = v.valor("fecha"),
+            encuesta = v.valor("encuesta").toInt(),
+            rutafoto = v.valor("rutafoto"),
             sincronizado = false
         )
-    }
 
     private fun csv(linea: String): List<String> {
 
+        val separator = SEPARADOR.single()
         val resultado = mutableListOf<String>()
         val actual = StringBuilder()
 
@@ -323,7 +444,7 @@ class CoreCsvProcessor @Inject constructor(
                     }
                 }
 
-                c.toString() == SEPARADOR && !enComillas -> {
+                c == separator && !enComillas -> {
                     resultado.add(actual.toString().trim())
                     actual.clear()
                 }
@@ -332,6 +453,11 @@ class CoreCsvProcessor @Inject constructor(
             }
             i++
         }
+
+        require(!enComillas) {
+            "Campo CSV con comillas sin cerrar"
+        }
+
         resultado.add(actual.toString().trim())
         return resultado
     }

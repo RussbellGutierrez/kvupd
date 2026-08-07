@@ -335,8 +335,7 @@
                     android:id="@+id/spn_via"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:entries="@array/vias" />
+                    android:layout_weight="0.5" />
 
             </LinearLayout>
 
@@ -397,8 +396,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="2dp"
-                    android:layout_weight="0.5"
-                    android:entries="@array/numeracion" />
+                    android:layout_weight="0.5" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -442,8 +440,7 @@
                     android:id="@+id/spn_zona"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:entries="@array/zona" />
+                    android:layout_weight="0.7" />
 
             </LinearLayout>
 

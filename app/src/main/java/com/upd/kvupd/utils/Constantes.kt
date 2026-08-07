@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 object BaseDatosRoom {
-    const val VERSION_CORE = 1
+    const val VERSION_CORE = 2
     const val VERSION_CACHE = 1
 
     const val CORE_NAME = "CoreVentas"
@@ -25,6 +25,7 @@ object BaseDatosRoom {
     const val FOLDER_CORE = "Core_sync"
 
     const val SEPARADOR = ";"
+    const val DATABASE_NOT_FOUND = -1
 }
 
 object DeviceConstant {
@@ -45,8 +46,6 @@ object SharedPreferenceKeys {
     const val SHARED_NOMBRE = "KVPREFERENCIA"
     const val KEY_HASH = "hash_id"
     const val KEY_UID = "android_uid"
-    const val KEY_ROOM_CORE = "version_core_room"
-    const val KEY_ROOM_CACHE = "version_cache_room"
     const val KEY_MODO_GPS = "gps_mode"
     const val KEY_HORA_INICIO = "hora_inicio_gps"
     const val KEY_HORA_FIN = "hora_fin_gps"
@@ -57,11 +56,6 @@ object NotificationHelper {
     const val NOTIFICATION_ID = 101
     const val ACTION_RECREATE_NOTIFICATION = "com.upd.kvupd.RECREATE_NOTIFICATION"
     const val ACTION_CHANGE_MODE = "com.upd.kvupd.CHANGE_MODE"
-}
-
-object BundleConstantes {
-    const val KEY_BAJA = "baja_resultado"
-    const val KEY_DETALLE = "bajadetalle_resultado"
 }
 
 object GPSConstants {

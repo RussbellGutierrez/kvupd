@@ -73,11 +73,7 @@ class UploadManager @Inject constructor(
             UploadConfig(
                 type = UploadType.ENCUESTAS,
                 getData = { roomFunctions.apiServerRespuestas(false) },
-                send = { item ->
-                    sendServerFunctions.enviarRespuesta(
-                        listOf(item as TableRespuesta)
-                    )
-                }
+                send = { sendServerFunctions.enviarRespuesta(it as TableRespuesta) }
             ),
 
             UploadConfig(
@@ -103,8 +99,10 @@ class UploadManager @Inject constructor(
         onProgress: (UploadType, Int, Int) -> Unit,
         onError: (UploadType, List<String>) -> Unit
     ) {
-
-        if (config.type == UploadType.GPS && configGlobal?.seguimiento != 1) {
+        if (
+            config.type == UploadType.GPS &&
+            configGlobal?.seguimiento != 1
+        ) {
             onStatus(config.type, ApiServerStatus.SUCCESS)
             return
         }
@@ -118,33 +116,64 @@ class UploadManager @Inject constructor(
 
         onStatus(config.type, ApiServerStatus.LOADING)
 
+        /*
+         * Para ENCUESTAS:
+         * una unidad visual = cliente + encuesta.
+         *
+         * Para los demás tipos:
+         * una unidad visual = un registro.
+         */
+        val grupos = if (config.type == UploadType.ENCUESTAS) {
+            data.groupBy { item ->
+                val respuesta = item as TableRespuesta
+                respuesta.cliente to respuesta.encuesta
+            }.values.toList()
+        } else {
+            data.map { item -> listOf(item) }
+        }
+
         val errores = mutableListOf<String>()
+        var gruposProcesados = 0
+        var huboFallos = false
 
-        data.forEachIndexed { index, item ->
+        grupos.forEach { grupo ->
 
-            val result = config.send(item)
+            var grupoExitoso = true
 
-            when (result) {
-                is ResultadoApi.Exito -> {
-                    onProgress(
-                        config.type,
-                        index + 1,
-                        data.size - (index + 1)
-                    )
+            grupo.forEach { item ->
+
+                when (val result = config.send(item)) {
+                    is ResultadoApi.Exito -> Unit
+
+                    is ResultadoApi.ErrorHttp,
+                    is ResultadoApi.Fallo -> {
+                        grupoExitoso = false
+                        huboFallos = true
+                        result.mensajeUsuario()?.let { errores.add(it) }
+                    }
+
+                    is ResultadoApi.Loading -> Unit
                 }
-
-                is ResultadoApi.ErrorHttp,
-                is ResultadoApi.Fallo -> {
-                    result.mensajeUsuario()?.let { errores.add(it) }
-                }
-
-                else -> Unit
             }
+
+            /*
+             * Una encuesta se considera procesada solamente cuando
+             * todas sus respuestas fueron enviadas correctamente.
+             */
+            if (grupoExitoso) {
+                gruposProcesados++
+            }
+
+            onProgress(
+                config.type,
+                gruposProcesados,
+                grupos.size - gruposProcesados
+            )
         }
 
         val finalStatus =
-            if (errores.isEmpty()) ApiServerStatus.SUCCESS
-            else ApiServerStatus.ERROR
+            if (huboFallos) ApiServerStatus.ERROR
+            else ApiServerStatus.SUCCESS
 
         onStatus(config.type, finalStatus)
 

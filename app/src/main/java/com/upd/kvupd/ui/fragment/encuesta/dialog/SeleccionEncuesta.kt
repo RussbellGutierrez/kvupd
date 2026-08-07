@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.dialog
+package com.upd.kvupd.ui.fragment.encuesta.dialog
 
 import android.content.Context
 import android.view.LayoutInflater

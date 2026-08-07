@@ -136,3 +136,20 @@ data class TableFoto(
     // 🔑 Nuevo control de sincronización
     var sincronizado: Boolean = false
 )
+
+@Entity(primaryKeys = ["identificador"])
+data class TableSolicitud(
+    val identificador: String,
+    val cliente: String,
+    val nombre: String,
+    val rutaFoto: String,
+    val solicitudes: String,
+    val comentario: String,
+    val fecha: String,
+    val longitud: Double,
+    val latitud: Double,
+    val estado: Int,
+
+    // 🔑 Nuevo control de sincronización
+    var sincronizado: Boolean = false
+)

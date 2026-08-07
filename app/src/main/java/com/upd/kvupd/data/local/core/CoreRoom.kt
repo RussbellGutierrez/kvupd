@@ -10,6 +10,7 @@ import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.model.core.TableFoto
 import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.data.model.core.TableSeguimiento
+import com.upd.kvupd.data.model.core.TableSolicitud
 import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CORE
 
 @Database(
@@ -22,7 +23,8 @@ import com.upd.kvupd.utils.BaseDatosRoom.VERSION_CORE
         TableBaja::class,
         TableBajaProcesada::class,
         TableRespuesta::class,
-        TableFoto::class
+        TableFoto::class,
+        TableSolicitud::class
     ],
     exportSchema = true
 )

@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.parcelize)
     alias(libs.plugins.google.services)
+
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 // ✔️ secrets.properties
@@ -34,8 +36,8 @@ android {
         applicationId = "com.upd.kvupd"
         minSdk = 26
         targetSdk = 36
-        versionCode = 260020000
-        versionName = "2.0.0"
+        versionCode = 260020002
+        versionName = "2.0.2"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -118,6 +120,8 @@ dependencies {
     implementation(libs.zxing)
     implementation(libs.socket) { exclude(group = "org.json", module = "json") }
     implementation(libs.facebook.shimmer)
+
+    implementation(libs.firebase.crashlytics)
 
     kapt(libs.dagger.hilt.compiler)
     ksp(libs.room.compiler)

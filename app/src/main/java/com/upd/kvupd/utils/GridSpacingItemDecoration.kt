@@ -1,4 +1,4 @@
-package com.upd.kvupd.ui.fragment.servidor.adapter
+package com.upd.kvupd.utils
 
 import android.graphics.Rect
 import android.view.View

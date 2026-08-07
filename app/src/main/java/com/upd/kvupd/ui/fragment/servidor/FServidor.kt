@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.upd.kvupd.R
 import com.upd.kvupd.databinding.FragmentFServidorBinding
-import com.upd.kvupd.ui.fragment.servidor.adapter.GridSpacingItemDecoration
+import com.upd.kvupd.utils.GridSpacingItemDecoration
 import com.upd.kvupd.ui.fragment.servidor.adapter.ServidorAdapter
 import com.upd.kvupd.ui.fragment.servidor.enumFile.ApiServerStatus
 import com.upd.kvupd.ui.fragment.servidor.enumFile.DrawablePosition
@@ -38,7 +38,7 @@ class FServidor : Fragment() {
     private val localViewmodel by activityViewModels<ALLViewModel>()
     private val binding by viewBinding(FragmentFServidorBinding::bind)
 
-    private var isUploading = false
+    //private var isUploading = false
     private lateinit var adapter: ServidorAdapter
     private val _tag by lazy { FServidor::class.java.simpleName }
 
@@ -56,23 +56,15 @@ class FServidor : Fragment() {
         observeData()
         updateErrorUI()
 
-        apiViewmodel.clearErrors()
-        apiViewmodel.resetItemsState()
-        apiViewmodel.loadServerData()
-        apiViewmodel.verifyStatusAndUpload()
+        if (!apiViewmodel.isUploading.value) {
+            apiViewmodel.loadServerData()
+            apiViewmodel.verifyStatusAndUpload()
+        }
     }
 
     private fun uiButtons() {
         binding.cardLanzar.setOnClickListener {
-
-            if (isUploading) return@setOnClickListener
-
-            isUploading = true
-
-            apiViewmodel.clearErrors()       // 🔥 LIMPIA ERRORES
-            apiViewmodel.resetItemsState()   // 🔥 RESETEA ITEMS
-
-            updateErrorUI()                  // 🔥 ACTUALIZA UI (gris + disabled)
+            if (apiViewmodel.isUploading.value) return@setOnClickListener
 
             apiViewmodel.verifyStatusAndUpload()
         }
@@ -100,23 +92,17 @@ class FServidor : Fragment() {
         }
 
         collectFlow(apiViewmodel.status) { status ->
-
             binding.txtEstado.text = status.message
 
             val color = ContextCompat.getColor(
                 requireContext(),
                 status.status.colorRes
             )
-            binding.imgEstado.setColorFilter(color)
 
-            if (status.status == ApiServerStatus.ERROR) {
-                isUploading = false
-                updateErrorUI()
-            }
+            binding.imgEstado.setColorFilter(color)
         }
 
-        collectFlow(apiViewmodel.uploadFinished) {
-            isUploading = false
+        collectFlow(apiViewmodel.isUploading) {
             updateErrorUI()
         }
     }
@@ -146,6 +132,7 @@ class FServidor : Fragment() {
 
     private fun updateErrorUI() {
 
+        val isUploading = apiViewmodel.isUploading.value
         val hasErrors = apiViewmodel.errorMap.isNotEmpty()
 
         val color = ContextCompat.getColor(
@@ -156,7 +143,6 @@ class FServidor : Fragment() {
         binding.txtErrores.setTextColor(color)
         binding.txtErrores.setDrawableTint(DrawablePosition.END, color)
 
-        // 🔥 aquí entra isUploading
         binding.cardLanzar.isEnabled = !isUploading
         binding.cardErrores.isEnabled = hasErrors && !isUploading
         binding.cardErrores.isClickable = hasErrors && !isUploading

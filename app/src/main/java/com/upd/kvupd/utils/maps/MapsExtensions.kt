@@ -35,8 +35,9 @@ fun GoogleMap.settingsMap() {
 }
 
 fun Pedimap.icono(context: Context): BitmapDescriptor {
-    val drawableId = when (emitiendo) {
-        1 -> R.drawable.pin_emite
+    val drawableId = when {
+        1 == emitiendo && "V" == cargo -> R.drawable.pin_emite
+        1 == emitiendo && "S" == cargo -> R.drawable.pin_emitesuper
         else -> R.drawable.pin_noemite
     }
     return context.vectorToBitmapDescriptor(drawableId)

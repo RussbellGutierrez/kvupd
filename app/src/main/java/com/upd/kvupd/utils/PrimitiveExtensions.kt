@@ -2,6 +2,7 @@ package com.upd.kvupd.utils
 
 import android.util.Patterns
 import com.upd.kvupd.ui.fragment.altas.enumAltaDatos.TipoPersona
+import java.text.NumberFormat
 import java.time.LocalTime
 import java.util.Locale
 
@@ -55,8 +56,8 @@ fun String.isValidPositiveNumber(): Boolean {
     return toIntOrNull()?.let { it > 0 } == true
 }
 
-fun Double.to0Dec(): String =
-    String.format(Locale.US, "%.0f", this)
+fun Number.to0Dec(): String =
+    String.format(Locale.US, "%,.0f", this)
 
-fun Double.to2Dec(): String =
-    String.format(Locale.US, "%.2f", this)
+fun Number.to2Dec(): String =
+    String.format(Locale.US, "%,.2f", this)

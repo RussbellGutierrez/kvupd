@@ -87,13 +87,13 @@
 
     <dialog
         android:id="@+id/BDConfiguracion"
-        android:name="com.upd.kvupd.ui.dialog.BDConfiguracion"
+        android:name="com.upd.kvupd.ui.fragment.base.dialog.BDConfiguracion"
         android:label="Configuracion"
         tools:layout="@layout/bottom_configuracion" />
 
     <dialog
         android:id="@+id/DSincronizarDiario"
-        android:name="com.upd.kvupd.ui.dialog.DSincronizarDiario"
+        android:name="com.upd.kvupd.ui.fragment.base.dialog.DSincronizarDiario"
         android:label="Sincronizacion"
         tools:layout="@layout/custom_dialog_progressbar" />
 
@@ -112,6 +112,14 @@
         <action
             android:id="@+id/action_FCartera_to_BDBajaCliente"
             app:destination="@id/BDBajaCliente"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_FCartera_to_BDSolicitudes"
+            app:destination="@id/BDSolicitudes"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -137,7 +145,7 @@
 
     <dialog
         android:id="@+id/BDBajaCliente"
-        android:name="com.upd.kvupd.ui.dialog.BDBajaCliente"
+        android:name="com.upd.kvupd.ui.fragment.baja.dialog.BDBajaCliente"
         android:label="Baja cliente"
         tools:layout="@layout/bottom_bajacliente">
 
@@ -145,17 +153,41 @@
             android:name="cliente"
             app:argType="com.upd.kvupd.data.model.FlowCliente" />
 
+        <argument
+            android:name="latitud"
+            app:argType="float" />
+
+        <argument
+            android:name="longitud"
+            app:argType="float" />
+
+        <argument
+            android:name="precision"
+            app:argType="float" />
+
     </dialog>
 
     <dialog
         android:id="@+id/BDDetalleBaja"
-        android:name="com.upd.kvupd.ui.dialog.BDDetalleBaja"
+        android:name="com.upd.kvupd.ui.fragment.baja.dialog.BDDetalleBaja"
         android:label="Detalle Baja cliente"
         tools:layout="@layout/bottom_detallebaja">
 
         <argument
             android:name="detalle"
             app:argType="com.upd.kvupd.data.model.FlowBajaSupervisor" />
+
+        <argument
+            android:name="latitud"
+            app:argType="float" />
+
+        <argument
+            android:name="longitud"
+            app:argType="float" />
+
+        <argument
+            android:name="precision"
+            app:argType="float" />
 
     </dialog>
 
@@ -242,5 +274,25 @@
         android:name="com.upd.kvupd.ui.fragment.servidor.FServidor"
         android:label="Servidor"
         tools:layout="@layout/fragment_f_servidor" />
+
+    <dialog
+        android:id="@+id/BDSolicitudes"
+        android:name="com.upd.kvupd.ui.fragment.solicitudes.dialog.BDSolicitudes"
+        android:label="Solicitudes"
+        tools:layout="@layout/bottom_solicitudes" >
+
+        <argument
+            android:name="cliente"
+            app:argType="com.upd.kvupd.data.model.FlowCliente" />
+
+        <argument
+            android:name="latitud"
+            app:argType="float" />
+
+        <argument
+            android:name="longitud"
+            app:argType="float" />
+
+    </dialog>
 
 </navigation>

@@ -48,4 +48,10 @@ object DeleteCoreConstants {
         WHERE fecha NOT LIKE :hoy || '%'
         AND sincronizado = 1
     """
+
+    const val DEL_SOLICITUD = """
+        DELETE FROM TableSolicitud
+        WHERE fecha NOT LIKE :hoy || '%'
+        AND sincronizado = 1
+    """
 }

@@ -24,6 +24,7 @@ import com.upd.kvupd.data.model.core.TableAlta
 import com.upd.kvupd.data.model.core.TableAltaDatos
 import com.upd.kvupd.data.model.core.TableBaja
 import com.upd.kvupd.data.model.core.TableBajaProcesada
+import com.upd.kvupd.data.model.core.TableConfiguracion
 import com.upd.kvupd.data.model.core.TableFoto
 import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.data.remote.sealed.SocketEvent
@@ -52,10 +53,13 @@ import com.upd.kvupd.ui.fragment.servidor.modelUI.UploadItem
 import com.upd.kvupd.ui.sealed.ResultadoApi
 import com.upd.kvupd.utils.EventFlow
 import com.upd.kvupd.utils.FechaHoraUtil
+import com.upd.kvupd.utils.respuestaUsuario
 import com.upd.kvupd.utils.to2Decimals
 import com.upd.kvupd.viewmodel.state.AltaFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -90,12 +94,10 @@ class APIViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var extraParam: String? = null
+    private var uploadJob: Job? = null
 
     private val _errorMap = mutableMapOf<UploadType, List<String>>()
     val errorMap: Map<UploadType, List<String>> get() = _errorMap
-
-    private val _uploadFinished = EventFlow<Unit>()
-    val uploadFinished = _uploadFinished.events
 
     private val _registerEvent = EventFlow<ResultadoApi<JsonResponseAny>>()
     val registerEvent = _registerEvent.events
@@ -144,6 +146,9 @@ class APIViewModel @Inject constructor(
 
     private val _items = MutableStateFlow<List<UploadItem>>(emptyList())
     val items: StateFlow<List<UploadItem>> = _items
+
+    private val _isUploading = MutableStateFlow(false)
+    val isUploading: StateFlow<Boolean> = _isUploading
 
     ///     REPORTES
     private val _preventaEvent = EventFlow<ResultadoApi<JsonVolumen>>()
@@ -278,52 +283,63 @@ class APIViewModel @Inject constructor(
     }
 
     fun downloadPedimap() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchApiWithConfig(_pedimapEvent) { config ->
             val json = jsobFunctions.jsonObjectPedimap(config)
-            serverFunctions.apiQueryPedimap(json).collect {
-                _pedimapEvent.emit(it)
-            }
+
+            serverFunctions.apiQueryPedimap(json)
+                .collect {
+                    _pedimapEvent.emit(it)
+                }
         }
     }
 
-    fun downloadClientes(vendedor: Int? = null, fecha: String? = null) {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
-            val json = jsobFunctions.jsonObjectClientes(config, vendedor, fecha)
+    fun downloadClientes(
+        vendedor: Int? = null,
+        fecha: String? = null
+    ) {
+        launchApiWithConfig(_clienteEvent) { config ->
+            val json = jsobFunctions.jsonObjectClientes(
+                config,
+                vendedor,
+                fecha
+            )
+
             serverFunctions.apiDownloadCliente(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.replaceClientesAndRutas(lista)
                     }
                 }
+
                 _clienteEvent.emit(result)
             }
         }
     }
 
     fun downloadBajasSupervisor() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchApiWithConfig(_bajasuperEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
+
             serverFunctions.apiDownloadSupervisorBajas(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.apiSaveBajaSupervisor(lista)
                     }
                 }
+
                 _bajasuperEvent.emit(result)
             }
         }
     }
 
     fun downloadAndShowBajas() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchApiWithConfig(_bajaestadoEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
-            serverFunctions.apiQueryVendedorBajas(json).collect {
-                _bajaestadoEvent.emit(it)
-            }
+
+            serverFunctions.apiQueryVendedorBajas(json)
+                .collect {
+                    _bajaestadoEvent.emit(it)
+                }
         }
     }
 
@@ -334,15 +350,16 @@ class APIViewModel @Inject constructor(
     }
 
     fun downloadEncuestas() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchApiWithConfig(_encuestaEvent) { config ->
             val json = jsobFunctions.jsonObjectBasico(config)
+
             serverFunctions.apiDownloadEncuesta(json).collect { result ->
                 if (result is ResultadoApi.Exito) {
                     result.data?.jobl?.let { lista ->
                         roomFunctions.replaceEncuesta(lista)
                     }
                 }
+
                 _encuestaEvent.emit(result)
             }
         }
@@ -377,35 +394,39 @@ class APIViewModel @Inject constructor(
     }
 
     private fun apiCambio() {
-        viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
-
+        launchApiWithConfig(_cambioEvent) { config ->
             val api = when (TipoUsuario.fromCodigo(config.tipo)) {
-                TipoUsuario.VENDEDOR -> serverFunctions::apiReportClienteCambio
-                TipoUsuario.SUPERVISOR -> serverFunctions::apiReportEmpleadoCambio
-                TipoUsuario.JEFE_VENTAS -> return@launch
+                TipoUsuario.VENDEDOR ->
+                    serverFunctions::apiReportClienteCambio
+
+                TipoUsuario.SUPERVISOR,
+                TipoUsuario.JEFE_VENTAS ->
+                    serverFunctions::apiReportEmpleadoCambio
             }
-            downloadBaseReport(api)
-                .collect { _cambioEvent.emit(it) }
+
+            downloadBaseReport(
+                apiCall = api,
+                config = config
+            ).collect { result ->
+                _cambioEvent.emit(result)
+            }
         }
     }
 
     private fun apiSolesPorLineas() {
-        viewModelScope.launch {
-
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
+        launchApiWithConfig(_solesEvent) { config ->
             val tipoUsuario = TipoUsuario.fromCodigo(config.tipo)
 
             // 🔹 1. Base (líneas)
             val base = downloadBaseReport(
-                apiCall = serverFunctions::apiReportSoles
+                apiCall = serverFunctions::apiReportSoles,
+                config = config
             ).first { it !is ResultadoApi.Loading }
 
-            val lineas = mapLineasResult(base) {
-                _solesEvent.emit(it)
-            }
-
-            if (lineas.isEmpty()) return@launch
+            val lineas = resolveLineasResult(
+                result = base,
+                onTerminal = _solesEvent::emit
+            ) ?: return@launchApiWithConfig
 
             // 🔹 2. Detalle por línea
             val resultado = coroutineScope {
@@ -419,16 +440,16 @@ class APIViewModel @Inject constructor(
                                 linea = linea.codigo
                             )
 
-                            TipoUsuario.SUPERVISOR -> SolesRequestConfig(
+                            TipoUsuario.SUPERVISOR,
+                            TipoUsuario.JEFE_VENTAS -> SolesRequestConfig(
                                 apiCall = serverFunctions::apiReportPreventa,
                                 marca = linea.codigo
                             )
-
-                            else -> return@async linea
                         }
 
                         val result = downloadBaseReport(
                             apiCall = request.apiCall,
+                            config = config,
                             linea = request.linea,
                             marca = request.marca
                         ).first { it !is ResultadoApi.Loading }
@@ -472,7 +493,17 @@ class APIViewModel @Inject constructor(
 
     private fun apiSolesDetalle(linea: Int?) {
         viewModelScope.launch {
-            val codigo = linea ?: return@launch
+            val codigo = linea
+                ?: run {
+                    _solesDetalleEvent.emit(
+                        ResultadoApi.Fallo(
+                            IllegalArgumentException(
+                                "No se encontró la línea seleccionada"
+                            )
+                        )
+                    )
+                    return@launch
+                }
             downloadBaseReport(
                 apiCall = serverFunctions::apiReportSolesGenerico,
                 linea = codigo
@@ -574,23 +605,35 @@ class APIViewModel @Inject constructor(
 
     fun createAlta(location: Location) {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
-            val fecha = FechaHoraUtil.ahora()
-            val timeStamp = FechaHoraUtil.timestamp()
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                    ?: run {
+                        _altaMessage.emit(
+                            "No se encontró la configuración local"
+                        )
+                        return@launch
+                    }
 
-            val idaux = "${config.codigo}$timeStamp"
+                val fecha = FechaHoraUtil.ahora()
+                val timeStamp = FechaHoraUtil.timestamp()
 
-            val item = TableAlta(
-                idaux = idaux,
-                empleado = config.codigo,
-                fecha = fecha,
-                longitud = location.longitude,
-                latitud = location.latitude,
-                precision = location.accuracy.toDouble().to2Decimals(),
-                datos = 0
-            )
+                val item = TableAlta(
+                    idaux = "${config.codigo}$timeStamp",
+                    empleado = config.codigo,
+                    fecha = fecha,
+                    longitud = location.longitude,
+                    latitud = location.latitude,
+                    precision = location.accuracy.toDouble().to2Decimals(),
+                    datos = 0
+                )
 
-            saveAndSendAlta(item)
+                saveAndSendAlta(item)
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _altaMessage.emit(error.respuestaUsuario())
+            }
         }
     }
 
@@ -653,14 +696,33 @@ class APIViewModel @Inject constructor(
         }
     }
 
-    fun saveAndSendRespuestas(item: List<TableRespuesta>) {
+    fun saveAndSendRespuestas(
+        items: List<TableRespuesta>
+    ) {
         viewModelScope.launch {
-            roomFunctions.saveRespuestas(item)
+            roomFunctions.saveRespuestas(items)
 
-            handleResult(
-                result = sendServerFunctions.enviarRespuesta(item),
-                onError = { _respuestaMessage.emit(it) }
-            )
+            var primerError: ResultadoApi<Unit>? = null
+
+            for (respuesta in items) {
+                val resultado =
+                    sendServerFunctions.enviarRespuesta(respuesta)
+
+                if (primerError == null &&
+                    (resultado is ResultadoApi.ErrorHttp || resultado is ResultadoApi.Fallo)
+                ) {
+                    primerError = resultado
+                }
+            }
+
+            primerError?.let { resultado ->
+                handleResult(
+                    result = resultado,
+                    onError = { mensaje ->
+                        _respuestaMessage.emit(mensaje)
+                    }
+                )
+            }
         }
     }
 
@@ -677,17 +739,31 @@ class APIViewModel @Inject constructor(
 
     fun executeUpdater() {
         viewModelScope.launch {
-            val config = roomFunctions.queryConfiguracion() ?: return@launch
-
-            serverFunctions.apiSocketUpdate(config.empresa)
-                .collect { event ->
-
-                    _socketEvent.emit(event)
-
-                    if (event is SocketEvent.Error) {
-                        return@collect
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                    ?: run {
+                        _socketEvent.emit(
+                            SocketEvent.Error(
+                                "No se encontró la configuración local"
+                            )
+                        )
+                        return@launch
                     }
-                }
+
+                serverFunctions.apiSocketUpdate(config.empresa)
+                    .collect { result ->
+                        _socketEvent.emit(result)
+                    }
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                _socketEvent.emit(
+                    SocketEvent.Error(
+                        error.respuestaUsuario()
+                    )
+                )
+            }
         }
     }
 
@@ -837,6 +913,10 @@ class APIViewModel @Inject constructor(
                 )
             }
 
+            /*val itemSolicitud = async {
+                val total = roomFunctions.apiCountSolicitud()
+            }*/
+
             _items.value = awaitAll(
                 itemSeguimiento,
                 itemAlta,
@@ -866,44 +946,54 @@ class APIViewModel @Inject constructor(
         _errorMap.clear()
     }
 
-    private fun uploadAll() {
-        viewModelScope.launch {
+    private suspend fun uploadAll() {
+        _errorMap.clear()
 
-            _errorMap.clear()
+        uploadManager.uploadAll(
+            extraParam = extraParam,
 
-            uploadManager.uploadAll(
-                extraParam = extraParam,
+            onStatus = { type, status ->
+                updateStatus(type, status)
+            },
 
-                onStatus = { type, status ->
-                    updateStatus(type, status)
-                },
+            onProgress = { type, processed, pending ->
+                updateProgress(type, processed, pending)
+            },
 
-                onProgress = { type, processed, pending ->
-                    updateProgress(type, processed, pending)
-                },
-
-                onError = { type, errores ->
-                    _errorMap[type] = errores
-                }
-            )
-
-            _uploadFinished.emit(Unit)
-        }
+            onError = { type, errores ->
+                _errorMap[type] = errores
+            }
+        )
     }
 
     fun verifyStatusAndUpload() {
-        viewModelScope.launch {
+        if (uploadJob?.isActive == true) return
 
-            serverFunctions.apiQueryStatusServidor().collect { result ->
+        _status.value = ServerStatusResult(
+            status = ApiServerStatus.LOADING,
+            message = "Consultando servidor..."
+        )
+        _isUploading.value = true
 
-                delay(300)
+        uploadJob = viewModelScope.launch {
+            clearErrors()
+            resetItemsState()
 
-                val mapped = mapServerStatus(result)
-                _status.value = mapped
+            try {
+                serverFunctions.apiQueryStatusServidor().collect { result ->
 
-                if (mapped.status == ApiServerStatus.SUCCESS) {
-                    uploadAll()
+                    delay(300)
+
+                    val mapped = mapServerStatus(result)
+                    _status.value = mapped
+
+                    if (mapped.status == ApiServerStatus.SUCCESS) {
+                        uploadAll()
+                    }
                 }
+            } finally {
+                _isUploading.value = false
+                uploadJob = null
             }
         }
     }
@@ -933,15 +1023,26 @@ class APIViewModel @Inject constructor(
 
     private fun <T> downloadBaseReport(
         apiCall: suspend (RequestBody) -> Flow<ResultadoApi<T>>,
+        config: TableConfiguracion? = null,
         linea: Int? = null,
         marca: Int? = null
     ): Flow<ResultadoApi<T>> = flow {
 
-        val config = roomFunctions.queryConfiguracion()
-            ?: return@flow
+        val reportConfig = config
+            ?: roomFunctions.queryConfiguracion()
+            ?: run {
+                emit(
+                    ResultadoApi.Fallo(
+                        IllegalStateException(
+                            "No se encontró la configuración local"
+                        )
+                    )
+                )
+                return@flow
+            }
 
         val json = jsobFunctions.jsonObjectReporte(
-            item = config,
+            item = reportConfig,
             linea = linea,
             marca = marca
         )
@@ -949,28 +1050,35 @@ class APIViewModel @Inject constructor(
         emitAll(apiCall(json))
     }
 
-    private suspend fun mapLineasResult(
+    private suspend fun resolveLineasResult(
         result: ResultadoApi<JsonSoles>,
-        onError: suspend (ResultadoApi<List<LineaUI>>) -> Unit
-    ): List<LineaUI> {
+        onTerminal: suspend (ResultadoApi<List<LineaUI>>) -> Unit
+    ): List<LineaUI>? {
 
         return when (result) {
 
             is ResultadoApi.Exito -> {
-                result.data?.let { mapToLineas(it) } ?: emptyList()
+                val lineas = result.data
+                    ?.let(::mapToLineas)
+                    .orEmpty()
+
+                lineas.ifEmpty {
+                    onTerminal(ResultadoApi.Exito(emptyList()))
+                    null
+                }
             }
 
             is ResultadoApi.ErrorHttp -> {
-                onError(result)
-                emptyList()
+                onTerminal(result)
+                null
             }
 
             is ResultadoApi.Fallo -> {
-                onError(result)
-                emptyList()
+                onTerminal(result)
+                null
             }
 
-            is ResultadoApi.Loading -> emptyList()
+            is ResultadoApi.Loading -> null
         }
     }
 
@@ -1030,6 +1138,27 @@ class APIViewModel @Inject constructor(
                 ApiServerStatus.LOADING,
                 "Consultando servidor..."
             )
+        }
+    }
+
+    private fun <T> launchApiWithConfig(
+        event: EventFlow<ResultadoApi<T>>,
+        block: suspend (TableConfiguracion) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val config = roomFunctions.queryConfiguracion()
+                    ?: throw IllegalStateException(
+                        "No se encontró la configuración local"
+                    )
+
+                block(config)
+
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                event.emit(ResultadoApi.Fallo(error))
+            }
         }
     }
 }

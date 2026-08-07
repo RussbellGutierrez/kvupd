@@ -15,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.RadioButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
@@ -33,7 +35,7 @@ import com.upd.kvupd.data.model.core.TableFoto
 import com.upd.kvupd.data.model.core.TableRespuesta
 import com.upd.kvupd.databinding.FlowRowPreguntasBinding
 import com.upd.kvupd.databinding.FragmentFEncuestaBinding
-import com.upd.kvupd.ui.dialog.SeleccionEncuesta
+import com.upd.kvupd.ui.fragment.encuesta.dialog.SeleccionEncuesta
 import com.upd.kvupd.ui.fragment.encuesta.enumFile.EstadoEncuesta
 import com.upd.kvupd.ui.fragment.encuesta.enumFile.TipoPregunta
 import com.upd.kvupd.ui.fragment.encuesta.mapper.toClienteUI
@@ -50,7 +52,6 @@ import com.upd.kvupd.utils.GPSConstants.IGNORAR_METROS
 import com.upd.kvupd.utils.GPSConstants.TRACKER_RAPIDO
 import com.upd.kvupd.utils.InstanciaDialog.REFERENCIA_DIALOG
 import com.upd.kvupd.utils.InstanciaDialog.cerrarDialogActual
-import com.upd.kvupd.utils.MaterialDialogTexto
 import com.upd.kvupd.utils.MaterialDialogTexto.T_ERROR
 import com.upd.kvupd.utils.MaterialDialogTexto.T_SUCCESS
 import com.upd.kvupd.utils.MaterialDialogTexto.T_WARNING
@@ -82,7 +83,7 @@ class FEncuesta : Fragment(), MenuProvider {
     private val binding by viewBinding(FragmentFEncuestaBinding::bind)
 
     private var requiereFoto = false
-    private var encuestaInitialized = false
+    private var actualizandoControles = false
     private var clienteActual: ClienteUI? = null
     private var getLocation: Location? = null
     private var estadoEncuesta = EstadoEncuesta.INIT
@@ -112,8 +113,7 @@ class FEncuesta : Fragment(), MenuProvider {
         initAutoComplete()
         startGps()
         setupActionViews()
-        estadoEncuesta =
-            EstadoEncuesta.INIT
+        estadoEncuesta = EstadoEncuesta.INIT
         observerData()
     }
 
@@ -619,6 +619,7 @@ class FEncuesta : Fragment(), MenuProvider {
                 isChecked = seleccion.contains(opcion)
 
                 setOnCheckedChangeListener { _, _ ->
+                    if (actualizandoControles) return@setOnCheckedChangeListener
 
                     val seleccionadas = binding.lnrMultiple.children
                         .filterIsInstance<CheckBox>()
@@ -650,10 +651,10 @@ class FEncuesta : Fragment(), MenuProvider {
             binding.edtLibre.setText(valor)
         }
 
-        binding.edtLibre.doAfterTextChanged {
-            val texto = it.toString()
+        binding.edtLibre.doAfterTextChanged { texto ->
+            if (actualizandoControles) return@doAfterTextChanged
 
-            localViewmodel.actualizarRespuesta(p.pregunta, texto)
+            localViewmodel.actualizarRespuesta(p.pregunta, texto.toString())
             limpiarDependientes(p.pregunta)
             actualizarVisibilidadCondicional()
         }
@@ -675,16 +676,23 @@ class FEncuesta : Fragment(), MenuProvider {
     }
 
     private fun limpiarView(view: View?) {
-        if (view !is ViewGroup) return
+        if (view == null) return
 
-        view.children.forEach { child ->
-            when (child) {
-                is RadioButton -> child.isChecked = false
-                is CheckBox -> child.isChecked = false
-                is ViewGroup -> limpiarView(child)
-            }
+        actualizandoControles = true
+
+        try {
+            limpiarControles(view)
+        } finally {
+            actualizandoControles = false
         }
-        view.findViewById<android.widget.EditText>(R.id.edt_libre)?.setText("")
+    }
+
+    private fun limpiarControles(view: View) {
+        when (view) {
+            is CompoundButton -> view.isChecked = false
+            is EditText -> view.text.clear()
+            is ViewGroup -> view.children.forEach(::limpiarControles)
+        }
     }
 
     private fun actualizarVisibilidadCondicional() {

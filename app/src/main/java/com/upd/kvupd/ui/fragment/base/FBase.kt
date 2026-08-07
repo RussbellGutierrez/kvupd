@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.upd.kvupd.R
 import com.upd.kvupd.data.local.enumClass.InfoDispositivo
 import com.upd.kvupd.data.model.BotonesConfig
@@ -22,6 +23,7 @@ import com.upd.kvupd.data.model.colorSeguimiento
 import com.upd.kvupd.data.model.nombreEmpresa
 import com.upd.kvupd.databinding.FragmentFBaseBinding
 import com.upd.kvupd.domain.enumFile.TipoUsuario
+import com.upd.kvupd.ui.fragment.base.modelUI.BotonInicioUI
 import com.upd.kvupd.ui.fragment.base.sealed.EstadoSesion
 import com.upd.kvupd.ui.sealed.AppDialogType
 import com.upd.kvupd.utils.ExtraInfo
@@ -62,11 +64,9 @@ class FBase : Fragment(), MenuProvider {
         binding.apply {
             txtVersion.text = ExtraInfo.obtener(InfoDispositivo.VERSION_APP)
 
-            btnVendedor.navegarSeguro(R.id.action_FBase_to_FRastreo)
+            btnRastreo.navegarSeguro(R.id.action_FBase_to_FRastreo)
 
             btnCartera.navegarSeguro(R.id.action_FBase_to_FCartera)
-
-            btnCliente.navegarSeguro(R.id.action_FBase_to_FCartera)
 
             btnAlta.navegarSeguro(R.id.action_FBase_to_FAlta)
 
@@ -89,7 +89,6 @@ class FBase : Fragment(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.registro -> consume { findNavController().navigate(R.id.action_FBase_to_BDConfiguracion) }
         R.id.sincronizar -> consume { findNavController().navigate(R.id.action_FBase_to_DSincronizarDiario) }
-        R.id.encuesta -> consume { }
         R.id.apagar -> consume { requireActivity().finishAndRemoveTask() }
         else -> false
     }
@@ -114,10 +113,11 @@ class FBase : Fragment(), MenuProvider {
             val tipo = TipoUsuario.fromCodigo(config.tipo)
             val cfg = configPorTipo(tipo)
 
+            configurarBotonesVariables(tipo)
+
             binding.apply {
-                btnVendedor.visibleIf(cfg.vendedor)
+                btnRastreo.visibleIf(cfg.rastreo)
                 btnCartera.visibleIf(cfg.cartera)
-                btnCliente.visibleIf(cfg.cliente)
                 btnReporte.visibleIf(cfg.reporte)
                 btnEncuesta.visibleIf(cfg.encuesta)
                 btnAlta.visibleIf(cfg.alta)
@@ -134,7 +134,7 @@ class FBase : Fragment(), MenuProvider {
     private fun configPorTipo(tipo: TipoUsuario): BotonesConfig =
         when (tipo) {
             TipoUsuario.VENDEDOR -> BotonesConfig(
-                cliente = true,
+                cartera = true,
                 reporte = true,
                 encuesta = true,
                 alta = true,
@@ -143,7 +143,7 @@ class FBase : Fragment(), MenuProvider {
             )
 
             TipoUsuario.SUPERVISOR -> BotonesConfig(
-                vendedor = true,
+                rastreo = true,
                 cartera = true,
                 reporte = true,
                 encuesta = true,
@@ -153,10 +153,12 @@ class FBase : Fragment(), MenuProvider {
             )
 
             TipoUsuario.JEFE_VENTAS -> BotonesConfig(
+                rastreo = true,
+                cartera = true,
                 reporte = true,
                 encuesta = true,
                 alta = true,
-                servidor = true /// agregar rastreo para ver supervisor y vendedores
+                servidor = true
             )
         }
 
@@ -194,5 +196,57 @@ class FBase : Fragment(), MenuProvider {
 
             REFERENCIA_DIALOG = WeakReference(dialog)
         }
+    }
+
+    private fun MaterialButton.aplicar(config: BotonInicioUI?) {
+        visibleIf(config != null && config.visible)
+
+        config ?: return
+
+        text = config.texto
+        setIconResource(config.icono)
+    }
+
+    private fun configurarBotonesVariables(tipo: TipoUsuario) = with(binding) {
+        val botonRastreo: BotonInicioUI?
+        val botonCartera: BotonInicioUI?
+
+        when (tipo) {
+            TipoUsuario.VENDEDOR -> {
+                botonRastreo = null
+
+                botonCartera = BotonInicioUI(
+                    texto = "Administrar clientes",
+                    icono = R.drawable.clientes
+                )
+            }
+
+            TipoUsuario.SUPERVISOR -> {
+                botonRastreo = BotonInicioUI(
+                    texto = "Control de vendedores",
+                    icono = R.drawable.rastreo
+                )
+
+                botonCartera = BotonInicioUI(
+                    texto = "Visualizar clientes por vendedor",
+                    icono = R.drawable.alzamano
+                )
+            }
+
+            TipoUsuario.JEFE_VENTAS -> {
+                botonRastreo = BotonInicioUI(
+                    texto = "Control de personal",
+                    icono = R.drawable.radar
+                )
+
+                botonCartera = BotonInicioUI(
+                    texto = "Visualizar clientes por vendedor",
+                    icono = R.drawable.alzamano
+                )
+            }
+        }
+
+        btnRastreo.aplicar(botonRastreo)
+        btnCartera.aplicar(botonCartera)
     }
 }

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -17,6 +18,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.upd.kvupd.application.receiver.GpsReceiver
 import com.upd.kvupd.application.work.BootStartWorker
+import com.upd.kvupd.application.work.CacheRecoveryWorker
 import com.upd.kvupd.application.work.CleanupWorker
 import com.upd.kvupd.application.work.ClientesWorker
 import com.upd.kvupd.application.work.ConfiguracionWorker
@@ -111,8 +113,8 @@ class OperationSource @Inject constructor(
 
         val especificos = when (usuarioTipo) {
             TipoUsuario.VENDEDOR -> listOf(workerClientes())
-            TipoUsuario.SUPERVISOR -> listOf(workerEmpleados())
-            TipoUsuario.JEFE_VENTAS -> emptyList()
+            TipoUsuario.SUPERVISOR,
+            TipoUsuario.JEFE_VENTAS-> listOf(workerEmpleados())
         }
 
         val lista = especificos + comunes
@@ -129,6 +131,22 @@ class OperationSource @Inject constructor(
 
             lista.map { it.id } + encuestas.id
         }
+    }
+
+    fun lanzarRecuperacionCache() {
+        val configuracion = workerConfiguracion()
+
+        val recuperacion = OneTimeWorkRequestBuilder<CacheRecoveryWorker>()
+            .build()
+
+        workManager
+            .beginUniqueWork(
+                "cache_recovery_worker",
+                ExistingWorkPolicy.KEEP,
+                configuracion
+            )
+            .then(recuperacion)
+            .enqueue()
     }
 
     private fun workerConfiguracion() =
@@ -193,6 +211,11 @@ class OperationSource @Inject constructor(
     private fun workerCoreCsv() =
         OneTimeWorkRequestBuilder<CoreCsvWorker>()
             .setConstraints(constraints)
+            .setBackoffCriteria(
+                BackoffPolicy.EXPONENTIAL,
+                30,
+                TimeUnit.SECONDS
+            )
             .build()
 
     fun syncInicial(config: TableConfiguracion) {

@@ -6,8 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bicolor_dialog"
     android:gravity="center"
-    android:padding="10dp"
-    tools:context=".ui.dialog.BDDetalleBaja">
+    android:padding="@dimen/separation_10"
+    tools:context=".ui.fragment.baja.dialog.BDDetalleBaja">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"

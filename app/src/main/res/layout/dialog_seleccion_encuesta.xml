@@ -9,7 +9,7 @@
     android:background="@color/white"
     app:cardCornerRadius="5dp"
     app:cardElevation="2dp"
-    tools:context=".ui.dialog.SeleccionEncuesta">
+    tools:context=".ui.fragment.encuesta.dialog.SeleccionEncuesta">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

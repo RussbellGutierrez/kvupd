@@ -10,11 +10,11 @@ enum class TipoReporte(
 ) {
     PREVENTA(
         1, "Preventa dia", "Versus cuota del día",
-        setOf(TipoUsuario.SUPERVISOR)
+        setOf(TipoUsuario.JEFE_VENTAS, TipoUsuario.SUPERVISOR)
     ),
     COBERTURA(
         2, "Cobertura clientes", "Versus cobertura del día",
-        setOf(TipoUsuario.SUPERVISOR, TipoUsuario.VENDEDOR)
+        setOf(TipoUsuario.JEFE_VENTAS, TipoUsuario.SUPERVISOR, TipoUsuario.VENDEDOR)
     ),
     CARTERA(
         3, "Clientes no coberturados", "Avance actual",
@@ -42,17 +42,21 @@ enum class TipoReporte(
 
             PREVENTA -> ReportAction.PREVENTA
             COBERTURA -> {
-                if (tipoUsuario == TipoUsuario.SUPERVISOR)
+                if (tipoUsuario == TipoUsuario.SUPERVISOR ||
+                    tipoUsuario == TipoUsuario.JEFE_VENTAS
+                )
                     ReportAction.COBERTURA_SUP
                 else
                     ReportAction.COBERTURA_VEN
             }
+
             CARTERA -> {
                 if (tipoUsuario == TipoUsuario.SUPERVISOR)
                     ReportAction.CARTERA_SUP
                 else
                     ReportAction.CARTERA_VEN
             }
+
             PEDIDOS -> ReportAction.PEDIDOS
             CAMBIOS -> ReportAction.CAMBIOS
             SOLES -> ReportAction.SOLES

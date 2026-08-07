@@ -1,6 +1,5 @@
 package com.upd.kvupd.ui.fragment.reportes
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.upd.kvupd.databinding.FragmentFDetalleBinding
-import com.upd.kvupd.ui.dialog.BDSolesDetalle
+import com.upd.kvupd.ui.fragment.reportes.dialog.BDSolesDetalle
 import com.upd.kvupd.ui.fragment.reportes.adapter.detalle.CambiosAdapter
 import com.upd.kvupd.ui.fragment.reportes.adapter.detalle.CoberturadosAdapter
 import com.upd.kvupd.ui.fragment.reportes.adapter.detalle.DetalleCoberturaAdapter

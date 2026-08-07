@@ -8,10 +8,9 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".ui.dialog.BDSolesDetalle">
+    tools:context=".ui.fragment.reportes.dialog.BDSolesDetalle">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
