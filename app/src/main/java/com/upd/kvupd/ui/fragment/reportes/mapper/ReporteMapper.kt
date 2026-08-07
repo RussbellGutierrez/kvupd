@@ -197,8 +197,8 @@ object ReporteMapper {
     ///     DETALLE KPI
     fun JsonVolumen.toSubUI(): List<SubProgresoUI> =
         jobl
-            .map { it.toSubUI() }
             .sortedByDescending { it.avance }
+            .map { it.toSubUI() }
 
     private fun Volumen.toSubUI(): SubProgresoUI {
         val porcentaje = if (cuota == 0.0) 0.0 else (avance * 100) / cuota
@@ -216,8 +216,8 @@ object ReporteMapper {
 
     fun JsonCoberturaCartera.toSubUI(): List<SubProgresoUI> =
         jobl
+            .sortedByDescending { it.avance.toDouble() }
             .map { it.toSubUI() }
-            .sortedByDescending { it.avance }
 
     private fun CoberturaCartera.toSubUI(): SubProgresoUI {
         val cuota = cartera.toDouble()
@@ -236,6 +236,7 @@ object ReporteMapper {
 
     fun JsonDetalleCobertura.toSubUI(): List<SubDetalleCoberturaUI> =
         jobl
+            .sortedBy { it.nombre }
             .groupBy { it.codigo }
             .map { (codigo, items) ->
                 val nombre = items.first().nombre
@@ -246,7 +247,7 @@ object ReporteMapper {
                     pedidos = items.map { it.toPedido() },
                     isLoading = false
                 )
-            }.sortedBy { it.nombre }
+            }
 
     private fun DetalleCobertura.toPedido(): PedidosRealizados =
         PedidosRealizados(
@@ -256,8 +257,8 @@ object ReporteMapper {
 
     fun JsonCoberturados.toSubUI(): List<SubCoberturadosUI> =
         jobl
-            .map { it.toSubUI() }
             .sortedBy { it.nombre }
+            .map { it.toSubUI() }
 
     private fun Coberturados.toSubUI(): SubCoberturadosUI =
         SubCoberturadosUI(
@@ -270,8 +271,8 @@ object ReporteMapper {
 
     fun JsonPedidoGeneral.toSubUI(): List<SubPedidoGeneralUI> =
         jobl
-            .map { it.toSubUI() }
             .sortedBy { it.id }
+            .map { it.toSubUI() }
 
     private fun PedidoGeneral.toSubUI(): SubPedidoGeneralUI =
         SubPedidoGeneralUI(
@@ -285,8 +286,8 @@ object ReporteMapper {
 
     fun JsonCambio.toSubUI(): List<SubCambioUI> =
         jobl
-            .map { it.toSubUI() }
             .sortedBy { it.codigo }
+            .map { it.toSubUI() }
 
     private fun Cambio.toSubUI(): SubCambioUI =
         SubCambioUI(
