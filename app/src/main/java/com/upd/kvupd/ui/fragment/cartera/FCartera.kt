@@ -233,7 +233,7 @@ class FCartera : Fragment(), MenuProvider {
             limpiarFiltroNegocio()
         }
 
-        /*mapHelper.setOnInfoWindowClickListener(
+        mapHelper.setOnInfoWindowClickListener(
             FlowCliente::class.java,
             object : MapHelper.OnInfoWindowClickListener<FlowCliente> {
 
@@ -241,7 +241,7 @@ class FCartera : Fragment(), MenuProvider {
                     realizarSolicitudCliente(data)
                 }
             }
-        )*/
+        )
 
         mapHelper.setOnInfoWindowLongClickListener(
             FlowCliente::class.java,
