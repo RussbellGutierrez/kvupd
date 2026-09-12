@@ -307,6 +307,7 @@ fun buildMaterialDialog(context: Context, dialogType: AppDialogType): MaterialDi
 
                 val positiveText =
                     if (dialogType.mostrarNegativo) TEXT_POSITIVO_B else TEXT_POSITIVO_A
+
                 positiveButton(null, positiveText) {
                     dismiss()
                     dialogType.onPositive()

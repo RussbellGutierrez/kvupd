@@ -105,8 +105,17 @@ object InstanciaDialog {
     var REFERENCIA_DIALOG: WeakReference<MaterialDialog>? = null
 
     fun cerrarDialogActual() {
-        REFERENCIA_DIALOG?.get()?.dismiss()
+        val dialog = REFERENCIA_DIALOG?.get()
         REFERENCIA_DIALOG = null
+
+        val decorView = dialog?.window?.decorView
+
+        if (
+            dialog?.isShowing == true &&
+            decorView?.isAttachedToWindow == true
+        ) {
+            dialog.dismiss()
+        }
     }
 }
 
