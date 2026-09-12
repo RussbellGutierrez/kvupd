@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private val localViewmodel by viewModels<ALLViewModel>()
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var navController: NavController
+    private var inicioServicioSolicitado = false
 
     @Inject
     lateinit var permissionManager: PermissionManager
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         validarFlujoInicial()
 
-        localViewmodel.iniciarServiceSiHayConfiguracion()
+        //localViewmodel.iniciarServiceSiHayConfiguracion()
         localViewmodel.sincronizarCsvCore()
 
         collectFlow(localViewmodel.sesionEstado) { estado ->
@@ -179,7 +180,13 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
 
-                InitialState.HasUUID -> toast("Bienvenido")
+                InitialState.HasUUID -> {
+                    if (!inicioServicioSolicitado) {
+                        inicioServicioSolicitado = true
+                        toast("Bienvenido")
+                        localViewmodel.iniciarServiceSiHayConfiguracion()
+                    }
+                }
             }
         }
     }

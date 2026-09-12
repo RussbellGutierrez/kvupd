@@ -15,7 +15,6 @@ import com.upd.kvupd.data.model.core.TableSeguimiento
 import com.upd.kvupd.domain.IdentityFunctions
 import com.upd.kvupd.domain.RoomFunctions
 import com.upd.kvupd.domain.send.SendServerFunctions
-import com.upd.kvupd.utils.ConstantsExtras
 import com.upd.kvupd.utils.ConstantsExtras.GPS_FLOW
 import com.upd.kvupd.utils.ConstantsExtras.NO_FIND_UUID
 import com.upd.kvupd.utils.FechaHoraUtil
@@ -31,6 +30,7 @@ import com.upd.kvupd.utils.GPSConstants.TRACKER_GPS
 import com.upd.kvupd.utils.NotificationHelper.NOTIFICATION_ID
 import com.upd.kvupd.utils.SharedPreferenceKeys.KEY_MODO_GPS
 import com.upd.kvupd.utils.gps.GpsTracker
+import com.upd.kvupd.utils.hasLocationPermission
 import com.upd.kvupd.utils.to2Decimals
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -70,24 +70,44 @@ class LocationServiceBackground : LifecycleService() {
         Log.i(_tag, "🟢 Servicio iniciado")
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int
+    ): Int {
         super.onStartCommand(intent, flags, startId)
 
+        if (!applicationContext.hasLocationPermission()) {
+            Log.e(_tag, "No se inicia el servicio: permiso de ubicación ausente")
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+
         val nuevoModo = intent?.getStringExtra(INTENT_EXTRA_GPS) ?: MODO_NORMAL
+
         val modoPrevio = preferences.getString(KEY_MODO_GPS, MODO_NORMAL)
 
-        // Persistir modo (Main)
-        preferences.edit().putString(KEY_MODO_GPS, nuevoModo).apply()
+        preferences.edit()
+            .putString(KEY_MODO_GPS, nuevoModo)
+            .apply()
+
         modoActual = nuevoModo
 
         val notification = obtenerNotificacionPorModo(nuevoModo)
 
-        // ⚠️ Foreground inmediato
-        startForeground(NOTIFICATION_ID, notification)
+        try {
+            startForeground(NOTIFICATION_ID, notification)
+        } catch (error: SecurityException) {
+            Log.e(
+                _tag,
+                "No se pudo iniciar el servicio de ubicación",
+                error
+            )
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
 
         lifecycleScope.launch {
-
-            // 🔹 Room en IO
             if (codigoUsuario == null) {
                 codigoUsuario = withContext(Dispatchers.IO) {
                     roomFunction.queryConfiguracion()?.codigo
